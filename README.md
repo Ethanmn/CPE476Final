@@ -10,3 +10,4 @@ Ethan Nakashima
 Katie Keim
 
 Christopher Hebert
+Katelyn Hicks
