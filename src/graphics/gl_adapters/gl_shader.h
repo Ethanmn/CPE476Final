@@ -18,7 +18,7 @@ struct GLShader {
    void use();
 
    template <typename T>
-   void uniform(const GLUniformLocationMap& uniforms, const T& data);
+   void sendUniform(const GLUniformLocationMap& uniforms, const T& data);
 
    void bindAndEnableAttribute(const ArrayBufferObject& array_buffer);
    void disableAttribute(const ArrayBufferObject& array_buffer);

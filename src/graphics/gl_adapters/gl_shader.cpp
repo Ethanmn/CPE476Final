@@ -1,12 +1,11 @@
 #include "gl_shader.h"
 
-
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <sstream>
 
-#include "graphics/gl_adapters/buffer_object.h"
+#include "graphics/gl_adapters/array_buffer_object.h"
 
 namespace {
    void uniformMatrix4fv(GLint location, const GLfloat *value) {
@@ -89,14 +88,14 @@ void GLShader::use() {
 }
 
 template <>
-void GLShader::uniform<glm::mat4>(
+void GLShader::sendUniform<glm::mat4>(
       const GLUniformLocationMap& uniforms,
       const glm::mat4& data) {
    uniformMatrix4fv(uniforms.at(program_), glm::value_ptr(data));
 }
 
 template <>
-void GLShader::uniform<float>(const GLUniformLocationMap& uniforms, const float& data) {
+void GLShader::sendUniform<float>(const GLUniformLocationMap& uniforms, const float& data) {
    glUniform1f(uniforms.at(program_), data);
 }
 
