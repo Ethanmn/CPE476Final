@@ -2,6 +2,6 @@
 
 #include "graphics/gl_adapters/buffer_object.h"
 
-IndexBufferObject createIndexBufferObject(const std::vector<unsigned short>& data) {
+IndexBufferObject IndexBufferObject::create(const std::vector<unsigned short>& data) {
    return IndexBufferObject{createBufferObject(data), data.size()};
 }
