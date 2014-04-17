@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "buffer_object.h"
 #include "gl_types.h"
 
 struct ArrayBufferObject {

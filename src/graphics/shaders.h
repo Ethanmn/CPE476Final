@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "graphics/Shader.h"
+#include "graphics/shader.h"
 
 enum class ShaderType {
    SUN

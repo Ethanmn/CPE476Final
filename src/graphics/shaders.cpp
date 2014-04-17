@@ -1,4 +1,4 @@
-#include "graphics/Shaders.h"
+#include "graphics/shaders.h"
 
 #include <assert.h>
 

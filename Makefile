@@ -27,10 +27,14 @@ CFLAGS=-g -Wall -Wextra -std=c++11 -MMD -I$(SRCDIR) `sdl2-config --cflags` `pkg-
 # ``=run a shell command (command substitution)
 # sdl-config=a command that generates the load libs/cflags necessary depending
 # on the platform (OS/Linux/Win)
-LDLIBS=`sdl2-config --libs` `pkg-config --libs $(PKGS)` -framework OpenGL
+LDLIBS=`sdl2-config --libs` `pkg-config --libs $(PKGS)`
 
 # LDFLAGS (Load/linker flags)
-LDFLAGS=
+ifeq ($(shell uname -s),Darwin)
+	LDFLAGS=-framework OpenGL
+else
+	LDFLAGS=
+endif
 
 # The C++ compiler you are using.
 CC=clang++
