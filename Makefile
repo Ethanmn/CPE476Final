@@ -10,7 +10,7 @@ OBJDIR=obj
 OBJECTS=$(patsubst %.$(CPP_EXT),$(OBJDIR)/%.o,$(SRCS))
 
 # The packages loaded by pkg-config.
-PKGS=glew gl assimp freetype2
+PKGS=glew gl assimp
 
 # The flags you want to use when compiling individual objects (.o files)
 # -g=generate information for debugging (used with debugging tools such as gdb
@@ -39,7 +39,7 @@ CC=clang++
 BINDIR=gen
 
 # What you run to play the game!
-EXECUTABLE=lab1
+EXECUTABLE=deer
 
 # If files named all/clean/run exist in the directory, then
 # Make will not run these commands (because they will be "Up-to-Date")
