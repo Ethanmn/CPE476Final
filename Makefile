@@ -10,7 +10,7 @@ OBJDIR=obj
 OBJECTS=$(patsubst %.$(CPP_EXT),$(OBJDIR)/%.o,$(SRCS))
 
 # The packages loaded by pkg-config.
-PKGS=glew gl assimp
+PKGS=glew assimp
 
 # The flags you want to use when compiling individual objects (.o files)
 # -g=generate information for debugging (used with debugging tools such as gdb
@@ -27,7 +27,7 @@ CFLAGS=-g -Wall -Wextra -std=c++11 -MMD -I$(SRCDIR) `sdl2-config --cflags` `pkg-
 # ``=run a shell command (command substitution)
 # sdl-config=a command that generates the load libs/cflags necessary depending
 # on the platform (OS/Linux/Win)
-LDLIBS=`sdl2-config --libs` `pkg-config --libs $(PKGS)`
+LDLIBS=`sdl2-config --libs` `pkg-config --libs $(PKGS)` -framework OpenGL
 
 # LDFLAGS (Load/linker flags)
 LDFLAGS=

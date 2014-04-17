@@ -11,6 +11,8 @@ enum class Uniform {
    NORMAL,
    TEXTURE,
    COLOR,
+   SUNDIR,
+   SUNINTENSITY,
 
    BLUE // ???
 };
@@ -31,6 +33,10 @@ inline std::string uniform_name(Uniform uniform) {
          return "uTexture";
       case Uniform::COLOR:
          return "uColor";
+      case Uniform::SUNDIR:
+         return "uSunDir";
+      case Uniform::SUNINTENSITY:
+         return "uSunIntensity";
 
       case Uniform::BLUE:
          return "uBlue";

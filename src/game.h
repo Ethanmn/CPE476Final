@@ -7,6 +7,7 @@
 #include "input.h"
 #include "sdl_engine.h"
 #include "units.h"
+#include "graphics/shaders.h"
 
 struct Game {
    Game();
@@ -16,6 +17,7 @@ struct Game {
   private:
    SDLEngine engine_;
    Input input_;
+   Shaders shaders_;
 
    void step(units::MS dt);
    void draw();

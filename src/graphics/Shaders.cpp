@@ -2,21 +2,21 @@
 
 #include <assert.h>
 
-const std::vector<Attribute> kGroundAttrs{
+const std::vector<Attribute> kSunAttrs{
    Attribute::VERTEX,
    Attribute::NORMAL
 };
-const std::vector<Uniform> kGroundUniforms{
-   Uniform::MODEL_VIEW,
+const std::vector<Uniform> kSunUniforms{
+   Uniform::VIEW,
    Uniform::PROJECTION,
-   Uniform::NORMAL,
-   Uniform::BLUE,
+   Uniform::SUNDIR,
+   Uniform::SUNINTENSITY
 };
 
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(
-            ShaderType::GROUND,
-            Shader("ground", kGroundAttrs, kGroundUniforms)));
+            ShaderType::SUN,
+            Shader("Sun", kSunAttrs, kSunUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

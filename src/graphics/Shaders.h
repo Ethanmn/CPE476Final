@@ -10,8 +10,7 @@
 #include "graphics/Shader.h"
 
 enum class ShaderType {
-   GROUND,
-   TEXT
+   SUN
 };
 
 struct Shaders {
