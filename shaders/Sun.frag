@@ -1,5 +1,4 @@
-/*
- struct Material {
+struct Material {
     vec3 aColor;
     vec3 dColor;
     vec3 sColor;
@@ -7,7 +6,6 @@
 };
 
 uniform Material uMat;
- */
 
 uniform mat4 uViewMatrix;
 
@@ -32,13 +30,10 @@ void main() {
     dotVRDir = dot(-1.0 * normalize(vec3(vViewer.x, vViewer.y, vViewer.z)),
                 normalize(ReflDir));
     
-    //Diffuse = directionalColor * uMat.dColor * dotNLDir;
-    //Spec = directionalColor * uMat.sColor * pow(dotVRDir, uMat.shine);
-   
-   Diffuse = directionalColor * dotNLDir;
-   Spec = directionalColor * pow(dotVRDir, 10.0);
+    Diffuse = directionalColor * uMat.dColor * dotNLDir;
+    Spec = directionalColor * uMat.sColor * pow(dotVRDir, uMat.shine);
     
-    color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + vec3(0.1, 0.1, 0.1);
+    color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + uMat.aColor;
     
     gl_FragColor = vec4(color.r, color.g, color.b, 1.0);
 }
