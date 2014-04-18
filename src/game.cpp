@@ -30,9 +30,9 @@ void Game::draw() {
    
    Material mat;
    mat.ambient = glm::vec3(0.1f, 0.1f, 0.1f);
-   mat.diffuse = glm::vec3(0.5f, 0.6f, 0.5f);
+   mat.diffuse = glm::vec3(0.7f, 0.5f, 0.7f);
    mat.specular = glm::vec3(0.1f, 0.2f, 0.1f);
-   mat.shine = 1000.0f;
+   mat.shine = 100.0f;
    
    
    modelMatrix = glm::mat4(1.0f);
@@ -47,7 +47,6 @@ void Game::draw() {
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::PROJECTION),
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
       
-      /*
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
          mat.ambient);
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_DIF),
@@ -56,7 +55,6 @@ void Game::draw() {
          mat.specular);
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_SHINE),
          mat.shine);
-      */
       
       
       shaderPair.second.drawMesh(bunny);
