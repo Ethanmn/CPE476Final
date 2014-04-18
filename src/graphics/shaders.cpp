@@ -34,14 +34,14 @@ Shader& Shaders::at(ShaderType shader_type) {
    }
 }
 
-GLUniformLocationMap Shaders::getUniforms(const Uniform& uniform) {
+UniformLocationMap Shaders::getUniforms(const Uniform& uniform) {
    GLUniformLocationMap uniforms;
    for (auto& pair : shaders_) {
       const auto maybe_location = pair.second.uniformLocation(uniform);
       if (maybe_location)
          uniforms.insert(*maybe_location);
    }
-   return uniforms;
+   return { uniform, uniforms };
 }
 
 GLAttributeLocationMap Shaders::getAttributes(const Attribute& attribute) {

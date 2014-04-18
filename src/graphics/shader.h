@@ -3,6 +3,7 @@
 
 #include <boost/optional.hpp>
 #include <GL/glew.h>
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
@@ -12,6 +13,7 @@
 
 #include "graphics/attributes.h"
 #include "graphics/uniforms.h"
+#include "graphics/uniform_location_map.h"
 
 struct AffineUniforms;
 struct Mesh;
@@ -45,8 +47,16 @@ struct Shader {
          const Uniform& uniform);
 
    template <typename T>
-   void sendUniform(const GLUniformLocationMap& uniform, const T& data) {
-      gl_shader_.sendUniform(uniform, data);
+   void sendUniform(const UniformLocationMap& uniforms, const T& data) {
+      try {
+         gl_shader_.sendUniform(uniforms.location_map, data);
+      } catch (std::out_of_range& exp) {
+         std::cerr << std::endl << "Could not find " << uniform_name(uniforms.uniform);
+         std::cerr << " in program " << program_name_ << std::endl;
+         std::cerr << "Make sure it is in the program's list of uniforms in ";
+         std::cerr << "Shaders.cpp" << std::endl << std::endl;
+         throw;
+      }
    }
 
   private:
