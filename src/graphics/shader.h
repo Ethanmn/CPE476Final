@@ -13,6 +13,7 @@
 #include "graphics/attributes.h"
 #include "graphics/uniforms.h"
 
+struct AffineUniforms;
 struct Mesh;
 struct ModelViewUniformMatrix;
 
@@ -23,6 +24,8 @@ struct Shader {
          const std::vector<Uniform>& uniforms);
 
    void use();
+
+   void drawMesh(const Mesh& mesh);
 
    bool has_attribute(const Attribute& attribute) const {
       return attribute_locations_.count(attribute) > 0;

@@ -7,6 +7,8 @@
 #include "graphics/gl_adapters/array_buffer_object.h"
 #include "graphics/gl_adapters/index_buffer_object.h"
 
+#include "graphics/mesh.h"
+
 const std::string kShaderPath = "../shaders/";
 
 Shader::Shader(
@@ -39,16 +41,12 @@ void Shader::use() {
    gl_shader_.use();
 }
 
-/* TODO(chebert): this is what you need to draw meshes.
-void Shader::drawMesh(const AffineUniforms& affine_uniforms, const Mesh& mesh) {
-   uniformMatrix(affine_uniforms.model_view_uniform);
-   uniformMatrix(affine_uniforms.normal_uniform);
+void Shader::drawMesh(const Mesh& mesh) {
    bindIndexBuffer(mesh.index_buffer_object);
    bindAndEnableAttributes(mesh.attribute_buffer_objects);
    glDrawElements(GL_TRIANGLES, mesh.index_buffer_object.size, GL_UNSIGNED_SHORT, 0);
    disableAttributes(mesh.attribute_buffer_objects);
 }
-*/
 
 boost::optional<std::pair<GLShaderHandle, GLAttributeLocation>> Shader::attributeLocation(
       const Attribute& attribute) {
