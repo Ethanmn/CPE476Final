@@ -46,6 +46,7 @@ void Game::draw() {
          viewMatrix);
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::PROJECTION),
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
+      
       /*
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
          mat.ambient);
@@ -56,6 +57,7 @@ void Game::draw() {
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_SHINE),
          mat.shine);
       */
+      
       
       shaderPair.second.drawMesh(bunny);
    }
