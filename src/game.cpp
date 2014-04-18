@@ -1,7 +1,14 @@
 #include "game.h"
+#include "graphics/assimp/mesh_loader.h"
+#include "graphics/mesh.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+
+namespace {
+   //Camera camera;
+   Mesh bunny;
+}
 
 Game::Game() {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
@@ -19,9 +26,26 @@ void Game::step(units::MS) {
 
 void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glm::mat4 viewMatrix, modelMatrix;
+   
+   modelMatrix = glm::mat4(1.0f);
+   viewMatrix = glm::lookAt(glm::vec3(3.0, 3.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0, 1.0, 0));
+   
+   for (auto& shaderPair: shaders_.getMap()) {
+      shaderPair.second.use();
+      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::MODEL),
+         modelMatrix);
+      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::VIEW),
+         viewMatrix);
+      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::PROJECTION),
+         glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
+      shaderPair.second.drawMesh(bunny);
+   }
 }
 
 void Game::mainLoop() {
+   bunny = Mesh::fromAssimpMesh(shaders_,loadMesh("../models/cube.obj"));
+   
    Input input;
    bool running = true;
    SDL_Event event;

@@ -7,10 +7,11 @@ const std::vector<Attribute> kSunAttrs{
    Attribute::NORMAL
 };
 const std::vector<Uniform> kSunUniforms{
+   Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
-   Uniform::SUNDIR,
-   Uniform::SUNINTENSITY
+//   Uniform::SUNDIR,
+//   Uniform::SUNINTENSITY
 };
 
 Shaders::Shaders() {
