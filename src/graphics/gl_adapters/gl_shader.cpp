@@ -95,6 +95,13 @@ void GLShader::sendUniform<glm::mat4>(
 }
 
 template <>
+void GLShader::sendUniform<glm::vec3>(
+      const GLUniformLocationMap& uniforms,
+      const glm::vec3& data) {
+   glUniform3f(uniforms.at(program_), data.x, data.y, data.z);
+}
+
+template <>
 void GLShader::sendUniform<float>(const GLUniformLocationMap& uniforms, const float& data) {
    glUniform1f(uniforms.at(program_), data);
 }
