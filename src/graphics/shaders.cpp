@@ -10,8 +10,12 @@ const std::vector<Uniform> kSunUniforms{
    Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
+   Uniform::M_AMB,
+   Uniform::M_DIF,
+   Uniform::M_SPEC,
+   Uniform::M_SHINE,
 //   Uniform::SUNDIR,
-//   Uniform::SUNINTENSITY
+//   Uniform::SUN_INTENSITY
 };
 
 Shaders::Shaders() {

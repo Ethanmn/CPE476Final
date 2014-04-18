@@ -1,9 +1,9 @@
-/*struct Material {
-  vec3 aColor;
-  vec3 dColor;
-  vec3 sColor;
+struct Material {
+  vec3 ambient;
+  vec3 diffuse;
+  vec3 specular;
   float shine;
-};*/
+};
 
 attribute vec3 aPosition;
 attribute vec3 aNormal;
@@ -12,8 +12,7 @@ uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uModelMatrix;
 uniform mat4 uNormalMatrix;
-
-//uniform Material uMat;
+uniform Material uMat;
 
 varying vec3 vColor;
 varying vec4 vViewer;
