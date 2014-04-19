@@ -1,23 +1,28 @@
-/* Deer
+/* 
+   Camera.cpp
    Katie Keim
-   CPE 476
+   Deer - CPE 476
 */
 #include "Camera.h"
 
+const float PI = 3.14159265359;
+const int MAX_ROTATE_VERT =  80;
+const int PI_IN_DEGREES = 180;
+
 Camera::Camera() {
-   this->position = glm::vec3(0, 0, 0);
-   this->lookAt = glm::vec3(0, 0, 1);
-   this->up = glm::vec3(0, 1, 0);
-   this->phi = 0;
-   this->theta = -PI / 2;
+   position = glm::vec3(0, 0, 0);
+   lookAt = glm::vec3(0, 0, 1);
+   up = glm::vec3(0, 1, 0);
+   phi = 0;
+   theta = -PI / 2;
 }
 
-Camera::Camera(glm::vec3 position, glm::vec3 lookAt) {
-   this->position = position;
-   this->lookAt = lookAt;
-   this->up = glm::vec3(0, 1, 0);
-   this->phi = 0;
-   this->theta = -PI / 2;
+Camera::Camera(glm::vec3 pos, glm::vec3 look) {
+   position = pos;
+   lookAt = look;
+   up = glm::vec3(0, 1, 0);
+   phi = 0;
+   theta = -PI / 2;
 }
 
 /* 
@@ -26,16 +31,19 @@ Camera::Camera(glm::vec3 position, glm::vec3 lookAt) {
 */
 void Camera::setPosition(glm::vec3 endPosition) {
    position = endPosition;
+   updateLookAt();
 }
 
 /* Moves the camera one step toward the specified position at the given speed. */
-void Camera::moveCameraToPoint(glm::vec3 endPosition, float speed) {
+void Camera::moveCameraToPoint(glm::vec3& endPosition, float speed) {
    position += (endPosition - position) / glm::length(endPosition - position) * speed;
+   updateLookAt();
 }
 
 /* Moves the camera one step in the given direction at the given speed. */
-void Camera::moveCameraInDirection(glm::vec3 direction, float speed) {
+void Camera::moveCameraInDirection(glm::vec3& direction, float speed) {
    position += direction / glm::length(direction) * speed;
+   updateLookAt();
 }
 
 /*
@@ -44,7 +52,7 @@ void Camera::moveCameraInDirection(glm::vec3 direction, float speed) {
    the ending mouse point, the width of the window,
    and the height of the window.
 */
-void Camera::rotateWithDrag(glm::vec3 startPoint, glm::vec3 endPoint, int width, int height) {
+void Camera::rotateWithDrag(glm::vec3& startPoint, glm::vec3& endPoint, int width, int height) {
    theta += (endPoint.x - startPoint.x) * PI / width;
    phi += (endPoint.y - startPoint.y) * PI / height;
 
@@ -54,6 +62,8 @@ void Camera::rotateWithDrag(glm::vec3 startPoint, glm::vec3 endPoint, int width,
    else if (phi < -MAX_ROTATE_VERT * PI / PI_IN_DEGREES) {
       phi = -MAX_ROTATE_VERT * PI / PI_IN_DEGREES;
    }
+
+   updateLookAt();
 }
 
 /* Retrieves the current position of the camera. */
@@ -74,6 +84,13 @@ glm::vec3 Camera::getCamLeftVec() {
 
 /* Retrieves the view matrix (glm::mat4) for shaders. */
 glm::mat4 Camera::getViewMatrix() {
-   lookAt = glm::vec3(cos(phi) * cos(theta) + position.x, sin(phi), cos(phi) * cos(PI / 2 - theta) + position.z);
    return glm::lookAt(position, lookAt, up);
+}
+
+/* 
+   A private function to update our lookAt point.
+   This should be called whenever the camera is rotated or translated.
+*/
+void Camera::updateLookAt() {
+   lookAt = glm::vec3(cos(phi) * cos(theta) + position.x, sin(phi), cos(phi) * cos(PI / 2 - theta) + position.z);
 }
