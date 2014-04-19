@@ -20,7 +20,7 @@ const std::vector<Uniform> kSunUniforms{
 
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
-   Attribute::TEXTURE_COORD
+   Attribute::TEX_COORD
 };
 const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL,
