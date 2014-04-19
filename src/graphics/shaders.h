@@ -11,7 +11,8 @@
 #include "graphics/uniform_location_map.h"
 
 enum class ShaderType {
-   SUN
+   SUN,
+   TEXTURE
 };
 
 struct Shaders {
