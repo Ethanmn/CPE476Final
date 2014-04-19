@@ -33,9 +33,11 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));
+   /*
    shaders_.insert(std::make_pair(
-            ShaderType::SUN,
+            ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   */
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
