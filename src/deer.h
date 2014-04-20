@@ -11,12 +11,7 @@ struct Shader;
 struct UniformLocationMap;
 
 struct Deer {
-   Deer(const Mesh& mesh, const glm::vec3 position) :
-      mesh_(mesh),
-      position_(position),
-      velocity_(0.0f),
-      walk_direction_(WalkType::NONE),
-      strafe_direction_(StrafeType::NONE) {}
+   Deer(const Mesh& mesh, const glm::vec3& position);
 
    void draw(Shader& shader, const UniformLocationMap& model_locations) const;
    void step(units::MS dt, const Camera& camera);
@@ -30,22 +25,22 @@ struct Deer {
    void stopStrafing();
 
   private:
-   enum class WalkType {
+   enum class WalkDirection {
       FORWARD,
       BACKWARD,
       NONE
    };
-   enum class StrafeType {
+   enum class StrafeDirection {
       LEFT,
       RIGHT,
       NONE
    };
 
    Mesh mesh_;
-   glm::vec3 position_;
-   glm::vec3 velocity_;
-   WalkType walk_direction_;
-   StrafeType strafe_direction_;
+   glm::vec2 position_;
+   glm::vec2 velocity_;
+   WalkDirection walk_direction_;
+   StrafeDirection strafe_direction_;
 };
 
 #endif // DEER_H_
