@@ -21,7 +21,7 @@ Mesh Mesh::fromAssimpMesh(Shaders& shaders, const AssimpMesh& mesh) {
          ArrayBufferObject::create(
             mesh.uv_array,
             shaders.getAttributes(Attribute::TEX_COORD),
-            2),
+            3),
       }
    };
 }

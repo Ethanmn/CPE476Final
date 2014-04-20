@@ -4,13 +4,16 @@
 #include <string>
 
 enum class Texture {
-   WATER
+   WATER,
+   GRASS
 };
 
 inline std::string texture_path(Texture texture) {
    switch (texture) {
       case Texture::WATER:
          return "../textures/water.bmp";
+      case Texture::GRASS:
+         return "../textures/grass.bmp";
    }
 }
 
