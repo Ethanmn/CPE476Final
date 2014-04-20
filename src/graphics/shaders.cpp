@@ -18,10 +18,26 @@ const std::vector<Uniform> kSunUniforms{
 //   Uniform::SUN_INTENSITY
 };
 
+const std::vector<Attribute> kTextureAttrs{
+   Attribute::VERTEX,
+   Attribute::TEX_COORD
+};
+const std::vector<Uniform> kTextureUniforms{
+   Uniform::MODEL,
+   Uniform::VIEW,
+   Uniform::PROJECTION,
+   Uniform::TEXTURE
+};
+
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));
+   /*
+   shaders_.insert(std::make_pair(
+            ShaderType::TEXTURE,
+            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   */
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
