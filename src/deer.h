@@ -14,6 +14,7 @@ struct Deer {
    Deer(const Mesh& mesh, const glm::vec3 position) :
       mesh_(mesh),
       position_(position),
+      velocity_(0.0f),
       walk_direction_(WalkType::NONE),
       strafe_direction_(StrafeType::NONE) {}
 
@@ -42,6 +43,7 @@ struct Deer {
 
    Mesh mesh_;
    glm::vec3 position_;
+   glm::vec3 velocity_;
    WalkType walk_direction_;
    StrafeType strafe_direction_;
 };
