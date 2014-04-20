@@ -11,7 +11,7 @@ namespace {
 }
 
 Game::Game() :
-   deer_(Mesh::fromAssimpMesh(shaders_, loadMesh("../models/cube.obj")), glm::vec3(0.0f))
+   deer_(Mesh::fromAssimpMesh(shaders_, loadMesh("../models/Test_Deer.dae")), glm::vec3(0.0f))
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
