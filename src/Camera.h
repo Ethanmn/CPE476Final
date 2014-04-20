@@ -18,10 +18,10 @@ struct Camera {
    void moveCameraToPoint(glm::vec3& endPosition, float speed);
    void moveCameraInDirection(glm::vec3& direction, float speed);
    void rotateWithDrag(glm::vec3& startPoint, glm::vec3& endPoint, int width, int height);
-   glm::vec3 getPosition();
-   glm::vec3 getCamForwardVec();
-   glm::vec3 getCamLeftVec();
-   glm::mat4 getViewMatrix();
+   glm::vec3 getPosition() const;
+   glm::vec3 getCamForwardVec() const;
+   glm::vec3 getCamLeftVec() const;
+   glm::mat4 getViewMatrix() const;
    
    private:
       glm::vec3 position;
