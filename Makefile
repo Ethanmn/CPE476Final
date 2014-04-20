@@ -48,7 +48,7 @@ EXECUTABLE=deer
 # If files named all/clean/run exist in the directory, then
 # Make will not run these commands (because they will be "Up-to-Date")
 # .PHONY is a special way of telling Make to run these no matter what.
-.PHONY: all clean run
+.PHONY: all clean run docs
 
 all: $(EXECUTABLE)
 
@@ -75,6 +75,9 @@ $(EXECUTABLE): $(OBJECTS)
 $(OBJDIR)/%.o: %.$(CPP_EXT)
 	@mkdir -p $(@D)
 	$(CC) -c $(CFLAGS) -o $@ $<
+
+docs:
+	doxygen Doxyfile
 
 # Deletes all .o/.d files and the executable. This helps when you want to
 # force recompilation.
