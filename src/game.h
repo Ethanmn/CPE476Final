@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "deer.h"
 #include "input.h"
 #include "sdl_engine.h"
 #include "units.h"
@@ -18,6 +19,7 @@ struct Game {
    SDLEngine engine_;
    Input input_;
    Shaders shaders_;
+   Deer deer_;
 
    void step(units::MS dt);
    void draw();

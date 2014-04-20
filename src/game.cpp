@@ -10,7 +10,9 @@ namespace {
    Mesh bunny;
 }
 
-Game::Game() {
+Game::Game() :
+   deer_(Mesh::fromAssimpMesh(shaders_, loadMesh("../models/cube.obj")), glm::vec3(0.0f))
+{
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
@@ -21,7 +23,8 @@ Game::Game() {
    glEnable(GL_CULL_FACE);
 }
 
-void Game::step(units::MS) {
+void Game::step(units::MS dt) {
+   deer_.step(dt, camera);
 }
 
 void Game::draw() {
@@ -39,25 +42,28 @@ void Game::draw() {
    viewMatrix = glm::lookAt(glm::vec3(3.0, 3.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0, 1.0, 0));
    
    for (auto& shaderPair: shaders_.getMap()) {
-      shaderPair.second.use();
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::MODEL),
+      Shader& shader = shaderPair.second;
+      shader.use();
+
+      shader.sendUniform(shaders_.getUniforms(Uniform::MODEL),
          modelMatrix);
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::VIEW),
+      shader.sendUniform(shaders_.getUniforms(Uniform::VIEW),
          viewMatrix);
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::PROJECTION),
+      shader.sendUniform(shaders_.getUniforms(Uniform::PROJECTION),
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
       
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
+      shader.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
          mat.ambient);
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_DIF),
+      shader.sendUniform(shaders_.getUniforms(Uniform::M_DIF),
          mat.diffuse);
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_SPEC),
+      shader.sendUniform(shaders_.getUniforms(Uniform::M_SPEC),
          mat.specular);
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_SHINE),
+      shader.sendUniform(shaders_.getUniforms(Uniform::M_SHINE),
          mat.shine);
       
       
-      shaderPair.second.drawMesh(bunny);
+      //shader.drawMesh(bunny);
+      deer_.draw(shader, shaders_.getUniforms(Uniform::MODEL));
    }
 }
 
@@ -86,6 +92,28 @@ void Game::mainLoop() {
       { // Handle input
          if (input.wasKeyPressed(SDL_SCANCODE_ESCAPE)) {
             running = false;
+         }
+         { // handle walk forward/backward for deer.
+            const auto key_forward = SDL_SCANCODE_W;
+            const auto key_backward = SDL_SCANCODE_S;
+            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
+               deer_.walkForward();
+            } else if (!input.isKeyHeld(key_forward) && input.isKeyHeld(key_backward)) {
+               deer_.walkBackward();
+            } else {
+               deer_.stopWalking();
+            }
+         }
+         { // handle strafe left/right for deer.
+            const auto key_left = SDL_SCANCODE_A;
+            const auto key_right = SDL_SCANCODE_D;
+            if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
+               deer_.strafeLeft();
+            } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
+               deer_.strafeRight();
+            } else {
+               deer_.stopStrafing();
+            }
          }
       }
 
