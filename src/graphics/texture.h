@@ -21,7 +21,7 @@ typedef struct Image {
 } Image;
 
 void initTexture();
-void enableTexture(GLuint h_uTexUnit, int texture_id);
+void enableTexture(int texture_id);
 void disableTexture();
 int loadTexture(const std::string& path);
 static unsigned int getint(FILE *fp);

@@ -25,11 +25,10 @@ void initTexture() {
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 }
 
-void enableTexture(GLuint h_uTexUnit, int texture_id) {
+void enableTexture(int texture_id) {
    glEnable(GL_TEXTURE_2D);
    glActiveTexture(TEXTURE_ID_OFFSET + texture_id);
    glBindTexture(GL_TEXTURE_2D, texture_id);
-   glUniform1i(h_uTexUnit, texture_id);
 }
 
 void disableTexture() {

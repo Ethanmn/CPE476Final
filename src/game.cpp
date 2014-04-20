@@ -3,6 +3,7 @@
 #include "graphics/mesh.h"
 #include "graphics/material.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "graphics/texture.h"
 #include <iostream>
 
 namespace {
@@ -19,9 +20,11 @@ Game::Game() {
    glShadeModel(GL_SMOOTH);
    glDisable(GL_LINE_SMOOTH);
    glEnable(GL_CULL_FACE);
+   initTexture();
 }
 
 void Game::step(units::MS) {
+   
 }
 
 void Game::draw() {
@@ -40,6 +43,7 @@ void Game::draw() {
    
    for (auto& shaderPair: shaders_.getMap()) {
       shaderPair.second.use();
+      
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::MODEL),
          modelMatrix);
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::VIEW),
@@ -47,6 +51,10 @@ void Game::draw() {
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::PROJECTION),
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
       
+      enableTexture(0);
+      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::TEXTURE), 0);
+      
+      /*
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
          mat.ambient);
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_DIF),
@@ -55,13 +63,16 @@ void Game::draw() {
          mat.specular);
       shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_SHINE),
          mat.shine);
-      
+      */
       
       shaderPair.second.drawMesh(bunny);
+      
+      disableTexture();
    }
 }
 
 void Game::mainLoop() {
+   loadTexture(texture_path(Texture::WATER));
    bunny = Mesh::fromAssimpMesh(shaders_,loadMesh("../models/cube.obj"));
    
    Input input;
