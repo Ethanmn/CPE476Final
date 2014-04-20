@@ -9,14 +9,6 @@ const float PI = 3.14159265359;
 const int MAX_ROTATE_VERT =  80;
 const int PI_IN_DEGREES = 180;
 
-Camera::Camera() {
-   position = glm::vec3(0, 0, 0);
-   lookAt = glm::vec3(0, 0, 1);
-   up = glm::vec3(0, 1, 0);
-   phi = 0;
-   theta = -PI / 2;
-}
-
 Camera::Camera(glm::vec3 pos, glm::vec3 look) {
    position = pos;
    lookAt = look;
@@ -29,20 +21,25 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) {
    'Jumps' the camera to the specified position.
    There is no transition.
 */
-void Camera::setPosition(glm::vec3 endPosition) {
+void Camera::setPosition(glm::vec3& endPosition) {
    position = endPosition;
    updateLookAt();
 }
 
+/* Changes what the camera is looking at to the specified point. */
+void Camera::setLookAt(glm::vec3& lookAtPoint) {
+   lookAt = lookAtPoint;
+}
+
 /* Moves the camera one step toward the specified position at the given speed. */
-void Camera::moveCameraToPoint(glm::vec3& endPosition, float speed) {
-   position += (endPosition - position) / glm::length(endPosition - position) * speed;
+void Camera::moveCameraToPoint(glm::vec3& endPosition, float speed, units::MS timeDif) {
+   position += (endPosition - position) / glm::length(endPosition - position) * speed * (float)timeDif;
    updateLookAt();
 }
 
 /* Moves the camera one step in the given direction at the given speed. */
-void Camera::moveCameraInDirection(glm::vec3& direction, float speed) {
-   position += direction / glm::length(direction) * speed;
+void Camera::moveCameraInDirection(glm::vec3& direction, float speed, units::MS timeDif) {
+   position += direction / glm::length(direction) * speed * (float)timeDif;
    updateLookAt();
 }
 
@@ -68,7 +65,7 @@ void Camera::rotateWithDrag(glm::vec3& startPoint, glm::vec3& endPoint, int widt
 
 /* Retrieves the current position of the camera. */
 glm::vec3 Camera::getPosition() {
-   return this->position;
+   return position;
 }
 
 /* Retrieves the vector pointing straight in front of the camera. */
