@@ -6,7 +6,7 @@
 #include <iostream>
 
 namespace {
-   //Camera camera;
+   Camera camera;
    Mesh bunny;
 }
 
