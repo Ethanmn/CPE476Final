@@ -10,7 +10,7 @@ struct ArrayBufferObject {
    template <typename T>
    static ArrayBufferObject create(
          const std::vector<T>& data,
-         const std::map<GLShaderHandle, GLAttributeLocation>& attributes,
+         const GLAttributeLocationMap& attributes,
          size_t num_components);
 
    GLBufferHandle handle; // Handle for where the Array Buffer is stored.
@@ -22,7 +22,7 @@ struct ArrayBufferObject {
 template <typename T>
 ArrayBufferObject ArrayBufferObject::create(
       const std::vector<T>& data,
-      const std::map<GLShaderHandle, GLAttributeLocation>& attributes,
+      const GLAttributeLocationMap& attributes,
       size_t num_components) {
    return ArrayBufferObject{
       createBufferObject(data),

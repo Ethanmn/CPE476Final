@@ -64,23 +64,23 @@ void Camera::rotateWithDrag(glm::vec3& startPoint, glm::vec3& endPoint, int widt
 }
 
 /* Retrieves the current position of the camera. */
-glm::vec3 Camera::getPosition() {
+glm::vec3 Camera::getPosition() const {
    return position;
 }
 
 /* Retrieves the vector pointing straight in front of the camera. */
-glm::vec3 Camera::getCamForwardVec() {
+glm::vec3 Camera::getCamForwardVec() const {
    return (lookAt - position) / glm::length(lookAt - position);
 }
 
 /* Retrieves the vector pointing to the left of the camera. */
-glm::vec3 Camera::getCamLeftVec() {
+glm::vec3 Camera::getCamLeftVec() const {
    glm::vec3 w = getCamForwardVec();
    return glm::cross(up, w) / glm::length(glm::cross(up, w));
 }
 
 /* Retrieves the view matrix (glm::mat4) for shaders. */
-glm::mat4 Camera::getViewMatrix() {
+glm::mat4 Camera::getViewMatrix() const {
    return glm::lookAt(position, lookAt, up);
 }
 

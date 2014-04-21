@@ -102,11 +102,21 @@ void GLShader::sendUniform<glm::vec3>(
 }
 
 template <>
+void GLShader::sendUniform<glm::vec4>(
+      const GLUniformLocationMap& uniforms,
+      const glm::vec4& data) {
+   glUniform4f(uniforms.at(program_), data.r, data.g, data.b, data.a);
+}
+
+template <>
 void GLShader::sendUniform<float>(const GLUniformLocationMap& uniforms, const float& data) {
    glUniform1f(uniforms.at(program_), data);
 }
 
 void GLShader::bindAndEnableAttribute(const ArrayBufferObject& array_buffer) {
+   if (array_buffer.attribute_locations.count(program_) == 0) {
+      return;
+   }
    glBindBuffer(GL_ARRAY_BUFFER, array_buffer.handle);
    glVertexAttribPointer(
          array_buffer.attribute_locations.at(program_),
@@ -118,6 +128,9 @@ void GLShader::bindAndEnableAttribute(const ArrayBufferObject& array_buffer) {
 }
 
 void GLShader::disableAttribute(const ArrayBufferObject& array_buffer) {
+   if (array_buffer.attribute_locations.count(program_) == 0) {
+      return;
+   }
    glDisableVertexAttribArray(array_buffer.attribute_locations.at(program_));
 }
 

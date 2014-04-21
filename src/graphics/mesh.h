@@ -4,12 +4,13 @@
 #include "graphics/attributes.h"
 #include "graphics/gl_adapters/array_buffer_object.h"
 #include "graphics/gl_adapters/index_buffer_object.h"
+#include "graphics/location_maps.h"
 
 struct AssimpMesh;
 struct Shaders;
 
 struct Mesh {
-   static Mesh fromAssimpMesh(Shaders& shaders, const AssimpMesh& mesh);
+   static Mesh fromAssimpMesh(AttributeLocationMap shaders, const AssimpMesh& mesh);
    IndexBufferObject index_buffer_object;
    std::vector<ArrayBufferObject> attribute_buffer_objects;
 };
