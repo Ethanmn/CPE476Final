@@ -42,6 +42,7 @@ struct Deer {
    Mesh mesh_;
    glm::vec2 position_;
    glm::vec2 velocity_;
+   glm::vec2 last_facing_;
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;
 

@@ -19,6 +19,7 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
    position_(xz(position)),
    velocity_(0.0f),
+   last_facing_(0, 1),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(position_, glm::vec2(3.0f))
@@ -71,6 +72,7 @@ void Deer::step(units::MS dt, const Camera& camera) {
          if (glm::length(velocity_) > kSpeed) {
             velocity_ = glm::normalize(velocity_) * kSpeed;
          }
+         last_facing_ = glm::normalize(velocity_);
       }
    }
    position_ += velocity_ * static_cast<float>(dt);
@@ -98,7 +100,7 @@ void Deer::stopStrafing() {
 }
 
 float Deer::yRotation() const {
-   float angle = glm::angle(glm::vec2(0, 1), glm::normalize(velocity_));
+   float angle = glm::angle(glm::vec2(0, 1), last_facing_);
    if (velocity_.x <= 0)
       return 360.0f - angle;
    return angle;
