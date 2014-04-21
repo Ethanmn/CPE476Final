@@ -17,11 +17,12 @@ Mesh Mesh::fromAssimpMesh(Shaders& shaders, const AssimpMesh& mesh) {
             mesh.normal_array,
             shaders.getAttributes(Attribute::NORMAL),
             3),
+         */
          ArrayBufferObject::create(
-            texcoord,
+            mesh.uv_array,
             shaders.getAttributes(Attribute::TEX_COORD),
             2),
-         */
+         
       }
    };
 }

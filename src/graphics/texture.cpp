@@ -11,7 +11,6 @@
 #include <string>
 using namespace std;
 
-#define TEXTURE_ID_OFFSET 33984
 
 namespace {
    int texture_id = 0;
@@ -27,7 +26,7 @@ void initTexture() {
 
 void enableTexture(int texture_id) {
    glEnable(GL_TEXTURE_2D);
-   glActiveTexture(TEXTURE_ID_OFFSET + texture_id);
+   glActiveTexture(GL_TEXTURE0 + texture_id);
    glBindTexture(GL_TEXTURE_2D, texture_id);
 }
 

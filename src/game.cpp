@@ -9,10 +9,10 @@
 namespace {
    //Camera camera;
    Mesh bunny;
-   GLuint TexBuffObj;
 }
 
-Game::Game() {
+Game::Game() :
+   ground_(shaders_) {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
@@ -66,6 +66,7 @@ void Game::draw() {
          mat.shine);
       */
       
+      ground_.draw(shaderPair.second, viewMatrix);
       shaderPair.second.drawMesh(bunny);
 
       disableTexture();
@@ -75,28 +76,6 @@ void Game::draw() {
 void Game::mainLoop() {
    loadTexture(texture_path(Texture::WATER));
    bunny = Mesh::fromAssimpMesh(shaders_,loadMesh("../models/cube.obj"));
-   
-   static float texcoord[] = {
-      0.75, 0, // back
-      0.75, 1,
-      0.5, 1,
-      0.5, 0,
-      0.25, 0, //right
-      0.25, 1,
-      0.5, 1,
-      0.5, 0,
-      0, 0, //front
-      0, 1,
-      0.25, 1,
-      0.25, 0,
-      0.75, 0, // left
-      0.75, 1,
-      1, 1,
-      1, 0
-   };
-   glGenBuffers(1, &TexBuffObj);
-   glBindBuffer(GL_ARRAY_BUFFER, TexBuffObj);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(texcoord), texcoord, GL_STATIC_DRAW);
    
    Input input;
    bool running = true;

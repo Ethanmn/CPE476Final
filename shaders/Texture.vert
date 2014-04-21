@@ -2,7 +2,7 @@ uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uModelMatrix;
 
-attribute vec2 aTexCoord;
+attribute vec3 aTexCoord;
 attribute vec3 aPosition;
 
 varying vec4 vPosition;

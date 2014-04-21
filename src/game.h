@@ -8,6 +8,8 @@
 #include "sdl_engine.h"
 #include "units.h"
 #include "graphics/shaders.h"
+#include "GroundPlane.h"
+
 
 struct Game {
    Game();
@@ -15,6 +17,7 @@ struct Game {
    void mainLoop();
 
   private:
+   GroundPlane ground_;
    SDLEngine engine_;
    Input input_;
    Shaders shaders_;
