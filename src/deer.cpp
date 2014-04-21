@@ -18,7 +18,9 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    position_(xz(position)),
    velocity_(0.0f),
    walk_direction_(WalkDirection::NONE),
-   strafe_direction_(StrafeDirection::NONE) {}
+   strafe_direction_(StrafeDirection::NONE),
+   bounding_rectangle_(position_, glm::vec2(3.0f))
+      {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& model_locations) const {
    const glm::mat4 model_matrix(
@@ -27,6 +29,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& model_locations) const
             glm::vec3(position_.x, 0.0f, position_.y)));
    shader.sendUniform(model_locations, model_matrix);
    shader.drawMesh(mesh_);
+   bounding_rectangle_.draw(model_locations, shader, 0.0f);
 }
 
 void Deer::step(units::MS dt, const Camera& camera) {

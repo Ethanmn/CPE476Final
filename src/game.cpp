@@ -11,7 +11,7 @@ namespace {
 }
 
 Game::Game() :
-   deer_(Mesh::fromAssimpMesh(shaders_, loadMesh("../models/Test_Deer.dae")), glm::vec3(0.0f))
+   deer_(Mesh::fromAssimpMesh(shaders_, loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f))
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
@@ -21,6 +21,8 @@ Game::Game() :
    glShadeModel(GL_SMOOTH);
    glDisable(GL_LINE_SMOOTH);
    glEnable(GL_CULL_FACE);
+
+   BoundingRectangle::loadBoundingMesh(shaders_);
 }
 
 void Game::step(units::MS dt) {
@@ -39,7 +41,7 @@ void Game::draw() {
    
    
    modelMatrix = glm::mat4(1.0f);
-   viewMatrix = glm::lookAt(glm::vec3(3.0, 3.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0, 1.0, 0));
+   viewMatrix = glm::lookAt(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0, 1.0, 0));
    
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;

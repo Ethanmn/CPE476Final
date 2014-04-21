@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 
+#include "bounding_rectangle.h"
 #include "Camera.h"
 #include "graphics/mesh.h"
 #include "units.h"
@@ -41,6 +42,8 @@ struct Deer {
    glm::vec2 velocity_;
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;
+
+   BoundingRectangle bounding_rectangle_;
 };
 
 #endif // DEER_H_
