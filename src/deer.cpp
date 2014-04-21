@@ -65,6 +65,7 @@ void Deer::step(units::MS dt, const Camera& camera) {
       }
    }
    position_ += velocity_ * static_cast<float>(dt);
+   bounding_rectangle_.set_position(position_);
 }
 
 void Deer::walkForward() {

@@ -12,17 +12,17 @@ struct Shaders;
 
 struct BoundingRectangle {
    BoundingRectangle(
-         const glm::vec2& position,
+         const glm::vec2& center,
          const glm::vec2& dimensions) :
-      position_(position),
+      center_(center),
       dimensions_(dimensions) {}
 
    static void loadBoundingMesh(Shaders& shaders);
 
-   float left() const  { return position_.x; }
-   float right() const { return position_.x + dimensions_.x; }
-   float front() const { return position_.y; }
-   float back() const  { return position_.y + dimensions_.y; }
+   float left() const  { return center_.x - dimensions_.x / 2; }
+   float right() const { return center_.x + dimensions_.x / 2; }
+   float front() const { return center_.y - dimensions_.y / 2; }
+   float back() const  { return center_.y + dimensions_.y / 2; }
 
    bool collidesWith(const BoundingRectangle& other) const {
       return right() >= other.left() &&
@@ -31,11 +31,11 @@ struct BoundingRectangle {
              back() >= other.front();
    }
 
-   void set_position(const glm::vec2& position) { position_ = position; }
+   void set_position(const glm::vec2& center) { center_ = center; }
    void draw(const UniformLocationMap& model_locations, Shader& shader, float y) const;
 
   private:
-   glm::vec2 position_;
+   glm::vec2 center_;
    glm::vec2 dimensions_;
    static boost::optional<Mesh> bounding_mesh_;
 };
