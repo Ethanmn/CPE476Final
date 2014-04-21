@@ -9,3 +9,4 @@ cscope.*
 *.pyc
 .lvimrc
 docs
+*~
