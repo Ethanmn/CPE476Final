@@ -17,10 +17,10 @@ struct Game {
    void mainLoop();
 
   private:
-   GroundPlane ground_;
    SDLEngine engine_;
    Input input_;
    Shaders shaders_;
+   GroundPlane ground_;
 
    void step(units::MS dt);
    void draw();

@@ -66,8 +66,8 @@ void Game::draw() {
          mat.shine);
       */
       
-      ground_.draw(shaderPair.second, viewMatrix);
-      shaderPair.second.drawMesh(bunny);
+      //ground_.draw(shaderPair.second, viewMatrix);
+      shaderPair.second.drawMesh(ground_.mesh_);
 
       disableTexture();
    }

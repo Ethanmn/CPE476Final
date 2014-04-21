@@ -13,6 +13,7 @@ struct Shaders;
 
 struct GroundPlane {
    GroundPlane(Shaders& shaders);
+   Mesh mesh_;
 
    void draw(Shader& shader, const glm::mat4& view);
 
@@ -20,7 +21,6 @@ struct GroundPlane {
    //Bounds z_bounds() const { return Bounds(-10, 10); }
 
   private:
-   Mesh mesh_;
    //ModelViewUniformMatrix model_matrix_;
    UniformLocationMap blue_uniform_;
 };

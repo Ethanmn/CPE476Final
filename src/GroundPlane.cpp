@@ -43,7 +43,7 @@ GroundPlane::GroundPlane(Shaders& shaders) :
          ArrayBufferObject::create(
             ground_tex_coord,
             shaders.getAttributes(Attribute::TEX_COORD),
-            3),
+            2),
       }
    }
 /*
@@ -53,6 +53,5 @@ GroundPlane::GroundPlane(Shaders& shaders) :
 {}
 
 void GroundPlane::draw(Shader& shader, const glm::mat4& view) {
-   shader.sendUniform(blue_uniform_, 0.0f);
-   //shader.drawMesh(model_matrix_.calculateAffineUniforms(view), mesh_);
+   
 }
