@@ -22,6 +22,9 @@ Game::Game() :
    glDisable(GL_LINE_SMOOTH);
    glEnable(GL_CULL_FACE);
 
+   glPolygonMode(GL_FRONT, GL_LINE);
+   glLineWidth(1.0);
+
    BoundingRectangle::loadBoundingMesh(shaders_);
 }
 
@@ -54,16 +57,19 @@ void Game::draw() {
       shader.sendUniform(shaders_.getUniforms(Uniform::PROJECTION),
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
       
-      shader.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
-         mat.ambient);
-      shader.sendUniform(shaders_.getUniforms(Uniform::M_DIF),
-         mat.diffuse);
-      shader.sendUniform(shaders_.getUniforms(Uniform::M_SPEC),
-         mat.specular);
-      shader.sendUniform(shaders_.getUniforms(Uniform::M_SHINE),
-         mat.shine);
-      
-      
+      if (shaderPair.first != ShaderType::WIREFRAME) {
+         shader.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
+            mat.ambient);
+         shader.sendUniform(shaders_.getUniforms(Uniform::M_DIF),
+            mat.diffuse);
+         shader.sendUniform(shaders_.getUniforms(Uniform::M_SPEC),
+            mat.specular);
+         shader.sendUniform(shaders_.getUniforms(Uniform::M_SHINE),
+            mat.shine);
+      } else {
+         shader.sendUniform(shaders_.getUniforms(Uniform::COLOR), glm::vec4(1, 0, 0, 1));
+      }
+
       //shader.drawMesh(bunny);
       deer_.draw(shader, shaders_.getUniforms(Uniform::MODEL));
    }

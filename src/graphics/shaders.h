@@ -12,7 +12,8 @@
 
 enum class ShaderType {
    SUN,
-   TEXTURE
+   TEXTURE,
+   WIREFRAME
 };
 
 struct Shaders {

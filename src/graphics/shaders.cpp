@@ -29,15 +29,28 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::TEXTURE
 };
 
+const std::vector<Attribute> kWireframeAttrs{
+   Attribute::VERTEX
+};
+const std::vector<Uniform> kWireframeUniforms{
+   Uniform::MODEL,
+   Uniform::VIEW,
+   Uniform::PROJECTION,
+   Uniform::COLOR,
+};
+
 Shaders::Shaders() {
-   shaders_.insert(std::make_pair(
-            ShaderType::SUN,
-            Shader("Sun", kSunAttrs, kSunUniforms)));
+   //shaders_.insert(std::make_pair(
+            //ShaderType::SUN,
+            //Shader("Sun", kSunAttrs, kSunUniforms)));
    /*
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
    */
+   shaders_.insert(std::make_pair(
+            ShaderType::WIREFRAME,
+            Shader("wireframe", kWireframeAttrs, kWireframeUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
