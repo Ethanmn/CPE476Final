@@ -39,7 +39,7 @@ void Game::draw() {
    mat.shine = 100.0f;
    
    
-   modelMatrix = glm::mat4(1.0f);
+   modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(5.0f));
    viewMatrix = glm::lookAt(glm::vec3(3.0, 3.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0, 1.0, 0));
    
    for (auto& shaderPair: shaders_.getMap()) {
