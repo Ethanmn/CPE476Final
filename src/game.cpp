@@ -125,6 +125,12 @@ void Game::mainLoop() {
                deer_.stopStrafing();
             }
          }
+         { // handle jumping
+            const auto key_jump = SDL_SCANCODE_J;
+            if (input.wasKeyPressed(key_jump)) {
+               deer_.jump();
+            }
+         }
       }
 
       {

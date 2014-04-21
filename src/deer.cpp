@@ -13,6 +13,7 @@ namespace {
 
 const float kSpeed = 0.010f;
 const float kFriction = 0.005f;
+const float kGravity = 0.0005f;
 const float kAcceleration = 0.00007f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
@@ -22,7 +23,10 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    last_facing_(0, 1),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
-   bounding_rectangle_(position_, glm::vec2(3.0f))
+   bounding_rectangle_(position_, glm::vec2(3.0f)),
+   is_jumping_(false),
+   y_(0.0f),
+   velocity_y_(0.0f)
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) const {
@@ -34,7 +38,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) con
    const glm::mat4 translate(
       glm::translate(
             glm::mat4(1.0f),
-            glm::vec3(position_.x, 0.0f, position_.y)));
+            glm::vec3(position_.x, y_, position_.y)));
    const glm::mat4 model_matrix(translate * rotate);
    shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
    shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
@@ -77,6 +81,16 @@ void Deer::step(units::MS dt, const Camera& camera) {
    }
    position_ += velocity_ * static_cast<float>(dt);
    bounding_rectangle_.set_position(position_);
+
+   if (is_jumping_) {
+      velocity_y_ -= kGravity * dt;
+      y_ += velocity_y_ * dt;
+      if (y_ <= 0.0f) {
+         y_ = 0.0f;
+         velocity_y_ = 0.0f;
+         is_jumping_ = false;
+      }
+   }
 }
 
 void Deer::walkForward() {
@@ -97,6 +111,13 @@ void Deer::strafeRight() {
 }
 void Deer::stopStrafing() {
    strafe_direction_ = StrafeDirection::NONE;
+}
+
+void Deer::jump() {
+   if (!is_jumping_) {
+      is_jumping_ = true;
+      velocity_y_ = 0.07f;
+   }
 }
 
 float Deer::yRotation() const {

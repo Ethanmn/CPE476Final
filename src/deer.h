@@ -25,6 +25,8 @@ struct Deer {
    void strafeRight();
    void stopStrafing();
 
+   void jump();
+
   private:
    enum class WalkDirection {
       FORWARD,
@@ -47,6 +49,9 @@ struct Deer {
    StrafeDirection strafe_direction_;
 
    BoundingRectangle bounding_rectangle_;
+
+   bool is_jumping_;
+   float y_, velocity_y_;
 };
 
 #endif // DEER_H_
