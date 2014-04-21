@@ -7,10 +7,12 @@
     #undef main
 #endif
 
+#include "globals.h"
+
 struct SDLEngine {
    SDLEngine() {
       SDL_Init(SDL_INIT_VIDEO);
-      window_ = SDL_CreateWindow("Deer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_OPENGL);
+      window_ = SDL_CreateWindow("Deer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, kScreenWidth, kScreenHeight, SDL_WINDOW_OPENGL);
       context_ = SDL_GL_CreateContext(window_);
       SDL_GL_MakeCurrent(window_, context_);
       glewInit();
