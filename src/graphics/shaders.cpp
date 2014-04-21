@@ -63,22 +63,32 @@ Shader& Shaders::at(ShaderType shader_type) {
    }
 }
 
-UniformLocationMap Shaders::getUniforms(const Uniform& uniform) {
-   GLUniformLocationMap uniforms;
-   for (auto& pair : shaders_) {
-      const auto maybe_location = pair.second.uniformLocation(uniform);
-      if (maybe_location)
-         uniforms.insert(*maybe_location);
+UniformLocationMap Shaders::getUniformLocationMap() {
+   UniformLocationMap uniforms;
+   for (int i = static_cast<int>(Uniform::FIRST_UNIFORM);
+        i < static_cast<int>(Uniform::LAST_UNIFORM);
+        ++i) {
+      const auto uniform = static_cast<Uniform>(i);
+      for (auto& pair : shaders_) {
+         const auto maybe_location = pair.second.uniformLocation(uniform);
+         if (maybe_location)
+            uniforms[uniform].insert(*maybe_location);
+      }
    }
-   return { uniform, uniforms };
+   return uniforms;
 }
 
-GLAttributeLocationMap Shaders::getAttributes(const Attribute& attribute) {
-   GLAttributeLocationMap attributes;
-   for (auto& pair : shaders_) {
-      const auto maybe_location = pair.second.attributeLocation(attribute);
-      if (maybe_location)
-         attributes.insert(*maybe_location);
+AttributeLocationMap Shaders::getAttributeLocationMap() {
+   AttributeLocationMap attributes;
+   for (int i = static_cast<int>(Attribute::FIRST_ATTRIBUTE);
+        i < static_cast<int>(Attribute::LAST_ATTRIBUTE);
+        ++i) {
+      const auto attribute = static_cast<Attribute>(i);
+      for (auto& pair : shaders_) {
+         const auto maybe_location = pair.second.attributeLocation(attribute);
+         if (maybe_location)
+            attributes[attribute].insert(*maybe_location);
+      }
    }
    return attributes;
 }

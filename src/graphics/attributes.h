@@ -4,9 +4,11 @@
 #include <string>
 
 enum class Attribute {
-   VERTEX,
+   FIRST_ATTRIBUTE,
+   VERTEX = FIRST_ATTRIBUTE,
    NORMAL,
    TEX_COORD,
+   LAST_ATTRIBUTE
 };
 
 inline std::string attribute_name(Attribute attribute) {
@@ -17,6 +19,8 @@ inline std::string attribute_name(Attribute attribute) {
          return "aNormal";
       case Attribute::TEX_COORD:
          return "aTexCoord";
+      default:
+         throw "Unknown attribute";
    }
 }
 

@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "graphics/mesh.h"
-#include "graphics/uniform_location_map.h"
+#include "graphics/location_maps.h"
 
 struct Shader;
 struct Shaders;
@@ -17,7 +17,7 @@ struct BoundingRectangle {
       center_(center),
       dimensions_(dimensions) {}
 
-   static void loadBoundingMesh(Shaders& shaders);
+   static void loadBoundingMesh(const AttributeLocationMap& locations);
 
    float left() const  { return center_.x - dimensions_.x / 2; }
    float right() const { return center_.x + dimensions_.x / 2; }
@@ -32,7 +32,7 @@ struct BoundingRectangle {
    }
 
    void set_position(const glm::vec2& center) { center_ = center; }
-   void draw(const UniformLocationMap& model_locations, Shader& shader, float y) const;
+   void draw(const UniformLocationMap& uniform_locations, Shader& shader, float y) const;
 
   private:
    glm::vec2 center_;

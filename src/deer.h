@@ -6,15 +6,15 @@
 #include "bounding_rectangle.h"
 #include "Camera.h"
 #include "graphics/mesh.h"
+#include "graphics/location_maps.h"
 #include "units.h"
 
 struct Shader;
-struct UniformLocationMap;
 
 struct Deer {
    Deer(const Mesh& mesh, const glm::vec3& position);
 
-   void draw(Shader& shader, const UniformLocationMap& model_locations) const;
+   void draw(Shader& shader, const UniformLocationMap& locations) const;
    void step(units::MS dt, const Camera& camera);
 
    void walkForward();

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "graphics/shader.h"
-#include "graphics/uniform_location_map.h"
+#include "graphics/location_maps.h"
 
 enum class ShaderType {
    SUN,
@@ -23,8 +23,8 @@ struct Shaders {
    void clear() { glUseProgram(0); }
 
    std::map<ShaderType, Shader>& getMap() { return shaders_; }
-   UniformLocationMap getUniforms(const Uniform& uniform);
-   GLAttributeLocationMap getAttributes(const Attribute& attribute);
+   UniformLocationMap getUniformLocationMap();
+   AttributeLocationMap getAttributeLocationMap();
 
   private:
    std::map<ShaderType, Shader> shaders_;

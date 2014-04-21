@@ -1,7 +1,7 @@
 #include "deer.h"
 
 #include "graphics/shader.h"
-#include "graphics/uniform_location_map.h"
+#include "graphics/location_maps.h"
 
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
@@ -22,14 +22,14 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    bounding_rectangle_(position_, glm::vec2(3.0f))
       {}
 
-void Deer::draw(Shader& shader, const UniformLocationMap& model_locations) const {
+void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) const {
    const glm::mat4 model_matrix(
          glm::translate(
             glm::mat4(1.0f),
             glm::vec3(position_.x, 0.0f, position_.y)));
-   shader.sendUniform(model_locations, model_matrix);
+   shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
    shader.drawMesh(mesh_);
-   bounding_rectangle_.draw(model_locations, shader, 0.0f);
+   bounding_rectangle_.draw(uniform_locations, shader, 0.0f);
 }
 
 void Deer::step(units::MS dt, const Camera& camera) {
