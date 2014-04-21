@@ -15,7 +15,6 @@ const float kSpeed = 0.010f;
 const float kFriction = 0.005f;
 const float kGravity = 0.0005f;
 const float kAcceleration = 0.00007f;
-const float kJumpSpeed = 0.05f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
@@ -117,7 +116,7 @@ void Deer::stopStrafing() {
 void Deer::jump() {
    if (!is_jumping_) {
       is_jumping_ = true;
-      velocity_y_ = kJumpSpeed;
+      velocity_y_ = 0.07f;
    }
 }
 
@@ -128,10 +127,6 @@ float Deer::yRotation() const {
    return angle;
 }
 
-glm::vec2 Deer::getPosition() {
-   return position_;
-}
-
-float Deer::getY() {
+float getY() {
    return y_;
 }

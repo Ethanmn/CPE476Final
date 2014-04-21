@@ -16,9 +16,9 @@ struct Camera {
 
    void setPosition(const glm::vec3& endPosition);
    void setLookAt(const glm::vec3& lookAtPoint);
-   void moveCameraToPoint(const glm::vec3& endPosition, float speed, units::MS timeDif);
-   void moveCameraInDirection(const glm::vec3& direction, float speed, units::MS timeDif);
-   void rotateWithDrag(const glm::vec3& startPoint, const glm::vec3& endPoint, int width, int height);
+   void moveCameraToPoint(glm::vec3& endPosition, float speed, units::MS timeDif);
+   void moveCameraInDirection(glm::vec3& direction, float speed, units::MS timeDif);
+   void rotateWithDrag(glm::vec3& startPoint, glm::vec3& endPoint, int width, int height);
    glm::vec3 getPosition() const;
    glm::vec3 getCamForwardVec() const;
    glm::vec3 getCamLeftVec() const;

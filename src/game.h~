@@ -25,7 +25,6 @@ struct Game {
 
    void step(units::MS dt);
    void draw();
-   void moveDeerCam();
 };
 
 #endif // GAME_H_

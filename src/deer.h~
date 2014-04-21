@@ -27,9 +27,6 @@ struct Deer {
 
    void jump();
 
-   glm::vec2 getPosition();
-   float getY();
-
   private:
    enum class WalkDirection {
       FORWARD,

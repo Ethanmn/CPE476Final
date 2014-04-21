@@ -39,7 +39,7 @@ void Game::step(units::MS dt) {
 }
 
 void Game::moveDeerCam() {
-   //glm::vec3 forwardVec = deerCam.getCamForwardVec();
+   glm::vec3 forwardVec = deerCam.getCamForwardVec();
    glm::vec2 deerPos = deer_.getPosition();
    float deerY = deer_.getY();
 
