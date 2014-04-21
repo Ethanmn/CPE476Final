@@ -9,7 +9,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
       std::clog << "Warning: unused attribute VERTEX in shaders." << std::endl;
    }
    if (locations.count(Attribute::NORMAL) == 0) {
-      std::clog << "Warning: unused attribute VERTEX in shaders." << std::endl;
+      std::clog << "Warning: unused attribute NORMAL in shaders." << std::endl;
    }
    return {
       IndexBufferObject::create(mesh.index_array),

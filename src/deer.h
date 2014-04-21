@@ -37,6 +37,8 @@ struct Deer {
       NONE
    };
 
+   float yRotation() const;
+
    Mesh mesh_;
    glm::vec2 position_;
    glm::vec2 velocity_;
