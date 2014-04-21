@@ -5,6 +5,7 @@
 //#include "graphics/gl_adapters/uniform_matrix.h"
 #include "graphics/mesh.h"
 #include "glm/glm.hpp"
+#include "graphics/uniform_location_map.h"
 //#include "graphics/model_view_uniform_matrix.h"
 
 struct Shader;
@@ -21,7 +22,7 @@ struct GroundPlane {
   private:
    Mesh mesh_;
    //ModelViewUniformMatrix model_matrix_;
-   GLUniformLocationMap blue_uniform_;
+   UniformLocationMap blue_uniform_;
 };
 
 #endif // GROUND_PLANE_H_
