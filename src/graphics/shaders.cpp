@@ -14,14 +14,16 @@ const std::vector<Uniform> kSunUniforms{
    Uniform::M_DIF,
    Uniform::M_SPEC,
    Uniform::M_SHINE,
-//   Uniform::SUNDIR,
-//   Uniform::SUN_INTENSITY
+   /*
+   Uniform::SUNDIR,
+   Uniform::SUN_INTENSITY
+   */
 };
 
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
-//   Attribute::NORMAL,
-   Attribute::TEX_COORD
+   Attribute::TEX_COORD,
+// Attribute::NORMAL,
 };
 const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL,
