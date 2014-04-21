@@ -36,10 +36,12 @@ GroundPlane::GroundPlane(Shaders& shaders) :
             ground_vertices,
             shaders.getAttributes(Attribute::VERTEX),
             3),
+         /*
          ArrayBufferObject::create(
             ground_normals,
             shaders.getAttributes(Attribute::NORMAL),
             3),
+         */
          ArrayBufferObject::create(
             ground_tex_coord,
             shaders.getAttributes(Attribute::TEX_COORD),
