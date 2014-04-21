@@ -20,6 +20,7 @@ void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader
             glm::scale(
                glm::translate(glm::mat4(1.0f), glm::vec3(center_.x, y, center_.y)),
                glm::vec3(dimensions_.x, 0.01f, dimensions_.y)));
+      shader.sendUniform(Uniform::COLOR, locations, glm::vec4(1.0f, 0, 0, 1.0f));
       shader.sendUniform(Uniform::MODEL, locations, model_matrix);
       shader.drawMesh(*bounding_mesh_);
    }

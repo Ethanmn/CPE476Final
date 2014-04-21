@@ -36,6 +36,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) con
             glm::vec3(position_.x, 0.0f, position_.y)));
    const glm::mat4 model_matrix(translate * rotate);
    shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
+   shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
    shader.drawMesh(mesh_);
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f);
 }
