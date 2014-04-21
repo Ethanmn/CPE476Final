@@ -6,10 +6,10 @@
 #include "graphics/shaders.h"
 
 const std::vector<float> ground_vertices{
-   -0.5, -0.5, 0.0,
-   0.5, -0.5, 0.0,
-   -0.5, 0.5, 0.0,
-   0.5, 0.5, 0.0,
+   -0.5, 0.0, -0.5,
+   0.5, 0.0, -0.5,
+   -0.5, 0.0, 0.5,
+   0.5, 0.0, 0.5,
 };
 const std::vector<float> ground_normals{
    0, 0, 1,
