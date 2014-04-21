@@ -11,5 +11,5 @@ varying vec2 vTexCoord;
 void main() {
    gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix *
          vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
-   vTexCoord = aTexCoord;
+   vTexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
