@@ -9,6 +9,9 @@
 #include "sdl_engine.h"
 #include "units.h"
 #include "graphics/shaders.h"
+#include "GroundPlane.h"
+#include "graphics/texture.h"
+
 
 struct Game {
    Game();
@@ -19,8 +22,10 @@ struct Game {
    SDLEngine engine_;
    Input input_;
    Shaders shaders_;
+   Texture texture_;
    AttributeLocationMap attribute_location_map_;
    UniformLocationMap uniform_location_map_;
+   GroundPlane ground_;
    Deer deer_;
 
    glm::vec2 mousePos;

@@ -113,6 +113,12 @@ void GLShader::sendUniform<float>(const GLUniformLocationMap& uniforms, const fl
    glUniform1f(uniforms.at(program_), data);
 }
 
+
+template <>
+void GLShader::sendUniform<int>(const GLUniformLocationMap& uniforms, const int& data) {
+   glUniform1i(uniforms.at(program_), data);
+}
+
 void GLShader::bindAndEnableAttribute(const ArrayBufferObject& array_buffer) {
    if (array_buffer.attribute_locations.count(program_) == 0) {
       return;

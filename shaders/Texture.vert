@@ -1,4 +1,4 @@
-uniform mat4 uProjMatrix;
+uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uModelMatrix;
 
@@ -9,7 +9,7 @@ varying vec4 vPosition;
 varying vec2 vTexCoord;
 
 void main() {
-   gl_Position = uProjMatrix * uViewMatrix * uModelMatrix *
+   gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix *
          vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
-   vTexCoord = aTexCoord;
+   vTexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
