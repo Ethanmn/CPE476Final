@@ -23,7 +23,7 @@ struct BoundingRectangle {
 
    static void loadBoundingMesh(const AttributeLocationMap& locations);
 
-   bool collision(const BoundingRectangle& other) const;
+   bool collidesWith(const BoundingRectangle& other) const;
 
    void set_position(const glm::vec2& center) { center_ = center; }
    void set_rotation(const float y_rotation) { y_rotation_ = y_rotation; }

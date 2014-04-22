@@ -31,24 +31,24 @@ void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader
       glm::mat4 scale(
             glm::scale(
                glm::mat4(),
-               glm::vec3(dimensions_.x, 0.01f, dimensions_.y)));
+               glm::vec3(dimensions_.x / 2.0f, 0.01f, dimensions_.y / 2.0f)));
       glm::mat4 translate(
             glm::translate(
-               glm::mat4(1.0f), glm::vec3(center_.x, y, center_.y)));
+               glm::mat4(),
+               glm::vec3(center_.x, y, center_.y)));
 
-      shader.sendUniform(Uniform::COLOR, locations, glm::vec4(1.0f, 0, 0, 1.0f));
       shader.sendUniform(Uniform::MODEL, locations, translate * rotate * scale);
       shader.drawMesh(*bounding_mesh_);
    }
 }
 
-bool BoundingRectangle::collision(const BoundingRectangle& other) const {
+bool BoundingRectangle::collidesWith(const BoundingRectangle& other) const {
    const auto radius_axis = center_ - other.center_;
    auto has_separation = hasSeparatingLineForAxis(vec2FromAngle(y_rotation_), radius_axis, other);
    has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(y_rotation_ + 90), radius_axis, other);
    has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(other.y_rotation_), radius_axis, other);
    has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(other.y_rotation_ + 90), radius_axis, other);
-   return has_separation;
+   return !has_separation;
 }
 
 glm::vec2 BoundingRectangle::localX() const {
@@ -56,7 +56,7 @@ glm::vec2 BoundingRectangle::localX() const {
 }
 
 glm::vec2 BoundingRectangle::localZ() const {
-   return vec2FromAngle(y_rotation_) * dimensions_.x / 2.0f;
+   return vec2FromAngle(y_rotation_ + 90) * dimensions_.y / 2.0f;
 }
 
 float BoundingRectangle::total_projection(const glm::vec2& separating_axis) const {

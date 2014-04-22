@@ -6,8 +6,7 @@
 
 namespace {
    DeerCam deerCam;
-   Mesh box;
-   bool cameraRotating;
+   BoundingRectangle rectangle(glm::vec2(), glm::vec2(7.0f), 45.0f);
 }
 
 Game::Game() :
@@ -70,7 +69,12 @@ void Game::draw() {
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
-      shader.drawMesh(box);
+      if (rectangle.collidesWith(deer_.bounding_rectangle())) {
+         shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1.0f, 0, 0, 1.0f));
+      } else {
+         shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(0.0f, 1, 0, 1.0f));
+      }
+      rectangle.draw(uniform_location_map_, shader, 0.0f);
       deer_.draw(shader, uniform_location_map_);
       ground_.draw(shader, uniform_location_map_);
       
@@ -80,8 +84,6 @@ void Game::draw() {
 }
 
 void Game::mainLoop() {
-   box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
-   
    Input input;
    int mX, mY;
    bool running = true;
