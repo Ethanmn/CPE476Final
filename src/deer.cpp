@@ -19,29 +19,24 @@ const float kJumpSpeed = 0.05f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
-   position_(xz(position)),
-   velocity_(0.0f),
-   last_facing_(0, 1),
+   position_(position),
+   velocity_(0, 0, 0),
+   last_facing_(0, 0, 1),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
-   bounding_rectangle_(position_, glm::vec2(3.0f)),
-   is_jumping_(false),
-   is_walking_(false),
-   is_strafing_(false),
-   y_(0.0f),
-   velocity_y_(0.0f)
+   bounding_rectangle_(xz(position_), glm::vec2(3.0f))
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) const {
    const glm::mat4 rotate(
-         glm::rotate(
-            glm::mat4(1.0f),
-            yRotation(),
+         glm::lookAt(
+            glm::vec3(0.0f),
+            glm::vec3(last_facing_.x, last_facing_.y, -last_facing_.z),
             glm::vec3(0, 1, 0)));
    const glm::mat4 translate(
       glm::translate(
             glm::mat4(1.0f),
-            glm::vec3(position_.x, y_, position_.y)));
+            position_));
    const glm::mat4 model_matrix(translate * rotate);
    shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
    shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
@@ -51,49 +46,57 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) con
 
 void Deer::step(units::MS dt, const Camera& camera) {
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
-      velocity_ -= velocity_ * (kFriction * dt);
-      if (glm::length(velocity_) < kSpeed / 4.0f) {
-         velocity_ = glm::vec2(0.0f);
+      glm::vec2 xz_velocity(xz(velocity_));
+      xz_velocity -= xz_velocity * (kFriction * dt);
+      if (glm::length(xz_velocity) < kSpeed / 4.0f) {
+         xz_velocity = glm::vec2(0.0f);
       }
+      velocity_.x = xz_velocity.x;
+      velocity_.z = xz_velocity.y;
    } else {
-      glm::vec2 acceleration(0.0f);
+      glm::vec3 acceleration(0.0f);
       { // If walking add in walk based on camera's forward.
          const glm::vec2 forward(xz(camera.getCamForwardVec()));
          if (walk_direction_ == WalkDirection::FORWARD) {
-            acceleration = forward;
+            acceleration = glm::vec3(forward.x, 0.0f, forward.y);
          } else if (walk_direction_ == WalkDirection::BACKWARD) {
-            acceleration = -forward;
+            acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
          }
       }
 
       { // Add in strafe from camera, if strafing.
-         const glm::vec2 left(xz(camera.getCamLeftVec()));
+         const glm::vec3 left(camera.getCamLeftVec());
          if (strafe_direction_ == StrafeDirection::LEFT) {
-            acceleration += left;
+            acceleration += glm::vec3(left.x, 0.0f, left.y);
          } else if (strafe_direction_ == StrafeDirection::RIGHT) {
-            acceleration -= left;
+            acceleration -= glm::vec3(left.x, 0.0f, left.y);
          }
       }
       { // Accelerate velocity, capping at kSpeed.
          velocity_ += glm::normalize(acceleration) * (kAcceleration * dt);
-         if (glm::length(velocity_) > kSpeed) {
-            velocity_ = glm::normalize(velocity_) * kSpeed;
+         glm::vec2 xz_velocity(xz(velocity_));
+         if (glm::length(xz_velocity) > kSpeed) {
+            xz_velocity = glm::normalize(xz_velocity) * kSpeed;
          }
-         last_facing_ = glm::normalize(velocity_);
+         velocity_.x = xz_velocity.x;
+         velocity_.z = xz_velocity.y;
+         last_facing_ = glm::normalize(glm::vec3(
+                  velocity_.x,
+                  0.0f,
+                  velocity_.z));
       }
    }
-   position_ += velocity_ * static_cast<float>(dt);
-   bounding_rectangle_.set_position(position_);
-
    if (is_jumping_) {
-      velocity_y_ -= kGravity * dt;
-      y_ += velocity_y_ * dt;
-      if (y_ <= 0.0f) {
-         y_ = 0.0f;
-         velocity_y_ = 0.0f;
+      velocity_.y -= kGravity * dt;
+      if (velocity_.y < 0) {
+         velocity_.y = 0.0f;
+         position_.y = 0.0f;
          is_jumping_ = false;
       }
    }
+
+   position_ += velocity_ * static_cast<float>(dt);
+   bounding_rectangle_.set_position(xz(position_));
 }
 
 void Deer::walkForward() {
@@ -124,8 +127,8 @@ void Deer::stopStrafing() {
 
 void Deer::jump() {
    if (!is_jumping_) {
+      velocity_.y = kJumpSpeed;
       is_jumping_ = true;
-      velocity_y_ = kJumpSpeed;
    }
 }
 
@@ -133,17 +136,6 @@ bool Deer::isMoving() {
    return is_walking_ || is_strafing_;
 }
 
-float Deer::yRotation() const {
-   float angle = glm::angle(glm::vec2(0, 1), last_facing_);
-   if (velocity_.x <= 0)
-      return 360.0f - angle;
-   return angle;
-}
-
-glm::vec2 Deer::getPosition() {
+glm::vec3 Deer::getPosition() {
    return position_;
-}
-
-float Deer::getY() {
-   return y_;
 }

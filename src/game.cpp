@@ -6,7 +6,7 @@
 #include <iostream>
 
 const float deerCamHeightAbvDeer = 8; 
-const float deerCamDistFromDeer = 8;
+const float deerCamDistFromDeer = 16;
 const float deerCamViewDist = 8;
 
 namespace {
@@ -45,24 +45,19 @@ void Game::step(units::MS dt) {
       moveDeerCam();
    }
    else if (cameraRotating) {
-      deerCam.setLookAt(glm::vec3(deer_.getPosition().x, deer_.getY(), deer_.getPosition().y));
+      deerCam.setLookAt(deer_.getPosition());
    }
-
-   //glm::vec3 camPos = deerCam.getPosition();
-   //printf("Camera position: %f %f %f\n", camPos.x, camPos.y, camPos.z); 
 }
 
 void Game::moveDeerCam() {
-   //glm::vec3 forwardVec = deerCam.getCamForwardVec();
-   glm::vec2 deerPos = deer_.getPosition();
-   float deerY = deer_.getY();
+   const glm::vec3 deerPos = deer_.getPosition();
 
    float camX = deerPos.x;
-   float camY = deerY + deerCamHeightAbvDeer;
-   float camZ = deerPos.y - deerCamDistFromDeer;
+   float camY = deerPos.y + deerCamHeightAbvDeer;
+   float camZ = deerPos.z - deerCamDistFromDeer;
 
    deerCam.setPosition(glm::vec3(camX, camY, camZ));
-   deerCam.setLookAt(glm::vec3(deerPos.x, deerY, deerPos.y + deerCamViewDist));
+   deerCam.setLookAt(glm::vec3(deerPos.x, deerPos.y, deerPos.z + deerCamViewDist));
 }
 
 void Game::draw() {
@@ -75,10 +70,8 @@ void Game::draw() {
    mat.specular = glm::vec3(0.1f, 0.2f, 0.1f);
    mat.shine = 100.0f;
    
-   
    modelMatrix = glm::mat4(1.0f);
-   //viewMatrix = glm::lookAt(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0, 1.0, 0));
-   
+
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
