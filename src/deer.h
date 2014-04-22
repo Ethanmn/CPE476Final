@@ -27,8 +27,7 @@ struct Deer {
 
    void jump();
 
-   glm::vec2 getPosition();
-   float getY();
+   glm::vec3 getPosition();
 
   private:
    enum class WalkDirection {
@@ -42,19 +41,17 @@ struct Deer {
       NONE
    };
 
-   float yRotation() const;
-
    Mesh mesh_;
-   glm::vec2 position_;
-   glm::vec2 velocity_;
-   glm::vec2 last_facing_;
+   glm::vec3 position_;
+   glm::vec3 velocity_;
+   glm::vec3 last_facing_;
+
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;
 
    BoundingRectangle bounding_rectangle_;
 
    bool is_jumping_;
-   float y_, velocity_y_;
 };
 
 #endif // DEER_H_
