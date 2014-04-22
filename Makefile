@@ -84,6 +84,12 @@ docs:
 clean:
 	rm -rf obj gen
 
+# Only needs to be run once. Really simple for cleaning after a checkout
+git-hooks:
+	cd ./.git/hooks/ &&\
+	echo "exec make clean" > post-checkout &&\
+	chmod 700 post-checkout
+
 # Just a nice way of running the game. (Since you have to be in the bindir for
 # the content to load properly)
 run:
