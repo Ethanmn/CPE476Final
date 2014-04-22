@@ -8,14 +8,15 @@
 
 const float PI = 3.14159265359;
 const int MAX_ROTATE_VERT_UP =  80;
-const int MAX_ROTATE_VERT_DOWN =  30;
+const int MAX_ROTATE_VERT_DOWN =  10;
 const int PI_IN_DEGREES = 180;
+const float ROTATION_SENSITIVITY = 0.025; //Smaller number -> less sensitive
 
 Camera::Camera(glm::vec3 pos, glm::vec3 look) {
    position = pos;
    lookAt = look;
    up = glm::vec3(0, 1, 0);
-   phi = 0;
+   phi = PI / 4;
    theta = -PI / 2;
 }
 
@@ -61,12 +62,17 @@ void Camera::rotateLookAtWithDrag(const glm::vec2& startPoint, const glm::vec2& 
 */
 void Camera::rotatePositionWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
    changeRotationAngles(startPoint, endPoint, width, height);
-   updatePosition();
+   updatePosition(glm::length(position - lookAt));
 }
 
 /* Retrieves the current position of the camera. */
 glm::vec3 Camera::getPosition() const {
    return position;
+}
+
+/* Retrieves the current look at point of the camera. */
+glm::vec3 Camera::getLookAt() const {
+   return lookAt;
 }
 
 /* Retrieves the vector pointing straight in front of the camera. */
@@ -91,17 +97,14 @@ void Camera::updateLookAt() {
 }
 
 /* A private function to update the position based on the current rotation angle and lookAt point. */
-void Camera::updatePosition() {
-   glm::vec3 radiusVec = position - lookAt;
-   float radius = glm::length(radiusVec);
-
+void Camera::updatePosition(float radius) {
    position = glm::vec3(radius * cos(phi) * cos(theta) + lookAt.x, radius * sin(phi), radius * cos(phi) * cos(PI / 2 - theta) + lookAt.z);
 }
 
 /* A private function called to change the current rotation angles */
 void Camera::changeRotationAngles(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
-   theta += (endPoint.x - startPoint.x) * PI / (float)width;
-   phi += (endPoint.y - startPoint.y) * PI / (float)height;
+   theta += (endPoint.x - startPoint.x) * PI / (float)width * ROTATION_SENSITIVITY;
+   phi += (endPoint.y - startPoint.y) * PI / (float)height * ROTATION_SENSITIVITY;
 
    if (phi > MAX_ROTATE_VERT_UP * PI / PI_IN_DEGREES) {
      phi = MAX_ROTATE_VERT_UP * PI / PI_IN_DEGREES;

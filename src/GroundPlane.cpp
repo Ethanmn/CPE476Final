@@ -54,5 +54,5 @@ void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locatio
    shader.sendUniform(Uniform::COLOR, uniform_locations,
          glm::vec4(0.0901, 0.3137, 0.1176, 0.5f));
    shader.drawMesh(mesh_);
-   glPolygonMode(GL_FRONT, GL_LINE);
+   //glPolygonMode(GL_FRONT, GL_LINE);
 }
