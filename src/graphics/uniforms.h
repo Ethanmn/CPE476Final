@@ -4,7 +4,8 @@
 #include <string>
 
 enum class Uniform {
-   MODEL,
+   FIRST_UNIFORM,
+   MODEL = FIRST_UNIFORM,
    VIEW,
    MODEL_VIEW,
    PROJECTION,
@@ -17,6 +18,7 @@ enum class Uniform {
    M_DIF,
    M_SPEC,
    M_SHINE,
+   LAST_UNIFORM,
 };
 
 inline std::string uniform_name(Uniform uniform) {
@@ -47,6 +49,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uMat.specular";
       case Uniform::M_SHINE:
          return "uMat.shine";
+      case Uniform::LAST_UNIFORM:
+         throw "Unknown uniform type, shouldn't even compile";
    }
 }
 

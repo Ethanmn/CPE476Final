@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "deer.h"
 #include "input.h"
 #include "sdl_engine.h"
 #include "units.h"
@@ -23,9 +24,17 @@ struct Game {
    Shaders shaders_;
    GroundPlane ground_;
    Texture texture_;
+   AttributeLocationMap attribute_location_map_;
+   UniformLocationMap uniform_location_map_;
+   Deer deer_;
+
+   glm::vec2 mousePos;
+   bool mouseDown;
 
    void step(units::MS dt);
    void draw();
+   void moveDeerCam();
+   void moveMouse(int endX, int endY);
 };
 
 #endif // GAME_H_

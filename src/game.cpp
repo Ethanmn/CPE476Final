@@ -5,13 +5,23 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
+const float deerCamHeightAbvDeer = 8; 
+const float deerCamDistFromDeer = 16;
+const float deerCamViewDist = 8;
+
 namespace {
+   Camera deerCam;
    Mesh bunny;
+   bool cameraRotating;
 }
 
 Game::Game() :
    ground_(shaders_),
    texture_(texture_path(Textures::WATER)) {
+   attribute_location_map_(shaders_.getAttributeLocationMap()),
+   uniform_location_map_(shaders_.getUniformLocationMap()),
+   deer_(Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f))
+{
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
@@ -20,10 +30,36 @@ Game::Game() :
    glShadeModel(GL_SMOOTH);
    glDisable(GL_LINE_SMOOTH);
    glEnable(GL_CULL_FACE);
+
+   glPolygonMode(GL_FRONT, GL_LINE);
+   glLineWidth(1.0);
+
+   BoundingRectangle::loadBoundingMesh(attribute_location_map_);
+   mouseDown = false;
+   cameraRotating = false;
+   moveDeerCam();
 }
 
-void Game::step(units::MS) {
-   
+void Game::step(units::MS dt) {
+   deer_.step(dt, deerCam);
+
+   if (deer_.isMoving()) {
+      moveDeerCam();
+   }
+   else if (cameraRotating) {
+      deerCam.setLookAt(deer_.getPosition());
+   }
+}
+
+void Game::moveDeerCam() {
+   const glm::vec3 deerPos = deer_.getPosition();
+
+   float camX = deerPos.x;
+   float camY = deerPos.y + deerCamHeightAbvDeer;
+   float camZ = deerPos.z - deerCamDistFromDeer;
+
+   deerCam.setPosition(glm::vec3(camX, camY, camZ));
+   deerCam.setLookAt(glm::vec3(deerPos.x, deerPos.y, deerPos.z + deerCamViewDist));
 }
 
 void Game::draw() {
@@ -31,52 +67,54 @@ void Game::draw() {
    glm::mat4 viewMatrix, modelMatrix;
    
    modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(5.0f));
-   viewMatrix = glm::lookAt(glm::vec3(3.0, 3.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0, 1.0, 0));
-   
+
    for (auto& shaderPair: shaders_.getMap()) {
-      shaderPair.second.use();
-      
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::MODEL),
+      Shader& shader = shaderPair.second;
+      shader.use();
+
+      shader.sendUniform(Uniform::MODEL, uniform_location_map_,
          modelMatrix);
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::VIEW),
-         viewMatrix);
-      shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::PROJECTION),
+      shader.sendUniform(Uniform::VIEW, uniform_location_map_,
+         deerCam.getViewMatrix());
+      shader.sendUniform(Uniform::PROJECTION, uniform_location_map_,
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
       
       if(shaderPair.first == ShaderType::TEXTURE) {
          texture_.enable();
          shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::TEXTURE), 0);
       }
-      
-      if(shaderPair.first == ShaderType::SUN) {
+      else if(shaderPair.first == ShaderType::SUN) {
          Material mat {
           glm::vec3(0.1f, 0.1f, 0.1f),
           glm::vec3(0.7f, 0.5f, 0.7f),
           glm::vec3(0.1f, 0.2f, 0.1f),
           100.0f
          };
-          
-         shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
-            mat.ambient);
-         shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_DIF),
-            mat.diffuse);
-         shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_SPEC),
-            mat.specular);
-         shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_SHINE),
-            mat.shine);
+         shader.sendUniform(Uniform::M_AMB, uniform_location_map_,
+                            mat.ambient);
+         shader.sendUniform(Uniform::M_DIF, uniform_location_map_,
+                            mat.diffuse);
+         shader.sendUniform(Uniform::M_SPEC, uniform_location_map_,
+                            mat.specular);
+         shader.sendUniform(Uniform::M_SHINE, uniform_location_map_,
+                            mat.shine);
       }
-      
-      ground_.draw(shaderPair.second);
-
-      if(shaderPair.first == ShaderType::TEXTURE)
+      else if(shaderPair.first == ShaderType::TEXTURE)
          texture_.disable();
+      else if(shaderPair.first == ShaderType::WIREFRAME)
+         shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
+
+      ground_.draw(shaderPair.second);
+      shader.drawMesh(bunny);
+      deer_.draw(shader, uniform_location_map_);
    }
 }
 
 void Game::mainLoop() {
-   bunny = Mesh::fromAssimpMesh(shaders_,loadMesh("../models/cube.obj"));
+   bunny = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
    
    Input input;
+   int mX, mY;
    bool running = true;
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
@@ -93,11 +131,53 @@ void Game::mainLoop() {
             } else if (event.type == SDL_KEYUP) {
                input.keyUp(event.key);
             }
+            else if (event.type == SDL_MOUSEBUTTONDOWN && SDL_GetMouseState(&mX, &mY)) {
+               //printf("Start mouse coords: %d %d\n", mX, mY);
+               mousePos = glm::vec2(mX, mY);
+               mouseDown = true;
+               cameraRotating = true;
+            }
+            else if (event.type == SDL_MOUSEMOTION && SDL_GetMouseState(&mX, &mY) && mouseDown) {
+               //printf("End mouse coords: %d %d\n", mX, mY);
+               deerCam.rotatePositionWithDrag(mousePos, glm::vec2(mX, mY), kScreenWidth, kScreenHeight);
+            }
+            else if (event.type == SDL_MOUSEBUTTONUP) {
+               mouseDown = false;
+               cameraRotating = false;
+            }
          }
       }
       { // Handle input
          if (input.wasKeyPressed(SDL_SCANCODE_ESCAPE)) {
             running = false;
+         }
+         { // handle walk forward/backward for deer.
+            const auto key_forward = SDL_SCANCODE_W;
+            const auto key_backward = SDL_SCANCODE_S;
+            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
+               deer_.walkForward();
+            } else if (!input.isKeyHeld(key_forward) && input.isKeyHeld(key_backward)) {
+               deer_.walkBackward();
+            } else {
+               deer_.stopWalking();
+            }
+         }
+         { // handle strafe left/right for deer.
+            const auto key_left = SDL_SCANCODE_A;
+            const auto key_right = SDL_SCANCODE_D;
+            if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
+               deer_.strafeLeft();
+            } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
+               deer_.strafeRight();
+            } else {
+               deer_.stopStrafing();
+            }
+         }
+         { // handle jumping
+            const auto key_jump = SDL_SCANCODE_J;
+            if (input.wasKeyPressed(key_jump)) {
+               deer_.jump();
+            }
          }
       }
 

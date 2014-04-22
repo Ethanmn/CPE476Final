@@ -19,6 +19,7 @@ AssimpMesh loadMesh(const std::string& path) {
     }
 
     const size_t kNumAxes = 3;
+    std::clog << "Loaded " << scene->mNumMeshes << " meshes from " << path << std::endl;
     aiMesh& mesh = *scene->mMeshes[0];
     AssimpMesh ret;
     ret.vertex_array = std::vector<float>(
