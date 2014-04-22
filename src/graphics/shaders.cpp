@@ -32,17 +32,6 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::TEXTURE
 };
 
-const std::vector<Attribute> kTextureAttrs{
-   Attribute::VERTEX,
-   Attribute::TEX_COORD
-};
-const std::vector<Uniform> kTextureUniforms{
-   Uniform::MODEL,
-   Uniform::VIEW,
-   Uniform::PROJECTION,
-   Uniform::TEXTURE
-};
-
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
