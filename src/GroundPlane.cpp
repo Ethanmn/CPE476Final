@@ -34,12 +34,10 @@ GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
             ground_vertices,
             locations[Attribute::VERTEX],
             3),
-         /*
          ArrayBufferObject::create(
             ground_normals,
             locations[Attribute::NORMAL],
             3),
-         */
          ArrayBufferObject::create(
             ground_tex_coord,
             locations[Attribute::TEX_COORD],
@@ -49,7 +47,9 @@ GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
 {}
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations) {
-   shader.sendUniform(Uniform::MODEL, uniform_locations, glm::mat4(1.0));
-   shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
+   glm::mat4 transform = glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0)) *
+      glm::scale(glm::mat4(1.0), glm::vec3(30.0));
+   shader.sendUniform(Uniform::MODEL, uniform_locations, transform);
+   shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 1, 0, 0.5f));
    shader.drawMesh(mesh_);
 }

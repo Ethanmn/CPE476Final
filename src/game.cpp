@@ -11,7 +11,7 @@ const float deerCamViewDist = 8;
 
 namespace {
    Camera deerCam;
-   Mesh bunny;
+   Mesh box;
    bool cameraRotating;
 }
 
@@ -20,7 +20,8 @@ Game::Game() :
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_, shaders_),
-   deer_(Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f))
+   deer_(Mesh::fromAssimpMesh(attribute_location_map_,
+      loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f))
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
@@ -65,7 +66,6 @@ void Game::moveDeerCam() {
 void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glm::mat4 viewMatrix, modelMatrix;
-   
    modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(5.0f));
 
    for (auto& shaderPair: shaders_.getMap()) {
@@ -104,14 +104,14 @@ void Game::draw() {
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
-      ground_.draw(shader, uniform_location_map_);
-      shader.drawMesh(bunny);
+      shader.drawMesh(box);
       deer_.draw(shader, uniform_location_map_);
+      ground_.draw(shader, uniform_location_map_);
    }
 }
 
 void Game::mainLoop() {
-   bunny = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
+   box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
    
    Input input;
    int mX, mY;
