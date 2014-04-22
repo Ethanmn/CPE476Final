@@ -26,6 +26,7 @@ struct BoundingRectangle {
    bool collision(const BoundingRectangle& other) const;
 
    void set_position(const glm::vec2& center) { center_ = center; }
+   void set_rotation(const float y_rotation) { y_rotation_ = y_rotation; }
    void draw(const UniformLocationMap& uniform_locations, Shader& shader, float y) const;
 
   private:

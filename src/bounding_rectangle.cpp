@@ -13,7 +13,6 @@ namespace {
    }
 }
 
-
 //static
 boost::optional<Mesh> BoundingRectangle::bounding_mesh_ = boost::none;
 
@@ -24,13 +23,21 @@ void BoundingRectangle::loadBoundingMesh(const AttributeLocationMap& locations) 
 
 void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader, float y) const {
    if (bounding_mesh_) {
-      glm::mat4 model_matrix(
+      const glm::mat4 rotate(
+            glm::rotate(
+               glm::mat4(),
+               y_rotation_,
+               glm::vec3(0, 1, 0)));
+      glm::mat4 scale(
             glm::scale(
-               glm::translate(glm::mat4(1.0f), glm::vec3(center_.x, y, center_.y)),
+               glm::mat4(),
                glm::vec3(dimensions_.x, 0.01f, dimensions_.y)));
+      glm::mat4 translate(
+            glm::translate(
+               glm::mat4(1.0f), glm::vec3(center_.x, y, center_.y)));
 
       shader.sendUniform(Uniform::COLOR, locations, glm::vec4(1.0f, 0, 0, 1.0f));
-      shader.sendUniform(Uniform::MODEL, locations, model_matrix);
+      shader.sendUniform(Uniform::MODEL, locations, translate * rotate * scale);
       shader.drawMesh(*bounding_mesh_);
    }
 }
