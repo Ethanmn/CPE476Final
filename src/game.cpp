@@ -14,8 +14,10 @@ namespace {
 }
 
 Game::Game() :
+   texture_(texture_path(Textures::WATER)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
+   ground_(attribute_location_map_, shaders_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f))
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
@@ -59,13 +61,7 @@ void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glm::mat4 viewMatrix, modelMatrix;
    
-   Material mat;
-   mat.ambient = glm::vec3(0.1f, 0.1f, 0.1f);
-   mat.diffuse = glm::vec3(0.7f, 0.5f, 0.7f);
-   mat.specular = glm::vec3(0.1f, 0.2f, 0.1f);
-   mat.shine = 100.0f;
-   
-   modelMatrix = glm::mat4(1.0f);
+   modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(5.0f));
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -78,19 +74,32 @@ void Game::draw() {
       shader.sendUniform(Uniform::PROJECTION, uniform_location_map_,
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
       
-      if (shaderPair.first != ShaderType::WIREFRAME) {
-         shader.sendUniform(Uniform::M_AMB, uniform_location_map_,
-            mat.ambient);
-         shader.sendUniform(Uniform::M_DIF, uniform_location_map_,
-            mat.diffuse);
-         shader.sendUniform(Uniform::M_SPEC, uniform_location_map_,
-            mat.specular);
-         shader.sendUniform(Uniform::M_SHINE, uniform_location_map_,
-            mat.shine);
-      } else {
-         shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
+      if(shaderPair.first == ShaderType::TEXTURE) {
+         texture_.enable();
+         shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
       }
+      else if(shaderPair.first == ShaderType::SUN) {
+         Material mat {
+          glm::vec3(0.1f, 0.1f, 0.1f),
+          glm::vec3(0.7f, 0.5f, 0.7f),
+          glm::vec3(0.1f, 0.2f, 0.1f),
+          100.0f
+         };
+         shader.sendUniform(Uniform::M_AMB, uniform_location_map_,
+                            mat.ambient);
+         shader.sendUniform(Uniform::M_DIF, uniform_location_map_,
+                            mat.diffuse);
+         shader.sendUniform(Uniform::M_SPEC, uniform_location_map_,
+                            mat.specular);
+         shader.sendUniform(Uniform::M_SHINE, uniform_location_map_,
+                            mat.shine);
+      }
+      else if(shaderPair.first == ShaderType::TEXTURE)
+         texture_.disable();
+      else if(shaderPair.first == ShaderType::WIREFRAME)
+         shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
+      ground_.draw(shader, uniform_location_map_);
       shader.drawMesh(bunny);
       deer_.draw(shader, uniform_location_map_);
    }
