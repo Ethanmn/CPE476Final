@@ -48,6 +48,8 @@ GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
    }
 {}
 
-void GroundPlane::draw(Shader& shader) {
+void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations) {
+   shader.sendUniform(Uniform::MODEL, uniform_locations, glm::mat4(1.0));
+   shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
    shader.drawMesh(mesh_);
 }

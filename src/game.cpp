@@ -104,7 +104,7 @@ void Game::draw() {
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
-      ground_.draw(shaderPair.second);
+      ground_.draw(shader, uniform_location_map_);
       shader.drawMesh(bunny);
       deer_.draw(shader, uniform_location_map_);
    }

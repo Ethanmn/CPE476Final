@@ -11,7 +11,7 @@ struct Shaders;
 struct GroundPlane {
    GroundPlane(AttributeLocationMap locations, Shaders& shaders);
    Mesh mesh_;
-   void draw(Shader& shader);
+   void draw(Shader& shader, const UniformLocationMap& uniform_locations);
 };
 
 #endif // GROUND_PLANE_H_
