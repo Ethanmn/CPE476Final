@@ -23,9 +23,13 @@ struct Game {
    UniformLocationMap uniform_location_map_;
    Deer deer_;
 
+   glm::vec2 mousePos;
+   bool mouseDown;
+
    void step(units::MS dt);
    void draw();
    void moveDeerCam();
+   void moveMouse(int endX, int endY);
 };
 
 #endif // GAME_H_

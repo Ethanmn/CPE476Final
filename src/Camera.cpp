@@ -4,6 +4,7 @@
    Deer - CPE 476
 */
 #include "Camera.h"
+#include <iostream>
 
 const float PI = 3.14159265359;
 const int MAX_ROTATE_VERT =  80;
@@ -49,7 +50,7 @@ void Camera::moveCameraInDirection(const glm::vec3& direction, float speed, unit
    the ending mouse point, the width of the window,
    and the height of the window.
 */
-void Camera::rotateWithDrag(const glm::vec3& startPoint, const glm::vec3& endPoint, int width, int height) {
+void Camera::rotateLookAtWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
    theta += (endPoint.x - startPoint.x) * PI / width;
    phi += (endPoint.y - startPoint.y) * PI / height;
 
@@ -60,7 +61,31 @@ void Camera::rotateWithDrag(const glm::vec3& startPoint, const glm::vec3& endPoi
       phi = -MAX_ROTATE_VERT * PI / PI_IN_DEGREES;
    }
 
+   //printf("Phi: %f\nTheta: %f\n", phi, theta);
+
    updateLookAt();
+}
+
+/*
+   Rotates the camera around the current lookAt point.
+   Parameters should be the starting mouse point,
+   the ending mouse point, the width of the window, 
+   the height of the window, and the center of the object to look at.
+*/
+void Camera::rotatePositionWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
+   theta += (endPoint.x - startPoint.x) * PI / (float)width;
+   phi += (endPoint.y - startPoint.y) * PI / (float)height;
+
+   if (phi > MAX_ROTATE_VERT * PI / PI_IN_DEGREES) {
+     phi = MAX_ROTATE_VERT * PI / PI_IN_DEGREES;
+   }
+   else if (phi < -MAX_ROTATE_VERT * PI / PI_IN_DEGREES) {
+      phi = -MAX_ROTATE_VERT * PI / PI_IN_DEGREES;
+   }
+
+   //printf("Phi: %f\nTheta: %f\n", phi, theta);
+
+   updatePosition();
 }
 
 /* Retrieves the current position of the camera. */
@@ -90,4 +115,13 @@ glm::mat4 Camera::getViewMatrix() const {
 */
 void Camera::updateLookAt() {
    lookAt = glm::vec3(cos(phi) * cos(theta) + position.x, sin(phi), cos(phi) * cos(PI / 2 - theta) + position.z);
+   //printf("Looking at: %f %f %f\n", lookAt.x, lookAt.y, lookAt.z);
+}
+
+void Camera::updatePosition() {
+   glm::vec3 radiusVec = position - lookAt;
+   float radius = glm::length(radiusVec);
+
+   position = glm::vec3(radius * cos(phi) * cos(theta) + lookAt.x, radius * sin(phi), radius * cos(phi) * cos(PI / 2 - theta) + lookAt.z);
+   //printf("New position: %f %f %f\n", position.x, position.y, position.z);
 }

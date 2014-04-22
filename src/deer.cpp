@@ -26,6 +26,8 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(position_, glm::vec2(3.0f)),
    is_jumping_(false),
+   is_walking_(false),
+   is_strafing_(false),
    y_(0.0f),
    velocity_y_(0.0f)
       {}
@@ -96,22 +98,28 @@ void Deer::step(units::MS dt, const Camera& camera) {
 
 void Deer::walkForward() {
    walk_direction_ = WalkDirection::FORWARD;
+   is_walking_ = true;
 }
 void Deer::walkBackward() {
    walk_direction_ = WalkDirection::BACKWARD;
+   is_walking_ = true;
 }
 void Deer::stopWalking() {
    walk_direction_ = WalkDirection::NONE;
+   is_walking_ = false;
 }
 
 void Deer::strafeLeft() {
    strafe_direction_ = StrafeDirection::LEFT;
+   is_strafing_ = true;
 }
 void Deer::strafeRight() {
    strafe_direction_ = StrafeDirection::RIGHT;
+   is_strafing_ = true;
 }
 void Deer::stopStrafing() {
    strafe_direction_ = StrafeDirection::NONE;
+   is_strafing_ = false;
 }
 
 void Deer::jump() {
@@ -119,6 +127,10 @@ void Deer::jump() {
       is_jumping_ = true;
       velocity_y_ = kJumpSpeed;
    }
+}
+
+bool Deer::isMoving() {
+   return is_walking_ || is_strafing_;
 }
 
 float Deer::yRotation() const {

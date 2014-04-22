@@ -5,12 +5,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-const float deerCamHeightAbvDeer = 5; 
+const float deerCamHeightAbvDeer = 8; 
 const float deerCamDistFromDeer = 8;
+const float deerCamViewDist = 8;
 
 namespace {
    Camera deerCam;
    Mesh bunny;
+   bool cameraRotating;
 }
 
 Game::Game() :
@@ -31,11 +33,23 @@ Game::Game() :
    glLineWidth(1.0);
 
    BoundingRectangle::loadBoundingMesh(attribute_location_map_);
+   mouseDown = false;
+   cameraRotating = false;
+   moveDeerCam();
 }
 
 void Game::step(units::MS dt) {
    deer_.step(dt, deerCam);
-   moveDeerCam();
+
+   if (deer_.isMoving()) {
+      moveDeerCam();
+   }
+   else if (cameraRotating) {
+      deerCam.setLookAt(glm::vec3(deer_.getPosition().x, deer_.getY(), deer_.getPosition().y));
+   }
+
+   //glm::vec3 camPos = deerCam.getPosition();
+   //printf("Camera position: %f %f %f\n", camPos.x, camPos.y, camPos.z); 
 }
 
 void Game::moveDeerCam() {
@@ -48,7 +62,7 @@ void Game::moveDeerCam() {
    float camZ = deerPos.y - deerCamDistFromDeer;
 
    deerCam.setPosition(glm::vec3(camX, camY, camZ));
-   deerCam.setLookAt(glm::vec3(deerPos.x, deerY, deerPos.y));
+   deerCam.setLookAt(glm::vec3(deerPos.x, deerY, deerPos.y + deerCamViewDist));
 }
 
 void Game::draw() {
@@ -89,7 +103,7 @@ void Game::draw() {
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
       }
 
-      //shader.drawMesh(bunny);
+      shader.drawMesh(bunny);
       deer_.draw(shader, uniform_location_map_);
    }
 }
@@ -98,6 +112,7 @@ void Game::mainLoop() {
    bunny = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
    
    Input input;
+   int mX, mY;
    bool running = true;
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
@@ -113,6 +128,20 @@ void Game::mainLoop() {
                input.keyDown(event.key);
             } else if (event.type == SDL_KEYUP) {
                input.keyUp(event.key);
+            }
+            else if (event.type == SDL_MOUSEBUTTONDOWN && SDL_GetMouseState(&mX, &mY)) {
+               //printf("Start mouse coords: %d %d\n", mX, mY);
+               mousePos = glm::vec2(mX, mY);
+               mouseDown = true;
+               cameraRotating = true;
+            }
+            else if (event.type == SDL_MOUSEMOTION && SDL_GetMouseState(&mX, &mY) && mouseDown) {
+               //printf("End mouse coords: %d %d\n", mX, mY);
+               deerCam.rotatePositionWithDrag(mousePos, glm::vec2(mX, mY), kScreenWidth, kScreenHeight);
+            }
+            else if (event.type == SDL_MOUSEBUTTONUP) {
+               mouseDown = false;
+               cameraRotating = false;
             }
          }
       }

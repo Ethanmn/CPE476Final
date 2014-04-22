@@ -30,6 +30,8 @@ struct Deer {
    glm::vec2 getPosition();
    float getY();
 
+   bool isMoving();
+
   private:
    enum class WalkDirection {
       FORWARD,
@@ -54,6 +56,8 @@ struct Deer {
    BoundingRectangle bounding_rectangle_;
 
    bool is_jumping_;
+   bool is_walking_;
+   bool is_strafing_;
    float y_, velocity_y_;
 };
 
