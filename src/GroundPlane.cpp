@@ -26,7 +26,7 @@ const std::vector<unsigned short> ground_indices{
    0, 2, 1, 3, 1, 2
 };
 
-GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
+GroundPlane::GroundPlane(AttributeLocationMap& locations) :
    mesh_{
       IndexBufferObject::create(ground_indices),
       {
@@ -43,8 +43,7 @@ GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
             locations[Attribute::TEX_COORD],
             2),
       }
-   }
-{}
+   } {}
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations) {
    glPolygonMode(GL_FRONT, GL_FILL);

@@ -19,18 +19,6 @@ struct BoundingRectangle {
 
    static void loadBoundingMesh(const AttributeLocationMap& locations);
 
-   float left() const  { return center_.x - dimensions_.x / 2; }
-   float right() const { return center_.x + dimensions_.x / 2; }
-   float front() const { return center_.y - dimensions_.y / 2; }
-   float back() const  { return center_.y + dimensions_.y / 2; }
-
-   bool collidesWith(const BoundingRectangle& other) const {
-      return right() >= other.left() &&
-             left() <= other.right() &&
-             front() <= other.back() &&
-             back() >= other.front();
-   }
-
    void set_position(const glm::vec2& center) { center_ = center; }
    void draw(const UniformLocationMap& uniform_locations, Shader& shader, float y) const;
 

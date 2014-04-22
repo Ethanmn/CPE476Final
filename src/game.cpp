@@ -14,7 +14,7 @@ Game::Game() :
    texture_(texture_path(Textures::GRASS)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
-   ground_(attribute_location_map_, shaders_),
+   ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
       loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
    mat_()
