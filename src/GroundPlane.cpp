@@ -1,5 +1,4 @@
 #include "GroundPlane.h"
-
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
@@ -27,23 +26,23 @@ const std::vector<unsigned short> ground_indices{
    0, 2, 1, 3, 1, 2
 };
 
-GroundPlane::GroundPlane(Shaders& shaders) :
+GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
    mesh_{
       IndexBufferObject::create(ground_indices),
       {
          ArrayBufferObject::create(
             ground_vertices,
-            shaders.getAttributes(Attribute::VERTEX),
+            locations[Attribute::VERTEX],
             3),
          /*
          ArrayBufferObject::create(
             ground_normals,
-            shaders.getAttributes(Attribute::NORMAL),
+            locations[Attribute::NORMAL],
             3),
          */
          ArrayBufferObject::create(
             ground_tex_coord,
-            shaders.getAttributes(Attribute::TEX_COORD),
+            locations[Attribute::TEX_COORD],
             2),
       }
    }

@@ -22,10 +22,10 @@ struct Game {
    SDLEngine engine_;
    Input input_;
    Shaders shaders_;
-   GroundPlane ground_;
    Texture texture_;
    AttributeLocationMap attribute_location_map_;
    UniformLocationMap uniform_location_map_;
+   GroundPlane ground_;
    Deer deer_;
 
    glm::vec2 mousePos;

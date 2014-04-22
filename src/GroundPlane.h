@@ -3,13 +3,13 @@
 
 #include "graphics/mesh.h"
 #include "glm/glm.hpp"
-#include "graphics/uniform_location_map.h"
+#include "graphics/location_maps.h"
 
 struct Shader;
 struct Shaders;
 
 struct GroundPlane {
-   GroundPlane(Shaders& shaders);
+   GroundPlane(AttributeLocationMap locations, Shaders& shaders);
    Mesh mesh_;
    void draw(Shader& shader);
 };

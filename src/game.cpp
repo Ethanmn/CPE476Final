@@ -16,10 +16,10 @@ namespace {
 }
 
 Game::Game() :
-   ground_(shaders_),
-   texture_(texture_path(Textures::WATER)) {
+   texture_(texture_path(Textures::WATER)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
+   ground_(attribute_location_map_, shaders_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f))
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
@@ -81,7 +81,7 @@ void Game::draw() {
       
       if(shaderPair.first == ShaderType::TEXTURE) {
          texture_.enable();
-         shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::TEXTURE), 0);
+         shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
       }
       else if(shaderPair.first == ShaderType::SUN) {
          Material mat {

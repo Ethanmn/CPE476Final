@@ -1,5 +1,4 @@
 #include "graphics/mesh.h"
-
 #include "graphics/assimp/mesh_loader.h"
 #include "graphics/shaders.h"
 
@@ -26,7 +25,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
          */
          ArrayBufferObject::create(
             mesh.uv_array,
-            shaders.getAttributes(Attribute::TEX_COORD),
+            locations[Attribute::TEX_COORD],
             2),
          
       }
