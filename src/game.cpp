@@ -33,7 +33,7 @@ Game::Game() :
 
    BoundingRectangle::loadBoundingMesh(attribute_location_map_);
    mouseDown = false;
-   deerCam.move(deer_.getPosition());
+   deerCam.initialize(deer_.getPosition());
 }
 
 void Game::step(units::MS dt) {
