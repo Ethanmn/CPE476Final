@@ -1,76 +1,44 @@
-#ifdef __APPLE__
-#include "GLUT/glut.h"
-#include <OPENGL/gl.h>
-#endif
-#ifdef __unix__
-#include <GL/glut.h>
-#endif
-
+#include <GL/glew.h>
 #include "texture.h"
 #include <stdio.h>
 #include <string>
+
 using namespace std;
 
+int load(const std::string& path);
+
+struct Image {
+   unsigned long sizeX;
+   unsigned long sizeY;
+   char *data;
+};
 
 namespace {
-   int texture_id = 0;
-}
-
-void initTexture() {
-   glEnable(GL_TEXTURE_2D);
-   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-}
-
-void enableTexture(int texture_id) {
-   glEnable(GL_TEXTURE_2D);
-   glActiveTexture(GL_TEXTURE0 + texture_id);
-   glBindTexture(GL_TEXTURE_2D, texture_id);
-}
-
-void disableTexture() {
-   glDisable(GL_TEXTURE_2D);
-}
-
-int loadTexture(const std::string& path) {
-   Image image;
-   cout << "Loading Image: " << path << endl;
-   if (!imageLoad(path, image)) {
-      exit(1);
+   int texture_ids = 0;
+   unsigned int getint(FILE *fp) {
+      int c, c1, c2, c3;
+      
+      /*  get 4 bytes */
+      c = getc(fp);
+      c1 = getc(fp);
+      c2 = getc(fp);
+      c3 = getc(fp);
+      
+      return ((unsigned int) c) +
+      (((unsigned int) c1) << 8) +
+      (((unsigned int) c2) << 16) +
+      (((unsigned int) c3) << 24);
    }
-   glBindTexture(GL_TEXTURE_2D, texture_id);
-   glTexImage2D(GL_TEXTURE_2D, 0, 3, image.sizeX, image.sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
-   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-   free(image.data);
-   return texture_id++;
-}
-
-static unsigned int getint(FILE *fp) {
-   int c, c1, c2, c3;
    
-   /*  get 4 bytes */
-   c = getc(fp);
-   c1 = getc(fp);
-   c2 = getc(fp);
-   c3 = getc(fp);
-   
-   return ((unsigned int) c) +
-   (((unsigned int) c1) << 8) +
-   (((unsigned int) c2) << 16) +
-   (((unsigned int) c3) << 24);
-}
-
-static unsigned int getshort(FILE *fp){
-   int c, c1;
-   
-   /* get 2 bytes*/
-   c = getc(fp);
-   c1 = getc(fp);
-   
-   return ((unsigned int) c) + (((unsigned int) c1) << 8);
+   unsigned int getshort(FILE *fp){
+      int c, c1;
+      
+      /* get 2 bytes*/
+      c = getc(fp);
+      c1 = getc(fp);
+      
+      return ((unsigned int) c) + (((unsigned int) c1) << 8);
+   }
 }
 
 int imageLoad(const std::string& path, Image &image) {
@@ -137,6 +105,41 @@ int imageLoad(const std::string& path, Image &image) {
    
    fclose(file);
    /* Close the file and release the filedes */
-
+   
    return 1;
+}
+
+Texture::Texture(const std::string& path) {
+   glEnable(GL_TEXTURE_2D);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   texture_id = texture_ids;
+   load(path);
+}
+
+void Texture::enable() {
+   glEnable(GL_TEXTURE_2D);
+   glActiveTexture(GL_TEXTURE0 + texture_id);
+   glBindTexture(GL_TEXTURE_2D, texture_id);
+}
+
+void Texture::disable() {
+   glDisable(GL_TEXTURE_2D);
+}
+
+int load(const std::string& path) {
+   Image image;
+   cout << "Loading Image: " << path << endl;
+   if (!imageLoad(path, image)) {
+      exit(1);
+   }
+   glBindTexture(GL_TEXTURE_2D, texture_ids);
+   glTexImage2D(GL_TEXTURE_2D, 0, 3, image.sizeX, image.sizeY, 0,
+                GL_RGB, GL_UNSIGNED_BYTE, image.data);
+   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+   free(image.data);
+   return texture_ids++;
 }

@@ -1,7 +1,6 @@
 #include "GroundPlane.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
 
@@ -48,12 +47,8 @@ GroundPlane::GroundPlane(Shaders& shaders) :
             2),
       }
    }
-/*
-   model_matrix_(shaders,
-         glm::rotate(glm::scale(glm::mat4(), glm::vec3(20.0f)), 90.0f, glm::vec3(1, 0, 0))),
-   blue_uniform_(shaders.getUniforms(Uniform::BLUE)) {*/
 {}
 
-void GroundPlane::draw(Shader& shader, const glm::mat4& view) {
-   
+void GroundPlane::draw(Shader& shader) {
+   shader.drawMesh(mesh_);
 }

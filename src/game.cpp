@@ -3,16 +3,15 @@
 #include "graphics/mesh.h"
 #include "graphics/material.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "graphics/texture.h"
 #include <iostream>
 
 namespace {
-   //Camera camera;
    Mesh bunny;
 }
 
 Game::Game() :
-   ground_(shaders_) {
+   ground_(shaders_),
+   texture_(texture_path(Textures::WATER)) {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
@@ -21,7 +20,6 @@ Game::Game() :
    glShadeModel(GL_SMOOTH);
    glDisable(GL_LINE_SMOOTH);
    glEnable(GL_CULL_FACE);
-   initTexture();
 }
 
 void Game::step(units::MS) {
@@ -46,16 +44,17 @@ void Game::draw() {
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
       
       if(shaderPair.first == ShaderType::TEXTURE) {
-         enableTexture(0);
+         texture_.enable();
          shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::TEXTURE), 0);
       }
       
       if(shaderPair.first == ShaderType::SUN) {
-          Material mat;
-          mat.ambient = glm::vec3(0.1f, 0.1f, 0.1f);
-          mat.diffuse = glm::vec3(0.7f, 0.5f, 0.7f);
-          mat.specular = glm::vec3(0.1f, 0.2f, 0.1f);
-          mat.shine = 100.0f;
+         Material mat {
+          glm::vec3(0.1f, 0.1f, 0.1f),
+          glm::vec3(0.7f, 0.5f, 0.7f),
+          glm::vec3(0.1f, 0.2f, 0.1f),
+          100.0f
+         };
           
          shaderPair.second.sendUniform(shaders_.getUniforms(Uniform::M_AMB),
             mat.ambient);
@@ -67,15 +66,14 @@ void Game::draw() {
             mat.shine);
       }
       
-      shaderPair.second.drawMesh(ground_.mesh_);
+      ground_.draw(shaderPair.second);
 
       if(shaderPair.first == ShaderType::TEXTURE)
-         disableTexture();
+         texture_.disable();
    }
 }
 
 void Game::mainLoop() {
-   loadTexture(texture_path(Texture::WATER));
    bunny = Mesh::fromAssimpMesh(shaders_,loadMesh("../models/cube.obj"));
    
    Input input;

@@ -3,32 +3,25 @@
 #include <iostream>
 #include <string>
 
-enum class Texture {
+enum class Textures {
    WATER,
    GRASS
 };
 
-inline std::string texture_path(Texture texture) {
+inline std::string texture_path(Textures texture) {
    switch (texture) {
-      case Texture::WATER:
+      case Textures::WATER:
          return "../textures/water.bmp";
-      case Texture::GRASS:
+      case Textures::GRASS:
          return "../textures/grass.bmp";
    }
 }
 
-typedef struct Image {
-   unsigned long sizeX;
-   unsigned long sizeY;
-   char *data;
-} Image;
-
-void initTexture();
-void enableTexture(int texture_id);
-void disableTexture();
-int loadTexture(const std::string& path);
-static unsigned int getint(FILE *fp);
-static unsigned int getshort(FILE *fp);
-int imageLoad(const std::string& path, Image &image);
+struct Texture {
+   int texture_id;
+   Texture(const std::string& path);
+   void enable();
+   void disable();
+};
 
 #endif

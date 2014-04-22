@@ -9,6 +9,7 @@
 #include "units.h"
 #include "graphics/shaders.h"
 #include "GroundPlane.h"
+#include "graphics/texture.h"
 
 
 struct Game {
@@ -21,6 +22,7 @@ struct Game {
    Input input_;
    Shaders shaders_;
    GroundPlane ground_;
+   Texture texture_;
 
    void step(units::MS dt);
    void draw();
