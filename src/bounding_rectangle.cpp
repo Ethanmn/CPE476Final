@@ -1,10 +1,18 @@
 #include "bounding_rectangle.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include "graphics/assimp/mesh_loader.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
+
+namespace {
+   glm::vec2 vec2FromAngle(float y_rotation) {
+      return glm::rotate(glm::vec2(1, 0), y_rotation);
+   }
+}
+
 
 //static
 boost::optional<Mesh> BoundingRectangle::bounding_mesh_ = boost::none;
@@ -20,9 +28,38 @@ void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader
             glm::scale(
                glm::translate(glm::mat4(1.0f), glm::vec3(center_.x, y, center_.y)),
                glm::vec3(dimensions_.x, 0.01f, dimensions_.y)));
-      
+
       shader.sendUniform(Uniform::COLOR, locations, glm::vec4(1.0f, 0, 0, 1.0f));
       shader.sendUniform(Uniform::MODEL, locations, model_matrix);
       shader.drawMesh(*bounding_mesh_);
    }
+}
+
+bool BoundingRectangle::collision(const BoundingRectangle& other) const {
+   const auto radius_axis = center_ - other.center_;
+   auto has_separation = hasSeparatingLineForAxis(vec2FromAngle(y_rotation_), radius_axis, other);
+   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(y_rotation_ + 90), radius_axis, other);
+   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(other.y_rotation_), radius_axis, other);
+   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(other.y_rotation_ + 90), radius_axis, other);
+   return has_separation;
+}
+
+glm::vec2 BoundingRectangle::localX() const {
+   return vec2FromAngle(y_rotation_) * dimensions_.x / 2.0f;
+}
+
+glm::vec2 BoundingRectangle::localZ() const {
+   return vec2FromAngle(y_rotation_) * dimensions_.x / 2.0f;
+}
+
+float BoundingRectangle::total_projection(const glm::vec2& separating_axis) const {
+   return std::abs(glm::dot(localX(), separating_axis)) + std::abs(glm::dot(localZ(), separating_axis));
+}
+
+bool BoundingRectangle::hasSeparatingLineForAxis(
+      const glm::vec2& separating_axis,
+      const glm::vec2& radius_axis,
+      const BoundingRectangle& other) const {
+   return std::abs(glm::dot(separating_axis, radius_axis)) >
+      total_projection(separating_axis) + other.total_projection(separating_axis);
 }

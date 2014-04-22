@@ -10,21 +10,38 @@
 struct Shader;
 struct Shaders;
 
+// Bounding rectangle on the XZ plane, with Y rotation.
 struct BoundingRectangle {
    BoundingRectangle(
          const glm::vec2& center,
-         const glm::vec2& dimensions) :
+         const glm::vec2& dimensions,
+         float y_rotation) :
       center_(center),
-      dimensions_(dimensions) {}
+      dimensions_(dimensions),
+      y_rotation_(y_rotation)
+   {}
 
    static void loadBoundingMesh(const AttributeLocationMap& locations);
+
+   bool collision(const BoundingRectangle& other) const;
 
    void set_position(const glm::vec2& center) { center_ = center; }
    void draw(const UniformLocationMap& uniform_locations, Shader& shader, float y) const;
 
   private:
+   glm::vec2 localX() const;
+   glm::vec2 localZ() const;
+   float total_projection(const glm::vec2& separating_axis) const;
+   bool hasSeparatingLineForAxis(
+         const glm::vec2& separating_axis,
+         const glm::vec2& radius_axis,
+         const BoundingRectangle& other) const;
+
    glm::vec2 center_;
    glm::vec2 dimensions_;
+
+   float y_rotation_;
+
    static boost::optional<Mesh> bounding_mesh_;
 };
 
