@@ -1,7 +1,6 @@
 #include "game.h"
 #include "graphics/assimp/mesh_loader.h"
 #include "graphics/mesh.h"
-#include "graphics/material.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
@@ -17,7 +16,8 @@ Game::Game() :
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_, shaders_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-      loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f))
+      loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
+   mat_()
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
@@ -65,20 +65,7 @@ void Game::draw() {
          shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
       }
       else if(shaderPair.first == ShaderType::SUN) {
-         Material mat {
-          glm::vec3(0.1f, 0.1f, 0.1f),
-          glm::vec3(0.7f, 0.5f, 0.7f),
-          glm::vec3(0.1f, 0.2f, 0.1f),
-          100.0f
-         };
-         shader.sendUniform(Uniform::M_AMB, uniform_location_map_,
-                            mat.ambient);
-         shader.sendUniform(Uniform::M_DIF, uniform_location_map_,
-                            mat.diffuse);
-         shader.sendUniform(Uniform::M_SPEC, uniform_location_map_,
-                            mat.specular);
-         shader.sendUniform(Uniform::M_SHINE, uniform_location_map_,
-                            mat.shine);
+         mat_.sendToShader(shader, uniform_location_map_);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));

@@ -12,7 +12,7 @@
 #include "GroundPlane.h"
 #include "graphics/texture.h"
 #include "DeerCam.h"
-
+#include "graphics/material.h"
 
 struct Game {
    Game();
@@ -28,6 +28,7 @@ struct Game {
    UniformLocationMap uniform_location_map_;
    GroundPlane ground_;
    Deer deer_;
+   Material mat_;
 
    glm::vec2 mousePos;
    bool mouseDown;
