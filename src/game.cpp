@@ -12,7 +12,7 @@ namespace {
 }
 
 Game::Game() :
-   texture_(texture_path(Textures::WATER)),
+   texture_(texture_path(Textures::GRASS)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_, shaders_),
@@ -80,14 +80,15 @@ void Game::draw() {
          shader.sendUniform(Uniform::M_SHINE, uniform_location_map_,
                             mat.shine);
       }
-      else if(shaderPair.first == ShaderType::TEXTURE)
-         texture_.disable();
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
       shader.drawMesh(box);
       deer_.draw(shader, uniform_location_map_);
       ground_.draw(shader, uniform_location_map_);
+      
+      if(shaderPair.first == ShaderType::TEXTURE)
+         texture_.disable();
    }
 }
 

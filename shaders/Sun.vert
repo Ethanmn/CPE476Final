@@ -7,7 +7,6 @@ struct Material {
 };
 uniform Material uMat;
 
-
 attribute vec3 aPosition;
 attribute vec3 aNormal;
 
