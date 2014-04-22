@@ -67,9 +67,9 @@ void Deer::step(units::MS dt, const Camera& camera) {
       { // Add in strafe from camera, if strafing.
          const glm::vec3 left(camera.getCamLeftVec());
          if (strafe_direction_ == StrafeDirection::LEFT) {
-            acceleration += glm::vec3(left.x, 0.0f, left.y);
+            acceleration += glm::vec3(left.x, 0.0f, left.z);
          } else if (strafe_direction_ == StrafeDirection::RIGHT) {
-            acceleration -= glm::vec3(left.x, 0.0f, left.y);
+            acceleration -= glm::vec3(left.x, 0.0f, left.z);
          }
       }
       { // Accelerate velocity, capping at kSpeed.

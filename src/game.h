@@ -11,6 +11,7 @@
 #include "graphics/shaders.h"
 #include "GroundPlane.h"
 #include "graphics/texture.h"
+#include "DeerCam.h"
 
 
 struct Game {
@@ -33,7 +34,6 @@ struct Game {
 
    void step(units::MS dt);
    void draw();
-   void moveDeerCam();
    void moveMouse(int endX, int endY);
 };
 

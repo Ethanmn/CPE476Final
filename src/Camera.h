@@ -34,6 +34,7 @@ struct Camera {
 
       void updateLookAt();
       void updatePosition();
+      void changeRotationAngles(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height);
 };
 
 #endif // CAMERA_H_
