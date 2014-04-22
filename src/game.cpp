@@ -11,12 +11,12 @@ const float deerCamViewDist = 8;
 
 namespace {
    Camera deerCam;
-   Mesh bunny;
+   Mesh box;
    bool cameraRotating;
 }
 
 Game::Game() :
-   texture_(texture_path(Textures::WATER)),
+   texture_(texture_path(Textures::GRASS)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_, shaders_),
@@ -99,19 +99,21 @@ void Game::draw() {
          shader.sendUniform(Uniform::M_SHINE, uniform_location_map_,
                             mat.shine);
       }
-      else if(shaderPair.first == ShaderType::TEXTURE)
-         texture_.disable();
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
-      ground_.draw(shader, uniform_location_map_);
-      shader.drawMesh(bunny);
+      
+      shader.drawMesh(box);
       deer_.draw(shader, uniform_location_map_);
+      ground_.draw(shader, uniform_location_map_);
+      
+      if(shaderPair.first == ShaderType::TEXTURE)
+         texture_.disable();
    }
 }
 
 void Game::mainLoop() {
-   bunny = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
+   box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
    
    Input input;
    int mX, mY;
