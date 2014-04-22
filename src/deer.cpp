@@ -96,7 +96,6 @@ void Deer::step(units::MS dt, const Camera& camera) {
    }
 
    position_ += velocity_ * static_cast<float>(dt);
-   printf("position = (%f, %f, %f)\n", position_.x, position_.y, position_.z);
    bounding_rectangle_.set_position(xz(position_));
 }
 
