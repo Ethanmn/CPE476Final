@@ -6,7 +6,7 @@
 #include <iostream>
 
 namespace {
-   Camera deerCam;
+   DeerCam deerCam;
    Mesh box;
    bool cameraRotating;
 }
