@@ -9,6 +9,7 @@
 #include "sdl_engine.h"
 #include "units.h"
 #include "graphics/shaders.h"
+#include "DeerCam.h"
 
 struct Game {
    Game();
@@ -28,7 +29,6 @@ struct Game {
 
    void step(units::MS dt);
    void draw();
-   void moveDeerCam();
    void moveMouse(int endX, int endY);
 };
 

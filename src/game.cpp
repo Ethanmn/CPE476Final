@@ -5,11 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-const float deerCamHeightAbvDeer = 8; 
-const float deerCamDistFromDeer = 16;
-
 namespace {
-   Camera deerCam;
+   DeerCam deerCam;
    Mesh bunny;
 }
 
@@ -32,27 +29,15 @@ Game::Game() :
 
    BoundingRectangle::loadBoundingMesh(attribute_location_map_);
    mouseDown = false;
-   moveDeerCam();
+   deerCam.move(deer_.getPosition());
 }
 
 void Game::step(units::MS dt) {
    deer_.step(dt, deerCam);
 
    if (deer_.isMoving()) {
-      moveDeerCam();
+      deerCam.move(deer_.getPosition());
    }
-}
-
-void Game::moveDeerCam() {
-   const glm::vec3 camDir = deerCam.getCamForwardVec();
-   const glm::vec3 deerPos = deer_.getPosition();
-
-   float camX = deerPos.x - (camDir.x * deerCamDistFromDeer);
-   float camY = deerPos.y + deerCamHeightAbvDeer;
-   float camZ = deerPos.z - (camDir.z * deerCamDistFromDeer);
-
-   deerCam.setPosition(glm::vec3(camX, camY, camZ));
-   deerCam.setLookAt(deerPos);
 }
 
 void Game::draw() {
