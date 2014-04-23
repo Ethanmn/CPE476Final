@@ -1,5 +1,7 @@
 #ifdef __APPLE__
 #include <OPENGL/gl.h>
+#else
+#include <GL/glew.h>
 #endif
 #include <glm/glm.hpp>
 #include "day_cycle.h"
