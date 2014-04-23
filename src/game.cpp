@@ -8,9 +8,7 @@ namespace {
    DeerCam deerCam;
    Mesh box;
    bool cameraRotating;
-   glm::vec3 sunDir;
-   float sunIntensity;
-   //bool dayToNight;
+   
 }
 
 Game::Game() :
@@ -21,9 +19,12 @@ Game::Game() :
    ground_(attribute_location_map_, shaders_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
       loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
-   mat_()
+   mat_(),
+   day_cycle_()
 {
-   glClearColor(0, 0, 0, 1); // Clear to solid blue.
+   //glClearColor(0, 0, 0, 1); // Clear to solid blue.
+   
+   glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -52,6 +53,7 @@ void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glm::mat4 viewMatrix, modelMatrix;
    modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f));
+   day_cycle_.autoAdjustTime();
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -67,6 +69,7 @@ void Game::draw() {
       if(shaderPair.first == ShaderType::TEXTURE) {
          texture_.enable();
 
+         shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
          shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
          ground_.draw(shader, uniform_location_map_);
          
@@ -79,8 +82,8 @@ void Game::draw() {
       }
       else if(shaderPair.first == ShaderType::SUN) {
          mat_.sendToShader(shader, uniform_location_map_);
-         shader.sendUniform(Uniform::SUN_DIR, uniform_location_map_, sunDir);
-         shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, sunIntensity);
+         shader.sendUniform(Uniform::SUN_DIR, uniform_location_map_, day_cycle_.getSunDir());
+         shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
          
          shader.sendUniform(Uniform::NORMAL, uniform_location_map_, glm::transpose(glm::inverse(deerCam.getViewMatrix())));
          mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
@@ -105,9 +108,6 @@ void Game::draw() {
 
 void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
-   sunDir = glm::vec3(1.5, 1.0, 0.4);
-   sunIntensity = 0.8;
-   dayToNight = false;
    
    Input input;
    int mX, mY;
@@ -169,6 +169,7 @@ void Game::mainLoop() {
             const auto key_jump = SDL_SCANCODE_J;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
+               day_cycle_.switchBoolean();
             }
          }
       }

@@ -28,7 +28,8 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
-   Uniform::TEXTURE
+   Uniform::TEXTURE,
+   Uniform::SUN_INTENSITY
 };
 
 const std::vector<Attribute> kWireframeAttrs{
