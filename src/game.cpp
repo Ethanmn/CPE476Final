@@ -6,8 +6,6 @@
 
 namespace {
    DeerCam deerCam;
-   Mesh box;
-   bool cameraRotating;
    glm::vec3 sunDir;
    float sunIntensity;
 }
@@ -19,8 +17,11 @@ Game::Game() :
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-      loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
-   mat_()
+         loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
+   tree_(Mesh::fromAssimpMesh(
+            attribute_location_map_,
+            loadMesh("../models/tree.3ds")),
+         glm::vec3(30, 0, 25))
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
@@ -57,53 +58,53 @@ void Game::draw() {
       shader.use();
 
       shader.sendUniform(Uniform::MODEL, uniform_location_map_,
-         modelMatrix);
+            modelMatrix);
       shader.sendUniform(Uniform::VIEW, uniform_location_map_,
-         deerCam.getViewMatrix());
+            deerCam.getViewMatrix());
       shader.sendUniform(Uniform::PROJECTION, uniform_location_map_,
-         glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
-      
+            glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
+
       if(shaderPair.first == ShaderType::TEXTURE) {
          texture_.enable();
 
          shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
          ground_.draw(shader, uniform_location_map_);
-         
+
          /* Render deer with texture -- please don't delete, used for debugging shaders
-         texture_.disable();
-         texture_.enable();
-         shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
-         deer_.draw(shader, uniform_location_map_);
-         */
+            texture_.disable();
+            texture_.enable();
+            shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
+            deer_.draw(shader, uniform_location_map_);
+            */
       }
       else if(shaderPair.first == ShaderType::SUN) {
          mat_.sendToShader(shader, uniform_location_map_);
          shader.sendUniform(Uniform::SUN_DIR, uniform_location_map_, sunDir);
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, sunIntensity);
-         
+
          shader.sendUniform(Uniform::NORMAL, uniform_location_map_, glm::transpose(glm::inverse(deerCam.getViewMatrix())));
          mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
-         shader.drawMesh(box);
-         
+
+         tree_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
+
          mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
          deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-         
+
          /* Render ground as dark green -- please don't delete, used for debugging shaders
-         mat_.changeDiffuse(glm::vec3(0.051 * 1.5, 0.2431 * 1.5, 0.1568 * 1.5), shader, uniform_location_map_);
-         ground_.draw(shader, uniform_location_map_);
-         */
-         
+            mat_.changeDiffuse(glm::vec3(0.051 * 1.5, 0.2431 * 1.5, 0.1568 * 1.5), shader, uniform_location_map_);
+            ground_.draw(shader, uniform_location_map_);
+            */
+
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
-      
+
       if(shaderPair.first == ShaderType::TEXTURE)
          texture_.disable();
    }
 }
 
 void Game::mainLoop() {
-   box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
    sunDir = glm::vec3(1.5, 1.0, 0.4);
    sunIntensity = 0.8;
 

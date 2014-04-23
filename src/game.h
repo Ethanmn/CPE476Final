@@ -13,6 +13,7 @@
 #include "graphics/texture.h"
 #include "DeerCam.h"
 #include "graphics/material.h"
+#include "tree.h"
 
 struct Game {
    Game();
@@ -30,6 +31,7 @@ struct Game {
    GroundPlane ground_;
    Deer deer_;
    Material mat_;
+   Tree tree_;
 
    glm::vec2 mousePos;
    bool mouseDown;
