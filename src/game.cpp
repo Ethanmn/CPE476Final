@@ -103,7 +103,7 @@ void Game::draw() {
       shader.sendUniform(Uniform::VIEW, uniform_location_map_,
             deerCam.getViewMatrix());
       shader.sendUniform(Uniform::PROJECTION, uniform_location_map_,
-            glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 200.f));
+            glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f));
 
       if(shaderPair.first == ShaderType::TEXTURE) {
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
