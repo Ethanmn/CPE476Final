@@ -3,6 +3,8 @@
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
 
+const int GroundPlane::GROUND_SCALE = 150;
+
 const std::vector<float> ground_vertices{
    -0.5, 0.0, -0.5,
    0.5, 0.0, -0.5,
@@ -49,7 +51,7 @@ GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations) {
    glPolygonMode(GL_FRONT, GL_FILL);
    glm::mat4 transform = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -10.0, 0.0)) *
-   glm::scale(glm::mat4(1.0), glm::vec3(150.0));
+   glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE));
    shader.sendUniform(Uniform::MODEL, uniform_locations, transform);
    shader.sendUniform(Uniform::COLOR, uniform_locations,
          glm::vec4(0.0901, 0.3137, 0.1176, 0.5f));

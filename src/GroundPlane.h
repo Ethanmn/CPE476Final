@@ -9,6 +9,8 @@ struct Shader;
 struct Shaders;
 
 struct GroundPlane {
+   static const int GROUND_SCALE;
+
    GroundPlane(AttributeLocationMap locations, Shaders& shaders);
    Mesh mesh_;
    void draw(Shader& shader, const UniformLocationMap& uniform_locations);

@@ -7,7 +7,6 @@
 namespace {
    DeerCam deerCam;
    Mesh box;
-   bool cameraRotating;
 }
 
 Game::Game() :
@@ -17,7 +16,9 @@ Game::Game() :
    ground_(attribute_location_map_, shaders_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
       loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
-   mat_()
+   mat_(),
+   treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
+      loadMesh("../models/tree2.3ds")))
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
@@ -34,6 +35,7 @@ Game::Game() :
    BoundingRectangle::loadBoundingMesh(attribute_location_map_);
    mouseDown = false;
    deerCam.initialize(deer_.getPosition());
+   treeGen.generateTrees();
 }
 
 void Game::step(units::MS dt) {
@@ -73,6 +75,7 @@ void Game::draw() {
       shader.drawMesh(box);
       deer_.draw(shader, uniform_location_map_);
       ground_.draw(shader, uniform_location_map_);
+      treeGen.drawTrees(shader, uniform_location_map_);
       
       if(shaderPair.first == ShaderType::TEXTURE)
          texture_.disable();

@@ -13,6 +13,7 @@
 #include "graphics/texture.h"
 #include "DeerCam.h"
 #include "graphics/material.h"
+#include "TreeGenerator.h"
 
 struct Game {
    Game();
@@ -29,6 +30,7 @@ struct Game {
    GroundPlane ground_;
    Deer deer_;
    Material mat_;
+   TreeGenerator treeGen; //May want this in a world generator class later
 
    glm::vec2 mousePos;
    bool mouseDown;
