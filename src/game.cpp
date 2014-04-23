@@ -74,6 +74,13 @@ void Game::step(units::MS dt) {
             tree.rustle();
          }
       }
+
+      for (auto& box : treeGen.getBoundingBoxes()) {
+         if (deer_.bounding_rectangle().collidesWith(box)) {
+            printf("Collided with tree!\n");
+            deer_.jump();
+         }
+      }
    }
 }
 

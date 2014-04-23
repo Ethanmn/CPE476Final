@@ -16,6 +16,8 @@ TreeGenerator::TreeGenerator(const Mesh& mesh) {
 //Generate the trees
 void TreeGenerator::generateTrees() {
    int size = GroundPlane::GROUND_SCALE / TREE_SIZE; 
+   int groundSize = GroundPlane::GROUND_SCALE / 2;
+
    for (int row = 0; row < size; row++) {
       std::vector<bool> colVec;
       for (int col = 0; col < size; col++) {
@@ -23,6 +25,15 @@ void TreeGenerator::generateTrees() {
          colVec.push_back(hasTree);
       }
       trees.push_back(colVec);
+   }
+
+   for(int row = 0; row < (int)trees.size(); row++) {
+      std::vector<bool> colVec = trees[row];
+      for (int col = 0; col < (int)colVec.size(); col++) {
+         if (colVec[col]) {
+            boxes.push_back(BoundingRectangle(glm::vec2(row * TREE_SIZE - groundSize, col * TREE_SIZE - groundSize), glm::vec2(3, 3), 0.0f));
+         }
+      }
    }
 
    //printConsoleTreeMap();
@@ -67,8 +78,8 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
 }
 
 //Get if there is a tree at a spot
-bool TreeGenerator::checkForTree(int x, int z) {
-   return (trees.at(x)).at(z);
+std::vector<BoundingRectangle> TreeGenerator::getBoundingBoxes() {
+   return boxes;
 }
 
 void TreeGenerator::printConsoleTreeMap() {
