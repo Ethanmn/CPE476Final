@@ -9,7 +9,6 @@ struct Shader;
 struct Shaders;
 
 struct GroundPlane {
-<<<<<<< HEAD
    static const int GROUND_SCALE;
    GroundPlane(AttributeLocationMap& locations);
    Mesh mesh_;

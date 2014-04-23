@@ -99,15 +99,12 @@ void Game::draw() {
          mat_.changeDiffuse(glm::vec3(0.051 * 1.5, 0.2431 * 1.5, 0.1568 * 1.5), shader, uniform_location_map_);
          ground_.draw(shader, uniform_location_map_);
          */
-         
+
+         treeGen.drawTrees(shader, uniform_location_map_);       
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
-
-      shader.drawMesh(box);
-      deer_.draw(shader, uniform_location_map_);
-      ground_.draw(shader, uniform_location_map_);
-      treeGen.drawTrees(shader, uniform_location_map_);
+      
       
       if(shaderPair.first == ShaderType::TEXTURE)
          texture_.disable();
