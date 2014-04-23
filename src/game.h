@@ -15,6 +15,7 @@
 #include "graphics/material.h"
 #include "TreeGenerator.h"
 #include "graphics/day_cycle.h"
+#include "tree.h"
 
 struct Game {
    Game();
@@ -34,6 +35,7 @@ struct Game {
    Material mat_;
    TreeGenerator treeGen; //May want this in a world generator class later
    DayCycle day_cycle_;
+   Tree tree_;
 
    glm::vec2 mousePos;
    bool mouseDown;
