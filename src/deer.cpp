@@ -41,7 +41,11 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) con
    shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
    shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
    shader.drawMesh(mesh_);
+   
+   glPolygonMode(GL_FRONT, GL_LINE);
+   glLineWidth(1.0);
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f);
+   glPolygonMode(GL_FRONT, GL_FILL);
 }
 
 void Deer::step(units::MS dt, const Camera& camera) {
