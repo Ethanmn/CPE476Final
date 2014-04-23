@@ -25,7 +25,7 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    last_facing_(0, 0, 1),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
-   bounding_rectangle_(xz(position_), glm::vec2(16.0f, 7.0f), 0.0f)
+   bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f)
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) const {

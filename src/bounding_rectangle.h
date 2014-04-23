@@ -28,14 +28,15 @@ struct BoundingRectangle {
    void set_position(const glm::vec2& center) { center_ = center; }
    void set_rotation(const float y_rotation) { y_rotation_ = y_rotation; }
    void draw(const UniformLocationMap& uniform_locations, Shader& shader, float y) const;
+   std::vector<glm::vec2> corners() const;
+   std::vector<float> corner_projections(const glm::vec2& separating_axis) const;
 
   private:
    glm::vec2 localX() const;
    glm::vec2 localZ() const;
-   float total_projection(const glm::vec2& separating_axis) const;
+
    bool hasSeparatingLineForAxis(
          const glm::vec2& separating_axis,
-         const glm::vec2& radius_axis,
          const BoundingRectangle& other) const;
 
    glm::vec2 center_;

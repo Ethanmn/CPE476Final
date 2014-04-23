@@ -6,7 +6,7 @@
 
 namespace {
    DeerCam deerCam;
-   BoundingRectangle rectangle(glm::vec2(), glm::vec2(7.0f), 45.0f);
+   BoundingRectangle rectangle(glm::vec2(), glm::vec2(7.0f), 0.0f);
 }
 
 Game::Game() :

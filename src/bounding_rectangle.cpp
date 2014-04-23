@@ -43,11 +43,10 @@ void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader
 }
 
 bool BoundingRectangle::collidesWith(const BoundingRectangle& other) const {
-   const auto radius_axis = center_ - other.center_;
-   auto has_separation = hasSeparatingLineForAxis(vec2FromAngle(y_rotation_), radius_axis, other);
-   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(y_rotation_ + 90), radius_axis, other);
-   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(other.y_rotation_), radius_axis, other);
-   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(other.y_rotation_ + 90), radius_axis, other);
+   auto has_separation = hasSeparatingLineForAxis(vec2FromAngle(y_rotation_), other);
+   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(y_rotation_ + 90), other);
+   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(other.y_rotation_), other);
+   has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(other.y_rotation_ + 90), other);
    return !has_separation;
 }
 
@@ -59,14 +58,33 @@ glm::vec2 BoundingRectangle::localZ() const {
    return vec2FromAngle(y_rotation_ + 90) * dimensions_.y / 2.0f;
 }
 
-float BoundingRectangle::total_projection(const glm::vec2& separating_axis) const {
-   return std::abs(glm::dot(localX(), separating_axis)) + std::abs(glm::dot(localZ(), separating_axis));
-}
-
 bool BoundingRectangle::hasSeparatingLineForAxis(
       const glm::vec2& separating_axis,
-      const glm::vec2& radius_axis,
       const BoundingRectangle& other) const {
-   return std::abs(glm::dot(separating_axis, radius_axis)) >
-      total_projection(separating_axis) + other.total_projection(separating_axis);
+   const auto projections_a = corner_projections(separating_axis);
+   float min_a = *std::min_element(projections_a.begin(), projections_a.end());
+   float max_a = *std::max_element(projections_a.begin(), projections_a.end());
+
+   const auto projections_b = other.corner_projections(separating_axis);
+   float min_b = *std::min_element(projections_b.begin(), projections_b.end());
+   float max_b = *std::max_element(projections_b.begin(), projections_b.end());
+
+   return min_a > max_b || max_a < min_b;
+}
+
+std::vector<float> BoundingRectangle::corner_projections(const glm::vec2& separating_axis) const {
+   std::vector<float> corner_projections;
+   for (const auto& corner : corners()) {
+      corner_projections.push_back(glm::dot(corner, separating_axis));
+   }
+   return corner_projections;
+}
+
+std::vector<glm::vec2> BoundingRectangle::corners() const {
+   return {
+      center_ + glm::rotate(glm::vec2(dimensions_.x / 2, dimensions_.y / 2), y_rotation_),
+      center_ + glm::rotate(glm::vec2(dimensions_.x / 2, -dimensions_.y / 2), y_rotation_),
+      center_ + glm::rotate(glm::vec2(-dimensions_.x / 2, dimensions_.y / 2), y_rotation_),
+      center_ + glm::rotate(glm::vec2(-dimensions_.x / 2, -dimensions_.y / 2), y_rotation_),
+   };
 }
