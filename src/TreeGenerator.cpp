@@ -6,7 +6,7 @@
 #include "TreeGenerator.h"
 
 const int TREE_SIZE = 20;
-const int TREE_DENSITY = 8; //Higher numbers here will mean less trees.
+const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
 const int TREE_SCALE = 5;
 
 TreeGenerator::TreeGenerator(const Mesh& mesh) {
@@ -36,9 +36,9 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
    glm::mat4 model_matrix;
    int groundSize = GroundPlane::GROUND_SCALE / 2;
 
-   for(int row = 0; row < trees.size(); row++) {
+   for(int row = 0; row < (int)trees.size(); row++) {
       std::vector<bool> colVec = trees[row];
-      for (int col = 0; col < colVec.size(); col++) {
+      for (int col = 0; col < (int)colVec.size(); col++) {
          if (colVec[col]) {
             scale = glm::scale(glm::mat4(1.0f), glm::vec3(TREE_SCALE));
 
