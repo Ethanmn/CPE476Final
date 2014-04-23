@@ -28,7 +28,8 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f)
       {}
 
-void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) const {
+void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
+                const glm::mat4& viewMatrix) const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
@@ -40,9 +41,16 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) con
             position_));
    const glm::mat4 model_matrix(translate * rotate);
    shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
-   shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
+   
+   shader.sendUniform(Uniform::NORMAL, uniform_locations, glm::transpose(glm::inverse(viewMatrix * model_matrix)));
+   
+   //shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
    shader.drawMesh(mesh_);
+   
+   glPolygonMode(GL_FRONT, GL_LINE);
+   glLineWidth(1.0);
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f);
+   glPolygonMode(GL_FRONT, GL_FILL);
 }
 
 void Deer::step(units::MS dt, const Camera& camera) {

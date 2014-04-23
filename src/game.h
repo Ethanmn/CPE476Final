@@ -24,6 +24,7 @@ struct Game {
    Input input_;
    Shaders shaders_;
    Texture texture_;
+   Texture deer_texture_;
    AttributeLocationMap attribute_location_map_;
    UniformLocationMap uniform_location_map_;
    GroundPlane ground_;

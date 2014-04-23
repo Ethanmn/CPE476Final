@@ -4,17 +4,27 @@
    Deer - CPE 476
 */
 #include "DeerCam.h"
+#include <iostream>
 
-const float deerCamHeightAbvDeer = 8; 
-const float deerCamDistFromDeer = 16;
+const float DIST_FROM_DEER = 16;
+
+DeerCam::DeerCam(float lookHeight) {
+   lookAtHeight = lookHeight;
+}
+
+void DeerCam::initialize(glm::vec3 deerPos) {
+   lookAtHeight = deerPos.y;
+   setLookAt(deerPos);
+   updatePosition(DIST_FROM_DEER);
+}
 
 void DeerCam::move(glm::vec3 deerPos) {
-   const glm::vec3 camDir = getCamForwardVec();
+   setLookAt(glm::vec3(deerPos.x, lookAtHeight, deerPos.z));
+   updatePosition(DIST_FROM_DEER);
+}
 
-   float camX = deerPos.x - (camDir.x * deerCamDistFromDeer);
-   float camY = deerPos.y + deerCamHeightAbvDeer;
-   float camZ = deerPos.z - (camDir.z * deerCamDistFromDeer);
-
-   setPosition(glm::vec3(camX, camY, camZ));
-   setLookAt(deerPos);
+void DeerCam::setLookAtHeight(float height) {
+   glm::vec3 lookAt = getLookAt();
+   lookAtHeight = height;
+   setLookAt(glm::vec3(lookAt.x, lookAtHeight, lookAt.z));
 }

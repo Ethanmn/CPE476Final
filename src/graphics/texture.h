@@ -5,7 +5,8 @@
 
 enum class Textures {
    WATER,
-   GRASS
+   GRASS,
+   DEER
 };
 
 inline std::string texture_path(Textures texture) {
@@ -14,6 +15,8 @@ inline std::string texture_path(Textures texture) {
          return "../textures/water.bmp";
       case Textures::GRASS:
          return "../textures/grass.bmp";
+      case Textures::DEER:
+         return "../textures/deer1.bmp";
    }
 }
 

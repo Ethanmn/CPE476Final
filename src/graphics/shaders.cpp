@@ -10,14 +10,13 @@ const std::vector<Uniform> kSunUniforms{
    Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
+   Uniform::NORMAL,
    Uniform::M_AMB,
    Uniform::M_DIF,
    Uniform::M_SPEC,
    Uniform::M_SHINE,
-   /*
-   Uniform::SUNDIR,
+   Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY
-   */
 };
 
 const std::vector<Attribute> kTextureAttrs{
@@ -43,17 +42,17 @@ const std::vector<Uniform> kWireframeUniforms{
 };
 
 Shaders::Shaders() {
-   /*
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
-    */
+   /*
    shaders_.insert(std::make_pair(
             ShaderType::WIREFRAME,
             Shader("wireframe", kWireframeAttrs, kWireframeUniforms)));
+   */
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
