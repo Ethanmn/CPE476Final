@@ -12,7 +12,7 @@ namespace {
    }
 }
 
-const float kSpeed = 0.010f;
+const float kSpeed = 0.025f;
 const float kFriction = 0.005f;
 const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
