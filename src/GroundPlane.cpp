@@ -26,7 +26,7 @@ const std::vector<unsigned short> ground_indices{
    0, 2, 1, 3, 1, 2
 };
 
-GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
+GroundPlane::GroundPlane(AttributeLocationMap& locations) :
    mesh_{
       IndexBufferObject::create(ground_indices),
       {
@@ -43,8 +43,7 @@ GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
             locations[Attribute::TEX_COORD],
             2),
       }
-   }
-{}
+   } {}
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations) {
    glm::mat4 transform = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -7.0, 0.0)) *

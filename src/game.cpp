@@ -8,7 +8,6 @@ namespace {
    DeerCam deerCam;
    Mesh box;
    bool cameraRotating;
-   
 }
 
 Game::Game() :
@@ -16,7 +15,7 @@ Game::Game() :
    deer_texture_(texture_path(Textures::DEER)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
-   ground_(attribute_location_map_, shaders_),
+   ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
       loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
    mat_(),
@@ -108,7 +107,7 @@ void Game::draw() {
 
 void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
-   
+
    Input input;
    int mX, mY;
    bool running = true;

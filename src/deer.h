@@ -31,6 +31,7 @@ struct Deer {
    glm::vec3 getPosition();
 
    bool isMoving();
+   BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
   private:
    enum class WalkDirection {

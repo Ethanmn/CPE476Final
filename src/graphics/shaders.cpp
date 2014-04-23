@@ -53,7 +53,7 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::WIREFRAME,
             Shader("wireframe", kWireframeAttrs, kWireframeUniforms)));
-    */
+   */
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
