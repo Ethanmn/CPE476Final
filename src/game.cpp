@@ -8,6 +8,8 @@ namespace {
    DeerCam deerCam;
    Mesh box;
    bool cameraRotating;
+   glm::vec3 sunDir;
+   float sunIntensity;
 }
 
 Game::Game() :
@@ -47,7 +49,7 @@ void Game::step(units::MS dt) {
 void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glm::mat4 viewMatrix, modelMatrix;
-   modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(5.0f));
+   modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f));
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -63,16 +65,23 @@ void Game::draw() {
       if(shaderPair.first == ShaderType::TEXTURE) {
          texture_.enable();
          shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
+         ground_.draw(shader, uniform_location_map_);
       }
       else if(shaderPair.first == ShaderType::SUN) {
          mat_.sendToShader(shader, uniform_location_map_);
+         shader.sendUniform(Uniform::SUN_DIR, uniform_location_map_, sunDir);
+         shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, sunIntensity);
+         
+         mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
+         shader.drawMesh(box);
+         
+         mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
+         deer_.draw(shader, uniform_location_map_);
+         
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
-      shader.drawMesh(box);
-      deer_.draw(shader, uniform_location_map_);
-      ground_.draw(shader, uniform_location_map_);
       
       if(shaderPair.first == ShaderType::TEXTURE)
          texture_.disable();
@@ -81,6 +90,8 @@ void Game::draw() {
 
 void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
+   sunDir = glm::vec3(1.5, 1.0, 0.4);
+   sunIntensity = 0.8;
    
    Input input;
    int mX, mY;
