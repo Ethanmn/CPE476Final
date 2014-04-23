@@ -16,7 +16,7 @@ const float kSpeed = 0.025f;
 const float kFriction = 0.005f;
 const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
-const float kJumpSpeed = 0.008f;
+const float kJumpSpeed = 0.015f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
@@ -97,7 +97,7 @@ void Deer::step(units::MS dt, const Camera& camera) {
    }
    if (is_jumping_) {
       velocity_.y -= kGravity * dt;
-      if (velocity_.y < 0) {
+      if (position_.y < 0) {
          velocity_.y = 0.0f;
          position_.y = 0.0f;
          is_jumping_ = false;

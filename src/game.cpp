@@ -16,17 +16,30 @@ Game::Game() :
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-      loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
-   mat_(),
+            loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
-      loadMesh("../models/tree2.3ds"))),
-   day_cycle_(),
-   tree_(Mesh::fromAssimpMesh(
+            loadMesh("../models/tree2.3ds"))),
+   tree_mesh_(Mesh::fromAssimpMesh(
             attribute_location_map_,
-            loadMesh("../models/tree.3ds")),
-         glm::vec3(30, 0, 25),
-         1.2f,
-         300)
+            loadMesh("../models/tree.3ds"))),
+   trees_{
+      Tree(tree_mesh_,
+            glm::vec3(30 - 15, 0, 25 + 5),
+            1.2f,
+            300),
+      Tree(tree_mesh_,
+            glm::vec3(20 - 15, 0, 18 + 5),
+            0.8f,
+            450),
+      Tree(tree_mesh_,
+            glm::vec3(25 - 15, 0, 12 + 5),
+            0.5f,
+            150),
+      Tree(tree_mesh_,
+            glm::vec3(12 - 15, 0, 24 + 5),
+            1.3f,
+            400),
+   }
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
@@ -50,12 +63,16 @@ Game::Game() :
 
 void Game::step(units::MS dt) {
    deer_.step(dt, deerCam);
-   tree_.step(dt);
+   for (auto& tree : trees_) {
+      tree.step(dt);
+   }
 
    if (deer_.isMoving()) {
       deerCam.move(deer_.getPosition());
-      if (deer_.bounding_rectangle().collidesWith(tree_.bounding_rectangle())) {
-         tree_.rustle();
+      for (auto& tree : trees_) {
+         if (deer_.bounding_rectangle().collidesWith(tree.bounding_rectangle())) {
+            tree.rustle();
+         }
       }
    }
 }
@@ -64,18 +81,18 @@ void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glm::mat4 viewMatrix, modelMatrix;
    modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f));
-   
+
    if(deer_.getPosition().x < -27.0 && deer_.getPosition().x > -32.0 &&
-      deer_.getPosition().z < -27.0 && deer_.getPosition().z > -32.0) {
+         deer_.getPosition().z < -27.0 && deer_.getPosition().z > -32.0) {
       day_cycle_.on();
    }
    if(deer_.getPosition().x > 17.0 && deer_.getPosition().x < 22.0 &&
-      deer_.getPosition().z > 17.0 && deer_.getPosition().z < 22.0) {
+         deer_.getPosition().z > 17.0 && deer_.getPosition().z < 22.0) {
       day_cycle_.off();
    }
-   
+
    day_cycle_.autoAdjustTime();
-   
+
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -90,16 +107,16 @@ void Game::draw() {
 
       if(shaderPair.first == ShaderType::TEXTURE) {
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
-         
+
          texture_.enable(0);
          shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
          ground_.draw(shader, uniform_location_map_);
-      
+
          /*
-         texture_.enable(1);
-         shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
-         deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-         */
+            texture_.enable(1);
+            shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
+            deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
+            */
 
       }
       else if(shaderPair.first == ShaderType::SUN) {
@@ -108,23 +125,25 @@ void Game::draw() {
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
 
          shader.sendUniform(Uniform::NORMAL, uniform_location_map_, glm::transpose(glm::inverse(deerCam.getViewMatrix())));
-         
+
          //ON BOX
          shader.sendUniform(Uniform::MODEL, uniform_location_map_,
-                            glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)));
+               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)));
          mat_.changeDiffuse(glm::vec3(0.6f, 0.9f, 0.6f), shader, uniform_location_map_);
          shader.drawMesh(box);
-         
+
          //OFF BOX
          shader.sendUniform(Uniform::MODEL, uniform_location_map_,
-                            glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)));
+               glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)));
          mat_.changeDiffuse(glm::vec3(0.9f, 0.6f, 0.6f), shader, uniform_location_map_);
          shader.drawMesh(box);
-         
+
+         for (auto& tree : trees_) {
+            tree.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
+         }
+
          mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
          deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-
-         tree_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
 
          treeGen.drawTrees(shader, uniform_location_map_, deerCam.getViewMatrix());
       }
@@ -138,7 +157,7 @@ void Game::draw() {
 
 void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
-   
+
    Input input;
    int mX, mY;
    bool running = true;
