@@ -33,7 +33,7 @@ Game::Game() :
             450),
       Tree(tree_mesh_,
             glm::vec3(25 - 15, 0, 12 + 5),
-            0.5f,
+            0.9f,
             150),
       Tree(tree_mesh_,
             glm::vec3(12 - 15, 0, 24 + 5),
