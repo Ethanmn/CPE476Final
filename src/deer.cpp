@@ -39,7 +39,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) con
             position_));
    const glm::mat4 model_matrix(translate * rotate);
    shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
-   shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
+   //shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
    shader.drawMesh(mesh_);
    
    glPolygonMode(GL_FRONT, GL_LINE);

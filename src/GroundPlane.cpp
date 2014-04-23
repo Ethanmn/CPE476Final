@@ -50,7 +50,7 @@ void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locatio
    glm::mat4 transform = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -7.0, 0.0)) *
    glm::scale(glm::mat4(1.0), glm::vec3(150.0));
    shader.sendUniform(Uniform::MODEL, uniform_locations, transform);
-   shader.sendUniform(Uniform::COLOR, uniform_locations,
-         glm::vec4(0.0901, 0.3137, 0.1176, 0.5f));
+   //shader.sendUniform(Uniform::COLOR, uniform_locations,
+         //glm::vec4(0.0901, 0.3137, 0.1176, 0.5f));
    shader.drawMesh(mesh_);
 }
