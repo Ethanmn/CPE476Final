@@ -12,6 +12,7 @@ Material::Material() :
 
 void Material::changeDiffuse(glm::vec3 diff, Shader& shader, const UniformLocationMap& uniform_locations) {
    diffuse = diff;
+   shader.sendUniform(Uniform::M_DIF, uniform_locations, diffuse);
 }
 
 void Material::sendToShader(Shader& shader, const UniformLocationMap& uniform_locations) {

@@ -17,9 +17,9 @@ const std::vector<float> ground_normals{
 };
 const std::vector<float> ground_tex_coord{
    0.0, 0.0,
-   1.0, 0.0,
-   0.0, 1.0,
-   1.0, 1.0
+   10.0, 0.0,
+   0.0, 10.0,
+   10.0, 10.0
 };
 
 const std::vector<unsigned short> ground_indices{

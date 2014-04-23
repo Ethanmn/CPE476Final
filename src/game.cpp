@@ -65,24 +65,23 @@ void Game::draw() {
       if(shaderPair.first == ShaderType::TEXTURE) {
          texture_.enable();
          shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
+         ground_.draw(shader, uniform_location_map_);
       }
       else if(shaderPair.first == ShaderType::SUN) {
          mat_.sendToShader(shader, uniform_location_map_);
          shader.sendUniform(Uniform::SUN_DIR, uniform_location_map_, sunDir);
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, sunIntensity);
          
+         mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
+         shader.drawMesh(box);
+         
+         mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
+         deer_.draw(shader, uniform_location_map_);
+         
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
-      mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
-      shader.drawMesh(box);
-      
-      mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
-      deer_.draw(shader, uniform_location_map_);
-      
-      mat_.changeDiffuse(glm::vec3(0.051, 0.2431, 0.1568), shader, uniform_location_map_);
-      ground_.draw(shader, uniform_location_map_);
       
       if(shaderPair.first == ShaderType::TEXTURE)
          texture_.disable();

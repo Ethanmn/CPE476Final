@@ -44,10 +44,10 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));
-   /*
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   /*
    shaders_.insert(std::make_pair(
             ShaderType::WIREFRAME,
             Shader("wireframe", kWireframeAttrs, kWireframeUniforms)));
