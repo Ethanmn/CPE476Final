@@ -8,6 +8,7 @@ uniform Material uMat;
 
 
 uniform mat4 uViewMatrix;
+uniform mat4 uNormalMatrix;
 uniform vec3 uSunDir;
 uniform float uSunIntensity;
 

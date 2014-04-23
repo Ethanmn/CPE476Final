@@ -13,7 +13,7 @@ namespace {
 }
 
 Game::Game() :
-   texture_(texture_path(Textures::DEER)),
+   texture_(texture_path(Textures::GRASS)),
    deer_texture_(texture_path(Textures::DEER)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
@@ -65,14 +65,16 @@ void Game::draw() {
       
       if(shaderPair.first == ShaderType::TEXTURE) {
          texture_.enable();
-         /*
+
          shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
          ground_.draw(shader, uniform_location_map_);
+         
+         /* Render deer with texture -- please don't delete, used for debugging shaders
          texture_.disable();
          texture_.enable();
-         */
-         shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 1);
+         shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
          deer_.draw(shader, uniform_location_map_);
+         */
       }
       else if(shaderPair.first == ShaderType::SUN) {
          mat_.sendToShader(shader, uniform_location_map_);
@@ -82,8 +84,13 @@ void Game::draw() {
          mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
          shader.drawMesh(box);
          
-         //mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
-         //deer_.draw(shader, uniform_location_map_);
+         mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
+         deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
+         
+         /* Render ground as dark green -- please don't delete, used for debugging shaders
+         mat_.changeDiffuse(glm::vec3(0.051 * 1.5, 0.2431 * 1.5, 0.1568 * 1.5), shader, uniform_location_map_);
+         ground_.draw(shader, uniform_location_map_);
+         */
          
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)

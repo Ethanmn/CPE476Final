@@ -10,6 +10,7 @@ const std::vector<Uniform> kSunUniforms{
    Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
+   Uniform::NORMAL,
    Uniform::M_AMB,
    Uniform::M_DIF,
    Uniform::M_SPEC,
