@@ -44,7 +44,7 @@ Game::Game() :
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
-   glClearColor (0.05098, 0.6274509, 1.0, 1.0f);
+   glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -63,6 +63,8 @@ Game::Game() :
 }
 
 void Game::step(units::MS dt) {
+   bool treeColl = false;
+
    deer_.step(dt, deerCam);
    for (auto& tree : trees_) {
       tree.step(dt);
@@ -75,13 +77,19 @@ void Game::step(units::MS dt) {
             tree.rustle();
          }
       }
+   }
 
-      for (auto& box : treeGen.getBoundingBoxes()) {
-         if (deer_.bounding_rectangle().collidesWith(box)) {
-            printf("Collided with tree!\n");
+   for (auto& box : treeGen.getBoundingBoxes()) {
+         treeColl = treeColl || deer_.bounding_rectangle().collidesWith(box);
+   }
+
+   if (treeColl) {
+      //printf("Collided with tree!\n");
             deer_.jump();
-         }
-      }
+	    deer_color = glm::vec3(0.225, 0.12, 0.075);
+   }
+   else {
+      deer_color = glm::vec3(0.45, 0.24, 0.15);
    }
 }
 
@@ -100,6 +108,7 @@ void Game::draw() {
    }
 
    day_cycle_.autoAdjustTime();
+
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -123,7 +132,7 @@ void Game::draw() {
             texture_.enable(1);
             shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
             deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-         */
+            */
 
       }
       else if(shaderPair.first == ShaderType::SUN) {
@@ -151,8 +160,7 @@ void Game::draw() {
 
          mat_.changeDiffuse(deer_color, shader, uniform_location_map_);
          deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-
-         mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
+	 mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
          treeGen.drawTrees(shader, uniform_location_map_, deerCam.getViewMatrix());
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
@@ -166,7 +174,6 @@ void Game::draw() {
 void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
    deer_color = glm::vec3(0.45, 0.24, 0.15);
-
    Input input;
    int mX, mY;
    bool running = true;
@@ -227,7 +234,7 @@ void Game::mainLoop() {
             const auto key_jump = SDL_SCANCODE_J;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
-               day_cycle_.switchBoolean();
+               //day_cycle_.switchBoolean();
             }
          }
       }

@@ -22,7 +22,7 @@ void BoundingRectangle::loadBoundingMesh(const AttributeLocationMap& locations) 
 }
 
 void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader, float y) const {
-   //return;
+   return;
    if (bounding_mesh_) {
       const glm::mat4 rotate(
             glm::rotate(
