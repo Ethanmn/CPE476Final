@@ -92,6 +92,8 @@ void Game::draw() {
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
 
          shader.sendUniform(Uniform::NORMAL, uniform_location_map_, glm::transpose(glm::inverse(deerCam.getViewMatrix())));
+         shader.sendUniform(Uniform::MODEL, uniform_location_map_,
+                            glm::translate(glm::mat4(1.0), glm::vec3(6.0, -6.0, 5.0)));
          mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
 
          tree_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
