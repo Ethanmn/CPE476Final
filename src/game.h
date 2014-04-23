@@ -35,7 +35,8 @@ struct Game {
    Material mat_;
    TreeGenerator treeGen; //May want this in a world generator class later
    DayCycle day_cycle_;
-   Tree tree_;
+   Mesh tree_mesh_;
+   std::vector<Tree> trees_;
 
    glm::vec2 mousePos;
    bool mouseDown;
