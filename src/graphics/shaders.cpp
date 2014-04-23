@@ -28,7 +28,7 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
-   Uniform::NORMAL,
+//   Uniform::NORMAL,
    Uniform::TEXTURE,
    Uniform::SUN_INTENSITY
 };
