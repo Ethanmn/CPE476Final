@@ -11,10 +11,10 @@
 using namespace std;
 
 DayCycle::DayCycle() :
-   sunDir(glm::vec3(0.5, 0.5, 0.2)),
-   sunIntensity(0.5),
+   sunDir(glm::vec3(0.0, 1.0, 0.2)),
+   sunIntensity(1.0),
    dayToNight(false),
-   timeOfDay(0.25)
+   timeOfDay(0.5)
 {}
 
 glm::vec3 DayCycle::getSunDir() {

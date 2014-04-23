@@ -7,6 +7,7 @@
 namespace {
    DeerCam deerCam;
    Mesh box;
+   glm::vec3 deer_color;
 }
 
 Game::Game() :
@@ -43,7 +44,7 @@ Game::Game() :
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
-   glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
+   glClearColor (0.05098, 0.6274509, 1.0, 1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -93,7 +94,6 @@ void Game::draw() {
 
    day_cycle_.autoAdjustTime();
 
-
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
@@ -103,7 +103,7 @@ void Game::draw() {
       shader.sendUniform(Uniform::VIEW, uniform_location_map_,
             deerCam.getViewMatrix());
       shader.sendUniform(Uniform::PROJECTION, uniform_location_map_,
-            glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
+            glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 200.f));
 
       if(shaderPair.first == ShaderType::TEXTURE) {
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
@@ -116,7 +116,7 @@ void Game::draw() {
             texture_.enable(1);
             shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
             deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-            */
+         */
 
       }
       else if(shaderPair.first == ShaderType::SUN) {
@@ -142,9 +142,10 @@ void Game::draw() {
             tree.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
          }
 
-         mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
+         mat_.changeDiffuse(deer_color, shader, uniform_location_map_);
          deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
 
+         mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
          treeGen.drawTrees(shader, uniform_location_map_, deerCam.getViewMatrix());
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
@@ -157,6 +158,7 @@ void Game::draw() {
 
 void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
+   deer_color = glm::vec3(0.45, 0.24, 0.15);
 
    Input input;
    int mX, mY;
