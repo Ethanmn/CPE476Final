@@ -1,6 +1,7 @@
 #include "deer.h"
 
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/compatibility.hpp>
 
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
@@ -13,9 +14,9 @@ namespace {
 
 const float kSpeed = 0.010f;
 const float kFriction = 0.005f;
-const float kGravity = 0.0005f;
+const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
-const float kJumpSpeed = 0.05f;
+const float kJumpSpeed = 0.008f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
@@ -24,10 +25,11 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    last_facing_(0, 0, 1),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
-   bounding_rectangle_(xz(position_), glm::vec2(3.0f))
+   bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f)
       {}
 
-void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) const {
+void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
+                const glm::mat4& viewMatrix) const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
@@ -39,9 +41,16 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations) con
             position_));
    const glm::mat4 model_matrix(translate * rotate);
    shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
-   shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
+   
+   shader.sendUniform(Uniform::NORMAL, uniform_locations, glm::transpose(glm::inverse(viewMatrix * model_matrix)));
+   
+   //shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
    shader.drawMesh(mesh_);
+   
+   glPolygonMode(GL_FRONT, GL_LINE);
+   glLineWidth(1.0);
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f);
+   glPolygonMode(GL_FRONT, GL_FILL);
 }
 
 void Deer::step(units::MS dt, const Camera& camera) {
@@ -96,7 +105,10 @@ void Deer::step(units::MS dt, const Camera& camera) {
    }
 
    position_ += velocity_ * static_cast<float>(dt);
+
    bounding_rectangle_.set_position(xz(position_));
+   const auto xz_last_facing(xz(last_facing_));
+   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-xz_last_facing.y, xz_last_facing.x)));
 }
 
 void Deer::walkForward() {
