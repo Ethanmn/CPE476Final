@@ -65,6 +65,8 @@ void Game::draw() {
    glm::mat4 viewMatrix, modelMatrix;
    modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f));
    
+   
+   //Temporary discovery node -- run into boxes for lighting
    if(deer_.getPosition().x < -27.0 && deer_.getPosition().x > -32.0 &&
       deer_.getPosition().z < -27.0 && deer_.getPosition().z > -32.0) {
       day_cycle_.on();
@@ -73,6 +75,7 @@ void Game::draw() {
       deer_.getPosition().z > 17.0 && deer_.getPosition().z < 22.0) {
       day_cycle_.off();
    }
+   //End of temporary discovery node
    
    day_cycle_.autoAdjustTime();
    
