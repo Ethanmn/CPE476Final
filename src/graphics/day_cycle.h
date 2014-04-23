@@ -12,6 +12,8 @@ struct DayCycle {
    void adjustToTime(float newTime);
    void autoAdjustTime();
    void switchBoolean();
+   void on();
+   void off();
    void adjustSun();
    
    glm::vec3 sunDir;

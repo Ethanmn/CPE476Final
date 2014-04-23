@@ -64,7 +64,18 @@ void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glm::mat4 viewMatrix, modelMatrix;
    modelMatrix = glm::scale(glm::mat4(1.0f),glm::vec3(1.0f));
+   
+   if(deer_.getPosition().x < -27.0 && deer_.getPosition().x > -32.0 &&
+      deer_.getPosition().z < -27.0 && deer_.getPosition().z > -32.0) {
+      day_cycle_.on();
+   }
+   if(deer_.getPosition().x > 17.0 && deer_.getPosition().x < 22.0 &&
+      deer_.getPosition().z > 17.0 && deer_.getPosition().z < 22.0) {
+      day_cycle_.off();
+   }
+   
    day_cycle_.autoAdjustTime();
+   
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -97,21 +108,23 @@ void Game::draw() {
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
 
          shader.sendUniform(Uniform::NORMAL, uniform_location_map_, glm::transpose(glm::inverse(deerCam.getViewMatrix())));
+         
+         //ON BOX
          shader.sendUniform(Uniform::MODEL, uniform_location_map_,
-                            glm::translate(glm::mat4(1.0), glm::vec3(6.0, -6.0, 5.0)));
-         mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
-
+                            glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)));
+         mat_.changeDiffuse(glm::vec3(0.6f, 0.9f, 0.6f), shader, uniform_location_map_);
+         shader.drawMesh(box);
+         
+         //OFF BOX
+         shader.sendUniform(Uniform::MODEL, uniform_location_map_,
+                            glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)));
+         mat_.changeDiffuse(glm::vec3(0.9f, 0.6f, 0.6f), shader, uniform_location_map_);
          shader.drawMesh(box);
          
          mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
          deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
 
          tree_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-
-         /* Render ground as dark green -- please don't delete, used for debugging shaders
-            mat_.changeDiffuse(glm::vec3(0.051 * 1.5, 0.2431 * 1.5, 0.1568 * 1.5), shader, uniform_location_map_);
-            ground_.draw(shader, uniform_location_map_);
-         */
 
          treeGen.drawTrees(shader, uniform_location_map_, deerCam.getViewMatrix());
       }
@@ -125,7 +138,7 @@ void Game::draw() {
 
 void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
-
+   
    Input input;
    int mX, mY;
    bool running = true;

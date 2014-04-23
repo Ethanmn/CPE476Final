@@ -34,6 +34,16 @@ void DayCycle::switchBoolean() {
    dayToNight = !dayToNight;
 }
 
+
+void DayCycle::on() {
+   dayToNight = true;
+}
+
+
+void DayCycle::off() {
+   dayToNight = false;
+}
+
 void DayCycle::autoAdjustTime() {
    if(dayToNight) {
          timeOfDay += 0.001;
