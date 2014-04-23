@@ -66,18 +66,20 @@ void Game::draw() {
          glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 100.f));
       
       if(shaderPair.first == ShaderType::TEXTURE) {
-         texture_.enable();
-
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, day_cycle_.getSunIntensity());
+         
+         /*
+         texture_.enable(0);
          shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
          ground_.draw(shader, uniform_location_map_);
-         
-         /* Render deer with texture -- please don't delete, used for debugging shaders
-         texture_.disable();
-         texture_.enable();
-         shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
-         deer_.draw(shader, uniform_location_map_);
          */
+         
+         /* Render deer with texture -- please don't delete, used for debugging shaders */
+         
+         texture_.enable(1);
+         shader.sendUniform(Uniform::TEXTURE, uniform_location_map_, 0);
+         deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
+         
       }
       else if(shaderPair.first == ShaderType::SUN) {
          mat_.sendToShader(shader, uniform_location_map_);
@@ -88,10 +90,10 @@ void Game::draw() {
          shader.sendUniform(Uniform::MODEL, uniform_location_map_,
                             glm::translate(glm::mat4(1.0), glm::vec3(6.0, -6.0, 5.0)));
          mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
-         shader.drawMesh(box);
+         //shader.drawMesh(box);
          
-         mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
-         deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
+         //mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
+         //deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
          
          /* Render ground as dark green -- please don't delete, used for debugging shaders
          mat_.changeDiffuse(glm::vec3(0.051 * 1.5, 0.2431 * 1.5, 0.1568 * 1.5), shader, uniform_location_map_);

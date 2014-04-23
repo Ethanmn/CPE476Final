@@ -23,7 +23,7 @@ inline std::string texture_path(Textures texture) {
 struct Texture {
    int texture_id;
    Texture(const std::string& path);
-   void enable();
+   void enable(int id_val);
    void disable();
 };
 
