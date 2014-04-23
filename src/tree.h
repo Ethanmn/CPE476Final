@@ -8,8 +8,9 @@
 struct Shader;
 
 struct Tree {
-   Tree(const Mesh& mesh, const glm::vec3& position) :
+   Tree(const Mesh& mesh, const glm::vec3& position, float scale) :
       position_(position),
+      scale_(scale),
       mesh_(mesh) {}
 
    void draw(
@@ -19,6 +20,7 @@ struct Tree {
 
   private:
    glm::vec3 position_;
+   float scale_;
    Mesh mesh_;
 };
 

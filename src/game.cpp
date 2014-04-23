@@ -21,7 +21,8 @@ Game::Game() :
    tree_(Mesh::fromAssimpMesh(
             attribute_location_map_,
             loadMesh("../models/tree.3ds")),
-         glm::vec3(30, 0, 25))
+         glm::vec3(30, 0, 25),
+         1.2f)
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
