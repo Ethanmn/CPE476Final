@@ -33,7 +33,8 @@ struct Game {
    Deer deer_;
    Material mat_;
    DayCycle day_cycle_;
-   Tree tree_;
+   Mesh tree_mesh_;
+   std::vector<Tree> trees_;
 
    glm::vec2 mousePos;
    bool mouseDown;
