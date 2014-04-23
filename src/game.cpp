@@ -22,7 +22,8 @@ Game::Game() :
             attribute_location_map_,
             loadMesh("../models/tree.3ds")),
          glm::vec3(30, 0, 25),
-         1.2f)
+         1.2f,
+         300)
 {
    glClearColor(0, 0, 0, 1); // Clear to solid blue.
    glClearDepth(1.0f);
@@ -43,9 +44,13 @@ Game::Game() :
 
 void Game::step(units::MS dt) {
    deer_.step(dt, deerCam);
+   tree_.step(dt);
 
    if (deer_.isMoving()) {
       deerCam.move(deer_.getPosition());
+      if (deer_.bounding_rectangle().collidesWith(tree_.bounding_rectangle())) {
+         tree_.rustle();
+      }
    }
 }
 
