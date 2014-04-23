@@ -10,6 +10,7 @@ namespace {
    bool cameraRotating;
    glm::vec3 sunDir;
    float sunIntensity;
+   //bool dayToNight;
 }
 
 Game::Game() :
@@ -81,7 +82,7 @@ void Game::draw() {
          shader.sendUniform(Uniform::SUN_DIR, uniform_location_map_, sunDir);
          shader.sendUniform(Uniform::SUN_INTENSITY, uniform_location_map_, sunIntensity);
          
-         shader.sendUniform(Uniform::NORMAL, uniform_location_map_, glm::mat4(1.0));
+         shader.sendUniform(Uniform::NORMAL, uniform_location_map_, glm::transpose(glm::inverse(deerCam.getViewMatrix())));
          mat_.changeDiffuse(glm::vec3(0.7f, 0.5f, 0.7f), shader, uniform_location_map_);
          shader.drawMesh(box);
          
