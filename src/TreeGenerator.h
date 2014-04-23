@@ -15,7 +15,7 @@ struct TreeGenerator {
    TreeGenerator(const Mesh& mesh);
 
    void generateTrees();
-   void drawTrees(Shader& shader, const UniformLocationMap& uniform_locations);
+   void drawTrees(Shader& shader, const UniformLocationMap& uniform_locations, const glm::mat4& viewMatrix);
    bool checkForTree(int x, int z);
 
    private:

@@ -113,7 +113,7 @@ void Game::draw() {
             ground_.draw(shader, uniform_location_map_);
          */
 
-         treeGen.drawTrees(shader, uniform_location_map_);       
+         treeGen.drawTrees(shader, uniform_location_map_, deerCam.getViewMatrix());
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          shader.sendUniform(Uniform::COLOR, uniform_location_map_, glm::vec4(1, 0, 0, 1));
