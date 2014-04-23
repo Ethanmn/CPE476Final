@@ -22,7 +22,7 @@ void main() {
    vec3 Refl, ReflDir;
    vec3 Spec, Diffuse;
    float dotNLDir, dotVRDir;
-   vec4 vLightAndDirectional = normalize(vec4(uSunDir, 0.0));
+   vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
    vec3 directionalColor = vec3(uSunIntensity);
    
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));

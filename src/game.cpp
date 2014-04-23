@@ -107,6 +107,7 @@ void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
    sunDir = glm::vec3(1.5, 1.0, 0.4);
    sunIntensity = 0.8;
+   dayToNight = false;
    
    Input input;
    int mX, mY;
