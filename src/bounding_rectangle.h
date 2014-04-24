@@ -33,9 +33,6 @@ struct BoundingRectangle {
    std::vector<float> corner_projections(const glm::vec2& separating_axis) const;
 
   private:
-   glm::vec2 localX() const;
-   glm::vec2 localZ() const;
-
    bool hasSeparatingLineForAxis(
          const glm::vec2& separating_axis,
          const BoundingRectangle& other) const;

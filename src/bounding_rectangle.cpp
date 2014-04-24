@@ -51,14 +51,6 @@ bool BoundingRectangle::collidesWith(const BoundingRectangle& other) const {
    return !has_separation;
 }
 
-glm::vec2 BoundingRectangle::localX() const {
-   return vec2FromAngle(y_rotation_) * dimensions_.x / 2.0f;
-}
-
-glm::vec2 BoundingRectangle::localZ() const {
-   return vec2FromAngle(y_rotation_ + 90) * dimensions_.y / 2.0f;
-}
-
 bool BoundingRectangle::hasSeparatingLineForAxis(
       const glm::vec2& separating_axis,
       const BoundingRectangle& other) const {
