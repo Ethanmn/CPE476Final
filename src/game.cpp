@@ -1,5 +1,4 @@
 #include "game.h"
-#include "graphics/assimp/mesh_loader.h"
 #include "graphics/mesh.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
@@ -17,12 +16,12 @@ Game::Game() :
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-            loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
+            mesh_loader_.loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            loadMesh("../models/tree2.3ds"))),
+            mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
             attribute_location_map_,
-            loadMesh("../models/tree.3ds"))),
+            mesh_loader_.loadMesh("../models/tree.3ds"))),
    trees_{
       Tree(tree_mesh_,
             glm::vec3(30 - 15, 0, 25 + 5),
@@ -56,7 +55,7 @@ Game::Game() :
    glPolygonMode(GL_FRONT, GL_LINE);
    glLineWidth(1.0);
 
-   BoundingRectangle::loadBoundingMesh(attribute_location_map_);
+   BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
    mouseDown = false;
    deerCam.initialize(deer_.getPosition());
    treeGen.generateTrees();
@@ -80,13 +79,13 @@ void Game::step(units::MS dt) {
    }
 
    for (auto& box : treeGen.getBoundingBoxes()) {
-         treeColl = treeColl || deer_.bounding_rectangle().collidesWith(box);
+      treeColl = treeColl || deer_.bounding_rectangle().collidesWith(box);
    }
 
    if (treeColl) {
       //printf("Collided with tree!\n");
-            deer_.jump();
-	    deer_color = glm::vec3(0.225, 0.12, 0.075);
+      deer_.jump();
+      deer_color = glm::vec3(0.225, 0.12, 0.075);
    }
    else {
       deer_color = glm::vec3(0.45, 0.24, 0.15);
@@ -160,7 +159,7 @@ void Game::draw() {
 
          mat_.changeDiffuse(deer_color, shader, uniform_location_map_);
          deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-	 mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
+         mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
          treeGen.drawTrees(shader, uniform_location_map_, deerCam.getViewMatrix());
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
@@ -172,7 +171,7 @@ void Game::draw() {
 }
 
 void Game::mainLoop() {
-   box = Mesh::fromAssimpMesh(attribute_location_map_, loadMesh("../models/cube.obj"));
+   box = Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"));
    deer_color = glm::vec3(0.45, 0.24, 0.15);
    Input input;
    int mX, mY;

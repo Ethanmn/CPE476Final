@@ -17,8 +17,8 @@ namespace {
 boost::optional<Mesh> BoundingRectangle::bounding_mesh_ = boost::none;
 
 //static
-void BoundingRectangle::loadBoundingMesh(const AttributeLocationMap& locations) {
-   bounding_mesh_ = Mesh::fromAssimpMesh(locations, loadMesh("../models/cube.obj"));
+void BoundingRectangle::loadBoundingMesh(MeshLoader& mesh_loader, const AttributeLocationMap& locations) {
+   bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh("../models/cube.obj"));
 }
 
 void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader, float y) const {

@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "graphics/assimp/mesh_loader.h"
 #include "deer.h"
 #include "input.h"
 #include "sdl_engine.h"
@@ -26,6 +27,7 @@ struct Game {
    SDLEngine engine_;
    Input input_;
    Shaders shaders_;
+   MeshLoader mesh_loader_;
    Texture texture_;
    Texture deer_texture_;
    AttributeLocationMap attribute_location_map_;

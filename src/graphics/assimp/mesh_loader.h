@@ -1,6 +1,7 @@
 #ifndef MESH_LOADER_H_
 #define MESH_LOADER_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,11 @@ struct AssimpMesh {
    std::vector<unsigned short> index_array;
 };
 
-AssimpMesh loadMesh(const std::string& path);
+struct MeshLoader {
+   AssimpMesh loadMesh(const std::string& path);
+
+  private:
+   std::map<std::string, AssimpMesh> meshes_;
+};
 
 #endif // MESH_LOADER_H_

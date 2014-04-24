@@ -7,6 +7,7 @@
 #include "graphics/mesh.h"
 #include "graphics/location_maps.h"
 
+struct MeshLoader;
 struct Shader;
 struct Shaders;
 
@@ -21,7 +22,7 @@ struct BoundingRectangle {
       y_rotation_(y_rotation)
    {}
 
-   static void loadBoundingMesh(const AttributeLocationMap& locations);
+   static void loadBoundingMesh(MeshLoader& mesh_loader, const AttributeLocationMap& locations);
 
    bool collidesWith(const BoundingRectangle& other) const;
 
