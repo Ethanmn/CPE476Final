@@ -7,6 +7,7 @@
 #include "day_cycle.h"
 #include <stdio.h>
 #include <string>
+#include <glm/gtc/constants.hpp>
 
 using namespace std;
 
@@ -44,9 +45,9 @@ void DayCycle::off() {
    dayToNight = false;
 }
 
-void DayCycle::autoAdjustTime() {
+void DayCycle::autoAdjustTime(units::MS dt) {
    if(dayToNight) {
-         timeOfDay += 0.001;
+         timeOfDay += dt * 0.001;
       if(timeOfDay >= 1.0)
          timeOfDay = 0.0;
       adjustSun();
@@ -61,8 +62,8 @@ void DayCycle::adjustSun() {
    if(tempTimeOfDay > 1.0)
       sunIntensity = 0.1;
    else {
-      sunDir.x = cos(PI * tempTimeOfDay);
-      sunDir.y = sin(PI * tempTimeOfDay);
+      sunDir.x = cos(glm::pi<float>() * tempTimeOfDay);
+      sunDir.y = sin(glm::pi<float>() * tempTimeOfDay);
       if(tempTimeOfDay > 0.5)
          tempTimeOfDay = 1.0 - tempTimeOfDay;
       tempTimeOfDay /= 0.5;

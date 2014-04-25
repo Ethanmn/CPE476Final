@@ -119,10 +119,10 @@ Texture::Texture(const std::string& path) {
    load(path);
 }
 
-void Texture::enable(int id_val) {
+void Texture::enable() {
    glEnable(GL_TEXTURE_2D);
-   glActiveTexture(GL_TEXTURE0 + id_val);
-   glBindTexture(GL_TEXTURE_2D, id_val);
+   glActiveTexture(GL_TEXTURE0 + texture_id);
+   glBindTexture(GL_TEXTURE_2D, texture_id);
 }
 
 void Texture::disable() {

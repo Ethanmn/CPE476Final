@@ -7,7 +7,7 @@ const std::vector<Attribute> kSunAttrs{
    Attribute::NORMAL
 };
 const std::vector<Uniform> kSunUniforms{
-   Uniform::MODEL,
+   Uniform::MODEL_VIEW,
    Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::NORMAL,
@@ -25,7 +25,7 @@ const std::vector<Attribute> kTextureAttrs{
 // Attribute::NORMAL,
 };
 const std::vector<Uniform> kTextureUniforms{
-   Uniform::MODEL,
+   Uniform::MODEL_VIEW,
    Uniform::VIEW,
    Uniform::PROJECTION,
 //   Uniform::NORMAL,
@@ -37,7 +37,7 @@ const std::vector<Attribute> kWireframeAttrs{
    Attribute::VERTEX
 };
 const std::vector<Uniform> kWireframeUniforms{
-   Uniform::MODEL,
+   Uniform::MODEL_VIEW,
    Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::COLOR,

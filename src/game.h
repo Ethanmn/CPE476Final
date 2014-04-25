@@ -34,7 +34,7 @@ struct Game {
    UniformLocationMap uniform_location_map_;
    GroundPlane ground_;
    Deer deer_;
-   Material mat_;
+   //Material mat_;
    TreeGenerator treeGen; //May want this in a world generator class later
    DayCycle day_cycle_;
    Mesh tree_mesh_;
