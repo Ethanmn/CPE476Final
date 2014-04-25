@@ -34,8 +34,8 @@ void setupSunShader(Shader& shader, const UniformLocationMap& locations,
 }
 
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations,
-      float sunIntensity) {
-   shader.sendUniform(Uniform::TEXTURE, locations, 0);
+      float sunIntensity, int texture_id) {
+   shader.sendUniform(Uniform::TEXTURE, locations, texture_id);
    shader.sendUniform(Uniform::SUN_INTENSITY, locations, sunIntensity);
    
 }

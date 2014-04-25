@@ -129,6 +129,10 @@ void Texture::disable() {
    glDisable(GL_TEXTURE_2D);
 }
 
+int Texture::textureID() {
+   return texture_id;
+}
+
 int load(const std::string& path) {
    Image image;
    cout << "Loading Image: " << path << endl;

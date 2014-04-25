@@ -25,6 +25,7 @@ struct Texture {
    Texture(const std::string& path);
    void enable();
    void disable();
+   int textureID();
 };
 
 #endif

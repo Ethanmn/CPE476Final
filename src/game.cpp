@@ -22,7 +22,7 @@ Game::Game() :
    tree_mesh_(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   trees_{
+   bushes_{
       Tree(tree_mesh_,
             glm::vec3(30 - 15, 0, 25 + 5),
             1.2f,
@@ -65,13 +65,13 @@ void Game::step(units::MS dt) {
    bool treeColl = false;
 
    deer_.step(dt, deerCam);
-   for (auto& tree : trees_) {
+   for (auto& tree : bushes_) {
       tree.step(dt);
    }
 
    if (deer_.isMoving()) {
       deerCam.move(deer_.getPosition());
-      for (auto& tree : trees_) {
+      for (auto& tree : bushes_) {
          if (deer_.bounding_rectangle().collidesWith(tree.bounding_rectangle())) {
             tree.rustle();
          }
@@ -111,7 +111,7 @@ void Game::draw() {
       setupProjection(shader, uniform_location_map_);
 
       if(shaderPair.first == ShaderType::TEXTURE) {
-         setupTextureShader(shader, uniform_location_map_, sunIntensity);
+         setupTextureShader(shader, uniform_location_map_, sunIntensity, texture_.textureID());
          texture_.enable();
    
          ground_.draw(shader, uniform_location_map_, viewMatrix);
@@ -134,8 +134,8 @@ void Game::draw() {
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
          shader.drawMesh(box);
 
-         for (auto& tree : trees_) {
-            tree.draw(shader, uniform_location_map_, viewMatrix);
+         for (auto& bush : bushes_) {
+            bush.draw(shader, uniform_location_map_, viewMatrix);
          }
          deer_.draw(shader, uniform_location_map_, viewMatrix);
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
