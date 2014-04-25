@@ -36,7 +36,7 @@ void Tree::draw(
    sendMaterial(shader, uniform_location_map, glm::vec3(0.45, 0.24, 0.15));
    
    shader.drawMesh(mesh_);
-   bounding_rectangle_.draw(uniform_location_map, shader, 0);
+   bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);
 }
 
 void Tree::rustle() {

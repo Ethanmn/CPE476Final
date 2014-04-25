@@ -47,7 +47,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    setupModelView(shader, uniform_locations, viewMatrix * model_matrix, true);
    shader.drawMesh(mesh_);
    
-   bounding_rectangle_.draw(uniform_locations, shader, 0.0f);
+   bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);
    glPolygonMode(GL_FRONT, GL_FILL);
 }
 

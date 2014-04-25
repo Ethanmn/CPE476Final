@@ -14,17 +14,18 @@ void setupModelView(Shader& shader, const UniformLocationMap& locations,
    shader.sendUniform(Uniform::MODEL_VIEW, locations, viewModelMatrix);
    if(needsNormal) {
       shader.sendUniform(Uniform::NORMAL, locations,
-                         glm::transpose(glm::inverse(viewModelMatrix)));
+         glm::transpose(glm::inverse(viewModelMatrix)));
    }
 }
 
-void setupViewAndProjection(Shader& shader, const UniformLocationMap& locations,
-                      const glm::mat4& viewMatrix) {
-   shader.sendUniform(Uniform::VIEW, locations, viewMatrix);
-   shader.sendUniform(Uniform::PROJECTION, locations,
-     projection_matrix);
+void setupProjection(Shader& shader, const UniformLocationMap& locations) {
+   shader.sendUniform(Uniform::PROJECTION, locations, projection_matrix);
 }
 
+void setupView(Shader& shader, const UniformLocationMap& locations,
+                            const glm::mat4& viewMatrix) {
+   shader.sendUniform(Uniform::VIEW, locations, viewMatrix);
+}
 
 void setupSunShader(Shader& shader, const UniformLocationMap& locations,
                     float sunIntensity, glm::vec3 sunDir) {
@@ -42,6 +43,6 @@ void setupTextureShader(Shader& shader, const UniformLocationMap& locations,
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
                           glm::vec4 color) {
    glPolygonMode(GL_FRONT, GL_LINE);
-   glLineWidth(1.0);
+   glLineWidth(1.0f);
    shader.sendUniform(Uniform::COLOR, locations, color);
 }

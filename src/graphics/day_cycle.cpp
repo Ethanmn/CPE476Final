@@ -47,7 +47,7 @@ void DayCycle::off() {
 
 void DayCycle::autoAdjustTime(units::MS dt) {
    if(dayToNight) {
-         timeOfDay += dt * 0.001;
+         timeOfDay += dt * 0.0001;
       if(timeOfDay >= 1.0)
          timeOfDay = 0.0;
       adjustSun();

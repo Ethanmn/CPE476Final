@@ -108,27 +108,28 @@ void Game::draw() {
       Shader& shader = shaderPair.second;
       shader.use();
       
-      setupViewAndProjection(shader, uniform_location_map_, viewMatrix);
+      setupProjection(shader, uniform_location_map_);
 
       if(shaderPair.first == ShaderType::TEXTURE) {
          setupTextureShader(shader, uniform_location_map_, sunIntensity);
          texture_.enable();
    
-         ground_.draw(shader, uniform_location_map_);
+         ground_.draw(shader, uniform_location_map_, viewMatrix);
          
          texture_.disable();
       }
       else if(shaderPair.first == ShaderType::SUN) {
+         setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
          //ON BOX
-         setupModelView(shader, uniform_location_map_,
+         setupModelView(shader, uniform_location_map_, viewMatrix *
                glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)), true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
 
          //OFF BOX
-         setupModelView(shader, uniform_location_map_,
+         setupModelView(shader, uniform_location_map_, viewMatrix *
                glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)), true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
          shader.drawMesh(box);

@@ -8,7 +8,8 @@ struct Shaders;
 
 void setupModelView(Shader& shader, const UniformLocationMap& locations,
                     const glm::mat4& viewModelMatrix, bool needsNormal);
-void setupViewAndProjection(Shader& shader, const UniformLocationMap& locations,
+void setupProjection(Shader& shader, const UniformLocationMap& locations);
+void setupView(Shader& shader, const UniformLocationMap& locations,
                             const glm::mat4& viewMatrix);
 void setupSunShader(Shader& shader, const UniformLocationMap& locations,
                     float sunIntensity, glm::vec3 sunDir);

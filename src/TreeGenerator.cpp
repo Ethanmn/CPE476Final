@@ -69,7 +69,7 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
             model_matrix = translate * rotate * scale * rotateTreeUp;
 
             shader.sendUniform(Uniform::NORMAL, uniform_locations, glm::transpose(glm::inverse(viewMatrix * model_matrix)));
-            shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
+            shader.sendUniform(Uniform::MODEL_VIEW, uniform_locations, viewMatrix * model_matrix);
             //shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 1, 0, 0.5f));
             shader.drawMesh(treeMesh1);
          }

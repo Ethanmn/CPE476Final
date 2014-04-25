@@ -27,5 +27,5 @@ void sendMaterial(Shader& shader, const UniformLocationMap& uniform_locations,
    shader.sendUniform(Uniform::M_AMB, uniform_locations, glm::vec3(0.1f, 0.1f, 0.1f));
    shader.sendUniform(Uniform::M_DIF, uniform_locations, diffuse);
    shader.sendUniform(Uniform::M_SPEC, uniform_locations, glm::vec3(0.1f, 0.0f, 0.1f));
-   shader.sendUniform(Uniform::M_SHINE, uniform_locations, 100.0);
+   shader.sendUniform(Uniform::M_SHINE, uniform_locations, 100.0f);
 }

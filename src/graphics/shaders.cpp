@@ -25,7 +25,7 @@ const std::vector<Attribute> kTextureAttrs{
 };
 const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL_VIEW,
-   Uniform::VIEW,
+//   Uniform::VIEW,
    Uniform::PROJECTION,
 //   Uniform::NORMAL,
    Uniform::TEXTURE,
@@ -37,7 +37,7 @@ const std::vector<Attribute> kWireframeAttrs{
 };
 const std::vector<Uniform> kWireframeUniforms{
    Uniform::MODEL_VIEW,
-   Uniform::VIEW,
+//   Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::COLOR,
 };
