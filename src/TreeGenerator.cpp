@@ -76,9 +76,9 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
       }
    }
 
-   /*for (int index = 0; index < (int)boxes.size(); index++) {
-      boxes[index].draw(shader, uniform_locations, const glm::mat4& viewMatrix);
-   }*/
+   for (int index = 0; index < (int)boxes.size(); index++) {
+      boxes[index].draw(uniform_locations, shader, 0.0f);
+   }
 }
 
 //Get if there is a tree at a spot
