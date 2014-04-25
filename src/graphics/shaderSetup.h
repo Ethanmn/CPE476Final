@@ -7,7 +7,8 @@ struct Shader;
 struct Shaders;
 
 void setupModelView(Shader& shader, const UniformLocationMap& locations,
-                    const glm::mat4& viewModelMatrix, bool needsNormal);
+                    const glm::mat4& modelMatrix, const glm::mat4& viewMatrix,
+                    bool needsNormal);
 void setupProjection(Shader& shader, const UniformLocationMap& locations);
 void setupView(Shader& shader, const UniformLocationMap& locations,
                             const glm::mat4& viewMatrix);

@@ -44,7 +44,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    const glm::mat4 model_matrix(translate * rotate);
    
    sendMaterial(shader, uniform_locations, glm::vec3(0.45, 0.24, 0.15));
-   setupModelView(shader, uniform_locations, viewMatrix * model_matrix, true);
+   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
    shader.drawMesh(mesh_);
    
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);

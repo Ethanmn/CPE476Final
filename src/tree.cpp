@@ -32,7 +32,7 @@ void Tree::draw(
             glm::vec3(1, 0, 0)));
    const glm::mat4 model_matrix(translate * scale * rotate);
    
-   setupModelView(shader, uniform_location_map, view_matrix * model_matrix, true);
+   setupModelView(shader, uniform_location_map, model_matrix, view_matrix, true);
    sendMaterial(shader, uniform_location_map, glm::vec3(0.45, 0.24, 0.15));
    
    shader.drawMesh(mesh_);

@@ -123,14 +123,14 @@ void Game::draw() {
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
          //ON BOX
-         setupModelView(shader, uniform_location_map_, viewMatrix *
-               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)), true);
+         setupModelView(shader, uniform_location_map_,
+               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)), viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
 
          //OFF BOX
-         setupModelView(shader, uniform_location_map_, viewMatrix *
-               glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)), true);
+         setupModelView(shader, uniform_location_map_,
+               glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)), viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
          shader.drawMesh(box);
 
