@@ -1,15 +1,20 @@
 #ifndef SHADER_SETUP_H_
 #define SHADER_SETUP_H_
 
+#include <glm/glm.hpp>
+#include "graphics/location_maps.h"
+struct Shader;
+struct Shaders;
+
 void setupModelView(Shader& shader, const UniformLocationMap& locations,
-                    const glm::mat4& viewModelMatrix, bool needsNormal) const;
+                    const glm::mat4& viewModelMatrix, bool needsNormal);
 void setupViewAndProjection(Shader& shader, const UniformLocationMap& locations,
-                            const glm::mat4& viewMatrix) const;
+                            const glm::mat4& viewMatrix);
 void setupSunShader(Shader& shader, const UniformLocationMap& locations,
-                    const glm::mat4& modelMatrix, const glm::mat4& viewMatrix) const;
+                    float sunIntensity, glm::vec3 sunDir);
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations,
-                        const glm::mat4& modelMatrix, const glm::mat4& viewMatrix) const;
+                        float sunIntensity);
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
-                          const glm::mat4& modelMatrix, const glm::mat4& viewMatrix) const;
+                          glm::vec4 color);
 
 #endif

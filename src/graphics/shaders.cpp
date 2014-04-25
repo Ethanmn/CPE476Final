@@ -1,5 +1,4 @@
 #include "graphics/shaders.h"
-
 #include <assert.h>
 
 const std::vector<Attribute> kSunAttrs{

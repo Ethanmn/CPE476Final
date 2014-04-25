@@ -1,12 +1,12 @@
 #include "game.h"
 #include "graphics/mesh.h"
+#include "graphics/shaderSetup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
 namespace {
    DeerCam deerCam;
    Mesh box;
-   glm::vec3 deer_color;
 }
 
 Game::Game() :
@@ -82,14 +82,9 @@ void Game::step(units::MS dt) {
       treeColl = treeColl || deer_.bounding_rectangle().collidesWith(box);
    }
 
-   if (treeColl) {
-      //printf("Collided with tree!\n");
+   if (treeColl)
       deer_.jump();
-      deer_color = glm::vec3(0.225, 0.12, 0.075);
-   }
-   else {
-      deer_color = glm::vec3(0.45, 0.24, 0.15);
-   }
+   
    day_cycle_.autoAdjustTime(dt);
 }
 
@@ -128,36 +123,30 @@ void Game::draw() {
 
          //ON BOX
          setupModelView(shader, uniform_location_map_,
-               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)));
+               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)), true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
 
          //OFF BOX
          setupModelView(shader, uniform_location_map_,
-               glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)));
+               glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)), true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
          shader.drawMesh(box);
 
          for (auto& tree : trees_) {
-            tree.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
+            tree.draw(shader, uniform_location_map_, viewMatrix);
          }
-
-         //mat_.changeDiffuse(deer_color, shader, uniform_location_map_);
-         deer_.draw(shader, uniform_location_map_, deerCam.getViewMatrix());
-         
-         //mat_.changeDiffuse(glm::vec3(0.45, 0.24, 0.15), shader, uniform_location_map_);
-         treeGen.drawTrees(shader, uniform_location_map_, deerCam.getViewMatrix());
+         deer_.draw(shader, uniform_location_map_, viewMatrix);
+         treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
-         setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
-                              glm::vec4(1, 0, 0, 1));
+         setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
       
    }
 }
 
 void Game::mainLoop() {
    box = Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"));
-   deer_color = glm::vec3(0.45, 0.24, 0.15);
    Input input;
    int mX, mY;
    bool running = true;

@@ -1,8 +1,8 @@
 #include "tree.h"
-
+#include "graphics/shaderSetup.h"
 #include <glm/gtc/matrix_transform.hpp>
-
 #include "graphics/shader.h"
+#include "graphics/material.h"
 
 void Tree::step(units::MS dt) {
    if (rustle_time_ < kMaxRustleTime) {
@@ -31,7 +31,10 @@ void Tree::draw(
             -90.0f,
             glm::vec3(1, 0, 0)));
    const glm::mat4 model_matrix(translate * scale * rotate);
-   shader.sendUniform(Uniform::MODEL, uniform_location_map, model_matrix);
+   
+   setupModelView(shader, uniform_location_map, view_matrix * model_matrix, true);
+   sendMaterial(shader, uniform_location_map, glm::vec3(0.45, 0.24, 0.15));
+   
    shader.drawMesh(mesh_);
    bounding_rectangle_.draw(uniform_location_map, shader, 0);
 }
