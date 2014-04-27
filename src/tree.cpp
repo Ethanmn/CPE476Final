@@ -1,5 +1,5 @@
 #include "tree.h"
-#include "graphics/shaderSetup.h"
+#include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/material.h"

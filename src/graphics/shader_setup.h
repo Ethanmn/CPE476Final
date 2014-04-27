@@ -15,7 +15,7 @@ void setupView(Shader& shader, const UniformLocationMap& locations,
 void setupSunShader(Shader& shader, const UniformLocationMap& locations,
                     float sunIntensity, glm::vec3 sunDir);
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations,
-                        float sunIntensity, int texture_id);
+                        float sunIntensity, GLTextureID texture_id);
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
                           glm::vec4 color);
 

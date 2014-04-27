@@ -5,7 +5,7 @@
 
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
-#include "graphics/shaderSetup.h"
+#include "graphics/shader_setup.h"
 #include "graphics/material.h"
 
 namespace {

@@ -2,6 +2,7 @@
 #define TEXTURE_H_
 #include <iostream>
 #include <string>
+#include "gl_adapters/gl_types.h"
 
 enum class Textures {
    WATER,
@@ -21,11 +22,11 @@ inline std::string texture_path(Textures texture) {
 }
 
 struct Texture {
-   int texture_id;
+   GLTextureID texture_id;
    Texture(const std::string& path);
    void enable();
    void disable();
-   int textureID();
+   GLTextureID textureID();
 };
 
 #endif

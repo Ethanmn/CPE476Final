@@ -3,7 +3,7 @@
    Katie Keim
    Deer - CPE 476
 */
-#include "GroundPlane.h"
+#include "ground_plane.h"
 #include <cstdlib>
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"

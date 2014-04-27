@@ -10,7 +10,7 @@
 #include "sdl_engine.h"
 #include "units.h"
 #include "graphics/shaders.h"
-#include "GroundPlane.h"
+#include "ground_plane.h"
 #include "graphics/texture.h"
 #include "DeerCam.h"
 #include "graphics/material.h"

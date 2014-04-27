@@ -1,4 +1,4 @@
-#include "GroundPlane.h"
+#include "ground_plane.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/shaders.h"

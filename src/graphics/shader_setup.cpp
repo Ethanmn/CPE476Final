@@ -1,4 +1,4 @@
-#include "shaderSetup.h"
+#include "shader_setup.h"
 #include "shaders.h"
 #include "shader.h"
 #include "uniforms.h"
@@ -39,7 +39,7 @@ void setupSunShader(Shader& shader, const UniformLocationMap& locations,
 }
 
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations,
-      float sunIntensity, int texture_id) {
+      float sunIntensity, GLTextureID texture_id) {
    glPolygonMode(GL_FRONT, GL_FILL);
    shader.sendUniform(Uniform::TEXTURE, locations, texture_id);
    shader.sendUniform(Uniform::SUN_INTENSITY, locations, sunIntensity);

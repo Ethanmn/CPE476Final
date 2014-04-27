@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
+#include "gl_types.h"
 #include <iostream>
 #include <sstream>
 
@@ -92,6 +93,13 @@ void GLShader::sendUniform<glm::mat4>(
       const GLUniformLocationMap& uniforms,
       const glm::mat4& data) {
    uniformMatrix4fv(uniforms.at(program_), glm::value_ptr(data));
+}
+
+template <>
+void GLShader::sendUniform<GLTextureID>(
+      const GLUniformLocationMap& uniforms,
+      const GLTextureID& data) {
+   glUniform1i(uniforms.at(program_), static_cast<GLint> (data));
 }
 
 template <>
