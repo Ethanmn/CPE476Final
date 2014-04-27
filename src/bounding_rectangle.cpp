@@ -1,5 +1,6 @@
 #include "bounding_rectangle.h"
 
+#include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -9,7 +10,7 @@
 
 namespace {
    glm::vec2 vec2FromAngle(float y_rotation) {
-      return glm::rotate(glm::vec2(1, 0), y_rotation);
+      return glm::rotate(glm::vec2(1, 0), 360.0f - y_rotation);
    }
 }
 
@@ -22,7 +23,6 @@ void BoundingRectangle::loadBoundingMesh(MeshLoader& mesh_loader, const Attribut
 }
 
 void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader, float y, const glm::mat4& viewMatrix) const {
-   return;
    if (bounding_mesh_) {
       const glm::mat4 rotate(
             glm::rotate(
@@ -63,7 +63,7 @@ bool BoundingRectangle::hasSeparatingLineForAxis(
    float min_b = *std::min_element(projections_b.begin(), projections_b.end());
    float max_b = *std::max_element(projections_b.begin(), projections_b.end());
 
-   return min_a > max_b || max_a < min_b;
+   return min_a > max_b || min_b > max_a;
 }
 
 std::vector<float> BoundingRectangle::corner_projections(const glm::vec2& separating_axis) const {
@@ -76,9 +76,9 @@ std::vector<float> BoundingRectangle::corner_projections(const glm::vec2& separa
 
 std::vector<glm::vec2> BoundingRectangle::corners() const {
    return {
-      center_ + glm::rotate(glm::vec2(dimensions_.x / 2, dimensions_.y / 2), y_rotation_),
-      center_ + glm::rotate(glm::vec2(dimensions_.x / 2, -dimensions_.y / 2), y_rotation_),
-      center_ + glm::rotate(glm::vec2(-dimensions_.x / 2, dimensions_.y / 2), y_rotation_),
-      center_ + glm::rotate(glm::vec2(-dimensions_.x / 2, -dimensions_.y / 2), y_rotation_),
+      center_ + glm::rotate(glm::vec2(dimensions_.x / 2, dimensions_.y / 2), 360.0f - y_rotation_),
+      center_ + glm::rotate(glm::vec2(dimensions_.x / 2, -dimensions_.y / 2), 360.0f - y_rotation_),
+      center_ + glm::rotate(glm::vec2(-dimensions_.x / 2, dimensions_.y / 2), 360.0f - y_rotation_),
+      center_ + glm::rotate(glm::vec2(-dimensions_.x / 2, -dimensions_.y / 2), 360.0f - y_rotation_),
    };
 }
