@@ -99,7 +99,7 @@ template <>
 void GLShader::sendUniform<GLTextureID>(
       const GLUniformLocationMap& uniforms,
       const GLTextureID& data) {
-   glUniform1i(uniforms.at(program_), static_cast<GLint> (data));
+   glUniform1i(uniforms.at(program_), static_cast<GLuint> (data));
 }
 
 template <>

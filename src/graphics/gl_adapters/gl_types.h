@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include <map>
 
-BOOST_STRONG_TYPEDEF(GLint, GLTextureID)
+BOOST_STRONG_TYPEDEF(GLuint, GLTextureID)
 BOOST_STRONG_TYPEDEF(GLint, GLAttributeLocation)
 BOOST_STRONG_TYPEDEF(GLint, GLUniformLocation)
 BOOST_STRONG_TYPEDEF(GLuint, GLShaderHandle)
