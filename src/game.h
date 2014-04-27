@@ -10,7 +10,7 @@
 #include "sdl_engine.h"
 #include "units.h"
 #include "graphics/shaders.h"
-#include "GroundPlane.h"
+#include "ground_plane.h"
 #include "graphics/texture.h"
 #include "DeerCam.h"
 #include "graphics/material.h"
@@ -34,11 +34,11 @@ struct Game {
    UniformLocationMap uniform_location_map_;
    GroundPlane ground_;
    Deer deer_;
-   Material mat_;
+   //Material mat_;
    TreeGenerator treeGen; //May want this in a world generator class later
    DayCycle day_cycle_;
    Mesh tree_mesh_;
-   std::vector<Tree> trees_;
+   std::vector<Tree> bushes_;
 
    glm::vec2 mousePos;
    bool mouseDown;

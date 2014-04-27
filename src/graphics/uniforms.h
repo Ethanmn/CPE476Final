@@ -5,9 +5,8 @@
 
 enum class Uniform {
    FIRST_UNIFORM,
-   MODEL = FIRST_UNIFORM,
+   MODEL_VIEW = FIRST_UNIFORM,
    VIEW,
-   MODEL_VIEW,
    PROJECTION,
    NORMAL,
    TEXTURE,
@@ -23,8 +22,6 @@ enum class Uniform {
 
 inline std::string uniform_name(Uniform uniform) {
    switch (uniform) {
-      case Uniform::MODEL:
-         return "uModelMatrix";
       case Uniform::VIEW:
          return "uViewMatrix";
       case Uniform::MODEL_VIEW:

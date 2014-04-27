@@ -1,4 +1,4 @@
-#include "GroundPlane.h"
+#include "ground_plane.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
@@ -47,10 +47,11 @@ GroundPlane::GroundPlane(AttributeLocationMap& locations) :
       }
    } {}
 
-void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations) {
+void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
+                       const glm::mat4& viewMatrix) {
    glm::mat4 transform = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -7.0, 0.0)) *
    glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE));
-   shader.sendUniform(Uniform::MODEL, uniform_locations, transform);
+   shader.sendUniform(Uniform::MODEL_VIEW, uniform_locations, viewMatrix * transform);
    //shader.sendUniform(Uniform::COLOR, uniform_locations,
          //glm::vec4(0.0901, 0.3137, 0.1176, 0.5f));
    shader.drawMesh(mesh_);

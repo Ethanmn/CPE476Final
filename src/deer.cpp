@@ -5,6 +5,8 @@
 
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
+#include "graphics/shader_setup.h"
+#include "graphics/material.h"
 
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
@@ -40,16 +42,12 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
             glm::mat4(1.0f),
             position_));
    const glm::mat4 model_matrix(translate * rotate);
-   shader.sendUniform(Uniform::MODEL, uniform_locations, model_matrix);
    
-   shader.sendUniform(Uniform::NORMAL, uniform_locations, glm::transpose(glm::inverse(viewMatrix * model_matrix)));
-   
-   //shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 0, 1, 0.5f));
+   sendMaterial(shader, uniform_locations, glm::vec3(0.45, 0.24, 0.15));
+   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
    shader.drawMesh(mesh_);
    
-   glPolygonMode(GL_FRONT, GL_LINE);
-   glLineWidth(1.0);
-   bounding_rectangle_.draw(uniform_locations, shader, 0.0f);
+   bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);
    glPolygonMode(GL_FRONT, GL_FILL);
 }
 
