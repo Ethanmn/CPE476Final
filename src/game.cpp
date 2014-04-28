@@ -173,6 +173,7 @@ void Game::mainLoop() {
             }
             else if (event.type == SDL_MOUSEMOTION && SDL_GetMouseState(&mX, &mY) && mouseDown) {
                deerCam.rotatePositionWithDrag(mousePos, glm::vec2(mX, mY), kScreenWidth, kScreenHeight);
+               mousePos = glm::vec2(mX, mY);
             }
             else if (event.type == SDL_MOUSEBUTTONUP) {
                mouseDown = false;
