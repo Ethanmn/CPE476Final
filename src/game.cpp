@@ -156,9 +156,6 @@ void Game::mainLoop() {
    units::MS previous_time = SDL_GetTicks();
 
    SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
-
-   printf("Needed mouse start: %d %d\n", kScreenWidth / 2, kScreenHeight / 2);
-
    mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
 
    while (running) {
@@ -177,21 +174,6 @@ void Game::mainLoop() {
 
             if (event.type == SDL_MOUSEMOTION) {
                SDL_GetRelativeMouseState(&mX, &mY);
-               //printf("Mouse moved to: %d %d\n", mX, mY);
-
-               if (event.motion.xrel > 0) {
-                  printf("MOUSE RIGHT\n");
-               }
-               else if (event.motion.xrel < 0) {
-                  printf("MOUSE LEFT\n");
-               }
-
-               if (event.motion.yrel > 0) {
-                  printf("MOUSE DOWN\n");
-               }
-               else if (event.motion.yrel < 0) {
-                  printf("MOUSE UP\n");
-               }
                deerCam.rotatePositionWithDrag(mX, mY, kScreenWidth, kScreenHeight);
                mousePos = glm::vec2(mX, mY);
             }
