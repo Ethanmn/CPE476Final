@@ -101,7 +101,7 @@ void Game::draw() {
    }
 
    float sunIntensity = day_cycle_.getSunIntensity();
-   glm::vec3 sunDir = day_cycle_.getSunDir();
+   //glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    
    for (auto& shaderPair: shaders_.getMap()) {
