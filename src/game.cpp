@@ -11,7 +11,6 @@ namespace {
 
 Game::Game() :
    texture_(texture_path(Textures::GRASS)),
-   deer_texture_(texture_path(Textures::DEER)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
@@ -113,11 +112,13 @@ void Game::draw() {
       if(shaderPair.first == ShaderType::TEXTURE) {
          setupTextureShader(shader, uniform_location_map_, sunIntensity, texture_.textureID());
          texture_.enable();
-   
          ground_.draw(shader, uniform_location_map_, viewMatrix);
-         
          texture_.disable();
+         
+         deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
+         
       }
+      /*
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
@@ -142,7 +143,7 @@ void Game::draw() {
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
-      
+      */
    }
 }
 

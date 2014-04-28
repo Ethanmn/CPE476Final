@@ -22,6 +22,7 @@ const float kJumpSpeed = 0.015f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
+   texture_(texture_path(Textures::DEER)),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 0, 1),
@@ -31,7 +32,7 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-                const glm::mat4& viewMatrix) const {
+                const glm::mat4& viewMatrix, float sunIntensity) const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
@@ -43,12 +44,16 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
             position_));
    const glm::mat4 model_matrix(translate * rotate);
    
-   sendMaterial(shader, uniform_locations, glm::vec3(0.45, 0.24, 0.15));
-   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
+   //sendMaterial(shader, uniform_locations, glm::vec3(0.45, 0.24, 0.15));
+   setupTextureShader(shader, uniform_locations, sunIntensity, texture_.textureID());
+   texture_.enable();
+   
+   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, false);
    shader.drawMesh(mesh_);
    
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);
    glPolygonMode(GL_FRONT, GL_FILL);
+   texture_.disable();
 }
 
 void Deer::step(units::MS dt, const Camera& camera) {

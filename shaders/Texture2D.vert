@@ -3,7 +3,7 @@ uniform mat4 uModelViewMatrix;
 //uniform mat4 uViewMatrix;
 //uniform mat4 uNormalMatrix;
 
-attribute vec2 aTexCoord;
+attribute vec3 aTexCoord;
 attribute vec3 aPosition;
 
 varying vec4 vPosition;
