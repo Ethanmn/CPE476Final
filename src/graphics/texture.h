@@ -2,10 +2,12 @@
 #define TEXTURE_H_
 #include <iostream>
 #include <string>
+#include "gl_adapters/gl_types.h"
 
 enum class Textures {
    WATER,
-   GRASS
+   GRASS,
+   DEER
 };
 
 inline std::string texture_path(Textures texture) {
@@ -14,14 +16,17 @@ inline std::string texture_path(Textures texture) {
          return "../textures/water.bmp";
       case Textures::GRASS:
          return "../textures/grass.bmp";
+      case Textures::DEER:
+         return "../textures/deer1.bmp";
    }
 }
 
 struct Texture {
-   int texture_id;
+   GLTextureID texture_id;
    Texture(const std::string& path);
    void enable();
    void disable();
+   GLTextureID textureID();
 };
 
 #endif

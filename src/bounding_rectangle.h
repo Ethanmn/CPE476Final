@@ -7,36 +7,42 @@
 #include "graphics/mesh.h"
 #include "graphics/location_maps.h"
 
+struct MeshLoader;
 struct Shader;
 struct Shaders;
 
+// Bounding rectangle on the XZ plane, with Y rotation.
 struct BoundingRectangle {
    BoundingRectangle(
          const glm::vec2& center,
-         const glm::vec2& dimensions) :
+         const glm::vec2& dimensions,
+         float y_rotation) :
       center_(center),
-      dimensions_(dimensions) {}
+      dimensions_(dimensions),
+      y_rotation_(y_rotation)
+   {}
 
-   static void loadBoundingMesh(const AttributeLocationMap& locations);
+   static void loadBoundingMesh(MeshLoader& mesh_loader, const AttributeLocationMap& locations);
 
-   float left() const  { return center_.x - dimensions_.x / 2; }
-   float right() const { return center_.x + dimensions_.x / 2; }
-   float front() const { return center_.y - dimensions_.y / 2; }
-   float back() const  { return center_.y + dimensions_.y / 2; }
-
-   bool collidesWith(const BoundingRectangle& other) const {
-      return right() >= other.left() &&
-             left() <= other.right() &&
-             front() <= other.back() &&
-             back() >= other.front();
-   }
+   bool collidesWith(const BoundingRectangle& other) const;
 
    void set_position(const glm::vec2& center) { center_ = center; }
-   void draw(const UniformLocationMap& uniform_locations, Shader& shader, float y) const;
+   void set_rotation(const float y_rotation) { y_rotation_ = y_rotation; }
+   void draw(const UniformLocationMap& uniform_locations, Shader& shader, float y,
+             const glm::mat4& viewMatrix) const;
+   std::vector<glm::vec2> corners() const;
+   std::vector<float> corner_projections(const glm::vec2& separating_axis) const;
 
   private:
+   bool hasSeparatingLineForAxis(
+         const glm::vec2& separating_axis,
+         const BoundingRectangle& other) const;
+
    glm::vec2 center_;
    glm::vec2 dimensions_;
+
+   float y_rotation_;
+
    static boost::optional<Mesh> bounding_mesh_;
 };
 

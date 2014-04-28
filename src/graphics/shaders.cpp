@@ -1,5 +1,4 @@
 #include "graphics/shaders.h"
-
 #include <assert.h>
 
 const std::vector<Attribute> kSunAttrs{
@@ -7,9 +6,10 @@ const std::vector<Attribute> kSunAttrs{
    Attribute::NORMAL
 };
 const std::vector<Uniform> kSunUniforms{
-   Uniform::MODEL,
+   Uniform::MODEL_VIEW,
    Uniform::VIEW,
    Uniform::PROJECTION,
+   Uniform::NORMAL,
    Uniform::M_AMB,
    Uniform::M_DIF,
    Uniform::M_SPEC,
@@ -24,18 +24,20 @@ const std::vector<Attribute> kTextureAttrs{
 // Attribute::NORMAL,
 };
 const std::vector<Uniform> kTextureUniforms{
-   Uniform::MODEL,
-   Uniform::VIEW,
+   Uniform::MODEL_VIEW,
+//   Uniform::VIEW,
    Uniform::PROJECTION,
-   Uniform::TEXTURE
+//   Uniform::NORMAL,
+   Uniform::TEXTURE,
+   Uniform::SUN_INTENSITY
 };
 
 const std::vector<Attribute> kWireframeAttrs{
    Attribute::VERTEX
 };
 const std::vector<Uniform> kWireframeUniforms{
-   Uniform::MODEL,
-   Uniform::VIEW,
+   Uniform::MODEL_VIEW,
+//   Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::COLOR,
 };
@@ -51,7 +53,7 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::WIREFRAME,
             Shader("wireframe", kWireframeAttrs, kWireframeUniforms)));
-    */
+   */
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

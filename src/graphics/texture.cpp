@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int load(const std::string& path);
+GLTextureID load(const std::string& path);
 
 struct Image {
    unsigned long sizeX;
@@ -129,7 +129,11 @@ void Texture::disable() {
    glDisable(GL_TEXTURE_2D);
 }
 
-int load(const std::string& path) {
+GLTextureID Texture::textureID() {
+   return texture_id;
+}
+
+GLTextureID load(const std::string& path) {
    Image image;
    cout << "Loading Image: " << path << endl;
    if (!imageLoad(path, image)) {
@@ -141,5 +145,5 @@ int load(const std::string& path) {
    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
    free(image.data);
-   return texture_ids++;
+   return (GLTextureID)texture_ids++;
 }

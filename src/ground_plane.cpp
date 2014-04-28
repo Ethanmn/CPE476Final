@@ -1,7 +1,9 @@
-#include "GroundPlane.h"
+#include "ground_plane.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
+
+const int GroundPlane::GROUND_SCALE = 500;
 
 const std::vector<float> ground_vertices{
    -0.5, 0.0, -0.5,
@@ -26,7 +28,7 @@ const std::vector<unsigned short> ground_indices{
    0, 2, 1, 3, 1, 2
 };
 
-GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
+GroundPlane::GroundPlane(AttributeLocationMap& locations) :
    mesh_{
       IndexBufferObject::create(ground_indices),
       {
@@ -43,14 +45,14 @@ GroundPlane::GroundPlane(AttributeLocationMap locations, Shaders& shaders) :
             locations[Attribute::TEX_COORD],
             2),
       }
-   }
-{}
+   } {}
 
-void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations) {
+void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
+                       const glm::mat4& viewMatrix) {
    glm::mat4 transform = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -7.0, 0.0)) *
-   glm::scale(glm::mat4(1.0), glm::vec3(150.0));
-   shader.sendUniform(Uniform::MODEL, uniform_locations, transform);
-   shader.sendUniform(Uniform::COLOR, uniform_locations,
-         glm::vec4(0.0901, 0.3137, 0.1176, 0.5f));
+   glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE));
+   shader.sendUniform(Uniform::MODEL_VIEW, uniform_locations, viewMatrix * transform);
+   //shader.sendUniform(Uniform::COLOR, uniform_locations,
+         //glm::vec4(0.0901, 0.3137, 0.1176, 0.5f));
    shader.drawMesh(mesh_);
 }

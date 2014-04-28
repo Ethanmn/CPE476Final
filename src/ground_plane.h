@@ -9,9 +9,11 @@ struct Shader;
 struct Shaders;
 
 struct GroundPlane {
-   GroundPlane(AttributeLocationMap locations, Shaders& shaders);
+   static const int GROUND_SCALE;
+   GroundPlane(AttributeLocationMap& locations);
    Mesh mesh_;
-   void draw(Shader& shader, const UniformLocationMap& uniform_locations);
+   void draw(Shader& shader, const UniformLocationMap& uniform_locations,
+             const glm::mat4& viewMatrix);
 };
 
 #endif // GROUND_PLANE_H_

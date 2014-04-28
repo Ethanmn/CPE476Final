@@ -18,4 +18,7 @@ struct Material {
    float shine;
 };
 
+void sendMaterial(Shader& shader, const UniformLocationMap& uniform_locations,
+   glm::vec3 diffuse);
+
 #endif

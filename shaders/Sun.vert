@@ -1,4 +1,3 @@
-
 struct Material {
   vec3 ambient;
   vec3 diffuse;
@@ -12,7 +11,7 @@ attribute vec3 aNormal;
 
 uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
-uniform mat4 uModelMatrix;
+uniform mat4 uModelViewMatrix;
 uniform mat4 uNormalMatrix;
 
 varying vec3 vColor;
@@ -20,13 +19,11 @@ varying vec4 vViewer;
 varying vec3 vNormal;
 
 void main() {
-  vec4 vPosition;
-  vPosition = uModelMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
-  vPosition = uViewMatrix * vPosition;
+  vec4 vPosition, light;
+   
+  vPosition = uModelViewMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
   gl_Position = uProjectionMatrix * vPosition;
-    
-  vNormal = aNormal;
+   
+  vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
   vViewer = vPosition;
-
-    
 }
