@@ -9,6 +9,9 @@ const int TREE_SIZE = 20;
 const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
 const int TREE_SCALE = 5;
 
+const float BOUNDING_ERR_X = 7.26;
+const float BOUNDING_ERR_Z = -1.75;
+
 TreeGenerator::TreeGenerator(const Mesh& mesh) {
    treeMesh1 = mesh;
 }
@@ -31,7 +34,7 @@ void TreeGenerator::generateTrees() {
       std::vector<bool> colVec = trees[row];
       for (int col = 0; col < (int)colVec.size(); col++) {
          if (colVec[col]) {
-            boxes.push_back(BoundingRectangle(glm::vec2(row * TREE_SIZE - groundSize, col * TREE_SIZE - groundSize), glm::vec2(4, 4), 0.0f));
+            boxes.push_back(BoundingRectangle(glm::vec2(row * TREE_SIZE - groundSize + BOUNDING_ERR_X, col * TREE_SIZE - groundSize + BOUNDING_ERR_Z), glm::vec2(4, 4), 0.0f));
          }
       }
    }
@@ -41,7 +44,7 @@ void TreeGenerator::generateTrees() {
 
 //Draw the trees
 void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_locations, const glm::mat4& viewMatrix) {
-   glm::mat4 rotate, rotateTreeUp;
+   glm::mat4 rotateTreeUp;
    glm::mat4 translate;
    glm::mat4 scale;
    glm::mat4 model_matrix;
@@ -58,30 +61,23 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
                (float)(-90),
                glm::vec3(1, 0, 0));
 
-            rotate = glm::rotate(
-               glm::mat4(1.0f),
-               (float)((row * col) % 180),
-               glm::vec3(0, 1, 0));
-
             translate = glm::translate(
                 glm::mat4(1.0f),
                glm::vec3(row * TREE_SIZE - groundSize, TREE_SCALE * TREE_SIZE / 2, col * TREE_SIZE - groundSize));
-            model_matrix = translate * rotate * scale * rotateTreeUp;
+            model_matrix = translate * scale * rotateTreeUp;
 
             shader.sendUniform(Uniform::NORMAL, uniform_locations, glm::transpose(glm::inverse(viewMatrix * model_matrix)));
             shader.sendUniform(Uniform::MODEL_VIEW, uniform_locations, viewMatrix * model_matrix);
-            //shader.sendUniform(Uniform::COLOR, uniform_locations, glm::vec4(0, 1, 0, 0.5f));
             shader.drawMesh(treeMesh1);
          }
       }
    }
 
-   /*for (int index = 0; index < (int)boxes.size(); index++) {
-      boxes[index].draw(shader, uniform_locations, const glm::mat4& viewMatrix);
-   }*/
+   for (int index = 0; index < (int)boxes.size(); index++) {
+      boxes[index].draw(uniform_locations, shader, 0.0f, viewMatrix);
+   }
 }
 
-//Get if there is a tree at a spot
 std::vector<BoundingRectangle> TreeGenerator::getBoundingBoxes() {
    return boxes;
 }

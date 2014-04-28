@@ -10,7 +10,7 @@ const float PI = 3.14159265359;
 const int MAX_ROTATE_VERT_UP =  80;
 const int MAX_ROTATE_VERT_DOWN =  10;
 const int PI_IN_DEGREES = 180;
-const float ROTATION_SENSITIVITY = 0.025; //Smaller number -> less sensitive
+const float ROTATION_SENSITIVITY = 0.75; //Smaller number -> less sensitive
 
 Camera::Camera(glm::vec3 pos, glm::vec3 look) {
    position = pos;
@@ -103,8 +103,8 @@ void Camera::updatePosition(float radius) {
 
 /* A private function called to change the current rotation angles */
 void Camera::changeRotationAngles(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
-   theta += (endPoint.x - startPoint.x) * PI / (float)width * ROTATION_SENSITIVITY;
-   phi += (endPoint.y - startPoint.y) * PI / (float)height * ROTATION_SENSITIVITY;
+   theta += ((endPoint.x - startPoint.x) * PI / (float)width) * ROTATION_SENSITIVITY;
+   phi += ((endPoint.y - startPoint.y) * PI / (float)height) * ROTATION_SENSITIVITY;
 
    if (phi > MAX_ROTATE_VERT_UP * PI / PI_IN_DEGREES) {
      phi = MAX_ROTATE_VERT_UP * PI / PI_IN_DEGREES;
