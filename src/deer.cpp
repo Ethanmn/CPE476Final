@@ -22,7 +22,7 @@ const float kJumpSpeed = 0.015f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
-   texture_(texture_path(Textures::DEER)),
+   texture_("../textures/box_texture.bmp"),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 0, 1),
