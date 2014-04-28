@@ -7,7 +7,8 @@
 enum class Textures {
    WATER,
    GRASS,
-   DEER
+   DEER,
+   BOX
 };
 
 inline std::string texture_path(Textures texture) {

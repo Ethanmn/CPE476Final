@@ -10,7 +10,7 @@ const float PI = 3.14159265359;
 const int MAX_ROTATE_VERT_UP =  80;
 const int MAX_ROTATE_VERT_DOWN =  10;
 const int PI_IN_DEGREES = 180;
-const float ROTATION_SENSITIVITY = 0.75; //Smaller number -> less sensitive
+const float ROTATION_SENSITIVITY = 2; //Smaller number -> less sensitive
 
 Camera::Camera(glm::vec3 pos, glm::vec3 look) {
    position = pos;
@@ -50,7 +50,7 @@ void Camera::moveCameraInDirection(const glm::vec3& direction, float speed, unit
    and the height of the window.
 */
 void Camera::rotateLookAtWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
-   changeRotationAngles(startPoint, endPoint, width, height);
+   changeRotationAngles(endPoint.x - startPoint.x, endPoint.y - startPoint.y, width, height);
    updateLookAt();
 }
 
@@ -61,7 +61,18 @@ void Camera::rotateLookAtWithDrag(const glm::vec2& startPoint, const glm::vec2& 
    and the height of the window.
 */
 void Camera::rotatePositionWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
-   changeRotationAngles(startPoint, endPoint, width, height);
+   changeRotationAngles(endPoint.x - startPoint.x, endPoint.y - startPoint.y, width, height);
+   updatePosition(glm::length(position - lookAt));
+}
+
+/*
+   Rotates the camera around the current lookAt point, changing the camera's position.
+   Parameters should be the starting mouse point,
+   the ending mouse point, tthe width of the window,
+   and the height of the window.
+*/
+void Camera::rotatePositionWithDrag(float diffX, float diffY, int width, int height) {
+   changeRotationAngles(diffX, diffY, width, height);
    updatePosition(glm::length(position - lookAt));
 }
 
@@ -102,9 +113,9 @@ void Camera::updatePosition(float radius) {
 }
 
 /* A private function called to change the current rotation angles */
-void Camera::changeRotationAngles(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
-   theta += ((endPoint.x - startPoint.x) * PI / (float)width) * ROTATION_SENSITIVITY;
-   phi += ((endPoint.y - startPoint.y) * PI / (float)height) * ROTATION_SENSITIVITY;
+void Camera::changeRotationAngles(float diffX, float diffY, int width, int height) {
+   theta += (diffX * PI / (float)width) * ROTATION_SENSITIVITY;
+   phi += (diffY * PI / (float)height) * ROTATION_SENSITIVITY;
 
    if (phi > MAX_ROTATE_VERT_UP * PI / PI_IN_DEGREES) {
      phi = MAX_ROTATE_VERT_UP * PI / PI_IN_DEGREES;
