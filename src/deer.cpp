@@ -143,7 +143,7 @@ void Deer::jump() {
 }
 
 bool Deer::isMoving() {
-   return is_walking_ || is_strafing_;
+   return velocity_.x > 0 || velocity_.z > 0 || velocity_.x < 0 || velocity_.z < 0;
 }
 
 glm::vec3 Deer::getPosition() {
