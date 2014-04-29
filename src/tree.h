@@ -26,6 +26,7 @@ struct Tree {
    void step(units::MS dt);
    void rustle();
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
+   glm::vec3 position() const { return position_; }
 
    void draw(
          Shader& shader,

@@ -28,7 +28,8 @@ struct Deer {
 
    void jump();
 
-   glm::vec3 getPosition();
+   glm::vec3 getPosition() const;
+   glm::vec3 getFacing() const;
 
    bool isMoving();
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }

@@ -15,6 +15,7 @@ struct SoundEngine {
    };
    SoundEngine();
 
+   void set_listener_position(const glm::vec3& listener_position, const glm::vec3& orientation);
    void playSoundEffect(SoundEffect sound, const glm::vec3& source_position);
 
   private:

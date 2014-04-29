@@ -146,6 +146,10 @@ bool Deer::isMoving() {
    return velocity_.x > 0 || velocity_.z > 0 || velocity_.x < 0 || velocity_.z < 0;
 }
 
-glm::vec3 Deer::getPosition() {
+glm::vec3 Deer::getPosition() const {
    return position_;
+}
+
+glm::vec3 Deer::getFacing() const {
+   return last_facing_;
 }
