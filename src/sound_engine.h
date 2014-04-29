@@ -2,6 +2,7 @@
 #define SOUND_ENGINE_H_
 
 #include <glm/glm.hpp>
+#include <map>
 
 namespace irrklang {
    class ISoundEngine;
@@ -9,16 +10,16 @@ namespace irrklang {
 }
 
 struct SoundEngine {
-   enum class SoundType {
+   enum class SoundEffect {
       RUSTLE
    };
    SoundEngine();
 
-   void play3D(SoundType sound, const glm::vec3& source_position);
+   void playSoundEffect(SoundEffect sound, const glm::vec3& source_position);
 
   private:
    irrklang::ISoundEngine* engine_;
-   irrklang::ISoundSource* rustle_sound_source_;
+   std::map<SoundEffect, irrklang::ISoundSource*> sound_effect_sources_;
 };
 
 #endif // SOUND_ENGINE_H_

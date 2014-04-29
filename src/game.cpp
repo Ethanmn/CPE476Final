@@ -74,7 +74,7 @@ void Game::step(units::MS dt) {
       deerCam.move(deer_.getPosition());
       for (auto& tree : bushes_) {
          if (deer_.bounding_rectangle().collidesWith(tree.bounding_rectangle())) {
-            sound_engine_.play3D(SoundEngine::SoundType::RUSTLE, glm::vec3());
+            sound_engine_.playSoundEffect(SoundEngine::SoundEffect::RUSTLE, glm::vec3());
             tree.rustle();
          }
       }
