@@ -4,9 +4,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
+#include <irrKlang.h>
+
 namespace {
    DeerCam deerCam;
    Mesh box;
+   irrklang::ISoundEngine* engine;
+   irrklang::ISoundSource* rustle_sound;
 }
 
 Game::Game() :
@@ -74,6 +78,8 @@ void Game::step(units::MS dt) {
       deerCam.move(deer_.getPosition());
       for (auto& tree : bushes_) {
          if (deer_.bounding_rectangle().collidesWith(tree.bounding_rectangle())) {
+            if (!engine->isCurrentlyPlaying(rustle_sound))
+               engine->play2D(rustle_sound, false);
             tree.rustle();
          }
       }
@@ -154,6 +160,11 @@ void Game::mainLoop() {
    bool running = true;
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
+
+   engine = irrklang::createIrrKlangDevice();
+   if (!engine)
+      throw "Could not load irrKlang";
+   rustle_sound = engine->addSoundSourceFromFile("../sounds/rustle1.ogg", irrklang::ESM_NO_STREAMING, true);
 
    SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
    mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
