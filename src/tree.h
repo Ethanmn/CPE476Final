@@ -8,6 +8,7 @@
 #include "units.h"
 
 struct Shader;
+struct SoundEngine;
 
 struct Tree {
    Tree(const Mesh& mesh, const glm::vec3& position, float scale, units::MS rustle_time) :
@@ -24,9 +25,8 @@ struct Tree {
       mesh_(mesh) {}
 
    void step(units::MS dt);
-   void rustle();
+   void rustle(SoundEngine& sound_engine);
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
-   glm::vec3 position() const { return position_; }
 
    void draw(
          Shader& shader,
