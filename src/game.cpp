@@ -78,8 +78,9 @@ void Game::step(units::MS dt) {
       deerCam.move(deer_.getPosition());
       for (auto& tree : bushes_) {
          if (deer_.bounding_rectangle().collidesWith(tree.bounding_rectangle())) {
-            if (!engine->isCurrentlyPlaying(rustle_sound))
-               engine->play2D(rustle_sound, false);
+            if (!engine->isCurrentlyPlaying(rustle_sound)) {
+               engine->play3D(rustle_sound, irrklang::vec3df(0, 0, 0), false);
+            }
             tree.rustle();
          }
       }
