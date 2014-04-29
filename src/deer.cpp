@@ -7,6 +7,7 @@
 #include "graphics/location_maps.h"
 #include "graphics/shader_setup.h"
 #include "graphics/material.h"
+#include "sound_engine.h"
 
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
@@ -20,6 +21,8 @@ const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
 const float kJumpSpeed = 0.015f;
 
+const float kStepTime = 300;
+
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
    position_(position),
@@ -27,7 +30,11 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    last_facing_(0, 0, 1),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
-   bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f)
+   bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
+   step_timer_(0),
+   is_jumping_(false),
+   is_walking_(false),
+   is_strafing_(false)
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
@@ -51,7 +58,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    glPolygonMode(GL_FRONT, GL_FILL);
 }
 
-void Deer::step(units::MS dt, const Camera& camera) {
+void Deer::step(units::MS dt, const Camera& camera, SoundEngine& sound_engine) {
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
       xz_velocity -= xz_velocity * (kFriction * dt);
@@ -99,7 +106,17 @@ void Deer::step(units::MS dt, const Camera& camera) {
          velocity_.y = 0.0f;
          position_.y = 0.0f;
          is_jumping_ = false;
+         sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, position_);
       }
+      step_timer_ = 0;
+   } else if (isMoving()) {
+      step_timer_ += dt;
+      if (step_timer_ > kStepTime) {
+         step_timer_ = 0;
+         sound_engine.playRandomWalkSound();
+      }
+   } else {
+      step_timer_ = 0;
    }
 
    position_ += velocity_ * static_cast<float>(dt);

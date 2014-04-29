@@ -10,13 +10,14 @@
 #include "units.h"
 
 struct Shader;
+struct SoundEngine;
 
 struct Deer {
    Deer(const Mesh& mesh, const glm::vec3& position);
 
    void draw(Shader& shader, const UniformLocationMap& locations,
              const glm::mat4& viewMatrix) const;
-   void step(units::MS dt, const Camera& camera);
+   void step(units::MS dt, const Camera& camera, SoundEngine& sound_engine);
 
    void walkForward();
    void walkBackward();
@@ -55,6 +56,8 @@ struct Deer {
    StrafeDirection strafe_direction_;
 
    BoundingRectangle bounding_rectangle_;
+
+   units::MS step_timer_;
 
    bool is_jumping_;
    bool is_walking_;

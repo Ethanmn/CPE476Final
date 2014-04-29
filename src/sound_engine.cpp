@@ -18,6 +18,47 @@ SoundEngine::SoundEngine() {
             "../sounds/rustle1.ogg",
             irrklang::ESM_NO_STREAMING,
             should_preload);
+   sound_effect_sources_[SoundEffect::RUSTLE]->setDefaultVolume(0.6f);
+
+   sound_effect_sources_[SoundEffect::GRASS_LAND] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/grassLand.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+
+   sound_effect_sources_[SoundEffect::GRASS_WALK0] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/grassStep1.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::GRASS_WALK1] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/grassStep2.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::GRASS_WALK2] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/grassStep3.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::GRASS_WALK3] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/grassStep4.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::GRASS_WALK4] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/grassStep5.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+
+   const auto kGrassVolume = 0.3f;
+   sound_effect_sources_[SoundEffect::GRASS_LAND]->setDefaultVolume(kGrassVolume);
+   sound_effect_sources_[SoundEffect::GRASS_WALK0]->setDefaultVolume(kGrassVolume);
+   sound_effect_sources_[SoundEffect::GRASS_WALK1]->setDefaultVolume(kGrassVolume);
+   sound_effect_sources_[SoundEffect::GRASS_WALK2]->setDefaultVolume(kGrassVolume);
+   sound_effect_sources_[SoundEffect::GRASS_WALK3]->setDefaultVolume(kGrassVolume);
+   sound_effect_sources_[SoundEffect::GRASS_WALK4]->setDefaultVolume(kGrassVolume);
 }
 
 void SoundEngine::set_listener_position(const glm::vec3& position, const glm::vec3& orientation) {
@@ -29,9 +70,21 @@ void SoundEngine::set_listener_position(const glm::vec3& position, const glm::ve
 void SoundEngine::playSoundEffect(SoundEffect sound, const glm::vec3& source_position) {
    const auto should_loop = false;
    if (!engine_->isCurrentlyPlaying(sound_effect_sources_[sound])) {
+      /* TODO(chebert): 3d Sound sound legitimately bad. I think i has to do
+       * with the listener direction.
       engine_->play3D(
-            sound_effect_sources_[SoundEffect::RUSTLE],
+            sound_effect_sources_[sound],
             irrklang::vec3df(source_position.x, source_position.y, source_position.z),
             should_loop);
+            */
+      engine_->play2D(
+            sound_effect_sources_[sound],
+            should_loop);
    }
+}
+
+void SoundEngine::playRandomWalkSound() {
+   const auto val = rand() % 3;
+   const auto walk = static_cast<SoundEffect>(val + static_cast<int>(SoundEffect::GRASS_WALK0));
+   engine_->play2D(sound_effect_sources_[walk], false);
 }

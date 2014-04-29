@@ -65,7 +65,7 @@ Game::Game() :
 void Game::step(units::MS dt) {
    bool treeColl = false;
 
-   deer_.step(dt, deerCam);
+   deer_.step(dt, deerCam, sound_engine_);
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
    for (auto& tree : bushes_) {
       tree.step(dt);

@@ -11,12 +11,19 @@ namespace irrklang {
 
 struct SoundEngine {
    enum class SoundEffect {
-      RUSTLE
+      RUSTLE,
+      GRASS_WALK0,
+      GRASS_WALK1,
+      GRASS_WALK2,
+      GRASS_WALK3,
+      GRASS_WALK4,
+      GRASS_LAND,
    };
    SoundEngine();
 
    void set_listener_position(const glm::vec3& listener_position, const glm::vec3& orientation);
    void playSoundEffect(SoundEffect sound, const glm::vec3& source_position);
+   void playRandomWalkSound();
 
   private:
    irrklang::ISoundEngine* engine_;
