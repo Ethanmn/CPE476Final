@@ -20,14 +20,14 @@ PKGS=glew assimp
 # -std=c++11=Enforce C++11 standard compliance. (You could also use C++11 if you
 #  want to be more up-to-date).
 # -MMD=Create a .d file to store the rule for the header dependencies of each object.
-CFLAGS=-g -Wall -Wextra -std=c++11 -MMD -I$(SRCDIR) `sdl2-config --cflags` `pkg-config --cflags $(PKGS)`
+CFLAGS=-m32 -g -Wall -Wextra -std=c++11 -MMD -I$(SRCDIR) `sdl2-config --cflags` `pkg-config --cflags $(PKGS)`
 
 # LDLIBS (Load Libraries)
 # External libraries you are using that need to be linked.
 # ``=run a shell command (command substitution)
 # sdl-config=a command that generates the load libs/cflags necessary depending
 # on the platform (OS/Linux/Win)
-LDLIBS=`sdl2-config --libs` `pkg-config --libs $(PKGS)`
+LDLIBS=-m32 -lSDL2 -lpthread `pkg-config --libs $(PKGS)`
 
 # LDFLAGS (Load/linker flags)
 ifeq ($(shell uname -s),Darwin)
