@@ -20,6 +20,8 @@ struct SoundEngine {
       GRASS_LAND,
 
       CARDINAL_BIRD,
+      CANARY0,
+      CANARY1,
    };
    SoundEngine();
 
