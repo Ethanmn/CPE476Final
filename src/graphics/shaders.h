@@ -11,6 +11,7 @@
 #include "graphics/location_maps.h"
 
 enum class ShaderType {
+   SHADOW,
    SUN,
    TEXTURE,
    WIREFRAME,

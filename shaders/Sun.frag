@@ -29,7 +29,7 @@ void main() {
    dotVRDir = dot(-1.0 * normalize(vec3(vViewer.x, vViewer.y, vViewer.z)), normalize(ReflDir));
    
    Diffuse = directionalColor * uMat.diffuse * dotNLDir;
-   Spec = directionalColor * uMat.specular * pow(dotVRDir, uMat.shine);
+   Spec = directionalColor * uMat.specular * pow(dotVRDir, uMat.shine) * vec3(0.0);
    color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + vec3(1.2) * uMat.ambient;
    
    gl_FragColor = vec4(color.r, color.g, color.b, 1.0);

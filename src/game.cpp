@@ -110,22 +110,25 @@ void Game::draw() {
       
       setupProjection(shader, uniform_location_map_);
 
-      if(shaderPair.first == ShaderType::TEXTURE) {
+      if(shaderPair.first == ShaderType::SHADOW) {
+
+
+      }
+      else if(shaderPair.first == ShaderType::TEXTURE) {
 	 setupView(shader, uniform_location_map_, viewMatrix);
-	 setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
+	 setupSunShader(shader, uniform_location_map_, sunIntensity, 
+            glm::vec3(0.0, 1.0, 0.0));
          setupTextureShader(shader, uniform_location_map_, texture_.textureID());
          texture_.enable();
          ground_.draw(shader, uniform_location_map_, viewMatrix);
          texture_.disable();
 
+         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-
-         //setupShadowShader(shader, uniform_location_map_, sunDir);
-
 
          //ON BOX
          setupModelView(shader, uniform_location_map_,

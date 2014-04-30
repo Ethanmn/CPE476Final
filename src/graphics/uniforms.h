@@ -13,6 +13,7 @@ enum class Uniform {
    COLOR,
    SUN_DIR,
    SUN_INTENSITY,
+   SHADOW_MVP,
    M_AMB,
    M_DIF,
    M_SPEC,
@@ -38,6 +39,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uSunDir";
       case Uniform::SUN_INTENSITY:
          return "uSunIntensity";
+      case Uniform::SHADOW_MVP:
+         return "uShadowMVP";
       case Uniform::M_AMB:
          return "uMat.ambient";
       case Uniform::M_DIF:
