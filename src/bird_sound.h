@@ -4,17 +4,20 @@
 #include <glm/glm.hpp>
 
 #include "units.h"
-
-struct SoundEngine;
+#include "sound_engine.h"
 
 struct BirdSound {
-   BirdSound();
+   BirdSound(SoundEngine::SoundEffect sound, units::MS period);
 
    void step(units::MS dt, SoundEngine& sound_engine);
 
   private:
+   units::MS calculate_next_time() const;
+
+   const units::MS period_;
    units::MS countdown_timer_;
    units::MS next_time_;
+   SoundEngine::SoundEffect sound_;
 
    glm::vec3 position_;
 };

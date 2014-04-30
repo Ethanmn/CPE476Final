@@ -72,6 +72,7 @@ SoundEngine::SoundEngine() {
             "../sounds/canary0.wav",
             irrklang::ESM_NO_STREAMING,
             should_preload);
+   sound_effect_sources_[SoundEffect::CANARY0]->setDefaultVolume(0.3f);
    sound_effect_sources_[SoundEffect::CANARY1] =
       engine_->addSoundSourceFromFile(
             "../sounds/canary1.wav",

@@ -41,7 +41,7 @@ struct Game {
    Mesh tree_mesh_;
    std::vector<Tree> bushes_;
    SoundEngine sound_engine_;
-   BirdSound bird_sound_;
+   BirdSound cardinal_bird_sound_, canary_bird_sound_;
 
    glm::vec2 mousePos;
    bool mouseDown;
