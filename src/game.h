@@ -18,7 +18,7 @@
 #include "graphics/day_cycle.h"
 #include "tree.h"
 #include "sound_engine.h"
-#include "cardinal_bird_sound.h"
+#include "bird_sound.h"
 
 struct Game {
    Game();
@@ -41,7 +41,7 @@ struct Game {
    Mesh tree_mesh_;
    std::vector<Tree> bushes_;
    SoundEngine sound_engine_;
-   CardinalBirdSound cardinal_bird_sound_;
+   BirdSound bird_sound_;
 
    glm::vec2 mousePos;
    bool mouseDown;

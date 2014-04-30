@@ -1,4 +1,4 @@
-#include "cardinal_bird_sound.h"
+#include "bird_sound.h"
 
 #include <stdlib.h>
 
@@ -10,12 +10,12 @@ namespace {
    }
 }
 
-CardinalBirdSound::CardinalBirdSound() :
+BirdSound::BirdSound() :
    countdown_timer_(0),
    next_time_(calculate_next_time())
 {}
 
-void CardinalBirdSound::step(units::MS dt, SoundEngine& sound_engine) {
+void BirdSound::step(units::MS dt, SoundEngine& sound_engine) {
    countdown_timer_ += dt;
    if (countdown_timer_ > next_time_) {
       countdown_timer_ = 0;

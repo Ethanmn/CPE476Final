@@ -64,7 +64,7 @@ Game::Game() :
 
 void Game::step(units::MS dt) {
    bool treeColl = false;
-   cardinal_bird_sound_.step(dt, sound_engine_);
+   bird_sound_.step(dt, sound_engine_);
 
    deer_.step(dt, deerCam, sound_engine_);
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());

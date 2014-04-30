@@ -1,5 +1,5 @@
-#ifndef CARDINAL_BIRD_SOUND_H_
-#define CARDINAL_BIRD_SOUND_H_
+#ifndef BIRD_SOUND_H_
+#define BIRD_SOUND_H_
 
 #include <glm/glm.hpp>
 
@@ -7,8 +7,8 @@
 
 struct SoundEngine;
 
-struct CardinalBirdSound {
-   CardinalBirdSound();
+struct BirdSound {
+   BirdSound();
 
    void step(units::MS dt, SoundEngine& sound_engine);
 
@@ -19,4 +19,4 @@ struct CardinalBirdSound {
    glm::vec3 position_;
 };
 
-#endif // CARDINAL_BIRD_SOUND_H_
+#endif // BIRD_SOUND_H_
