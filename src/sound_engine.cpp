@@ -79,6 +79,28 @@ SoundEngine::SoundEngine() {
             irrklang::ESM_NO_STREAMING,
             should_preload);
    sound_effect_sources_[SoundEffect::CANARY1]->setDefaultVolume(0.2f);
+
+   sound_effect_sources_[SoundEffect::WOODPECKER0] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/woodpecker1.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::WOODPECKER1] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/woodpecker2.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::WOODPECKER2] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/woodpecker3.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::WOODPECKER3] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/woodpecker4.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::WOODPECKER0]->setDefaultVolume(0.2f);
 }
 
 void SoundEngine::set_listener_position(const glm::vec3& position, const glm::vec3& orientation) {

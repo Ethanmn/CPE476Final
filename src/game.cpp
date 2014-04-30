@@ -42,7 +42,8 @@ Game::Game() :
    },
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
-   canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000)
+   canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
+   woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000)
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
@@ -70,6 +71,7 @@ void Game::step(units::MS dt) {
    cardinal_bird_sound_.step(dt, sound_engine_);
    canary_bird_sound_.step(dt, sound_engine_);
    canary2_bird_sound_.step(dt, sound_engine_);
+   woodpecker_bird_sound_.step(dt, sound_engine_);
 
    deer_.step(dt, deerCam, sound_engine_);
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());

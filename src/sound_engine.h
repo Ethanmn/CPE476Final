@@ -22,6 +22,10 @@ struct SoundEngine {
       CARDINAL_BIRD,
       CANARY0,
       CANARY1,
+      WOODPECKER0,
+      WOODPECKER1,
+      WOODPECKER2,
+      WOODPECKER3,
    };
    SoundEngine();
 
