@@ -159,6 +159,8 @@ void Game::mainLoop() {
    SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
    mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
 
+   sound_engine_.playSoundEffect(SoundEngine::SoundEffect::CARDINAL_BIRD, true, glm::vec3());
+
    while (running) {
       {  // Collect input
          input.beginFrame();

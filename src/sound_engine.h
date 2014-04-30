@@ -18,11 +18,13 @@ struct SoundEngine {
       GRASS_WALK3,
       GRASS_WALK4,
       GRASS_LAND,
+
+      CARDINAL_BIRD,
    };
    SoundEngine();
 
    void set_listener_position(const glm::vec3& listener_position, const glm::vec3& orientation);
-   void playSoundEffect(SoundEffect sound, const glm::vec3& source_position);
+   void playSoundEffect(SoundEffect sound, bool should_loop, const glm::vec3& source_position);
    void playRandomWalkSound();
 
   private:

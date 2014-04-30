@@ -106,7 +106,7 @@ void Deer::step(units::MS dt, const Camera& camera, SoundEngine& sound_engine) {
          velocity_.y = 0.0f;
          position_.y = 0.0f;
          is_jumping_ = false;
-         sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, position_);
+         sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, false, position_);
       }
       step_timer_ = 0;
    } else if (isMoving()) {

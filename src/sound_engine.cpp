@@ -59,6 +59,12 @@ SoundEngine::SoundEngine() {
    sound_effect_sources_[SoundEffect::GRASS_WALK2]->setDefaultVolume(kGrassVolume);
    sound_effect_sources_[SoundEffect::GRASS_WALK3]->setDefaultVolume(kGrassVolume);
    sound_effect_sources_[SoundEffect::GRASS_WALK4]->setDefaultVolume(kGrassVolume);
+
+   sound_effect_sources_[SoundEffect::CARDINAL_BIRD] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/cardinal_bird.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
 }
 
 void SoundEngine::set_listener_position(const glm::vec3& position, const glm::vec3& orientation) {
@@ -67,8 +73,7 @@ void SoundEngine::set_listener_position(const glm::vec3& position, const glm::ve
          irrklang::vec3df(orientation.x, orientation.y, orientation.z));
 }
 
-void SoundEngine::playSoundEffect(SoundEffect sound, const glm::vec3& source_position) {
-   const auto should_loop = false;
+void SoundEngine::playSoundEffect(SoundEffect sound, bool should_loop, const glm::vec3& source_position) {
    if (!engine_->isCurrentlyPlaying(sound_effect_sources_[sound])) {
       /* TODO(chebert): 3d Sound sound legitimately bad. I think i has to do
        * with the listener direction.

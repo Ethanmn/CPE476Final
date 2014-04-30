@@ -43,6 +43,7 @@ void Tree::draw(
 void Tree::rustle(SoundEngine& sound_engine) {
    sound_engine.playSoundEffect(
          SoundEngine::SoundEffect::RUSTLE,
+         false,
          position_);
    rustle_time_ = 0;
 }
