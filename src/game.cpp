@@ -148,7 +148,7 @@ void Game::draw() {
 }
 
 void Game::mainLoop() {
-   box = Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"));
+   box = Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/dance_cyl.dae"));
    Input input;
    int mX, mY;
    bool running = true;
