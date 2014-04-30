@@ -46,9 +46,11 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    
 
    setupTextureShader(shader, uniform_locations, texture_.textureID());
+   texture_.enable();
    //sendMaterial(shader, uniform_locations, glm::vec3(0.45, 0.24, 0.15));
    setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
    shader.drawMesh(mesh_);
+   texture_.disable();
    
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);
    glPolygonMode(GL_FRONT, GL_FILL);

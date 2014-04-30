@@ -115,11 +115,10 @@ void Game::draw() {
 	 setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
          setupTextureShader(shader, uniform_location_map_, texture_.textureID());
          texture_.enable();
-   
          ground_.draw(shader, uniform_location_map_, viewMatrix);
+         texture_.disable();
 
          deer_.draw(shader, uniform_location_map_, viewMatrix);
-         texture_.disable();
       }
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
