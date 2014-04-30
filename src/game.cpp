@@ -59,6 +59,7 @@ Game::Game() :
    mouseDown = false;
    deerCam.initialize(deer_.getPosition());
    treeGen.generateTrees();
+   //SDL_SetRelativeMouseMode(true);
 }
 
 void Game::step(units::MS dt) {
@@ -153,6 +154,10 @@ void Game::mainLoop() {
    bool running = true;
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
+
+   SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
+   mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
+
    while (running) {
       {  // Collect input
          input.beginFrame();
@@ -166,16 +171,11 @@ void Game::mainLoop() {
             } else if (event.type == SDL_KEYUP) {
                input.keyUp(event.key);
             }
-            else if (event.type == SDL_MOUSEBUTTONDOWN && SDL_GetMouseState(&mX, &mY)) {
+
+            if (event.type == SDL_MOUSEMOTION) {
+               SDL_GetRelativeMouseState(&mX, &mY);
+               deerCam.rotatePositionWithDrag(mX, mY, kScreenWidth, kScreenHeight);
                mousePos = glm::vec2(mX, mY);
-               mouseDown = true;
-            }
-            else if (event.type == SDL_MOUSEMOTION && SDL_GetMouseState(&mX, &mY) && mouseDown) {
-               deerCam.rotatePositionWithDrag(mousePos, glm::vec2(mX, mY), kScreenWidth, kScreenHeight);
-               mousePos = glm::vec2(mX, mY);
-            }
-            else if (event.type == SDL_MOUSEBUTTONUP) {
-               mouseDown = false;
             }
          }
       }
@@ -210,6 +210,12 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
                //day_cycle_.switchBoolean();
+            }
+         }
+         { //handle quit
+            const auto key_quit = SDL_SCANCODE_Q;
+            if (input.wasKeyPressed(key_quit)) {
+               running = false;
             }
          }
       }

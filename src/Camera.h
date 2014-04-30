@@ -25,6 +25,7 @@ struct Camera {
    glm::vec3 getCamLeftVec() const;
    glm::mat4 getViewMatrix() const;
    void rotatePositionWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height);
+   void rotatePositionWithDrag(float diffX, float diffY, int width, int height);
 
    protected:
       void updatePosition(float radius);
@@ -37,7 +38,7 @@ struct Camera {
       float theta;
 
       void updateLookAt();
-      void changeRotationAngles(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height);
+      void changeRotationAngles(float diffX, float diffY, int width, int height);
 };
 
 #endif // CAMERA_H_
