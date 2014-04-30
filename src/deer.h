@@ -6,6 +6,7 @@
 #include "bounding_rectangle.h"
 #include "Camera.h"
 #include "graphics/mesh.h"
+#include "graphics/texture.h"
 #include "graphics/location_maps.h"
 #include "units.h"
 
@@ -46,6 +47,7 @@ struct Deer {
    };
 
    Mesh mesh_;
+   Texture texture_;
    glm::vec3 position_;
    glm::vec3 velocity_;
    glm::vec3 last_facing_;

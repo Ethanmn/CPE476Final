@@ -6,7 +6,7 @@
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
 #include "graphics/shader_setup.h"
-#include "graphics/material.h"
+//#include "graphics/material.h"
 
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
@@ -22,6 +22,7 @@ const float kJumpSpeed = 0.015f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
+   texture_(texture_path(Textures::DEER)),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 0, 1),
@@ -43,7 +44,9 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
             position_));
    const glm::mat4 model_matrix(translate * rotate);
    
-   sendMaterial(shader, uniform_locations, glm::vec3(0.45, 0.24, 0.15));
+
+   setupTextureShader(shader, uniform_locations, texture_.textureID());
+   //sendMaterial(shader, uniform_locations, glm::vec3(0.45, 0.24, 0.15));
    setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
    shader.drawMesh(mesh_);
    

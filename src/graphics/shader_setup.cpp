@@ -39,11 +39,9 @@ void setupSunShader(Shader& shader, const UniformLocationMap& locations,
 }
 
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations,
-      float sunIntensity, GLTextureID texture_id) {
+      GLTextureID texture_id) {
    glPolygonMode(GL_FRONT, GL_FILL);
-   shader.sendUniform(Uniform::TEXTURE, locations, texture_id);
-   shader.sendUniform(Uniform::SUN_INTENSITY, locations, sunIntensity);
-   
+   shader.sendUniform(Uniform::TEXTURE, locations, texture_id);  
 }
 
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
@@ -51,4 +49,15 @@ void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
    glPolygonMode(GL_FRONT, GL_LINE);
    glLineWidth(1.0f);
    shader.sendUniform(Uniform::COLOR, locations, color);
+}
+
+void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
+                          glm::vec3 lightDir) {
+   glPolygonMode(GL_FRONT, GL_FILL);
+   glm::mat4 shadowProjection, shadowView;
+   shadowView = glm::lookAt(lightDir, glm::vec3(0.0, 0.0, 0.0), 
+      glm::vec3(0.0, 1.0, 0.0));
+   shadowProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 20.0f);
+   setupModelView(shader, locations, glm::mat4(1.0), shadowView, false);
+   shader.sendUniform(Uniform::PROJECTION, locations, shadowProjection);
 }

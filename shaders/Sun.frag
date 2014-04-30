@@ -22,7 +22,7 @@ void main() {
    vec3 Spec, Diffuse;
    float dotNLDir, dotVRDir;
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
-   vec3 directionalColor = vec3(uSunIntensity);
+   vec3 directionalColor = vec3(0.7*uSunIntensity);
    
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));
    ReflDir = normalize(reflect(-1.0 * vec3(vLightAndDirectional), vNormal));
@@ -30,7 +30,7 @@ void main() {
    
    Diffuse = directionalColor * uMat.diffuse * dotNLDir;
    Spec = directionalColor * uMat.specular * pow(dotVRDir, uMat.shine);
-   color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + uMat.ambient;
+   color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + vec3(1.2) * uMat.ambient;
    
    gl_FragColor = vec4(color.r, color.g, color.b, 1.0);
 }

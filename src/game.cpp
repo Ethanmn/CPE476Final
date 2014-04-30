@@ -11,12 +11,11 @@ namespace {
 
 Game::Game() :
    texture_(texture_path(Textures::GRASS)),
-   deer_texture_(texture_path(Textures::DEER)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
+            mesh_loader_.loadMesh("../models/Test_Deer_Texture.dae")), glm::vec3(0.0f)),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -112,16 +111,22 @@ void Game::draw() {
       setupProjection(shader, uniform_location_map_);
 
       if(shaderPair.first == ShaderType::TEXTURE) {
-         setupTextureShader(shader, uniform_location_map_, sunIntensity, texture_.textureID());
+	 setupView(shader, uniform_location_map_, viewMatrix);
+	 setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
+         setupTextureShader(shader, uniform_location_map_, texture_.textureID());
          texture_.enable();
    
          ground_.draw(shader, uniform_location_map_, viewMatrix);
-         
+
+         deer_.draw(shader, uniform_location_map_, viewMatrix);
          texture_.disable();
       }
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
+
+         //setupShadowShader(shader, uniform_location_map_, sunDir);
+
 
          //ON BOX
          setupModelView(shader, uniform_location_map_,
@@ -138,7 +143,6 @@ void Game::draw() {
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
-         deer_.draw(shader, uniform_location_map_, viewMatrix);
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)

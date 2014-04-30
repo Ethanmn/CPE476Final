@@ -21,14 +21,15 @@ const std::vector<Uniform> kSunUniforms{
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
    Attribute::TEX_COORD,
-// Attribute::NORMAL,
+   Attribute::NORMAL,
 };
 const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL_VIEW,
-//   Uniform::VIEW,
+   Uniform::VIEW,
    Uniform::PROJECTION,
-//   Uniform::NORMAL,
+   Uniform::NORMAL,
    Uniform::TEXTURE,
+   Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY
 };
 
