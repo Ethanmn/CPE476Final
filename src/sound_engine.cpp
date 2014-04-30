@@ -78,6 +78,7 @@ SoundEngine::SoundEngine() {
             "../sounds/canary1.wav",
             irrklang::ESM_NO_STREAMING,
             should_preload);
+   sound_effect_sources_[SoundEffect::CANARY1]->setDefaultVolume(0.2f);
 }
 
 void SoundEngine::set_listener_position(const glm::vec3& position, const glm::vec3& orientation) {
