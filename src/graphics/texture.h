@@ -29,7 +29,7 @@ struct Texture {
    Texture(const std::string& path);
    void enable();
    void disable();
-   GLTextureID textureID();
+   GLTextureID textureID() const;
 };
 
 #endif

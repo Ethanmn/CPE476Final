@@ -129,7 +129,7 @@ void Texture::disable() {
    glDisable(GL_TEXTURE_2D);
 }
 
-GLTextureID Texture::textureID() {
+GLTextureID Texture::textureID() const {
    return texture_id;
 }
 
