@@ -107,16 +107,17 @@ void Game::draw() {
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
+
       
-      setupProjection(shader, uniform_location_map_);
-
       if(shaderPair.first == ShaderType::SHADOW) {
-
-
+         setupShadowShader(shader, uniform_location_map_, sunDir);
+         shader.drawMesh(box);
+         glDisable(GL_STENCIL_TEST);
       }
       else if(shaderPair.first == ShaderType::TEXTURE) {
-	 setupView(shader, uniform_location_map_, viewMatrix);
-	 setupSunShader(shader, uniform_location_map_, sunIntensity, 
+        setupProjection(shader, uniform_location_map_);
+	     setupView(shader, uniform_location_map_, viewMatrix);
+	     setupSunShader(shader, uniform_location_map_, sunIntensity, 
             glm::vec3(0.0, 1.0, 0.0));
          setupTextureShader(shader, uniform_location_map_, texture_.textureID());
          texture_.enable();
@@ -127,6 +128,7 @@ void Game::draw() {
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::SUN) {
+         setupProjection(shader, uniform_location_map_);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -147,8 +149,10 @@ void Game::draw() {
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
-      else if(shaderPair.first == ShaderType::WIREFRAME)
+      else if(shaderPair.first == ShaderType::WIREFRAME) {
+         setupProjection(shader, uniform_location_map_);
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
+      }
       
    }
 }

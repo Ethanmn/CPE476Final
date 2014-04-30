@@ -38,12 +38,21 @@ const std::vector<Attribute> kWireframeAttrs{
 };
 const std::vector<Uniform> kWireframeUniforms{
    Uniform::MODEL_VIEW,
-//   Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::COLOR,
 };
 
+const std::vector<Attribute> kShadowAttrs{
+   Attribute::VERTEX
+};
+const std::vector<Uniform> kShadowUniforms{
+   Uniform::SHADOW_MVP
+};
+
 Shaders::Shaders() {
+   shaders_.insert(std::make_pair(
+            ShaderType::SHADOW,
+            Shader("Shadow", kShadowAttrs, kShadowUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));
