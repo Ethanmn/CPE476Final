@@ -65,6 +65,7 @@ SoundEngine::SoundEngine() {
             "../sounds/cardinal_bird.ogg",
             irrklang::ESM_NO_STREAMING,
             should_preload);
+   sound_effect_sources_[SoundEffect::CARDINAL_BIRD]->setDefaultVolume(0.1f);
 }
 
 void SoundEngine::set_listener_position(const glm::vec3& position, const glm::vec3& orientation) {

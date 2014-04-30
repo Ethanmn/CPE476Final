@@ -64,6 +64,7 @@ Game::Game() :
 
 void Game::step(units::MS dt) {
    bool treeColl = false;
+   cardinal_bird_sound_.step(dt, sound_engine_);
 
    deer_.step(dt, deerCam, sound_engine_);
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
@@ -158,8 +159,6 @@ void Game::mainLoop() {
 
    SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
    mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
-
-   sound_engine_.playSoundEffect(SoundEngine::SoundEffect::CARDINAL_BIRD, true, glm::vec3());
 
    while (running) {
       {  // Collect input
