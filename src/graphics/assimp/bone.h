@@ -9,6 +9,8 @@ typedef size_t BoneID;
 struct Bone {
    Bone(aiBone* ai_bone, aiNode* ai_node, BoneID bone_id);
 
+   std::string name() const { return name_; }
+
   private:
    std::string name_, parent_name_;
    glm::mat4 bind_pose_, inverse_bind_pose_;
