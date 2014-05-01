@@ -16,6 +16,7 @@
 #include "graphics/material.h"
 #include "TreeGenerator.h"
 #include "graphics/day_cycle.h"
+#include "graphics/shadow_map.h"
 #include "tree.h"
 
 struct Game {
@@ -37,6 +38,7 @@ struct Game {
    DayCycle day_cycle_;
    Mesh tree_mesh_;
    std::vector<Tree> bushes_;
+   ShadowMapFBO shadow_map_;
 
    glm::vec2 mousePos;
    bool mouseDown;

@@ -1,10 +1,12 @@
 #include "shadow_map.h"
+#include <stdio.h>
 
 ShadowMapFBO::ShadowMapFBO() {
 	glGenFramebuffers(1, &fbo_id);
 }
 
 bool ShadowMapFBO::setup(unsigned int WindowWidth, unsigned int WindowHeight) {
+	printf("inside of fbo\n");
 	glGenTextures(1, &shadow_map_texture);
 	glBindTexture(GL_TEXTURE_2D, shadow_map_texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WindowWidth, 
@@ -18,6 +20,7 @@ bool ShadowMapFBO::setup(unsigned int WindowWidth, unsigned int WindowHeight) {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo_id);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
 	 GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadow_map_texture, 0);
+
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 
@@ -28,9 +31,7 @@ void ShadowMapFBO::BindForWriting() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_id);
 }
 
-void ShadowMapFBO::BindForReading(GLTextureID TextureUnit) {
-	glActiveTexture(TextureUnit);
+void ShadowMapFBO::BindForReading() {
+	glActiveTexture(shadow_map_texture);
 	glBindTexture(GL_TEXTURE_2D, shadow_map_texture);
 }
-
-/* once shadowmap render is done, call glBindFramebuffer(GL_FRAMEBUFFER, 0); */

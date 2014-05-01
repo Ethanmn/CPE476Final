@@ -7,6 +7,7 @@
 namespace {
    DeerCam deerCam;
    Mesh box;
+   
 }
 
 Game::Game() :
@@ -110,10 +111,12 @@ void Game::draw() {
 
       
       if(shaderPair.first == ShaderType::SHADOW) {
-         
-         setupShadowShader(shader, uniform_location_map_, sunDir, deer_.getModelMatrix());
+         shadow_map_.BindForWriting();
+         setupShadowShader(shader, uniform_location_map_, sunDir, 
+            deer_.getModelMatrix());
          deer_.drawMesh(shader);
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         shadow_map_.BindForReading();
       }
       else if(shaderPair.first == ShaderType::TEXTURE) {
         setupProjection(shader, uniform_location_map_);
@@ -159,12 +162,19 @@ void Game::draw() {
 }
 
 void Game::mainLoop() {
-   box = Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"));
+   box = Mesh::fromAssimpMesh(attribute_location_map_, 
+      mesh_loader_.loadMesh("../models/cube.obj"));
    Input input;
    int mX, mY;
    bool running = true;
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
+
+   printf("Before setup\n");
+   if(!shadow_map_.setup(kScreenWidth, kScreenHeight)) {
+      printf("FAILURE\n");
+      return;
+   }
 
    SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
    mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
@@ -220,7 +230,7 @@ void Game::mainLoop() {
             const auto key_jump = SDL_SCANCODE_J;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
-               //day_cycle_.switchBoolean();
+               day_cycle_.switchBoolean();
             }
          }
          { //handle quit

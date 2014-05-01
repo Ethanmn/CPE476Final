@@ -9,7 +9,7 @@ class ShadowMapFBO
         ShadowMapFBO();
         bool setup(unsigned int WindowWidth, unsigned int WindowHeight);
         void BindForWriting();
-        void BindForReading(GLTextureID TextureUnit);
+        void BindForReading();
     private:
         GLuint fbo_id;
         GLuint shadow_map_texture;
