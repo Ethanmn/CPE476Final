@@ -110,9 +110,10 @@ void Game::draw() {
 
       
       if(shaderPair.first == ShaderType::SHADOW) {
-         setupShadowShader(shader, uniform_location_map_, sunDir);
-         shader.drawMesh(box);
-         glDisable(GL_STENCIL_TEST);
+         
+         setupShadowShader(shader, uniform_location_map_, sunDir, deer_.getModelMatrix());
+         deer_.drawMesh(shader);
+         glBindFramebuffer(GL_FRAMEBUFFER, 0);
       }
       else if(shaderPair.first == ShaderType::TEXTURE) {
         setupProjection(shader, uniform_location_map_);

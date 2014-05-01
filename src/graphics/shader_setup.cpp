@@ -52,12 +52,13 @@ void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
 }
 
 void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
-                          glm::vec3 lightDir) {
+                          glm::vec3 lightDir, glm::mat4 modelMatrix) {
    glEnable(GL_STENCIL_TEST);
    glPolygonMode(GL_FRONT, GL_FILL);
    glm::mat4 shadowProjection, shadowView;
    shadowView = glm::lookAt(lightDir, glm::vec3(0.0, 0.0, 0.0), 
       glm::vec3(0.0, 1.0, 0.0));
    shadowProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 20.0f);
-   shader.sendUniform(Uniform::SHADOW_MVP, locations, shadowProjection * shadowView);
+   shader.sendUniform(Uniform::MODEL_VIEW, locations, shadowView * modelMatrix);
+   shader.sendUniform(Uniform::PROJECTION, locations, shadowProjection);
 }

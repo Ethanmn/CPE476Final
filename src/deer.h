@@ -34,6 +34,10 @@ struct Deer {
    bool isMoving();
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
+   /* helper functions for shadows */
+   glm::mat4 getModelMatrix();
+   void drawMesh(Shader& shader);
+
   private:
    enum class WalkDirection {
       FORWARD,

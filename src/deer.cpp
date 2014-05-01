@@ -154,3 +154,20 @@ bool Deer::isMoving() {
 glm::vec3 Deer::getPosition() {
    return position_;
 }
+
+glm::mat4 Deer::getModelMatrix() {
+      const glm::mat4 rotate(
+         glm::lookAt(
+            glm::vec3(0.0f),
+            glm::vec3(last_facing_.x, last_facing_.y, -last_facing_.z),
+            glm::vec3(0, 1, 0)));
+   const glm::mat4 translate(
+      glm::translate(
+            glm::mat4(1.0f),
+            position_));
+   return translate * rotate;
+}
+
+void Deer::drawMesh(Shader& shader) {
+   shader.drawMesh(mesh_);
+}

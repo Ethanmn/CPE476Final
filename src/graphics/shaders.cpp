@@ -46,7 +46,8 @@ const std::vector<Attribute> kShadowAttrs{
    Attribute::VERTEX
 };
 const std::vector<Uniform> kShadowUniforms{
-   Uniform::SHADOW_MVP
+   Uniform::MODEL_VIEW,
+   Uniform::PROJECTION
 };
 
 Shaders::Shaders() {
