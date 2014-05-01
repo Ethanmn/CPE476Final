@@ -4,7 +4,27 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 
+#include <glm/glm.hpp>
 #include <iostream>
+#include <set>
+#include <memory>
+
+namespace {
+
+   aiNode* findAiNode(aiBone* bone, aiNode* root) {
+      if (bone->mName == root->mName) {
+         return root;
+      }
+
+      for (size_t i = 0; i < root->mNumChildren; ++i) {
+         aiNode* node = findAiNode(bone, root->mChildren[i]);
+         if (node != nullptr) {
+            return node;
+         }
+      }
+      return nullptr;
+   }
+}
 
 AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    if (meshes_.count(path) != 0) {
@@ -43,6 +63,26 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
             ret.index_array.end(),
             mesh.mFaces[i].mIndices,
             mesh.mFaces[i].mIndices + kNumAxes);
+   }
+
+   // Get the bones.
+   if (mesh.mNumBones > 0) {
+      ret.bone_weights_array.resize(mesh.mNumVertices);
+      for (size_t i = 0; i < mesh.mNumBones; ++i) {
+         auto& bone = mesh.mBones[i];
+         aiNode* node = findAiNode(bone, scene->mRootNode);
+         assert(node != nullptr);
+
+         const auto bone_id = i;
+         ret.bone_array.push_back(Bone(bone, node, bone_id));
+
+         for (size_t i = 0; i < bone->mNumWeights; ++i) {
+            auto& weight = bone->mWeights[i];
+            ret.bone_weights_array[weight.mVertexId].push_back({bone_id, weight.mWeight});
+         }
+      }
+      assert(ret.bone_array.size() == mesh.mNumBones);
+      assert(ret.bone_weights_array.size() == mesh.mNumVertices);
    }
 
    meshes_[path] = ret;
