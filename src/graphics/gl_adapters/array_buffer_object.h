@@ -5,6 +5,7 @@
 
 #include "buffer_object.h"
 #include "gl_types.h"
+#include "graphics/assimp/mesh_loader.h"
 
 struct ArrayBufferObject {
    template <typename T>
