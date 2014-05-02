@@ -26,10 +26,30 @@ namespace {
    }
 }
 
-Bone::Bone(aiBone* ai_bone, aiNode* ai_node, BoneID bone_id) :
+//static
+BoneAnimation BoneAnimation::fromAiAnimNode(BoneID bone_id, const aiNodeAnim& channel) {
+   BoneAnimation anim;
+   anim.bone_id = bone_id;
+   for (size_t i = 0; i < channel.mNumPositionKeys; ++i) {
+      anim.position_keys.push_back(Vec3Key(channel.mPositionKeys[i]));
+   }
+   for (size_t i = 0; i < channel.mNumRotationKeys; ++i) {
+      anim.rotation_keys.push_back(QuatKey(channel.mRotationKeys[i]));
+   }
+   for (size_t i = 0; i < channel.mNumScalingKeys; ++i) {
+      anim.scale_keys.push_back(Vec3Key(channel.mScalingKeys[i]));
+   }
+   anim.pre_state = channel.mPreState;
+   anim.post_state = channel.mPostState;
+   return anim;
+}
+
+
+Bone::Bone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id) :
       name_(ai_node->mName.C_Str()),
       parent_name_(ai_node->mParent->mName.C_Str()),
       bind_pose_(fromAiMatrix4x4(ai_node->mTransformation)),
       inverse_bind_pose_(fromAiMatrix4x4(ai_bone->mOffsetMatrix)),
+      bone_animation_(BoneAnimation::fromAiAnimNode(bone_id, channel)),
       bone_id_(bone_id)
    {}
