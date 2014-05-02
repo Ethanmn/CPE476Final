@@ -127,13 +127,13 @@ void Game::draw() {
 
          //ON BOX
          setupModelView(shader, uniform_location_map_,
-               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, 0.0, -30.0)), viewMatrix, true);
+               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, 3.0, -30.0)), viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
 
          //OFF BOX
          setupModelView(shader, uniform_location_map_,
-               glm::translate(glm::mat4(1.0), glm::vec3(20.0, 0.0, 20.0)), viewMatrix, true);
+               glm::translate(glm::mat4(1.0), glm::vec3(20.0, 3.0, 20.0)), viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
          shader.drawMesh(box);
 

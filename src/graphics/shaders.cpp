@@ -3,7 +3,11 @@
 
 const std::vector<Attribute> kSunAttrs{
    Attribute::VERTEX,
-   Attribute::NORMAL
+   Attribute::NORMAL,
+
+   Attribute::BONE_ID0,
+   Attribute::BONE_ID1,
+   //Attribute::BONE_WEIGHT0,
 };
 const std::vector<Uniform> kSunUniforms{
    Uniform::MODEL_VIEW,

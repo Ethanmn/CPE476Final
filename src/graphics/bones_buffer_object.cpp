@@ -1,11 +1,14 @@
 #include "bones_buffer_object.h"
 
+#include <iostream>
+
 #include "graphics/attributes.h"
 
 std::vector<ArrayBufferObject> createFromBoneIDAndWeights(
          const std::vector<std::vector<AssimpMesh::BoneIDAndWeight>>& data,
          AttributeLocationMap locations) {
-   std::vector<std::vector<size_t>> bone_ids(kMaxBonesPerVertex, std::vector<size_t>(data.size()));
+   // -1 is a sentinel value. Means: does not have an index.
+   std::vector<std::vector<int>> bone_ids(kMaxBonesPerVertex, std::vector<int>(data.size(), -1));
    std::vector<std::vector<float>> bone_weights(kMaxBonesPerVertex, std::vector<float>(data.size()));
    for (size_t vi = 0; vi < data.size(); ++vi) {
       auto& vertex = data[vi];

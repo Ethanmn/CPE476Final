@@ -32,5 +32,6 @@ void main() {
    Spec = directionalColor * uMat.specular * pow(dotVRDir, uMat.shine);
    color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + uMat.ambient;
    
-   gl_FragColor = vec4(color.r, color.g, color.b, 1.0);
+   /*gl_FragColor = vec4(color.r, color.g, color.b, 1.0);*/
+   gl_FragColor = vec4(color.r * vColor.r, color.g * vColor.g, color.b * vColor.b, 1.0);
 }
