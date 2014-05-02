@@ -43,6 +43,8 @@ Game::Game() :
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
+   std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
+   std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
