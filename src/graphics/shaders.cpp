@@ -19,7 +19,9 @@ const std::vector<Uniform> kSunUniforms{
    Uniform::M_SPEC,
    Uniform::M_SHINE,
    Uniform::SUN_DIR,
-   Uniform::SUN_INTENSITY
+   Uniform::SUN_INTENSITY,
+   Uniform::BONES,
+   Uniform::HAS_BONES,
 };
 
 const std::vector<Attribute> kTextureAttrs{
