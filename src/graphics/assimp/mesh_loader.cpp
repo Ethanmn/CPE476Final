@@ -9,6 +9,8 @@
 #include <set>
 #include <memory>
 
+#include "ai_utils.h"
+
 namespace {
    aiNode* findAiNodeForBone(aiBone* bone, aiNode* root) {
       if (bone->mName == root->mName) {
@@ -113,11 +115,13 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          }
       }
       assert(assimp_bones.size() == mesh.mNumBones);
+      glm::mat4 global_inverse_transform(fromAiMatrix4x4(scene->mRootNode->mTransformation.Inverse()));
       for (const auto& assimp_bone : assimp_bones) {
          ret.bone_array.push_back(Bone(
                   assimp_bone.ai_bone,
                   assimp_bone.ai_node,
                   assimp_bone.channel,
+                  global_inverse_transform,
                   assimp_bone.bone_id,
                   findParentBoneID(assimp_bones, assimp_bone)));
       }

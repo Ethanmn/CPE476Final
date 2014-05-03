@@ -37,7 +37,11 @@ struct BoneAnimation {
 };
 
 struct Bone {
-   Bone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id, BoneID parent_id);
+   Bone(aiBone* ai_bone,
+         aiNode* ai_node,
+         const aiNodeAnim& channel,
+         const glm::mat4& global_inverse_transform,
+         BoneID bone_id, BoneID parent_id);
 
    static std::vector<glm::mat4> calculateBoneTransformations(const std::vector<Bone>& bones);
 
@@ -55,6 +59,8 @@ struct Bone {
 
    // Transformation of the bone in world space from the root of the scene.
    glm::mat4 transform_;
+   // Transform the scene into mesh space.
+   glm::mat4 global_inverse_transform_;
    // Transform from mesh space into bone space.
    glm::mat4 inverse_bind_pose_;
    BoneAnimation bone_animation_;

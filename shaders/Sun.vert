@@ -56,6 +56,6 @@ void main() {
   vec4 position = uModelViewMatrix * bone * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
   gl_Position = uProjectionMatrix * position;
 
-  vNormal = vec3(uNormalMatrix * bone * vec4(aNormal, 1.0));
+  vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
   vViewer = position;
 }

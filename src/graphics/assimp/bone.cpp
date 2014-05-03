@@ -1,32 +1,8 @@
 #include "graphics/assimp/bone.h"
 
+#include "graphics/assimp/ai_utils.h"
+
 #include <iostream>
-
-namespace {
-   glm::mat4 fromAiMatrix4x4(const aiMatrix4x4& ai_mat) {
-      glm::mat4 glm_mat;
-      glm_mat[0][0] = ai_mat.a1;
-      glm_mat[1][0] = ai_mat.a2;
-      glm_mat[2][0] = ai_mat.a3;
-      glm_mat[3][0] = ai_mat.a4;
-
-      glm_mat[0][1] = ai_mat.b1;
-      glm_mat[1][1] = ai_mat.b2;
-      glm_mat[2][1] = ai_mat.b3;
-      glm_mat[3][1] = ai_mat.b4;
-
-      glm_mat[0][2] = ai_mat.c1;
-      glm_mat[1][2] = ai_mat.c2;
-      glm_mat[2][2] = ai_mat.c3;
-      glm_mat[3][2] = ai_mat.c4;
-
-      glm_mat[0][3] = ai_mat.d1;
-      glm_mat[1][3] = ai_mat.d2;
-      glm_mat[2][3] = ai_mat.d3;
-      glm_mat[3][3] = ai_mat.d4;
-      return glm_mat;
-   }
-}
 
 //static
 BoneAnimation BoneAnimation::fromAiAnimNode(const aiNodeAnim& channel) {
@@ -46,8 +22,13 @@ BoneAnimation BoneAnimation::fromAiAnimNode(const aiNodeAnim& channel) {
 }
 
 
-Bone::Bone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id, BoneID parent_id) :
+Bone::Bone(aiBone* ai_bone,
+         aiNode* ai_node,
+         const aiNodeAnim& channel,
+         const glm::mat4& global_inverse_transform,
+         BoneID bone_id, BoneID parent_id) :
       transform_(fromAiMatrix4x4(ai_node->mTransformation)),
+      global_inverse_transform_(global_inverse_transform),
       inverse_bind_pose_(fromAiMatrix4x4(ai_bone->mOffsetMatrix)),
       bone_animation_(BoneAnimation::fromAiAnimNode(channel)),
       bone_id_(bone_id),
@@ -61,7 +42,7 @@ std::vector<glm::mat4> Bone::calculateBoneTransformations(const std::vector<Bone
    for (const auto& bone : bones) {
       if (!maybe_transformations[bone.id()])
          calculateBoneTransformation(bones, bone, maybe_transformations);
-      transformations[bone.id()] = *maybe_transformations[bone.id()];
+      transformations[bone.id()] = *maybe_transformations[bone.id()] * bone.inverse_bind_pose();
    }
 
    assert(transformations.size() == bones.size());
@@ -84,5 +65,5 @@ void Bone::calculateBoneTransformation(
 
    glm::mat4 node_transform(bone.transform());
    //TODO: calculate transform for a given time.
-   transformations[bone.id()] = parent_transformation * node_transform * bone.inverse_bind_pose();
+   transformations[bone.id()] = parent_transformation * node_transform;
 }
