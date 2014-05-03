@@ -23,6 +23,28 @@ namespace {
       }
       return nullptr;
    }
+
+   struct AssimpBone {
+      AssimpBone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id) :
+         ai_bone(ai_bone),
+         ai_node(ai_node),
+         channel(channel),
+         bone_id(bone_id) {}
+
+      aiBone* ai_bone;
+      aiNode* ai_node;
+      const aiNodeAnim& channel;
+      BoneID bone_id;
+   };
+
+   BoneID findParentBoneID(const std::vector<AssimpBone>& bones, const AssimpBone& child_bone) {
+      for (auto& bone : bones) {
+         if (bone.ai_node->mName == child_bone.ai_node->mParent->mName) {
+            return bone.bone_id;
+         }
+      }
+      return child_bone.bone_id;
+   }
 }
 
 AssimpMesh MeshLoader::loadMesh(const std::string& path) {
@@ -77,18 +99,29 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
       }
 
       ret.bone_weights_array.resize(mesh.mNumVertices);
+      std::vector<AssimpBone> assimp_bones;
       for (size_t i = 0; i < mesh.mNumBones; ++i) {
          auto& bone = mesh.mBones[i];
          aiNode* node = findAiNodeForBone(bone, scene->mRootNode);
          assert(node != nullptr);
 
          const auto bone_id = i;
-         ret.bone_array.push_back(Bone(bone, node, *channel_map[node->mName.C_Str()], bone_id));
+         assimp_bones.push_back(AssimpBone(bone, node, *channel_map[node->mName.C_Str()], bone_id));
          for (size_t i = 0; i < bone->mNumWeights; ++i) {
             auto& weight = bone->mWeights[i];
             ret.bone_weights_array[weight.mVertexId].push_back({bone_id, weight.mWeight});
          }
       }
+      assert(assimp_bones.size() == mesh.mNumBones);
+      for (const auto& assimp_bone : assimp_bones) {
+         ret.bone_array.push_back(Bone(
+                  assimp_bone.ai_bone,
+                  assimp_bone.ai_node,
+                  assimp_bone.channel,
+                  assimp_bone.bone_id,
+                  findParentBoneID(assimp_bones, assimp_bone)));
+      }
+
       assert(ret.bone_array.size() == mesh.mNumBones);
       assert(ret.bone_weights_array.size() == mesh.mNumVertices);
    }

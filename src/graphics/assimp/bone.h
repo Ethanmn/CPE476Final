@@ -2,6 +2,7 @@
 #define BONE_H_
 
 #include <assimp/scene.h>
+#include <boost/optional.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
@@ -37,7 +38,7 @@ struct BoneAnimation {
 };
 
 struct Bone {
-   Bone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id);
+   Bone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id, BoneID parent_id);
 
    std::string name() const { return name_; }
 
@@ -45,7 +46,7 @@ struct Bone {
    std::string name_, parent_name_;
    glm::mat4 bind_pose_, inverse_bind_pose_;
    BoneAnimation bone_animation_;
-   BoneID bone_id_;
+   BoneID bone_id_, parent_id_;
 };
 
 #endif // BONE_H_

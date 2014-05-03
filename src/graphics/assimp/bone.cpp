@@ -45,11 +45,12 @@ BoneAnimation BoneAnimation::fromAiAnimNode(BoneID bone_id, const aiNodeAnim& ch
 }
 
 
-Bone::Bone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id) :
+Bone::Bone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id, BoneID parent_id) :
       name_(ai_node->mName.C_Str()),
       parent_name_(ai_node->mParent->mName.C_Str()),
       bind_pose_(fromAiMatrix4x4(ai_node->mTransformation)),
       inverse_bind_pose_(fromAiMatrix4x4(ai_bone->mOffsetMatrix)),
       bone_animation_(BoneAnimation::fromAiAnimNode(bone_id, channel)),
-      bone_id_(bone_id)
+      bone_id_(bone_id),
+      parent_id_(parent_id)
    {}
