@@ -96,6 +96,17 @@ void GLShader::sendUniform<glm::mat4>(
 }
 
 template <>
+void GLShader::sendUniform<std::vector<glm::mat4>>(
+      const GLUniformLocationMap& uniforms,
+      const std::vector<glm::mat4>& data) {
+   std::vector<float> floats;
+   for (auto& m : data) {
+      floats.insert(floats.end(), glm::value_ptr(m), glm::value_ptr(m) + 16);
+   }
+   glUniformMatrix4fv(uniforms.at(program_), floats.size(), GL_FALSE, floats.data());
+}
+
+template <>
 void GLShader::sendUniform<GLTextureID>(
       const GLUniformLocationMap& uniforms,
       const GLTextureID& data) {

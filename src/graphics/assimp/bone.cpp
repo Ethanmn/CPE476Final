@@ -1,5 +1,7 @@
 #include "graphics/assimp/bone.h"
 
+#include <iostream>
+
 namespace {
    glm::mat4 fromAiMatrix4x4(const aiMatrix4x4& ai_mat) {
       glm::mat4 glm_mat;
@@ -27,9 +29,8 @@ namespace {
 }
 
 //static
-BoneAnimation BoneAnimation::fromAiAnimNode(BoneID bone_id, const aiNodeAnim& channel) {
+BoneAnimation BoneAnimation::fromAiAnimNode(const aiNodeAnim& channel) {
    BoneAnimation anim;
-   anim.bone_id = bone_id;
    for (size_t i = 0; i < channel.mNumPositionKeys; ++i) {
       anim.position_keys.push_back(Vec3Key(channel.mPositionKeys[i]));
    }
@@ -46,11 +47,42 @@ BoneAnimation BoneAnimation::fromAiAnimNode(BoneID bone_id, const aiNodeAnim& ch
 
 
 Bone::Bone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id, BoneID parent_id) :
-      name_(ai_node->mName.C_Str()),
-      parent_name_(ai_node->mParent->mName.C_Str()),
-      bind_pose_(fromAiMatrix4x4(ai_node->mTransformation)),
+      transform_(fromAiMatrix4x4(ai_node->mTransformation)),
       inverse_bind_pose_(fromAiMatrix4x4(ai_bone->mOffsetMatrix)),
-      bone_animation_(BoneAnimation::fromAiAnimNode(bone_id, channel)),
+      bone_animation_(BoneAnimation::fromAiAnimNode(channel)),
       bone_id_(bone_id),
       parent_id_(parent_id)
    {}
+
+//static
+std::vector<glm::mat4> Bone::calculateBoneTransformations(const std::vector<Bone>& bones) {
+   std::vector<glm::mat4> transformations(bones.size());
+   std::vector<boost::optional<glm::mat4>> maybe_transformations(bones.size());
+   for (const auto& bone : bones) {
+      if (!maybe_transformations[bone.id()])
+         calculateBoneTransformation(bones, bone, maybe_transformations);
+      transformations[bone.id()] = *maybe_transformations[bone.id()];
+   }
+
+   assert(transformations.size() == bones.size());
+   assert(maybe_transformations.size() == bones.size());
+   return transformations;
+}
+
+//static
+void Bone::calculateBoneTransformation(
+      const std::vector<Bone>& bones,
+      const Bone& bone,
+      std::vector<boost::optional<glm::mat4>>& transformations) {
+   glm::mat4 parent_transformation;
+   if (!bone.is_root()) {
+      if (!transformations[bone.parent_id()]) {
+         calculateBoneTransformation(bones, bones[bone.parent_id()], transformations);
+      }
+      parent_transformation = *transformations[bone.parent_id()];
+   }
+
+   glm::mat4 node_transform(bone.transform());
+   //TODO: calculate transform for a given time.
+   transformations[bone.id()] = parent_transformation * node_transform * bone.inverse_bind_pose();
+}

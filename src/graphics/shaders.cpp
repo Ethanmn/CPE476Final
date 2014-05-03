@@ -6,8 +6,19 @@ const std::vector<Attribute> kSunAttrs{
    Attribute::NORMAL,
 
    Attribute::BONE_ID0,
+   Attribute::BONE_WEIGHT0,
+
    Attribute::BONE_ID1,
-   //Attribute::BONE_WEIGHT0,
+   Attribute::BONE_WEIGHT1,
+
+   Attribute::BONE_ID2,
+   Attribute::BONE_WEIGHT2,
+
+   Attribute::BONE_ID3,
+   Attribute::BONE_WEIGHT3,
+
+   Attribute::BONE_ID4,
+   Attribute::BONE_WEIGHT4,
 };
 const std::vector<Uniform> kSunUniforms{
    Uniform::MODEL_VIEW,
