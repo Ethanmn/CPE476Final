@@ -230,11 +230,11 @@ void Game::mainLoop() {
             }
          }
          if (input.isKeyHeld(SDL_SCANCODE_0)) {
-            anim_time += 0.005f;
+            anim_time += 0.001f;
             anim_time = std::max(anim_time, 0.0f);
             std::clog << anim_time << std::endl;
          } else if (input.isKeyHeld(SDL_SCANCODE_9)) {
-            anim_time -= 0.005f;
+            anim_time -= 0.001f;
             anim_time = std::min(anim_time, 2.0f);
             std::clog << anim_time << std::endl;
          }

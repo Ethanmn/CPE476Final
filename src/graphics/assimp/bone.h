@@ -8,24 +8,25 @@
 
 typedef size_t BoneID;
 
-template <typename T, typename U>
-struct AnimKey {
-   static AnimKey<T, U> create(const U&);
-
-   static T calculateInterpolation(AnimKey pre, AnimKey post, double time) {
-      const auto delta_time = post.time - pre.time;
-      const auto interp_factor = (time - pre.time) / delta_time;
-      const auto interpolated = glm::mix(pre.value, post.value, interp_factor);
-      return interpolated;
-   }
-
+struct Vec3Key {
+   Vec3Key(const aiVectorKey& key) :
+      time(key.mTime),
+      value(glm::vec3(key.mValue.x, key.mValue.y, key.mValue.z))
+   {}
    double time;
-   T value;
+   glm::vec3 value;
+};
+
+struct QuatKey {
+   QuatKey(const aiQuatKey& key) :
+      time(key.mTime),
+      value(glm::quat(key.mValue.x, key.mValue.y, key.mValue.z, key.mValue.w))
+   {}
+   double time;
+   glm::quat value;
 };
 
 struct BoneAnimation {
-   typedef AnimKey<glm::vec3, aiVectorKey> Vec3Key;
-   typedef AnimKey<glm::quat, aiQuatKey> QuatKey;
    static BoneAnimation fromAiAnimNode(const aiNodeAnim& channel);
 
    glm::mat4 translation(double time) const;

@@ -6,33 +6,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-template <>
-AnimKey<glm::vec3, aiVectorKey> AnimKey<glm::vec3, aiVectorKey>::create(const aiVectorKey& key) {
-   AnimKey<glm::vec3, aiVectorKey> anim_key;
-   anim_key.time = key.mTime;
-   anim_key.value = glm::vec3(key.mValue.x, key.mValue.y, key.mValue.z);
-   return anim_key;
-}
-
-template <>
-AnimKey<glm::quat, aiQuatKey> AnimKey<glm::quat, aiQuatKey>::create(const aiQuatKey& key) {
-   AnimKey<glm::quat, aiQuatKey> anim_key;
-   anim_key.time = key.mTime;
-   anim_key.value = glm::quat(key.mValue.x, key.mValue.y, key.mValue.z, key.mValue.w);
-   return anim_key;
-}
-
 //static
 BoneAnimation BoneAnimation::fromAiAnimNode(const aiNodeAnim& channel) {
    BoneAnimation anim;
    for (size_t i = 0; i < channel.mNumPositionKeys; ++i) {
-      anim.position_keys.push_back(Vec3Key::create(channel.mPositionKeys[i]));
+      anim.position_keys.push_back(Vec3Key(channel.mPositionKeys[i]));
    }
    for (size_t i = 0; i < channel.mNumRotationKeys; ++i) {
-      anim.rotation_keys.push_back(QuatKey::create(channel.mRotationKeys[i]));
+      anim.rotation_keys.push_back(QuatKey(channel.mRotationKeys[i]));
    }
    for (size_t i = 0; i < channel.mNumScalingKeys; ++i) {
-      anim.scale_keys.push_back(Vec3Key::create(channel.mScalingKeys[i]));
+      anim.scale_keys.push_back(Vec3Key(channel.mScalingKeys[i]));
    }
    anim.pre_state = channel.mPreState;
    anim.post_state = channel.mPostState;
@@ -45,9 +29,15 @@ glm::mat4 BoneAnimation::translation(double time) const {
       if (time < position_keys[i+1].time) {
          const auto& pos1 = position_keys[i];
          const auto& pos2 = position_keys[i + 1];
+         std::clog << " num frames = " << position_keys.size() << std::endl;
+         std::clog << " interpolating between: " << std::endl;
+         std::clog << " @frame " << i << std::endl;
+         std::clog << " " << pos1.value.x << ", " << pos1.value.y << ", " << pos1.value.z << std::endl;
+         std::clog << " " << pos2.value.x << ", " << pos2.value.y << ", " << pos2.value.z << std::endl;
          const auto delta_time = pos2.time - pos1.time;
          const auto interp_factor = (time - pos1.time) / delta_time;
          const auto interpolated = glm::mix(pos1.value, pos2.value, interp_factor);
+         std::clog << " " << interpolated.x << ", " << interpolated.y << ", " << interpolated.z << std::endl;
          assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
          return glm::translate(
                glm::mat4(),
@@ -68,7 +58,7 @@ glm::mat4 BoneAnimation::rotation(double time) const {
          const float interp_factor = (time - rot1.time) / delta_time;
          assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
          return glm::mat4_cast(
-               glm::mix(rot1.value, rot2.value, interp_factor));
+               glm::lerp(rot1.value, rot2.value, interp_factor));
       }
    }
    assert(false && "NOT REACHED");
@@ -141,7 +131,9 @@ void Bone::calculateBoneTransformation(
 
    // This is the default pose (no animation)
    glm::mat4 node_transform(bone.transform());
-   if (bone.bone_animation_ && bone.name_ == "joint1") {
+   if (bone.bone_animation_) {
+      std::clog << "bone: " << bone.name_ << std::endl;
+      std::clog << "parent bone: " << bones[bone.parent_id()].name_ << std::endl;
       const auto translate(bone.bone_animation_->translation(time));
       const auto rotate(bone.bone_animation_->rotation(time));
       const auto scale(bone.bone_animation_->scale(time));
