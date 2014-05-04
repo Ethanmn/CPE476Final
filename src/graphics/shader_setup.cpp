@@ -8,7 +8,6 @@ namespace  {
    const glm::mat4 projection_matrix = glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f);
 }
 
-
 void setupModelView(Shader& shader, const UniformLocationMap& locations,
                     const glm::mat4& modelMatrix, const glm::mat4& viewMatrix,
                     bool needsNormal) {
@@ -53,12 +52,14 @@ void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
 
 void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
                           glm::vec3 lightDir, glm::mat4 modelMatrix) {
-   glEnable(GL_STENCIL_TEST);
+   //glEnable(GL_STENCIL_TEST);
    glPolygonMode(GL_FRONT, GL_FILL);
-   glm::mat4 shadowProjection, shadowView;
-   shadowView = glm::lookAt(lightDir, glm::vec3(0.0, 0.0, 0.0), 
-      glm::vec3(0.0, 1.0, 0.0));
+   glm::mat4 shadowProjection, shadowView, modelView;
+
    shadowProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 20.0f);
-   shader.sendUniform(Uniform::MODEL_VIEW, locations, shadowView * modelMatrix);
+   shadowView = glm::lookAt(lightDir, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+   modelView = shadowView * modelMatrix;
+
+   shader.sendUniform(Uniform::MODEL_VIEW, locations, modelView);
    shader.sendUniform(Uniform::PROJECTION, locations, shadowProjection);
 }

@@ -104,22 +104,24 @@ void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
-   
+   Shader shadow_shader = shaders_.getShadowShader();
+   shadow_shader.use();
+
+   shadow_map_fbo_.BindForWriting();
+   glClear(GL_DEPTH_BUFFER_BIT);
+   setupShadowShader(shadow_shader, uniform_location_map_, sunDir, 
+      deer_.getModelMatrix());
+   deer_.drawDeer(shadow_shader);
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   shadow_map_fbo_.BindForReading(GL_TEXTURE0);
+
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
 
-      
-      if(shaderPair.first == ShaderType::SHADOW) {
-         shadow_map_.BindForWriting();
-         setupShadowShader(shader, uniform_location_map_, sunDir, 
-            deer_.getModelMatrix());
-         deer_.drawMesh(shader);
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         shadow_map_.BindForReading();
-      }
-      else if(shaderPair.first == ShaderType::TEXTURE) {
-        setupProjection(shader, uniform_location_map_);
+      setupProjection(shader, uniform_location_map_);
+
+      if(shaderPair.first == ShaderType::TEXTURE) {
 	     setupView(shader, uniform_location_map_, viewMatrix);
 	     setupSunShader(shader, uniform_location_map_, sunIntensity, 
             glm::vec3(0.0, 1.0, 0.0));
@@ -132,7 +134,6 @@ void Game::draw() {
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::SUN) {
-         setupProjection(shader, uniform_location_map_);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -154,7 +155,6 @@ void Game::draw() {
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME) {
-         setupProjection(shader, uniform_location_map_);
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
       }
       
@@ -171,7 +171,7 @@ void Game::mainLoop() {
    units::MS previous_time = SDL_GetTicks();
 
    printf("Before setup\n");
-   if(!shadow_map_.setup(kScreenWidth, kScreenHeight)) {
+   if(!shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
       printf("FAILURE\n");
       return;
    }

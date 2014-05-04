@@ -38,7 +38,7 @@ struct Game {
    DayCycle day_cycle_;
    Mesh tree_mesh_;
    std::vector<Tree> bushes_;
-   ShadowMapFBO shadow_map_;
+   ShadowMapFBO shadow_map_fbo_;
 
    glm::vec2 mousePos;
    bool mouseDown;

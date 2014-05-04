@@ -36,7 +36,7 @@ struct Deer {
 
    /* helper functions for shadows */
    glm::mat4 getModelMatrix();
-   void drawMesh(Shader& shader);
+   void drawDeer(Shader& shader);
 
   private:
    enum class WalkDirection {

@@ -31,7 +31,7 @@ void ShadowMapFBO::BindForWriting() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_id);
 }
 
-void ShadowMapFBO::BindForReading() {
-	glActiveTexture(shadow_map_texture);
+void ShadowMapFBO::BindForReading(GLenum TextureUnit) {
+	glActiveTexture(TextureUnit);
 	glBindTexture(GL_TEXTURE_2D, shadow_map_texture);
 }

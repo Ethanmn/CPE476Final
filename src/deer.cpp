@@ -156,7 +156,7 @@ glm::vec3 Deer::getPosition() {
 }
 
 glm::mat4 Deer::getModelMatrix() {
-      const glm::mat4 rotate(
+   const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
             glm::vec3(last_facing_.x, last_facing_.y, -last_facing_.z),
@@ -168,6 +168,6 @@ glm::mat4 Deer::getModelMatrix() {
    return translate * rotate;
 }
 
-void Deer::drawMesh(Shader& shader) {
+void Deer::drawDeer(Shader& shader) {
    shader.drawMesh(mesh_);
 }
