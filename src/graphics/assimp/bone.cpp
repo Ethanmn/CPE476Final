@@ -3,6 +3,8 @@
 #include "graphics/assimp/ai_utils.h"
 
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 //static
 BoneAnimation BoneAnimation::fromAiAnimNode(const aiNodeAnim& channel) {
@@ -21,6 +23,36 @@ BoneAnimation BoneAnimation::fromAiAnimNode(const aiNodeAnim& channel) {
    return anim;
 }
 
+glm::mat4 BoneAnimation::translation(double time) const {
+   return glm::translate(glm::mat4(), position_keys.front().value);
+   for (size_t i = position_keys.size(); i != 0; --i) {
+      if (position_keys[i].time < time) {
+         return glm::translate(glm::mat4(), position_keys[i].value);
+      }
+   }
+   return glm::mat4();
+}
+
+glm::mat4 BoneAnimation::rotation(double time) const {
+   return glm::mat4_cast(rotation_keys.front().value);
+   for (size_t i = rotation_keys.size(); i != 0; --i) {
+      if (rotation_keys[i].time < time) {
+         return glm::mat4_cast(rotation_keys[i].value);
+      }
+   }
+   return glm::mat4();
+}
+
+glm::mat4 BoneAnimation::scale(double time) const {
+   return glm::scale(glm::mat4(), scale_keys.front().value);
+   for (size_t i = scale_keys.size(); i != 0; --i) {
+      if (scale_keys[i].time < time) {
+         return glm::scale(glm::mat4(), scale_keys[i].value);
+      }
+   }
+   return glm::mat4();
+}
+
 
 Bone::Bone(aiBone* ai_bone,
          aiNode* ai_node,
@@ -36,12 +68,14 @@ Bone::Bone(aiBone* ai_bone,
    {}
 
 //static
-std::vector<glm::mat4> Bone::calculateBoneTransformations(const std::vector<Bone>& bones) {
+std::vector<glm::mat4> Bone::calculateBoneTransformations(
+      const std::vector<Bone>& bones,
+      double time) {
    std::vector<glm::mat4> transformations(bones.size());
    std::vector<boost::optional<glm::mat4>> maybe_transformations(bones.size());
    for (const auto& bone : bones) {
       if (!maybe_transformations[bone.id()])
-         calculateBoneTransformation(bones, bone, maybe_transformations);
+         calculateBoneTransformation(bones, time, bone, maybe_transformations);
       transformations[bone.id()] = *maybe_transformations[bone.id()] * bone.inverse_bind_pose();
    }
 
@@ -53,17 +87,23 @@ std::vector<glm::mat4> Bone::calculateBoneTransformations(const std::vector<Bone
 //static
 void Bone::calculateBoneTransformation(
       const std::vector<Bone>& bones,
+      double time,
       const Bone& bone,
       std::vector<boost::optional<glm::mat4>>& transformations) {
    glm::mat4 parent_transformation;
    if (!bone.is_root()) {
       if (!transformations[bone.parent_id()]) {
-         calculateBoneTransformation(bones, bones[bone.parent_id()], transformations);
+         calculateBoneTransformation(bones, time, bones[bone.parent_id()], transformations);
       }
       parent_transformation = *transformations[bone.parent_id()];
    }
 
-   glm::mat4 node_transform(bone.transform());
-   //TODO: calculate transform for a given time.
+   // This is the default pose (no animation)
+   //glm::mat4 node_transform(bone.transform());
+
+   const auto translate(bone.bone_animation_.translation(time));
+   const auto rotate(bone.bone_animation_.rotation(time));
+   const auto scale(bone.bone_animation_.scale(time));
+   const auto node_transform = translate;
    transformations[bone.id()] = parent_transformation * node_transform;
 }

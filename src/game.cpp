@@ -7,6 +7,7 @@
 namespace {
    DeerCam deerCam;
    Mesh box;
+   float anim_time = 0.0f;
 }
 
 Game::Game() :
@@ -127,7 +128,9 @@ void Game::draw() {
 
          //ON BOX
          shader.sendUniform(Uniform::HAS_BONES, uniform_location_map_, 1);
-         shader.sendUniform(Uniform::BONES, uniform_location_map_, Bone::calculateBoneTransformations(box.bone_array));
+         shader.sendUniform(
+               Uniform::BONES, uniform_location_map_,
+               Bone::calculateBoneTransformations(box.bone_array, anim_time));
          setupModelView(shader, uniform_location_map_,
                glm::translate(glm::mat4(1.0), glm::vec3(-30.0, 3.0, -30.0)), viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
@@ -225,6 +228,13 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_quit)) {
                running = false;
             }
+         }
+         if (input.isKeyHeld(SDL_SCANCODE_0)) {
+            anim_time += 0.001f;
+            anim_time = std::max(anim_time, 0.0f);
+         } else if (input.isKeyHeld(SDL_SCANCODE_9)) {
+            anim_time -= 0.001f;
+            anim_time = std::min(anim_time, 2.0f);
          }
       }
 

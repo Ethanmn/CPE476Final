@@ -29,6 +29,10 @@ struct QuatKey {
 struct BoneAnimation {
    static BoneAnimation fromAiAnimNode(const aiNodeAnim& channel);
 
+   glm::mat4 translation(double time) const;
+   glm::mat4 rotation(double time) const;
+   glm::mat4 scale(double time) const;
+
    std::vector<Vec3Key> position_keys;
    std::vector<QuatKey> rotation_keys;
    std::vector<Vec3Key> scale_keys;
@@ -43,7 +47,10 @@ struct Bone {
          const glm::mat4& global_inverse_transform,
          BoneID bone_id, BoneID parent_id);
 
-   static std::vector<glm::mat4> calculateBoneTransformations(const std::vector<Bone>& bones);
+   static std::vector<glm::mat4> calculateBoneTransformations(
+         const std::vector<Bone>& bones,
+         double time
+         );
 
    bool is_root() const { return parent_id_ == bone_id_; }
    BoneID id() const { return bone_id_; }
@@ -54,6 +61,7 @@ struct Bone {
   private:
    static void calculateBoneTransformation(
          const std::vector<Bone>& bones,
+         double time,
          const Bone& bone,
          std::vector<boost::optional<glm::mat4>>& transformations);
 
