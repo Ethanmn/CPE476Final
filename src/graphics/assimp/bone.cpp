@@ -24,32 +24,61 @@ BoneAnimation BoneAnimation::fromAiAnimNode(const aiNodeAnim& channel) {
 }
 
 glm::mat4 BoneAnimation::translation(double time) const {
-   return glm::translate(glm::mat4(), position_keys.front().value);
-   for (size_t i = position_keys.size(); i != 0; --i) {
-      if (position_keys[i].time < time) {
-         return glm::translate(glm::mat4(), position_keys[i].value);
+   assert(position_keys.size() > 1);
+   for (size_t i = 0; i < position_keys.size() - 1; ++i) {
+      if (time < position_keys[i+1].time) {
+         const auto& pos1 = position_keys[i];
+         const auto& pos2 = position_keys[i + 1];
+         std::clog << " interpolating between: " << std::endl;
+         std::clog << " animation_time: " << time << " key_time: " << pos1.time << " next_key_time " << pos2.time << std::endl;
+         std::clog << " " << pos1.value.x << ", " << pos1.value.y << ", " << pos1.value.z << std::endl;
+         std::clog << " " << pos2.value.x << ", " << pos2.value.y << ", " << pos2.value.z << std::endl;
+         const auto delta_time = pos2.time - pos1.time;
+         const auto interp_factor = (time - pos1.time) / delta_time;
+         const auto interpolated = glm::mix(pos1.value, pos2.value, interp_factor);
+         std::clog << " " << interpolated.x << ", " << interpolated.y << ", " << interpolated.z << std::endl;
+         assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
+         return glm::translate(
+               glm::mat4(),
+               interpolated);
       }
    }
+   assert(false && "NOT REACHED");
    return glm::mat4();
 }
 
 glm::mat4 BoneAnimation::rotation(double time) const {
-   return glm::mat4_cast(rotation_keys.front().value);
-   for (size_t i = rotation_keys.size(); i != 0; --i) {
-      if (rotation_keys[i].time < time) {
-         return glm::mat4_cast(rotation_keys[i].value);
+   assert(rotation_keys.size() > 1);
+   for (size_t i = 0; i < rotation_keys.size() - 1; ++i) {
+      if (time < rotation_keys[i+1].time) {
+         const auto& rot1 = rotation_keys[i];
+         const auto& rot2 = rotation_keys[i + 1];
+         const auto delta_time = rot2.time - rot1.time;
+         const float interp_factor = (time - rot1.time) / delta_time;
+         assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
+         return glm::mat4_cast(
+               glm::lerp(rot1.value, rot2.value, interp_factor));
       }
    }
+   assert(false && "NOT REACHED");
    return glm::mat4();
 }
 
 glm::mat4 BoneAnimation::scale(double time) const {
-   return glm::scale(glm::mat4(), scale_keys.front().value);
-   for (size_t i = scale_keys.size(); i != 0; --i) {
-      if (scale_keys[i].time < time) {
-         return glm::scale(glm::mat4(), scale_keys[i].value);
+   assert(scale_keys.size() > 1);
+   for (size_t i = 0; i < scale_keys.size() - 1; ++i) {
+      if (time < scale_keys[i+1].time) {
+         const auto& scale1 = scale_keys[i];
+         const auto& scale2 = scale_keys[i + 1];
+         const auto delta_time = scale2.time - scale1.time;
+         const auto interp_factor = (time - scale1.time) / delta_time;
+         assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
+         return glm::scale(
+               glm::mat4(),
+               glm::mix(scale1.value, scale2.value, interp_factor));
       }
    }
+   assert(false && "NOT REACHED");
    return glm::mat4();
 }
 
@@ -100,8 +129,8 @@ void Bone::calculateBoneTransformation(
 
    // This is the default pose (no animation)
    glm::mat4 node_transform(bone.transform());
-
    if (bone.bone_animation_) {
+      std::clog << "bone: " << bone.bone_id_ << std::endl;
       const auto translate(bone.bone_animation_->translation(time));
       const auto rotate(bone.bone_animation_->rotation(time));
       const auto scale(bone.bone_animation_->scale(time));
