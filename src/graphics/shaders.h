@@ -10,10 +10,12 @@
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
 
-enum class ShaderType {
+enum class ShaderType { 
+   /* Ordering is important, shadow must be first */
+   SHADOW,
    SUN,
    TEXTURE,
-   WIREFRAME
+   WIREFRAME,
 };
 
 struct Shaders {
@@ -23,12 +25,10 @@ struct Shaders {
    void clear() { glUseProgram(0); }
 
    std::map<ShaderType, Shader>& getMap() { return shaders_; }
-   Shader& getShadowShader() { return shadow_shader_; }
    UniformLocationMap getUniformLocationMap();
    AttributeLocationMap getAttributeLocationMap();
 
   private:
-   Shader shadow_shader_;
    std::map<ShaderType, Shader> shaders_;
 };
 

@@ -104,16 +104,6 @@ void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
-   Shader shadow_shader = shaders_.getShadowShader();
-   shadow_shader.use();
-
-   shadow_map_fbo_.BindForWriting();
-   glClear(GL_DEPTH_BUFFER_BIT);
-   setupShadowShader(shadow_shader, uniform_location_map_, sunDir, 
-      deer_.getModelMatrix());
-   deer_.drawDeer(shadow_shader);
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   shadow_map_fbo_.BindForReading(GL_TEXTURE0);
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -121,7 +111,17 @@ void Game::draw() {
 
       setupProjection(shader, uniform_location_map_);
 
-      if(shaderPair.first == ShaderType::TEXTURE) {
+      if(shaderPair.first == ShaderType::SHADOW) {
+         shadow_map_fbo_.BindForWriting();
+         glClear(GL_DEPTH_BUFFER_BIT);
+         setupShadowShader(shader, uniform_location_map_, sunDir, 
+            deer_.getModelMatrix());
+         deer_.drawDeer(shader);
+         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         shadow_map_fbo_.BindForReading();
+      }
+      else if(shaderPair.first == ShaderType::TEXTURE) {
 	     setupView(shader, uniform_location_map_, viewMatrix);
 	     setupSunShader(shader, uniform_location_map_, sunIntensity, 
             glm::vec3(0.0, 1.0, 0.0));

@@ -6,7 +6,6 @@ ShadowMapFBO::ShadowMapFBO() {
 }
 
 bool ShadowMapFBO::setup(unsigned int WindowWidth, unsigned int WindowHeight) {
-	printf("inside of fbo\n");
 	glGenTextures(1, &shadow_map_texture);
 	glBindTexture(GL_TEXTURE_2D, shadow_map_texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WindowWidth, 
@@ -31,7 +30,7 @@ void ShadowMapFBO::BindForWriting() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_id);
 }
 
-void ShadowMapFBO::BindForReading(GLenum TextureUnit) {
-	glActiveTexture(TextureUnit);
+void ShadowMapFBO::BindForReading() {
+	glActiveTexture(GL_TEXTURE0 + shadow_map_texture);
 	glBindTexture(GL_TEXTURE_2D, shadow_map_texture);
 }
