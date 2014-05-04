@@ -65,6 +65,7 @@ struct Bone {
          const Bone& bone,
          std::vector<boost::optional<glm::mat4>>& transformations);
 
+   std::string name_;
    // Transformation of the bone in world space from the root of the scene.
    glm::mat4 transform_;
    // Transform the scene into mesh space.

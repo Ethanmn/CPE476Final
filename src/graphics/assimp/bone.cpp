@@ -29,8 +29,9 @@ glm::mat4 BoneAnimation::translation(double time) const {
       if (time < position_keys[i+1].time) {
          const auto& pos1 = position_keys[i];
          const auto& pos2 = position_keys[i + 1];
+         std::clog << " num frames = " << position_keys.size() << std::endl;
          std::clog << " interpolating between: " << std::endl;
-         std::clog << " animation_time: " << time << " key_time: " << pos1.time << " next_key_time " << pos2.time << std::endl;
+         std::clog << " @frame " << i << std::endl;
          std::clog << " " << pos1.value.x << ", " << pos1.value.y << ", " << pos1.value.z << std::endl;
          std::clog << " " << pos2.value.x << ", " << pos2.value.y << ", " << pos2.value.z << std::endl;
          const auto delta_time = pos2.time - pos1.time;
@@ -88,13 +89,14 @@ Bone::Bone(aiBone* ai_bone,
          aiNodeAnim* channel,
          const glm::mat4& global_inverse_transform,
          BoneID bone_id, BoneID parent_id) :
-      transform_(fromAiMatrix4x4(ai_node->mTransformation)),
-      global_inverse_transform_(global_inverse_transform),
-      inverse_bind_pose_(fromAiMatrix4x4(ai_bone->mOffsetMatrix)),
-      bone_animation_(channel ? boost::make_optional(BoneAnimation::fromAiAnimNode(*channel)) : boost::none),
-      bone_id_(bone_id),
-      parent_id_(parent_id)
-   {}
+   name_(ai_node->mName.C_Str()),
+   transform_(fromAiMatrix4x4(ai_node->mTransformation)),
+   global_inverse_transform_(global_inverse_transform),
+   inverse_bind_pose_(fromAiMatrix4x4(ai_bone->mOffsetMatrix)),
+   bone_animation_(channel ? boost::make_optional(BoneAnimation::fromAiAnimNode(*channel)) : boost::none),
+   bone_id_(bone_id),
+   parent_id_(parent_id)
+{}
 
 //static
 std::vector<glm::mat4> Bone::calculateBoneTransformations(
@@ -130,7 +132,8 @@ void Bone::calculateBoneTransformation(
    // This is the default pose (no animation)
    glm::mat4 node_transform(bone.transform());
    if (bone.bone_animation_) {
-      std::clog << "bone: " << bone.bone_id_ << std::endl;
+      std::clog << "bone: " << bone.name_ << std::endl;
+      std::clog << "parent bone: " << bones[bone.parent_id()].name_ << std::endl;
       const auto translate(bone.bone_animation_->translation(time));
       const auto rotate(bone.bone_animation_->rotation(time));
       const auto scale(bone.bone_animation_->scale(time));
