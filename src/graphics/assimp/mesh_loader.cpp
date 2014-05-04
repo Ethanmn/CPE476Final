@@ -27,7 +27,7 @@ namespace {
    }
 
    struct AssimpBone {
-      AssimpBone(aiBone* ai_bone, aiNode* ai_node, const aiNodeAnim& channel, BoneID bone_id) :
+      AssimpBone(aiBone* ai_bone, aiNode* ai_node, aiNodeAnim* channel, BoneID bone_id) :
          ai_bone(ai_bone),
          ai_node(ai_node),
          channel(channel),
@@ -35,7 +35,7 @@ namespace {
 
       aiBone* ai_bone;
       aiNode* ai_node;
-      const aiNodeAnim& channel;
+      aiNodeAnim* channel;
       BoneID bone_id;
    };
 
@@ -96,6 +96,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          auto& animation = *scene->mAnimations[i];
          for (size_t i = 0; i < animation.mNumChannels; ++i) {
             auto& channel = animation.mChannels[i];
+            std::clog << "loading channel for " << channel->mNodeName.C_Str() << std::endl;
             channel_map[channel->mNodeName.C_Str()] = channel;
          }
       }
@@ -108,7 +109,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          assert(node != nullptr);
 
          const auto bone_id = i;
-         assimp_bones.push_back(AssimpBone(bone, node, *channel_map[node->mName.C_Str()], bone_id));
+         assimp_bones.push_back(AssimpBone(bone, node, channel_map[node->mName.C_Str()], bone_id));
          for (size_t i = 0; i < bone->mNumWeights; ++i) {
             auto& weight = bone->mWeights[i];
             ret.bone_weights_array[weight.mVertexId].push_back({bone_id, weight.mWeight});

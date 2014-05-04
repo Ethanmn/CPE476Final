@@ -43,7 +43,7 @@ struct BoneAnimation {
 struct Bone {
    Bone(aiBone* ai_bone,
          aiNode* ai_node,
-         const aiNodeAnim& channel,
+         aiNodeAnim* channel,
          const glm::mat4& global_inverse_transform,
          BoneID bone_id, BoneID parent_id);
 
@@ -71,7 +71,7 @@ struct Bone {
    glm::mat4 global_inverse_transform_;
    // Transform from mesh space into bone space.
    glm::mat4 inverse_bind_pose_;
-   BoneAnimation bone_animation_;
+   boost::optional<BoneAnimation> bone_animation_;
    BoneID bone_id_, parent_id_;
 };
 

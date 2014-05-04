@@ -132,7 +132,7 @@ void Game::draw() {
                Uniform::BONES, uniform_location_map_,
                Bone::calculateBoneTransformations(box.bone_array, anim_time));
          setupModelView(shader, uniform_location_map_,
-               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, 3.0, -30.0)), viewMatrix, true);
+               glm::scale(glm::translate(glm::mat4(), glm::vec3(-30.0, 3.0, -30.0)), glm::vec3(4.0)), viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
 
@@ -159,7 +159,7 @@ void Game::draw() {
 }
 
 void Game::mainLoop() {
-   box = Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/dance_cyl.dae"));
+   box = Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/simple_bones.dae"));
    Input input;
    int mX, mY;
    bool running = true;

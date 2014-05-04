@@ -56,13 +56,13 @@ glm::mat4 BoneAnimation::scale(double time) const {
 
 Bone::Bone(aiBone* ai_bone,
          aiNode* ai_node,
-         const aiNodeAnim& channel,
+         aiNodeAnim* channel,
          const glm::mat4& global_inverse_transform,
          BoneID bone_id, BoneID parent_id) :
       transform_(fromAiMatrix4x4(ai_node->mTransformation)),
       global_inverse_transform_(global_inverse_transform),
       inverse_bind_pose_(fromAiMatrix4x4(ai_bone->mOffsetMatrix)),
-      bone_animation_(BoneAnimation::fromAiAnimNode(channel)),
+      bone_animation_(channel ? boost::make_optional(BoneAnimation::fromAiAnimNode(*channel)) : boost::none),
       bone_id_(bone_id),
       parent_id_(parent_id)
    {}
@@ -99,11 +99,13 @@ void Bone::calculateBoneTransformation(
    }
 
    // This is the default pose (no animation)
-   //glm::mat4 node_transform(bone.transform());
+   glm::mat4 node_transform(bone.transform());
 
-   const auto translate(bone.bone_animation_.translation(time));
-   const auto rotate(bone.bone_animation_.rotation(time));
-   const auto scale(bone.bone_animation_.scale(time));
-   const auto node_transform = translate;
+   if (bone.bone_animation_) {
+      const auto translate(bone.bone_animation_->translation(time));
+      const auto rotate(bone.bone_animation_->rotation(time));
+      const auto scale(bone.bone_animation_->scale(time));
+      node_transform = translate * rotate * scale;
+   }
    transformations[bone.id()] = parent_transformation * node_transform;
 }
