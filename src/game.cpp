@@ -103,6 +103,7 @@ void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
+   glm::mat4 boxModelMatrix;
    
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -124,21 +125,23 @@ void Game::draw() {
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
          //ON BOX
+         boxModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0));
          setupModelView(shader, uniform_location_map_,
-               glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0)), viewMatrix, true);
+               boxModelMatrix, viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
 
          //OFF BOX
+         boxModelMatrix =  glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0));
          setupModelView(shader, uniform_location_map_,
-               glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0)), viewMatrix, true);
+              boxModelMatrix, viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
          shader.drawMesh(box);
 
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
-         deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
+         
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
