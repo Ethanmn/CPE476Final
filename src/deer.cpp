@@ -22,13 +22,14 @@ const float kJumpSpeed = 0.015f;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
-   texture_("../textures/box_texture.bmp"),
+   texture_(texture_path(Textures::DEER)),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 0, 1),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
-   bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f)
+   bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
+   is_jumping_(false)
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,

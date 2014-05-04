@@ -29,12 +29,12 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    ret.vertex_array = std::vector<float>(
          (float*)(mesh.mVertices),
          (float*)(mesh.mVertices) + mesh.mNumVertices * kNumAxes);
-
+   
    ret.uv_array = mesh.HasTextureCoords(0) ?
          std::vector<float>((float*)(mesh.mTextureCoords[0]),
          (float*)(mesh.mTextureCoords[0]) + mesh.mNumVertices * kNumAxes)
          : std::vector<float>();
-
+   
    ret.normal_array = std::vector<float>(
          (float*)(mesh.mNormals),
          (float*)(mesh.mNormals) + mesh.mNumVertices * kNumAxes);
