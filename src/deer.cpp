@@ -45,11 +45,10 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
             position_));
    const glm::mat4 model_matrix(translate * rotate);
    
-   //sendMaterial(shader, uniform_locations, glm::vec3(0.45, 0.24, 0.15));
    setupTextureShader(shader, uniform_locations, sunIntensity, texture_.textureID());
    texture_.enable();
    
-   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, false);
+   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
    shader.drawMesh(mesh_);
    
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);

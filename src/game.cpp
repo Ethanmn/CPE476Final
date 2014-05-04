@@ -112,6 +112,8 @@ void Game::draw() {
       setupProjection(shader, uniform_location_map_);
 
       if(shaderPair.first == ShaderType::TEXTURE) {
+         setupView(shader, uniform_location_map_, viewMatrix);
+         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
          setupTextureShader(shader, uniform_location_map_, sunIntensity, texture_.textureID());
          texture_.enable();
          ground_.draw(shader, uniform_location_map_, viewMatrix);
@@ -141,7 +143,6 @@ void Game::draw() {
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
-         
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
