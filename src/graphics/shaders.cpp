@@ -43,11 +43,9 @@ const std::vector<Uniform> kWireframeUniforms{
 };
 
 Shaders::Shaders() {
-   /*
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));
-   */
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
             Shader("Texture2D", kTextureAttrs, kTextureUniforms)));
