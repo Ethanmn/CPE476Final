@@ -29,15 +29,9 @@ glm::mat4 BoneAnimation::translation(double time) const {
       if (time < position_keys[i+1].time) {
          const auto& pos1 = position_keys[i];
          const auto& pos2 = position_keys[i + 1];
-         std::clog << " num frames = " << position_keys.size() << std::endl;
-         std::clog << " interpolating between: " << std::endl;
-         std::clog << " @frame " << i << std::endl;
-         std::clog << " " << pos1.value.x << ", " << pos1.value.y << ", " << pos1.value.z << std::endl;
-         std::clog << " " << pos2.value.x << ", " << pos2.value.y << ", " << pos2.value.z << std::endl;
          const auto delta_time = pos2.time - pos1.time;
          const auto interp_factor = (time - pos1.time) / delta_time;
          const auto interpolated = glm::mix(pos1.value, pos2.value, interp_factor);
-         std::clog << " " << interpolated.x << ", " << interpolated.y << ", " << interpolated.z << std::endl;
          assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
          return glm::translate(
                glm::mat4(),
@@ -131,9 +125,7 @@ void Bone::calculateBoneTransformation(
 
    // This is the default pose (no animation)
    glm::mat4 node_transform(bone.transform());
-   if (bone.bone_animation_) {
-      std::clog << "bone: " << bone.name_ << std::endl;
-      std::clog << "parent bone: " << bones[bone.parent_id()].name_ << std::endl;
+   if (bone.bone_animation_ && bone.name_ == "joint1") {
       const auto translate(bone.bone_animation_->translation(time));
       const auto rotate(bone.bone_animation_->rotation(time));
       const auto scale(bone.bone_animation_->scale(time));
