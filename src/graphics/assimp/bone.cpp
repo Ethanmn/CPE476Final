@@ -24,7 +24,9 @@ BoneAnimation BoneAnimation::fromAiAnimNode(const aiNodeAnim& channel) {
 }
 
 glm::mat4 BoneAnimation::translation(double time) const {
-   assert(position_keys.size() > 1);
+   if (position_keys.size() <= 1 || time < position_keys.front().time) {
+      return glm::translate(glm::mat4(), position_keys.front().value);
+   }
    for (size_t i = 0; i < position_keys.size() - 1; ++i) {
       if (time < position_keys[i+1].time) {
          const auto& pos1 = position_keys[i];
@@ -38,12 +40,13 @@ glm::mat4 BoneAnimation::translation(double time) const {
                interpolated);
       }
    }
-   assert(false && "NOT REACHED");
-   return glm::mat4();
+   return glm::translate(glm::mat4(), position_keys.back().value);
 }
 
 glm::mat4 BoneAnimation::rotation(double time) const {
-   assert(rotation_keys.size() > 1);
+   if (rotation_keys.size() <= 1 || time < rotation_keys.front().time) {
+      return glm::mat4_cast(rotation_keys.front().value);
+   }
    for (size_t i = 0; i < rotation_keys.size() - 1; ++i) {
       if (time < rotation_keys[i+1].time) {
          const auto& rot1 = rotation_keys[i];
@@ -55,12 +58,11 @@ glm::mat4 BoneAnimation::rotation(double time) const {
          return glm::mat4_cast(interpolated);
       }
    }
-   assert(false && "NOT REACHED");
-   return glm::mat4();
+   return glm::mat4_cast(rotation_keys.back().value);
 }
 
 glm::mat4 BoneAnimation::scale(double time) const {
-   if (scale_keys.size() == 1) {
+   if (scale_keys.size() <= 1 || time < scale_keys.front().time) {
       return glm::scale(glm::mat4(), scale_keys.front().value);
    }
    for (size_t i = 0; i < scale_keys.size() - 1; ++i) {
@@ -76,8 +78,7 @@ glm::mat4 BoneAnimation::scale(double time) const {
                interpolated);
       }
    }
-   assert(false && "NOT REACHED");
-   return glm::mat4();
+   return glm::scale(glm::mat4(), scale_keys.back().value);
 }
 
 

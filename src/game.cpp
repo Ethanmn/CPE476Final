@@ -133,7 +133,6 @@ void Game::draw() {
                Bone::calculateBoneTransformations(box.bone_array, anim_time));
          setupModelView(shader, uniform_location_map_,
                glm::scale(glm::translate(glm::mat4(), glm::vec3(-30.0, 3.0, -30.0)), glm::vec3(4.0)), viewMatrix, true);
-         setupModelView(shader, uniform_location_map_, glm::mat4(), viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
@@ -232,13 +231,11 @@ void Game::mainLoop() {
             }
          }
          if (input.isKeyHeld(SDL_SCANCODE_0)) {
-            anim_time += 0.001f;
-            anim_time = std::max(anim_time, 0.0f);
-            std::clog << anim_time << std::endl;
-         } else if (input.isKeyHeld(SDL_SCANCODE_9)) {
-            anim_time -= 0.001f;
+            anim_time += 0.01f;
             anim_time = std::min(anim_time, 2.0f);
-            std::clog << anim_time << std::endl;
+         } else if (input.isKeyHeld(SDL_SCANCODE_9)) {
+            anim_time -= 0.01f;
+            anim_time = std::max(anim_time, 0.0f);
          }
       }
 
