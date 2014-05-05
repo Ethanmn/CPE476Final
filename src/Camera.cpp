@@ -10,7 +10,7 @@ const float PI = 3.14159265359;
 const int MAX_ROTATE_VERT_UP =  80;
 const int MAX_ROTATE_VERT_DOWN =  10;
 const int PI_IN_DEGREES = 180;
-const float ROTATION_SENSITIVITY = 2; //Smaller number -> less sensitive
+const float ROTATION_SENSITIVITY = 1; //Smaller number -> less sensitive
 
 Camera::Camera(glm::vec3 pos, glm::vec3 look) {
    position = pos;

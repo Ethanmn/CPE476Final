@@ -9,6 +9,8 @@
 #include "graphics/texture.h"
 #include "graphics/location_maps.h"
 #include "units.h"
+#include "graphics/texture.h"
+//#include "graphics/texture_3d.h"
 
 struct Shader;
 
@@ -58,7 +60,6 @@ struct Deer {
 
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;
-
    BoundingRectangle bounding_rectangle_;
 
    bool is_jumping_;

@@ -12,6 +12,7 @@
 #include "graphics/shaders.h"
 #include "ground_plane.h"
 #include "graphics/texture.h"
+//#include "graphics/texture_3d.h"
 #include "DeerCam.h"
 #include "graphics/material.h"
 #include "TreeGenerator.h"
