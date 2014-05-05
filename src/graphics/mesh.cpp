@@ -23,7 +23,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
          ArrayBufferObject::create(
                mesh.uv_array,
                locations[Attribute::TEX_COORD],
-               2),
+               3),
          });
    const auto bones_attributes = createFromBoneIDAndWeights(mesh.bone_weights_array, locations);
    attributes.insert(attributes.end(), bones_attributes.begin(), bones_attributes.end());

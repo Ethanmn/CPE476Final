@@ -12,12 +12,11 @@ namespace {
 
 Game::Game() :
    texture_(texture_path(Textures::GRASS)),
-   deer_texture_(texture_path(Textures::DEER)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/Test_Deer2.dae")), glm::vec3(0.0f)),
+            mesh_loader_.loadMesh("../models/Test_Deer_Texture.dae")), glm::vec3(0.0f)),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -107,6 +106,7 @@ void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
+   glm::mat4 boxModelMatrix;
    
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -115,12 +115,15 @@ void Game::draw() {
       setupProjection(shader, uniform_location_map_);
 
       if(shaderPair.first == ShaderType::TEXTURE) {
+         setupView(shader, uniform_location_map_, viewMatrix);
+         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
          setupTextureShader(shader, uniform_location_map_, sunIntensity, texture_.textureID());
          texture_.enable();
-   
          ground_.draw(shader, uniform_location_map_, viewMatrix);
-         
          texture_.disable();
+         
+         deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
+         
       }
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
@@ -131,31 +134,26 @@ void Game::draw() {
          shader.sendUniform(
                Uniform::BONES, uniform_location_map_,
                Bone::calculateBoneTransformations(box.bone_array, anim_time));
+         boxModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0));
          setupModelView(shader, uniform_location_map_,
-               glm::scale(glm::translate(glm::mat4(), glm::vec3(-30.0, 3.0, -30.0)), glm::vec3(4.0)), viewMatrix, true);
-         sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
+               boxModelMatrix, viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
 
          //OFF BOX
-         //shader.sendUniform(Uniform::HAS_BONES, uniform_location_map_, 1);
-         //shader.sendUniform(Uniform::BONES, uniform_location_map_, Bone::calculateBoneTransformations(box.bone_array));
-         //setupModelView(shader, uniform_location_map_,
-               //glm::translate(glm::mat4(1.0), glm::vec3(20.0, 3.0, 20.0)), viewMatrix, true);
-         //sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
-         //shader.drawMesh(box);
-
-         shader.sendUniform(Uniform::HAS_BONES, uniform_location_map_, 0);
+         boxModelMatrix =  glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0));
+         setupModelView(shader, uniform_location_map_,
+              boxModelMatrix, viewMatrix, true);
+         sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
+         shader.drawMesh(box);
 
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
-         deer_.draw(shader, uniform_location_map_, viewMatrix);
-         //treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
+         treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
-      
    }
 }
 
