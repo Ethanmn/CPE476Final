@@ -8,8 +8,8 @@
 #include "graphics/mesh.h"
 #include "graphics/location_maps.h"
 #include "units.h"
-#include "graphics/texture_2d.h"
-//#include "graphics/texture_3d.h"
+#include "graphics/texture.h"
+
 
 struct Shader;
 
@@ -48,7 +48,7 @@ struct Deer {
    };
 
    Mesh mesh_;
-   Texture2D texture_;
+   Texture texture_;
    glm::vec3 position_;
    glm::vec3 velocity_;
    glm::vec3 last_facing_;
