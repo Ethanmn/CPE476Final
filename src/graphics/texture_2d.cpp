@@ -1,5 +1,5 @@
 #include <GL/glew.h>
-#include "texture.h"
+#include "texture_2d.h"
 #include <stdio.h>
 #include <string>
 
@@ -109,7 +109,7 @@ int imageLoad(const std::string& path, Image &image) {
    return 1;
 }
 
-Texture::Texture(const std::string& path) {
+Texture2D::Texture2D(const std::string& path) {
    glEnable(GL_TEXTURE_2D);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -119,17 +119,17 @@ Texture::Texture(const std::string& path) {
    load(path);
 }
 
-void Texture::enable() {
+void Texture2D::enable() const {
    glEnable(GL_TEXTURE_2D);
    glActiveTexture(GL_TEXTURE0 + texture_id);
    glBindTexture(GL_TEXTURE_2D, texture_id);
 }
 
-void Texture::disable() {
+void Texture2D::disable() const {
    glDisable(GL_TEXTURE_2D);
 }
 
-GLTextureID Texture::textureID() {
+GLTextureID Texture2D::textureID() const {
    return texture_id;
 }
 
