@@ -59,6 +59,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          aiProcess_CalcTangentSpace       |
          aiProcess_Triangulate            |
          aiProcess_JoinIdenticalVertices  |
+         aiProcess_LimitBoneWeights       | // Limits the number of bones that affect a vertex.
          aiProcess_SortByPType);
    if (!scene) {
       std::cerr << "Failed to load: " << path << std::endl;
@@ -67,8 +68,10 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
 
    const size_t kNumAxes = 3;
    std::clog << "Loaded " << scene->mNumMeshes << " meshes from " << path << std::endl;
+
    aiMesh& mesh = *scene->mMeshes[0];
    AssimpMesh ret;
+   ret.global_inverse_transform = fromAiMatrix4x4(scene->mRootNode->mTransformation.Inverse());
    ret.vertex_array = std::vector<float>(
          (float*)(mesh.mVertices),
          (float*)(mesh.mVertices) + mesh.mNumVertices * kNumAxes);
@@ -116,13 +119,11 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          }
       }
       assert(assimp_bones.size() == mesh.mNumBones);
-      glm::mat4 global_inverse_transform(fromAiMatrix4x4(scene->mRootNode->mTransformation.Inverse()));
       for (const auto& assimp_bone : assimp_bones) {
          ret.bone_array.push_back(Bone(
                   assimp_bone.ai_bone,
                   assimp_bone.ai_node,
                   assimp_bone.channel,
-                  global_inverse_transform,
                   assimp_bone.bone_id,
                   findParentBoneID(assimp_bones, assimp_bone)));
       }

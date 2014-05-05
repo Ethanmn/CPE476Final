@@ -30,6 +30,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
    return Mesh({
          IndexBufferObject::create(mesh.index_array),
          attributes,
-         mesh.bone_array
+         mesh.bone_array,
+         mesh.global_inverse_transform
    });
 }

@@ -82,11 +82,9 @@ glm::mat4 BoneAnimation::scale(double time) const {
 Bone::Bone(aiBone* ai_bone,
          aiNode* ai_node,
          aiNodeAnim* channel,
-         const glm::mat4& global_inverse_transform,
          BoneID bone_id, BoneID parent_id) :
    name_(ai_node->mName.C_Str()),
    transform_(fromAiMatrix4x4(ai_node->mTransformation)),
-   global_inverse_transform_(global_inverse_transform),
    inverse_bind_pose_(fromAiMatrix4x4(ai_bone->mOffsetMatrix)),
    bone_animation_(channel ? boost::make_optional(BoneAnimation::fromAiAnimNode(*channel)) : boost::none),
    bone_id_(bone_id),
@@ -96,13 +94,17 @@ Bone::Bone(aiBone* ai_bone,
 //static
 std::vector<glm::mat4> Bone::calculateBoneTransformations(
       const std::vector<Bone>& bones,
+      const glm::mat4& global_inverse_transform,
       double time) {
    std::vector<glm::mat4> transformations(bones.size());
    std::vector<boost::optional<glm::mat4>> maybe_transformations(bones.size());
    for (const auto& bone : bones) {
       if (!maybe_transformations[bone.id()])
          calculateBoneTransformation(bones, time, bone, maybe_transformations);
-      transformations[bone.id()] = *maybe_transformations[bone.id()] * bone.inverse_bind_pose();
+      transformations[bone.id()] =
+         global_inverse_transform *
+         *maybe_transformations[bone.id()] *
+         bone.inverse_bind_pose();
    }
 
    assert(transformations.size() == bones.size());
