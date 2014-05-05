@@ -20,7 +20,7 @@ struct Vec3Key {
 struct QuatKey {
    QuatKey(const aiQuatKey& key) :
       time(key.mTime),
-      value(glm::quat(key.mValue.x, key.mValue.y, key.mValue.z, key.mValue.w))
+      value(glm::quat(key.mValue.w, key.mValue.x, key.mValue.y, key.mValue.z))
    {}
    double time;
    glm::quat value;
@@ -48,7 +48,6 @@ struct Bone {
 
    static std::vector<glm::mat4> calculateBoneTransformations(
          const std::vector<Bone>& bones,
-         const glm::mat4& global_inverse_transform,
          double time
          );
 

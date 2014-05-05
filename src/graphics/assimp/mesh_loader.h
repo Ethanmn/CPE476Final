@@ -25,7 +25,6 @@ struct AssimpMesh {
    // Canonical array of Bones. Access with BoneID's.
    // Length is the number of bones in the scene NOT the number of vertices.
    std::vector<Bone> bone_array;
-   glm::mat4 global_inverse_transform;
 };
 
 struct MeshLoader {

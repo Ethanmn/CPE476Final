@@ -71,7 +71,6 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
 
    aiMesh& mesh = *scene->mMeshes[0];
    AssimpMesh ret;
-   ret.global_inverse_transform = fromAiMatrix4x4(scene->mRootNode->mTransformation.Inverse());
    ret.vertex_array = std::vector<float>(
          (float*)(mesh.mVertices),
          (float*)(mesh.mVertices) + mesh.mNumVertices * kNumAxes);
@@ -99,7 +98,6 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          auto& animation = *scene->mAnimations[i];
          for (size_t i = 0; i < animation.mNumChannels; ++i) {
             auto& channel = animation.mChannels[i];
-            std::clog << "loading channel for " << channel->mNodeName.C_Str() << std::endl;
             channel_map[channel->mNodeName.C_Str()] = channel;
          }
       }

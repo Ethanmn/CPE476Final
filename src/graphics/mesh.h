@@ -15,7 +15,6 @@ struct Mesh {
    std::vector<ArrayBufferObject> attribute_buffer_objects;
 
    std::vector<Bone> bone_array;
-   glm::mat4 global_inverse_transform;
 };
 
 #endif // MESH_H_

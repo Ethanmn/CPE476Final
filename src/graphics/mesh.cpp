@@ -31,6 +31,5 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
          IndexBufferObject::create(mesh.index_array),
          attributes,
          mesh.bone_array,
-         mesh.global_inverse_transform
    });
 }

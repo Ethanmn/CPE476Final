@@ -60,7 +60,9 @@ glm::mat4 BoneAnimation::rotation(double time) const {
 }
 
 glm::mat4 BoneAnimation::scale(double time) const {
-   assert(scale_keys.size() > 1);
+   if (scale_keys.size() == 1) {
+      return glm::scale(glm::mat4(), scale_keys.front().value);
+   }
    for (size_t i = 0; i < scale_keys.size() - 1; ++i) {
       if (time < scale_keys[i+1].time) {
          const auto& scale1 = scale_keys[i];
@@ -94,7 +96,6 @@ Bone::Bone(aiBone* ai_bone,
 //static
 std::vector<glm::mat4> Bone::calculateBoneTransformations(
       const std::vector<Bone>& bones,
-      const glm::mat4& global_inverse_transform,
       double time) {
    std::vector<glm::mat4> transformations(bones.size());
    std::vector<boost::optional<glm::mat4>> maybe_transformations(bones.size());
@@ -102,7 +103,6 @@ std::vector<glm::mat4> Bone::calculateBoneTransformations(
       if (!maybe_transformations[bone.id()])
          calculateBoneTransformation(bones, time, bone, maybe_transformations);
       transformations[bone.id()] =
-         global_inverse_transform *
          *maybe_transformations[bone.id()] *
          bone.inverse_bind_pose();
    }
@@ -128,7 +128,7 @@ void Bone::calculateBoneTransformation(
 
    // This is the default pose (no animation)
    glm::mat4 node_transform(bone.transform());
-   if (bone.bone_animation_ && bone.name_ == "joint1") {
+   if (bone.bone_animation_) {
       const auto translate(bone.bone_animation_->translation(time));
       const auto rotate(bone.bone_animation_->rotation(time));
       const auto scale(bone.bone_animation_->scale(time));

@@ -164,7 +164,6 @@ GLAttributeLocation GLShader::getAttributeLocation(const std::string& attribute)
    if (a < 0) {
       std::cout << "Could not find attribute location for: " << attribute << " in program: " << program_ << std::endl;
       std::cerr << "Make sure you are actually using it in the program, GLSL optimizes out unused variables." << std::endl;
-      exit(EXIT_FAILURE);
    }
    return GLAttributeLocation(a);
 }
@@ -174,7 +173,6 @@ GLUniformLocation GLShader::getUniformLocation(const std::string& uniform) {
    if (u < 0) {
       std::cerr << "Could not find uniform location for: " << uniform << " in program: " << program_ << std::endl;
       std::cerr << "Make sure you are actually using it in the program, GLSL optimizes out unused variables." << std::endl;
-      exit(EXIT_FAILURE);
    }
    return GLUniformLocation(u);
 }
