@@ -13,9 +13,11 @@ struct Material {
    glm::vec3 diffuse;
    glm::vec3 specular;
    float shine;
+   Material(const glm::vec3& diff = glm::vec3(1.0),
+            const glm::vec3& amb = glm::vec3(0.1),
+            const glm::vec3& spec = glm::vec3(0.1),
+            float shineVal = 1000.0f);
+   void sendMaterial(Shader& shader, const UniformLocationMap& uniform_locations) const;
 };
-
-void sendMaterial(Shader& shader, const UniformLocationMap& uniform_locations,
-   glm::vec3 diffuse);
 
 #endif
