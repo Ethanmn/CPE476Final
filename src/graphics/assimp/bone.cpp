@@ -53,7 +53,7 @@ glm::mat4 BoneAnimation::rotation(double time) const {
          const auto& rot2 = rotation_keys[i + 1];
          const auto delta_time = rot2.time - rot1.time;
          const float interp_factor = (time - rot1.time) / delta_time;
-         const auto interpolated = glm::lerp(rot1.value, rot2.value, interp_factor);
+         const auto interpolated = glm::mix(rot1.value, rot2.value, interp_factor);
          assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
          return glm::mat4_cast(interpolated);
       }
