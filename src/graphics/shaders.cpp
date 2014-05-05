@@ -21,14 +21,15 @@ const std::vector<Uniform> kSunUniforms{
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
    Attribute::TEX_COORD,
-// Attribute::NORMAL,
+   Attribute::NORMAL,
 };
 const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL_VIEW,
-//   Uniform::VIEW,
+   Uniform::VIEW,
    Uniform::PROJECTION,
-//   Uniform::NORMAL,
+   Uniform::NORMAL,
    Uniform::TEXTURE,
+   Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY
 };
 
@@ -48,7 +49,7 @@ Shaders::Shaders() {
             Shader("Sun", kSunAttrs, kSunUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+            Shader("Texture2D", kTextureAttrs, kTextureUniforms)));
    /*
    shaders_.insert(std::make_pair(
             ShaderType::WIREFRAME,

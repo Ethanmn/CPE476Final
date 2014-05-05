@@ -11,7 +11,8 @@
 #include "units.h"
 #include "graphics/shaders.h"
 #include "ground_plane.h"
-#include "graphics/texture.h"
+#include "graphics/texture_2d.h"
+//#include "graphics/texture_3d.h"
 #include "DeerCam.h"
 #include "graphics/material.h"
 #include "TreeGenerator.h"
@@ -30,8 +31,7 @@ struct Game {
    Input input_;
    Shaders shaders_;
    MeshLoader mesh_loader_;
-   Texture texture_;
-   Texture deer_texture_;
+   Texture2D texture_;
    AttributeLocationMap attribute_location_map_;
    UniformLocationMap uniform_location_map_;
    GroundPlane ground_;

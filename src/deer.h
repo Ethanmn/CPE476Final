@@ -8,6 +8,8 @@
 #include "graphics/mesh.h"
 #include "graphics/location_maps.h"
 #include "units.h"
+#include "graphics/texture_2d.h"
+//#include "graphics/texture_3d.h"
 
 struct Shader;
 struct SoundEngine;
@@ -16,7 +18,7 @@ struct Deer {
    Deer(const Mesh& mesh, const glm::vec3& position);
 
    void draw(Shader& shader, const UniformLocationMap& locations,
-             const glm::mat4& viewMatrix) const;
+         const glm::mat4& viewMatrix, float sunIntensity) const;
    void step(units::MS dt, const Camera& camera, SoundEngine& sound_engine);
 
    void walkForward();
@@ -48,13 +50,13 @@ struct Deer {
    };
 
    Mesh mesh_;
+   Texture2D texture_;
    glm::vec3 position_;
    glm::vec3 velocity_;
    glm::vec3 last_facing_;
 
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;
-
    BoundingRectangle bounding_rectangle_;
 
    units::MS step_timer_;

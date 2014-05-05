@@ -24,7 +24,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
          ArrayBufferObject::create(
             mesh.uv_array,
             locations[Attribute::TEX_COORD],
-            2),
+            3),
          
       }
    };

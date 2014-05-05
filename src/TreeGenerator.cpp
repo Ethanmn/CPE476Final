@@ -4,6 +4,7 @@
    Deer - CPE 476
 */
 #include "TreeGenerator.h"
+#include "graphics/shader_setup.h"
 
 const int TREE_SIZE = 20;
 const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
@@ -66,8 +67,8 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
                glm::vec3(row * TREE_SIZE - groundSize, TREE_SCALE * TREE_SIZE / 2, col * TREE_SIZE - groundSize));
             model_matrix = translate * scale * rotateTreeUp;
 
-            shader.sendUniform(Uniform::NORMAL, uniform_locations, glm::transpose(glm::inverse(viewMatrix * model_matrix)));
-            shader.sendUniform(Uniform::MODEL_VIEW, uniform_locations, viewMatrix * model_matrix);
+            setupModelView(shader, uniform_locations, model_matrix,
+                           viewMatrix, true);
             shader.drawMesh(treeMesh1);
          }
       }
