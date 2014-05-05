@@ -19,6 +19,7 @@
 #include "graphics/day_cycle.h"
 #include "tree.h"
 #include "box.h"
+#include "BVHNode.h"
 
 struct Game {
    Game();
@@ -42,11 +43,9 @@ struct Game {
    std::vector<Tree> bushes_;
 
    glm::vec2 mousePos;
-   bool mouseDown;
 
    void step(units::MS dt);
    void draw();
-   void moveMouse(int endX, int endY);
 };
 
 #endif // GAME_H_

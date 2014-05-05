@@ -56,7 +56,6 @@ Game::Game() :
    glLineWidth(1.0);
 
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
-   mouseDown = false;
    deerCam.initialize(deer_.getPosition());
    treeGen.generateTrees();
    //SDL_SetRelativeMouseMode(true);
@@ -135,6 +134,8 @@ void Game::draw() {
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
+
+      //If pixel is under ground draw as blue (water)?
    }
 }
 
