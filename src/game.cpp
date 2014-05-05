@@ -131,8 +131,9 @@ void Game::draw() {
          shader.sendUniform(
                Uniform::BONES, uniform_location_map_,
                Bone::calculateBoneTransformations(box.bone_array, anim_time));
-         setupModelView(shader, uniform_location_map_,
-               glm::scale(glm::translate(glm::mat4(), glm::vec3(-30.0, 3.0, -30.0)), glm::vec3(4.0)), viewMatrix, true);
+         //setupModelView(shader, uniform_location_map_,
+               //glm::scale(glm::translate(glm::mat4(), glm::vec3(-30.0, 3.0, -30.0)), glm::vec3(4.0)), viewMatrix, true);
+         setupModelView(shader, uniform_location_map_, glm::mat4(), viewMatrix, true);
          sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
          shader.drawMesh(box);
 

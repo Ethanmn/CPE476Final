@@ -50,9 +50,9 @@ glm::mat4 BoneAnimation::rotation(double time) const {
          const auto& rot2 = rotation_keys[i + 1];
          const auto delta_time = rot2.time - rot1.time;
          const float interp_factor = (time - rot1.time) / delta_time;
+         const auto interpolated = glm::lerp(rot1.value, rot2.value, interp_factor);
          assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
-         return glm::mat4_cast(
-               glm::lerp(rot1.value, rot2.value, interp_factor));
+         return glm::mat4_cast(interpolated);
       }
    }
    assert(false && "NOT REACHED");
@@ -68,9 +68,10 @@ glm::mat4 BoneAnimation::scale(double time) const {
          const auto delta_time = scale2.time - scale1.time;
          const auto interp_factor = (time - scale1.time) / delta_time;
          assert(interp_factor >= 0.0f && interp_factor <= 1.0f);
+         const auto interpolated = glm::mix(scale1.value, scale2.value, interp_factor);
          return glm::scale(
                glm::mat4(),
-               glm::mix(scale1.value, scale2.value, interp_factor));
+               interpolated);
       }
    }
    assert(false && "NOT REACHED");
