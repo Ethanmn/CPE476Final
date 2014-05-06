@@ -16,7 +16,6 @@ struct Mesh {
    IndexBufferObject index_buffer_object;
    std::vector<ArrayBufferObject> attribute_buffer_objects;
    Material material;
-   Texture texture;
 };
 
 #endif // MESH_H_
