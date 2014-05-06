@@ -96,6 +96,17 @@ void GLShader::sendUniform<glm::mat4>(
 }
 
 template <>
+void GLShader::sendUniform<std::vector<glm::mat4>>(
+      const GLUniformLocationMap& uniforms,
+      const std::vector<glm::mat4>& data) {
+   std::vector<float> floats;
+   for (auto& m : data) {
+      floats.insert(floats.end(), glm::value_ptr(m), glm::value_ptr(m) + 16);
+   }
+   glUniformMatrix4fv(uniforms.at(program_), floats.size(), GL_FALSE, floats.data());
+}
+
+template <>
 void GLShader::sendUniform<GLTextureID>(
       const GLUniformLocationMap& uniforms,
       const GLTextureID& data) {
@@ -153,7 +164,6 @@ GLAttributeLocation GLShader::getAttributeLocation(const std::string& attribute)
    if (a < 0) {
       std::cout << "Could not find attribute location for: " << attribute << " in program: " << program_ << std::endl;
       std::cerr << "Make sure you are actually using it in the program, GLSL optimizes out unused variables." << std::endl;
-      exit(EXIT_FAILURE);
    }
    return GLAttributeLocation(a);
 }
@@ -163,7 +173,6 @@ GLUniformLocation GLShader::getUniformLocation(const std::string& uniform) {
    if (u < 0) {
       std::cerr << "Could not find uniform location for: " << uniform << " in program: " << program_ << std::endl;
       std::cerr << "Make sure you are actually using it in the program, GLSL optimizes out unused variables." << std::endl;
-      exit(EXIT_FAILURE);
    }
    return GLUniformLocation(u);
 }

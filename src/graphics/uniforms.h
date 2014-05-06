@@ -17,6 +17,8 @@ enum class Uniform {
    M_DIF,
    M_SPEC,
    M_SHINE,
+   BONES,
+   HAS_BONES,
    LAST_UNIFORM,
 };
 
@@ -46,6 +48,10 @@ inline std::string uniform_name(Uniform uniform) {
          return "uMat.specular";
       case Uniform::M_SHINE:
          return "uMat.shine";
+      case Uniform::BONES:
+         return "uBones";
+      case Uniform::HAS_BONES:
+         return "uHasBones";
       case Uniform::LAST_UNIFORM:
          throw "Unknown uniform type, shouldn't even compile";
    }
