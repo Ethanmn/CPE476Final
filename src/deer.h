@@ -28,11 +28,6 @@ struct Deer {
    void strafeRight();
    void stopStrafing();
 
-   void update_animation(float update_amount) {
-      animation_time_ += update_amount;
-      animation_time_ = std::max(std::min(animation_time_, 2.0f), 0.0f);
-   }
-
    void jump();
 
    glm::vec3 getPosition();
@@ -61,8 +56,6 @@ struct Deer {
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;
    BoundingRectangle bounding_rectangle_;
-
-   float animation_time_;
 
    bool is_jumping_;
    bool is_walking_;

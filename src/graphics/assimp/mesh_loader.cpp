@@ -120,6 +120,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
       std::map<std::string, aiNodeAnim*> channel_map;
       for (size_t i = 0; i < scene->mNumAnimations; ++i) {
          auto& animation = *scene->mAnimations[i];
+         ret.animation = Animation(animation.mDuration, animation.mTicksPerSecond);
          for (size_t i = 0; i < animation.mNumChannels; ++i) {
             auto& channel = animation.mChannels[i];
             channel_map[channel->mNodeName.C_Str()] = channel;

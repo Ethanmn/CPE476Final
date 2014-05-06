@@ -4,8 +4,7 @@
 #include "graphics/bones_buffer_object.h"
 
 //static
-Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
-) {
+Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh) {
    if (locations.count(Attribute::VERTEX) == 0) {
       std::clog << "Warning: unused attribute VERTEX in shaders." << std::endl;
    }
@@ -32,6 +31,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
          IndexBufferObject::create(mesh.index_array),
          attributes,
          mesh.bone_array,
-         mesh.material
+         mesh.animation,
+         mesh.material,
    });
 }

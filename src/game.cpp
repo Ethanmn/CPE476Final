@@ -211,11 +211,6 @@ void Game::mainLoop() {
                running = false;
             }
          }
-         if (input.isKeyHeld(SDL_SCANCODE_0)) {
-            deer_.update_animation(0.01f);
-         } else if (input.isKeyHeld(SDL_SCANCODE_9)) {
-            deer_.update_animation(-0.01f);
-         }
       }
 
       {

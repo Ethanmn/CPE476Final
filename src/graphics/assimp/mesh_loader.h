@@ -11,6 +11,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "graphics/assimp/bone.h"
+#include "graphics/animation.h"
 #include "graphics/material.h"
 
 struct AssimpMesh {
@@ -26,6 +27,8 @@ struct AssimpMesh {
    // Canonical array of Bones. Access with BoneID's.
    // Length is the number of bones in the scene NOT the number of vertices.
    std::vector<Bone> bone_array;
+   // TODO: support multiple animations.
+   Animation animation;
    Material material;
 };
 

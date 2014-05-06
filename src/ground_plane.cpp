@@ -47,6 +47,7 @@ GroundPlane::GroundPlane(AttributeLocationMap& locations) :
             3),
       }),
       std::vector<Bone>(),
+      Animation(),
       Material(),
    } {}
 

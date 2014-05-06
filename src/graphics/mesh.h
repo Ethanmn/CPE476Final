@@ -17,6 +17,7 @@ struct Mesh {
    std::vector<ArrayBufferObject> attribute_buffer_objects;
 
    std::vector<Bone> bone_array;
+   Animation animation;
    Material material;
 };
 

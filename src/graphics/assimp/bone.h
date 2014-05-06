@@ -69,6 +69,7 @@ struct Bone {
    glm::mat4 transform_;
    // Transform from mesh space into bone space.
    glm::mat4 inverse_bind_pose_;
+   // TODO: support multiple animations.
    boost::optional<BoneAnimation> bone_animation_;
    BoneID bone_id_, parent_id_;
 };

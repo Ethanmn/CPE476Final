@@ -29,7 +29,6 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
-   animation_time_(0.0f),
    is_jumping_(false)
       {}
 
@@ -52,7 +51,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
    shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
    shader.sendUniform(Uniform::BONES, uniform_locations,
-         Bone::calculateBoneTransformations(mesh_.bone_array, animation_time_));
+         mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
    shader.drawMesh(mesh_);
    shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
 
@@ -62,6 +61,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
 }
 
 void Deer::step(units::MS dt, const Camera& camera) {
+   mesh_.animation.step(dt);
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
       xz_velocity -= xz_velocity * (kFriction * dt);
