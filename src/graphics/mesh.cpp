@@ -3,7 +3,8 @@
 #include "graphics/shaders.h"
 
 //static
-Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh) {
+Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
+) {
    if (locations.count(Attribute::VERTEX) == 0) {
       std::clog << "Warning: unused attribute VERTEX in shaders." << std::endl;
    }
