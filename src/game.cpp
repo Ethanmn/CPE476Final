@@ -7,7 +7,6 @@
 
 namespace {
    DeerCam deerCam;
-   float anim_time = 0.5f;
 }
 
 Game::Game() :
