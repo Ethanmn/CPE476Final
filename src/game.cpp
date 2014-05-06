@@ -211,11 +211,9 @@ void Game::mainLoop() {
             }
          }
          if (input.isKeyHeld(SDL_SCANCODE_0)) {
-            anim_time += 0.01f;
-            anim_time = std::min(anim_time, 2.0f);
+            deer_.update_animation(0.01f);
          } else if (input.isKeyHeld(SDL_SCANCODE_9)) {
-            anim_time -= 0.01f;
-            anim_time = std::max(anim_time, 0.0f);
+            deer_.update_animation(-0.01f);
          }
       }
 

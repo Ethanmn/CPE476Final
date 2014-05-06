@@ -4,6 +4,24 @@
 const std::vector<Attribute> kSunAttrs{
    Attribute::VERTEX,
    Attribute::NORMAL,
+};
+const std::vector<Uniform> kSunUniforms{
+   Uniform::MODEL_VIEW,
+   Uniform::VIEW,
+   Uniform::PROJECTION,
+   Uniform::NORMAL,
+   Uniform::M_AMB,
+   Uniform::M_DIF,
+   Uniform::M_SPEC,
+   Uniform::M_SHINE,
+   Uniform::SUN_DIR,
+   Uniform::SUN_INTENSITY,
+};
+
+const std::vector<Attribute> kTextureAttrs{
+   Attribute::VERTEX,
+   Attribute::TEX_COORD,
+   Attribute::NORMAL,
 
    Attribute::BONE_ID0,
    Attribute::BONE_WEIGHT0,
@@ -20,26 +38,6 @@ const std::vector<Attribute> kSunAttrs{
    Attribute::BONE_ID4,
    Attribute::BONE_WEIGHT4,
 };
-const std::vector<Uniform> kSunUniforms{
-   Uniform::MODEL_VIEW,
-   Uniform::VIEW,
-   Uniform::PROJECTION,
-   Uniform::NORMAL,
-   Uniform::M_AMB,
-   Uniform::M_DIF,
-   Uniform::M_SPEC,
-   Uniform::M_SHINE,
-   Uniform::SUN_DIR,
-   Uniform::SUN_INTENSITY,
-   Uniform::BONES,
-   Uniform::HAS_BONES,
-};
-
-const std::vector<Attribute> kTextureAttrs{
-   Attribute::VERTEX,
-   Attribute::TEX_COORD,
-   Attribute::NORMAL,
-};
 const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL_VIEW,
    Uniform::VIEW,
@@ -47,7 +45,9 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::NORMAL,
    Uniform::TEXTURE,
    Uniform::SUN_DIR,
-   Uniform::SUN_INTENSITY
+   Uniform::SUN_INTENSITY,
+   Uniform::BONES,
+   Uniform::HAS_BONES,
 };
 
 const std::vector<Attribute> kWireframeAttrs{

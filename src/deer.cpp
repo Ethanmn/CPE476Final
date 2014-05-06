@@ -29,6 +29,7 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
+   animation_time_(0.0f),
    is_jumping_(false)
       {}
 
@@ -44,13 +45,17 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
             glm::mat4(1.0f),
             position_));
    const glm::mat4 model_matrix(translate * rotate);
-   
+
    setupTextureShader(shader, uniform_locations, sunIntensity, texture_.textureID());
    texture_.enable();
-   
+
    setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
+   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
+   shader.sendUniform(Uniform::BONES, uniform_locations,
+         Bone::calculateBoneTransformations(mesh_.bone_array, animation_time_));
    shader.drawMesh(mesh_);
-   
+   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
+
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);
    glPolygonMode(GL_FRONT, GL_FILL);
    texture_.disable();

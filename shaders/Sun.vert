@@ -35,7 +35,6 @@ varying vec3 vNormal;
 
 void main() {
   mat4 bone = mat4(1.0);
-  vColor = vec3(1, 1, 1);
   if (uHasBones != 0) {
      if (aBoneID0 != -1) {
         bone = uBones[aBoneID0] * aBoneWeight0;
