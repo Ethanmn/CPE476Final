@@ -1,5 +1,5 @@
-#ifndef TEXTURE_2D_H_
-#define TEXTURE_2D_H_
+#ifndef TEXTURE_H_
+#define TEXTURE_H_
 #include <iostream>
 #include <string>
 #include "gl_adapters/gl_types.h"
@@ -21,8 +21,8 @@ inline std::string texture_path(Textures texture) {
    }
 }
 
-struct Texture2D {
-   Texture2D(const std::string& path);
+struct Texture {
+   Texture(const std::string& path);
    void enable() const;
    void disable() const;
    GLTextureID textureID() const;

@@ -5,11 +5,14 @@
 #include <string>
 #include <vector>
 
+#include "graphics/material.h"
+
 struct AssimpMesh {
    std::vector<float> vertex_array;
    std::vector<float> normal_array;
    std::vector<float> uv_array;
    std::vector<unsigned short> index_array;
+   Material material;
 };
 
 struct MeshLoader {

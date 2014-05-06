@@ -22,7 +22,8 @@ void BoundingRectangle::loadBoundingMesh(MeshLoader& mesh_loader, const Attribut
    bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh("../models/cube.obj"));
 }
 
-void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader, float y, const glm::mat4& viewMatrix) const {
+void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader, 
+   float y, const glm::mat4& viewMatrix) const {
    return;
    if (bounding_mesh_) {
       const glm::mat4 rotate(

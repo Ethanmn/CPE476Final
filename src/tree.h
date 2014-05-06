@@ -21,7 +21,9 @@ struct Tree {
             glm::vec2(position.x, position.z),
             glm::vec2(8.0f, 8.0f),
             0.0f),
-      mesh_(mesh) {}
+      mesh_(mesh) {
+         mesh_.material = Material(glm::vec3(0.45, 0.24, 0.15));
+      }
 
    void step(units::MS dt);
    void rustle();

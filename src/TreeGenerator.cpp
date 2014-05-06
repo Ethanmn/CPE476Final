@@ -15,6 +15,7 @@ const float BOUNDING_ERR_Z = -1.75;
 
 TreeGenerator::TreeGenerator(const Mesh& mesh) {
    treeMesh1 = mesh;
+   treeMesh1.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
 }
 
 //Generate the trees
@@ -50,6 +51,7 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
    glm::mat4 scale;
    glm::mat4 model_matrix;
    int groundSize = GroundPlane::GROUND_SCALE / 2;
+   treeMesh1.material.sendMaterial(shader, uniform_locations);
 
    for(int row = 0; row < (int)trees.size(); row++) {
       std::vector<bool> colVec = trees[row];
