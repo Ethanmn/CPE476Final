@@ -6,6 +6,7 @@
 #include "graphics/gl_adapters/index_buffer_object.h"
 #include "graphics/location_maps.h"
 #include "graphics/assimp/mesh_loader.h"
+#include "graphics/material.h"
 
 struct Shaders;
 
@@ -15,6 +16,7 @@ struct Mesh {
    std::vector<ArrayBufferObject> attribute_buffer_objects;
 
    std::vector<Bone> bone_array;
+   Material material;
 };
 
 #endif // MESH_H_

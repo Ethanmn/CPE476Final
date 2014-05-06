@@ -33,7 +33,8 @@ void Tree::draw(
    const glm::mat4 model_matrix(translate * scale * rotate);
    
    setupModelView(shader, uniform_location_map, model_matrix, view_matrix, true);
-   sendMaterial(shader, uniform_location_map, glm::vec3(0.45, 0.24, 0.15));
+   
+   mesh_.material.sendMaterial(shader, uniform_location_map);
    
    shader.drawMesh(mesh_);
    bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);

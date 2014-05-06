@@ -11,6 +11,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "graphics/assimp/bone.h"
+#include "graphics/material.h"
 
 struct AssimpMesh {
    typedef std::pair<BoneID, float> BoneIDAndWeight;
@@ -25,6 +26,7 @@ struct AssimpMesh {
    // Canonical array of Bones. Access with BoneID's.
    // Length is the number of bones in the scene NOT the number of vertices.
    std::vector<Bone> bone_array;
+   Material material;
 };
 
 struct MeshLoader {
