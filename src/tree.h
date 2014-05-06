@@ -36,7 +36,7 @@ struct Tree {
    glm::vec3 position_;
    float scale_;
    float rotate_;
-   units::MS elapsed_time_, rustle_time_;
+   units::MS elap sed_time_, rustle_time_;
    const units::MS kMaxRustleTime;
    BoundingRectangle bounding_rectangle_;
    Mesh mesh_;
