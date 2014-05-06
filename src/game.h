@@ -17,7 +17,7 @@
 #include "TreeGenerator.h"
 #include "graphics/day_cycle.h"
 #include "tree.h"
-#include "box.h"
+#include "day_night_interaction.h"
 #include "BVHNode.h"
 
 struct Game {
@@ -35,7 +35,7 @@ struct Game {
    UniformLocationMap uniform_location_map_;
    GroundPlane ground_;
    Deer deer_;
-   Box box_;
+   DayNightInteraction day_night_boxes_;
    TreeGenerator treeGen; //May want this in a world generator class later
    DayCycle day_cycle_;
    Mesh tree_mesh_;
