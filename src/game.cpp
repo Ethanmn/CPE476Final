@@ -16,7 +16,7 @@ Game::Game() :
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/Test_Deer_Texture.dae")), glm::vec3(0.0f)),
+            mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -87,7 +87,7 @@ void Game::step(units::MS dt) {
 
    if (treeColl)
       deer_.jump();
-   
+
    day_cycle_.autoAdjustTime(dt);
 }
 
@@ -107,11 +107,11 @@ void Game::draw() {
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    glm::mat4 boxModelMatrix;
-   
+
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
-      
+
       setupProjection(shader, uniform_location_map_);
 
       if(shaderPair.first == ShaderType::TEXTURE) {
@@ -121,9 +121,9 @@ void Game::draw() {
          texture_.enable();
          ground_.draw(shader, uniform_location_map_, viewMatrix);
          texture_.disable();
-         
+
          deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
-         
+
       }
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
