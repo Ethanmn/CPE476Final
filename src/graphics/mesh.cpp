@@ -4,7 +4,8 @@
 #include "graphics/bones_buffer_object.h"
 
 //static
-Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh) {
+Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
+) {
    if (locations.count(Attribute::VERTEX) == 0) {
       std::clog << "Warning: unused attribute VERTEX in shaders." << std::endl;
    }
@@ -13,17 +14,17 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
    }
    std::vector<ArrayBufferObject> attributes({
          ArrayBufferObject::create(
-               mesh.vertex_array,
-               locations[Attribute::VERTEX],
-               3),
+            mesh.vertex_array,
+            locations[Attribute::VERTEX],
+            3),
          ArrayBufferObject::create(
-               mesh.normal_array,
-               locations[Attribute::NORMAL],
-               3),
+            mesh.normal_array,
+            locations[Attribute::NORMAL],
+            3),
          ArrayBufferObject::create(
-               mesh.uv_array,
-               locations[Attribute::TEX_COORD],
-               3),
+            mesh.uv_array,
+            locations[Attribute::TEX_COORD],
+            3),
          });
    const auto bones_attributes = createFromBoneIDAndWeights(mesh.bone_weights_array, locations);
    attributes.insert(attributes.end(), bones_attributes.begin(), bones_attributes.end());

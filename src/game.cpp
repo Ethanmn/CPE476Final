@@ -16,7 +16,7 @@ Game::Game() :
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
-   box_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -86,12 +86,14 @@ void Game::step(units::MS dt) {
 
    if (treeColl)
       deer_.jump();
-   if (deer_.bounding_rectangle().collidesWith(box_.bounding_rectangle_green())) {
+
+   if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
       day_cycle_.on();
    }
-   else if (deer_.bounding_rectangle().collidesWith(box_.bounding_rectangle_red())) {
+   else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
       day_cycle_.off();
    }
+
    day_cycle_.autoAdjustTime(dt);
 }
 
@@ -124,8 +126,8 @@ void Game::draw() {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
-         box_.drawRed(shader, uniform_location_map_, viewMatrix);
-         box_.drawGreen(shader, uniform_location_map_, viewMatrix);
+         day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
+         day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);

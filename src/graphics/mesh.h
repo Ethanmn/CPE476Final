@@ -7,6 +7,7 @@
 #include "graphics/location_maps.h"
 #include "graphics/assimp/mesh_loader.h"
 #include "graphics/material.h"
+#include "graphics/texture.h"
 
 struct Shaders;
 
