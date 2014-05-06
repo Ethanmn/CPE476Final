@@ -1,5 +1,5 @@
-#ifndef TEXTURE_2D_H_
-#define TEXTURE_2D_H_
+#ifndef TEXTURE_H_
+#define TEXTURE_H_
 #include <iostream>
 #include <string>
 #include "gl_adapters/gl_types.h"

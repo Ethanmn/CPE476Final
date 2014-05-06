@@ -29,16 +29,38 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    ret.vertex_array = std::vector<float>(
          (float*)(mesh.mVertices),
          (float*)(mesh.mVertices) + mesh.mNumVertices * kNumAxes);
-   
+
    ret.uv_array = mesh.HasTextureCoords(0) ?
-         std::vector<float>(
-               (float*)(mesh.mTextureCoords[0]),
-               (float*)(mesh.mTextureCoords[0]) + mesh.mNumVertices * kNumAxes)
-         : std::vector<float>();
+      std::vector<float>(
+            (float*)(mesh.mTextureCoords[0]),
+            (float*)(mesh.mTextureCoords[0]) + mesh.mNumVertices * kNumAxes)
+      : std::vector<float>();
 
    ret.normal_array = std::vector<float>(
          (float*)(mesh.mNormals),
          (float*)(mesh.mNormals) + mesh.mNumVertices * kNumAxes);
+
+   const auto& material = *scene->mMaterials[mesh.mMaterialIndex];
+   {  // ambient
+      aiColor3D color;
+      material.Get(AI_MATKEY_COLOR_AMBIENT, color);
+      ret.material.ambient = glm::vec3(color.r, color.g, color.b);
+   }
+   {  // diffuse
+      aiColor3D color;
+      material.Get(AI_MATKEY_COLOR_DIFFUSE, color);
+      ret.material.diffuse = glm::vec3(color.r, color.g, color.b);
+   }
+   {  // specular
+      aiColor3D color;
+      material.Get(AI_MATKEY_COLOR_SPECULAR, color);
+      ret.material.specular = glm::vec3(color.r, color.g, color.b);
+   }
+   {  // shininess
+      float shine;
+      material.Get(AI_MATKEY_SHININESS, shine);
+      ret.material.shine = shine;
+   }
 
    for (unsigned int i = 0; i < mesh.mNumFaces; ++i) {
       ret.index_array.insert(

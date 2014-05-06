@@ -10,7 +10,6 @@
 #include "graphics/location_maps.h"
 #include "units.h"
 #include "graphics/texture.h"
-//#include "graphics/texture_3d.h"
 
 struct Shader;
 

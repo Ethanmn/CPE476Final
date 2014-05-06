@@ -2,12 +2,11 @@
 #include "graphics/mesh.h"
 #include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <graphics/material.h>
 #include <iostream>
 
 namespace {
    DeerCam deerCam;
-   Mesh box;
-   
 }
 
 Game::Game() :
@@ -17,6 +16,7 @@ Game::Game() :
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/Test_Deer_Texture.dae")), glm::vec3(0.0f)),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -56,7 +56,6 @@ Game::Game() :
    glLineWidth(1.0);
 
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
-   mouseDown = false;
    deerCam.initialize(deer_.getPosition());
    treeGen.generateTrees();
    //SDL_SetRelativeMouseMode(true);
@@ -86,20 +85,18 @@ void Game::step(units::MS dt) {
    if (treeColl)
       deer_.jump();
    
+   if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
+      day_cycle_.on();
+   }
+   else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
+      day_cycle_.off();
+   }
+   
    day_cycle_.autoAdjustTime(dt);
 }
 
 void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-   if(deer_.getPosition().x < -27.0 && deer_.getPosition().x > -32.0 &&
-         deer_.getPosition().z < -27.0 && deer_.getPosition().z > -32.0) {
-      day_cycle_.on();
-   }
-   if(deer_.getPosition().x > 17.0 && deer_.getPosition().x < 22.0 &&
-         deer_.getPosition().z > 17.0 && deer_.getPosition().z < 22.0) {
-      day_cycle_.off();
-   }
 
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
@@ -135,19 +132,8 @@ void Game::draw() {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
-         //ON BOX
-         boxModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-30.0, -6.0, -30.0));
-         setupModelView(shader, uniform_location_map_,
-               boxModelMatrix, viewMatrix, true);
-         sendMaterial(shader, uniform_location_map_, glm::vec3(0.5f, 0.7f, 0.5f));
-         shader.drawMesh(box);
-
-         //OFF BOX
-         boxModelMatrix =  glm::translate(glm::mat4(1.0), glm::vec3(20.0, -6.0, 20.0));
-         setupModelView(shader, uniform_location_map_,
-              boxModelMatrix, viewMatrix, true);
-         sendMaterial(shader, uniform_location_map_, glm::vec3(0.7f, 0.5f, 0.5f));
-         shader.drawMesh(box);
+         day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
+         day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
@@ -157,12 +143,12 @@ void Game::draw() {
       else if(shaderPair.first == ShaderType::WIREFRAME) {
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
       }
+      //If pixel is under ground draw as blue (water)?
+
    }
 }
 
 void Game::mainLoop() {
-   box = Mesh::fromAssimpMesh(attribute_location_map_, 
-      mesh_loader_.loadMesh("../models/cube.obj"));
    Input input;
    int mX, mY;
    bool running = true;
