@@ -14,18 +14,19 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
       IndexBufferObject::create(mesh.index_array),
       {
          ArrayBufferObject::create(
-            mesh.vertex_array,
-            locations[Attribute::VERTEX],
-            3),
+               mesh.vertex_array,
+               locations[Attribute::VERTEX],
+               3),
          ArrayBufferObject::create(
-            mesh.normal_array,
-            locations[Attribute::NORMAL],
-            3),
+               mesh.normal_array,
+               locations[Attribute::NORMAL],
+               3),
          ArrayBufferObject::create(
-            mesh.uv_array,
-            locations[Attribute::TEX_COORD],
-            3),
-         
-      }
+               mesh.uv_array,
+               locations[Attribute::TEX_COORD],
+               3),
+
+      },
+      mesh.material
    };
 }
