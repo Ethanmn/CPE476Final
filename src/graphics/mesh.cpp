@@ -1,6 +1,7 @@
 #include "graphics/mesh.h"
 #include "graphics/assimp/mesh_loader.h"
 #include "graphics/shaders.h"
+#include "graphics/bones_buffer_object.h"
 
 //static
 Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh) {
@@ -10,9 +11,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
    if (locations.count(Attribute::NORMAL) == 0) {
       std::clog << "Warning: unused attribute NORMAL in shaders." << std::endl;
    }
-   return {
-      IndexBufferObject::create(mesh.index_array),
-      {
+   std::vector<ArrayBufferObject> attributes({
          ArrayBufferObject::create(
             mesh.vertex_array,
             locations[Attribute::VERTEX],
@@ -25,7 +24,14 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
             mesh.uv_array,
             locations[Attribute::TEX_COORD],
             3),
-         
-      }
-   };
+         });
+   const auto bones_attributes = createFromBoneIDAndWeights(mesh.bone_weights_array, locations);
+   attributes.insert(attributes.end(), bones_attributes.begin(), bones_attributes.end());
+   return Mesh({
+         IndexBufferObject::create(mesh.index_array),
+         attributes,
+         mesh.bone_array,
+         mesh.animation,
+         mesh.material,
+   });
 }

@@ -32,7 +32,7 @@ const std::vector<unsigned short> ground_indices{
 GroundPlane::GroundPlane(AttributeLocationMap& locations) :
    mesh_{
       IndexBufferObject::create(ground_indices),
-      {
+      std::vector<ArrayBufferObject>({
          ArrayBufferObject::create(
             ground_vertices,
             locations[Attribute::VERTEX],
@@ -45,7 +45,10 @@ GroundPlane::GroundPlane(AttributeLocationMap& locations) :
             ground_tex_coord,
             locations[Attribute::TEX_COORD],
             3),
-      }
+      }),
+      std::vector<Bone>(),
+      Animation(),
+      Material(),
    } {}
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,

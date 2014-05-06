@@ -55,7 +55,11 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    texture_.enable();
 
    setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
+   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
+   shader.sendUniform(Uniform::BONES, uniform_locations,
+         mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
    shader.drawMesh(mesh_);
+   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
 
    bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);
    glPolygonMode(GL_FRONT, GL_FILL);
@@ -63,6 +67,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
 }
 
 void Deer::step(units::MS dt, const Camera& camera, SoundEngine& sound_engine) {
+   mesh_.animation.step(dt);
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
       xz_velocity -= xz_velocity * (kFriction * dt);
