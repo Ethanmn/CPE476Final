@@ -40,7 +40,6 @@ struct Game {
    DayCycle day_cycle_;
    Mesh tree_mesh_;
    std::vector<Tree> bushes_;
-   std::vector<Particle> particles_;
 
    glm::vec2 mousePos;
 

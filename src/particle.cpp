@@ -6,8 +6,8 @@
 
 void Particle::step(units::MS dt) {
    life_time_ += dt;
-   velocity_ += acceleration_ * dt;
-   position_ += velocity_ * dt;
+   velocity_ += acceleration_ * (float)dt;
+   position_ += velocity_ * (float)dt;
 }
 
 void Particle::draw(
@@ -23,19 +23,30 @@ void Particle::draw(
          const glm::mat4 rotate(glm::rotate(
             glm::mat4(),
             rotate_,
-            glm::vec3(0, 1, 0));
+            glm::vec3(0, 1, 0)));
          const glm::mat4 model_matrix(translate * scale * rotate);
    
          setupModelView(shader, uniform_location_map, model_matrix, view_matrix, true);
-         sendMaterial(shader, uniform_location_map, glm::vec3(0.45, 0.24, 0.15));
+         mesh_.material.sendMaterial(shader, uniform_location_map);
    
          shader.drawMesh(mesh_);
-         bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);
       }
-)
+
+
+void Particle::setAccel(float x, float y, float z) {
+   velocity_ = glm::vec3(x, y, z);
+}
+
+void Particle::setPos(float x, float y, float z) {
+   position_ = glm::vec3(x, y, z);
+}
+
+void Particle::setMeshMaterial(float r, float g, float b) {
+   mesh_.material = Material(glm::vec3(r, g, b));
+}
 
 glm::vec3 Particle::getPos() {
-   return posistion_;
+   return position_;
 }
 
 glm::vec3 Particle::getVel() {
