@@ -45,7 +45,8 @@ GroundPlane::GroundPlane(AttributeLocationMap& locations) :
             ground_tex_coord,
             locations[Attribute::TEX_COORD],
             3),
-      }
+      },
+      Material()
    } {}
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
