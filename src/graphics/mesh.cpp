@@ -12,7 +12,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
    }
    return {
       IndexBufferObject::create(mesh.index_array),
-      {
+      std::vector<ArrayBufferObject>({
          ArrayBufferObject::create(
                mesh.vertex_array,
                locations[Attribute::VERTEX],
@@ -26,7 +26,7 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
                locations[Attribute::TEX_COORD],
                3),
 
-      },
+      }),
       mesh.material
    };
 }
