@@ -6,6 +6,7 @@
 #include "graphics/gl_adapters/index_buffer_object.h"
 #include "graphics/location_maps.h"
 #include "graphics/material.h"
+#include "graphics/texture.h"
 
 struct AssimpMesh;
 struct Shaders;
