@@ -15,7 +15,7 @@ Game::Game() :
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/Test_Deer_Texture.dae")), glm::vec3(0.0f)),
+            mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
@@ -43,6 +43,8 @@ Game::Game() :
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
+   std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
+   std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
@@ -84,14 +86,14 @@ void Game::step(units::MS dt) {
 
    if (treeColl)
       deer_.jump();
-   
+
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
       day_cycle_.on();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
       day_cycle_.off();
    }
-   
+
    day_cycle_.autoAdjustTime(dt);
 }
 
@@ -101,7 +103,7 @@ void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
-   glm::mat4 boxModelMatrix;
+
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
@@ -111,7 +113,7 @@ void Game::draw() {
       if(shaderPair.first == ShaderType::SHADOW) {
          shadow_map_fbo_.BindForWriting();
          glClear(GL_DEPTH_BUFFER_BIT);
-         setupShadowShader(shader, uniform_location_map_, sunDir, 
+         setupShadowShader(shader, uniform_location_map_, sunDir,
             deer_.getModelMatrix());
          deer_.drawDeer(shader);
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -125,7 +127,7 @@ void Game::draw() {
          texture_.enable();
          ground_.draw(shader, uniform_location_map_, viewMatrix);
          texture_.disable();
-         
+
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::SUN) {
