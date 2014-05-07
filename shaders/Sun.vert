@@ -31,7 +31,7 @@ uniform mat4 uModelViewMatrix;
 uniform mat4 uNormalMatrix;
 
 varying vec3 vColor;
-varying vec4 vViewer;
+varying vec4 vPosition;
 varying vec3 vNormal;
 
 void main() {
@@ -59,6 +59,6 @@ void main() {
   vec4 position = uModelViewMatrix * bone * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
   gl_Position = uProjectionMatrix * position;
 
-  vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
-  vViewer = position;
+  vNormal = vec3(uNormalMatrix * vec4(aNormal, 0.0));
+  vPosition = position;
 }

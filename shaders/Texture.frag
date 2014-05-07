@@ -10,7 +10,9 @@ varying vec4 vViewer;
 varying vec3 vNormal;
 
 void main() {
+   
    vec4 texColor = texture2D(uTexture, vTexCoord);
+
    vec3 color;
    vec3 Refl, ReflDir;
    vec3 Spec, Diffuse;
@@ -20,12 +22,12 @@ void main() {
    
    /* temporary material values */
    vec3 amb = vec3(0.1, 0.1, 0.1);
-   vec3 spec = vec3(0.1, 0.1, 0.1);
+   vec3 spec = vec3(0.01, 0.01, 0.01);
    float shine = 100.0;
    
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));
    ReflDir = normalize(reflect(-1.0 * vec3(vLightAndDirectional), vNormal));
-   dotVRDir = dot(-1.0 * normalize(vec3(vViewer.x, vViewer.y, vViewer.z)), normalize(ReflDir));
+   dotVRDir = dot(-1.0 * normalize(vec3(vViewer.x, vViewer.y, vViewer.z)), ReflDir);
    
    Diffuse = directionalColor * vec3(texColor) * dotNLDir;
    Spec = directionalColor * spec * pow(dotVRDir, shine);

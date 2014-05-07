@@ -12,7 +12,7 @@ uniform vec3 uSunDir;
 uniform float uSunIntensity;
 
 varying vec3 vColor;
-varying vec4 vViewer;
+varying vec4 vPosition;
 varying vec3 vNormal;
 
 
@@ -26,7 +26,7 @@ void main() {
    
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));
    ReflDir = normalize(reflect(-1.0 * vec3(vLightAndDirectional), vNormal));
-   dotVRDir = dot(-1.0 * normalize(vec3(vViewer.x, vViewer.y, vViewer.z)), normalize(ReflDir));
+   dotVRDir = dot(-1.0 * normalize(vec3(vPosition.x, vPosition.y, vPosition.z)), normalize(ReflDir));
    
    Diffuse = directionalColor * uMat.diffuse * dotNLDir;
    Spec = directionalColor * uMat.specular * pow(dotVRDir, uMat.shine) * vec3(0.0);
