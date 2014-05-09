@@ -111,16 +111,17 @@ void Game::draw() {
       setupProjection(shader, uniform_location_map_);
 
       if(shaderPair.first == ShaderType::SHADOW) {
-         shadow_map_fbo_.BindForWriting();
-         glClear(GL_DEPTH_BUFFER_BIT);
+         //shadow_map_fbo_.BindForWriting();
+         //glClear(GL_DEPTH_BUFFER_BIT);
          setupShadowShader(shader, uniform_location_map_, sunDir,
             deer_.getModelMatrix());
          deer_.drawDeer(shader);
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         shadow_map_fbo_.BindForReading();
+         //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         //shadow_map_fbo_.BindForReading();
       }
       else if(shaderPair.first == ShaderType::TEXTURE) {
+         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
          setupTextureShader(shader, uniform_location_map_, texture_.textureID());
@@ -131,6 +132,7 @@ void Game::draw() {
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::SUN) {
+         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -158,11 +160,12 @@ void Game::mainLoop() {
    units::MS previous_time = SDL_GetTicks();
 
    printf("Before setup\n");
+   /*
    if(!shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
       printf("FAILURE\n");
       return;
    }
-
+   */
    SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
    mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
 

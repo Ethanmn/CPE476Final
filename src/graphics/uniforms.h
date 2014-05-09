@@ -19,6 +19,7 @@ enum class Uniform {
    M_SHINE,
    BONES,
    HAS_BONES,
+   SHADOW_MAP_INVERSE,
    LAST_UNIFORM,
 };
 
@@ -52,6 +53,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uBones";
       case Uniform::HAS_BONES:
          return "uHasBones";
+      case Uniform::SHADOW_MAP_INVERSE:
+         return "uShadowMapInverse";
       case Uniform::LAST_UNIFORM:
          throw "Unknown uniform type, shouldn't even compile";
    }

@@ -8,6 +8,7 @@ uniform Material uMat;
 
 uniform mat4 uViewMatrix;
 uniform mat4 uNormalMatrix;
+uniform mat4 uShadowMapInverse;
 uniform vec3 uSunDir;
 uniform float uSunIntensity;
 
