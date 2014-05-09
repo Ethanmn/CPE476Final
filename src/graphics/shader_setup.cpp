@@ -55,7 +55,7 @@ void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
    glPolygonMode(GL_FRONT, GL_FILL);
    glm::mat4 shadowProjection, shadowView, modelView;
 
-   shadowProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 20.0f);
+   shadowProjection = glm::ortho(-75.0f, 75.0f, -75.0f, 75.0f, -10.0f, 20.0f);
    shadowView = glm::lookAt(lightDir, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
    modelView = shadowView * modelMatrix;
 

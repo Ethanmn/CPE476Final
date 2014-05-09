@@ -16,7 +16,8 @@ Game::Game() :
    ground_(attribute_location_map_),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
-   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
+      mesh_loader_.loadMesh("../models/cube.obj"))),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -45,7 +46,14 @@ Game::Game() :
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-   glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
+   glClearColor (1.0, 1.0, 1.0, 1.0f);
+
+   /*
+   glClearColor (0.05098 * sunIntensity, 
+              0.6274509 * sunIntensity,
+              sunIntensity, 1.0f);
+   */
+
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -107,10 +115,11 @@ void Game::draw() {
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
-
+      
       setupProjection(shader, uniform_location_map_);
 
       if(shaderPair.first == ShaderType::SHADOW) {
+         
          //shadow_map_fbo_.BindForWriting();
          //glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -121,10 +130,10 @@ void Game::draw() {
          for (auto& bush : bushes_) {
             bush.shadowDraw(shader, uniform_location_map_, sunDir);
          }
-
          //glBindFramebuffer(GL_FRAMEBUFFER, 0);
          //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          //shadow_map_fbo_.BindForReading();
+         /* Note: glClearColor must be changed back in day_cycle */
       }
       else if(shaderPair.first == ShaderType::TEXTURE) {
          sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
