@@ -113,9 +113,15 @@ void Game::draw() {
       if(shaderPair.first == ShaderType::SHADOW) {
          //shadow_map_fbo_.BindForWriting();
          //glClear(GL_DEPTH_BUFFER_BIT);
-         setupShadowShader(shader, uniform_location_map_, sunDir,
-            deer_.getModelMatrix());
-         deer_.drawDeer(shader);
+
+         deer_.shadowDraw(shader, uniform_location_map_, sunDir);
+         day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir);
+         day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir);
+         treeGen.shadowDraw(shader, uniform_location_map_, sunDir);
+         for (auto& bush : bushes_) {
+            bush.shadowDraw(shader, uniform_location_map_, sunDir);
+         }
+
          //glBindFramebuffer(GL_FRAMEBUFFER, 0);
          //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          //shadow_map_fbo_.BindForReading();

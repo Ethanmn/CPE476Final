@@ -66,8 +66,10 @@ void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
       glm::vec3 lightDir) {
    glm::mat4 inverseLight, shadowProjection, shadowView;
-   shadowProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 20.0f);
+   
+   shadowProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 200.0f);
    shadowView = glm::lookAt(lightDir, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+
    inverseLight = glm::inverse(shadowView) * glm::inverse(shadowProjection);
    shader.sendUniform(Uniform::SHADOW_MAP_INVERSE, locations, inverseLight);
 }

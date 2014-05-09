@@ -17,6 +17,8 @@ struct TreeGenerator {
 
    void generateTrees();
    void drawTrees(Shader& shader, const UniformLocationMap& uniform_locations, const glm::mat4& viewMatrix);
+   void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      glm::vec3 sunDir);
    std::vector<BoundingRectangle> getBoundingBoxes();
 
    private:

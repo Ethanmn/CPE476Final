@@ -81,6 +81,38 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
    }
 }
 
+void TreeGenerator::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      glm::vec3 sunDir) {
+   glm::mat4 rotateTreeUp;
+   glm::mat4 translate;
+   glm::mat4 scale;
+   glm::mat4 model_matrix;
+   int groundSize = GroundPlane::GROUND_SCALE / 2;
+
+   for(int row = 0; row < (int)trees.size(); row++) {
+      std::vector<bool> colVec = trees[row];
+      for (int col = 0; col < (int)colVec.size(); col++) {
+         if (colVec[col]) {
+            scale = glm::scale(glm::mat4(1.0f), glm::vec3(TREE_SCALE));
+
+            rotateTreeUp = glm::rotate(
+               glm::mat4(1.0f),
+               (float)(-90),
+               glm::vec3(1, 0, 0));
+
+            translate = glm::translate(
+                glm::mat4(1.0f),
+               glm::vec3(row * TREE_SIZE - groundSize, TREE_SCALE * TREE_SIZE / 2, col * TREE_SIZE - groundSize));
+            model_matrix = translate * scale * rotateTreeUp;
+
+            setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
+            shader.drawMesh(treeMesh1);
+         }
+      }
+   }
+
+}
+
 std::vector<BoundingRectangle> TreeGenerator::getBoundingBoxes() {
    return boxes;
 }

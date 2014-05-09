@@ -157,7 +157,8 @@ glm::vec3 Deer::getPosition() {
    return position_;
 }
 
-glm::mat4 Deer::getModelMatrix() {
+void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      glm::vec3 sunDir) {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
@@ -167,9 +168,7 @@ glm::mat4 Deer::getModelMatrix() {
       glm::translate(
             glm::mat4(1.0f),
             position_));
-   return translate * rotate;
-}
-
-void Deer::drawDeer(Shader& shader) {
+   glm::mat4 model_matrix = translate * rotate;
+   setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
    shader.drawMesh(mesh_);
 }

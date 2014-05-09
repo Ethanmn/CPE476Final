@@ -33,6 +33,8 @@ struct Tree {
          Shader& shader,
          const UniformLocationMap& uniform_location_map,
          const glm::mat4& view_matrix) const;
+   void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      glm::vec3 sunDir);
 
   private:
    glm::vec3 position_;
