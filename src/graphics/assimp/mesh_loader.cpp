@@ -63,6 +63,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          aiProcess_SortByPType);
    if (!scene) {
       std::cerr << "Failed to load: " << path << std::endl;
+      std::cerr << importer.GetErrorString() << std::endl;
       exit(EXIT_FAILURE);
    }
 
@@ -112,6 +113,13 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
             ret.index_array.end(),
             mesh.mFaces[i].mIndices,
             mesh.mFaces[i].mIndices + kNumAxes);
+   }
+
+   for (size_t i = 0; i < mesh.mNumVertices; ++i) {
+      for (size_t j = 0; j < 3; ++j) {
+         ret.min[j] = std::min(ret.min[j], mesh.mVertices[i][j]);
+         ret.max[j] = std::max(ret.max[j], mesh.mVertices[i][j]);
+      }
    }
 
    // Get the bones/skinning.
