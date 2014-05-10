@@ -46,6 +46,12 @@ void setupTextureShader(Shader& shader, const UniformLocationMap& locations, con
    texture.enable();
 }
 
+void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const Texture& height_map) {
+   shader.sendUniform(Uniform::HEIGHT_MAP, locations, height_map.textureID());
+   shader.sendUniform(Uniform::HAS_HEIGHT_MAP, locations, 1);
+   height_map.enable();
+}
+
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
                           glm::vec4 color) {
    glPolygonMode(GL_FRONT, GL_LINE);

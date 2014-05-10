@@ -10,6 +10,7 @@ enum class Uniform {
    PROJECTION,
    NORMAL,
    TEXTURE,
+   HAS_HEIGHT_MAP,
    HEIGHT_MAP,
    COLOR,
    SUN_DIR,
@@ -37,6 +38,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uTexture";
       case Uniform::HEIGHT_MAP:
          return "uHeightMap";
+      case Uniform::HAS_HEIGHT_MAP:
+         return "uHasHeightMap";
       case Uniform::COLOR:
          return "uColor";
       case Uniform::SUN_DIR:

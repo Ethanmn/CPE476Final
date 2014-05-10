@@ -1,4 +1,5 @@
 #version 130
+uniform int uHasHeightMap;
 uniform sampler2D uHeightMap;
 
 uniform mat4 uProjectionMatrix;
@@ -28,6 +29,7 @@ varying vec4 vPosition;
 varying vec2 vTexCoord;
 varying vec4 vViewer;
 varying vec3 vNormal;
+varying vec4 vColor;
 
 void main() {
    mat4 bone = mat4(1.0);
@@ -49,11 +51,15 @@ void main() {
       }
    }
 
-   vec4 heightColor = texture2D(uHeightMap, aTexCoord.xy);
-   heightColor = vec4(0.0);
-   vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
+   vec4 heightColor = vec4(0.0);
+   if (uHasHeightMap != 0) {
+      heightColor = vec4(texture2D(uHeightMap, aTexCoord.xy).xyz, 0.0);
+      vColor = heightColor;
+   }
+   /*vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);*/
+   vPosition = uModelViewMatrix * bone * vec4(aPosition, 1.0);
    gl_Position = uProjectionMatrix * vPosition;
-   
+
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vViewer = vPosition;
    vTexCoord = vec2(aTexCoord.x, aTexCoord.y);

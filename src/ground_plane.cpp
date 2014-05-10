@@ -18,13 +18,17 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
                        const glm::mat4& viewMatrix) {
-   setupTextureShader(shader, uniform_locations, texture_);
    const glm::mat4 translate(glm::translate(glm::mat4(), glm::vec3(0, -7, 0)));
    const glm::mat4 rotate(glm::rotate(glm::mat4(1.0), 90.0f, glm::vec3(1, 0, 0)));
    const glm::mat4 scale(glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, GROUND_SCALE, 1)));
-   const glm::mat4 transform = translate * rotate * scale;
+   //const glm::mat4 transform = translate * rotate * scale;
+   const glm::mat4 transform;
 
    setupModelView(shader, uniform_locations, transform, viewMatrix, true);
+   setupTextureShader(shader, uniform_locations, texture_);
+   setupHeightMap(shader, uniform_locations, height_map_);
    shader.drawMesh(mesh_);
+   height_map_.disable();
+   shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniform_locations, 0);
    texture_.disable();
 }

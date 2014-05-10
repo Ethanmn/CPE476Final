@@ -16,7 +16,10 @@ void setupView(Shader& shader, const UniformLocationMap& locations,
                             const glm::mat4& viewMatrix);
 void setupSunShader(Shader& shader, const UniformLocationMap& locations,
                     float sunIntensity, glm::vec3 sunDir);
+
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture);
+void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const Texture& height_map);
+
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
                           glm::vec4 color);
 
