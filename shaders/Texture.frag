@@ -39,9 +39,11 @@ void main() {
       Spec = directionalColor * spec * pow(dotVRDir, shine);
       color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + amb;
 
-      gl_FragColor = vec4(color.r, color.g, color.b, 1.0);
+      gl_FragColor = vec4(shadowMapTexColor.x * color.r, 
+                          shadowMapTexColor.x * color.g, 
+                          shadowMapTexColor.x * color.b, 1.0);
    }
 
-   gl_FragColor = vec4(shadowMapTexColor.x, shadowMapTexColor.x, 
-      shadowMapTexColor.x, 1.0);
+   //gl_FragColor = vec4(shadowMapTexColor.x, shadowMapTexColor.x, 
+    //  shadowMapTexColor.x, 1.0);
 }
