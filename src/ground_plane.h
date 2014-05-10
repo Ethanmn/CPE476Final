@@ -6,6 +6,7 @@
 #include "graphics/location_maps.h"
 
 #include <ImageMagick-6/Magick++.h>
+#include <vector>
 
 struct Shader;
 struct Shaders;
@@ -19,7 +20,7 @@ struct GroundPlane {
    float heightAt(const glm::vec3& position) const;
 
   private:
-   glm::mat4 transform_;
+   std::vector<glm::mat4> transforms_;
    Texture texture_, height_map_;
    Mesh mesh_;
    Magick::Image height_map_image_;
