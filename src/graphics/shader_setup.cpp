@@ -1,8 +1,11 @@
 #include "shader_setup.h"
+
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "shaders.h"
 #include "shader.h"
+#include "texture.h"
 #include "uniforms.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 namespace  {
    const glm::mat4 projection_matrix = glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f);
@@ -38,12 +41,9 @@ void setupSunShader(Shader& shader, const UniformLocationMap& locations,
    shader.sendUniform(Uniform::SUN_DIR, locations, sunDir);
 }
 
-void setupTextureShader(Shader& shader, const UniformLocationMap& locations,
-      float sunIntensity, GLTextureID texture_id) {
-   glPolygonMode(GL_FRONT, GL_FILL);
-   shader.sendUniform(Uniform::TEXTURE, locations, texture_id);
-   shader.sendUniform(Uniform::SUN_INTENSITY, locations, sunIntensity);
-   
+void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture) {
+   shader.sendUniform(Uniform::TEXTURE, locations, texture.textureID());
+   texture.enable();
 }
 
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,

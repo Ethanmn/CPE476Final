@@ -33,7 +33,7 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-                const glm::mat4& viewMatrix, float sunIntensity) const {
+                const glm::mat4& viewMatrix) const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
@@ -45,8 +45,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
             position_));
    const glm::mat4 model_matrix(translate * rotate);
 
-   setupTextureShader(shader, uniform_locations, sunIntensity, texture_.textureID());
-   texture_.enable();
+   setupTextureShader(shader, uniform_locations, texture_);
 
    setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
    shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);

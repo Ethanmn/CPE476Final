@@ -14,6 +14,9 @@ struct GroundPlane {
    Mesh mesh_;
    void draw(Shader& shader, const UniformLocationMap& uniform_locations,
              const glm::mat4& viewMatrix);
+
+  private:
+   Texture texture_;
 };
 
 #endif // GROUND_PLANE_H_

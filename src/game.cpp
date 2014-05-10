@@ -10,7 +10,6 @@ namespace {
 }
 
 Game::Game() :
-   texture_(texture_path(Textures::GRASS)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
@@ -41,8 +40,6 @@ Game::Game() :
             400),
    }
 {
-   //glClearColor(0, 0, 0, 1); // Clear to solid blue.
-
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
@@ -60,7 +57,6 @@ Game::Game() :
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
    deerCam.initialize(deer_.getPosition());
    treeGen.generateTrees();
-   //SDL_SetRelativeMouseMode(true);
 }
 
 void Game::step(units::MS dt) {
@@ -111,18 +107,14 @@ void Game::draw() {
 
       setupProjection(shader, uniform_location_map_);
 
-      if(shaderPair.first == ShaderType::TEXTURE) {
+      if (shaderPair.first == ShaderType::TEXTURE) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-         setupTextureShader(shader, uniform_location_map_, sunIntensity, texture_.textureID());
-         texture_.enable();
          ground_.draw(shader, uniform_location_map_, viewMatrix);
-         texture_.disable();
 
-         deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
+         deer_.draw(shader, uniform_location_map_, viewMatrix);
 
-      }
-      else if(shaderPair.first == ShaderType::SUN) {
+      } else if (shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -133,9 +125,9 @@ void Game::draw() {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
-      }
-      else if(shaderPair.first == ShaderType::WIREFRAME)
+      } else if (shaderPair.first == ShaderType::WIREFRAME) {
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
+      }
 
       //If pixel is under ground draw as blue (water)?
    }
