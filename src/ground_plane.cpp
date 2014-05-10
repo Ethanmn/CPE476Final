@@ -4,7 +4,8 @@
 #include "graphics/shaders.h"
 #include "graphics/shader_setup.h"
 
-const int GroundPlane::GROUND_SCALE = 80;
+const int GroundPlane::GROUND_SCALE = 500;
+const int PLANE_SIZE = 80;
 
 const float HEIGHT_MAP_SCALE = 8.0f;
 
@@ -19,9 +20,8 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
    // TODO(chebert): Loaded it twice because textures confuse me.
    height_map_image_(texture_path(Textures::HEIGHT_MAP)) {
 
-   const glm::mat4 scale(glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, 1, GROUND_SCALE)));
+   const glm::mat4 scale(glm::scale(glm::mat4(1.0), glm::vec3(PLANE_SIZE, 1, PLANE_SIZE)));
    transform_ = scale;
-
 }
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
