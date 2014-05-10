@@ -63,7 +63,7 @@ Game::Game() :
 void Game::step(units::MS dt) {
    bool treeColl = false;
 
-   deer_.step(dt, deerCam);
+   deer_.step(dt, deerCam, ground_);
    for (auto& tree : bushes_) {
       tree.step(dt);
    }
@@ -76,8 +76,6 @@ void Game::step(units::MS dt) {
          }
       }
    }
-
-   ground_.heightAt(deer_.getPosition());
 
    for (auto& box : treeGen.getBoundingBoxes()) {
       treeColl = treeColl || deer_.bounding_rectangle().collidesWith(box);

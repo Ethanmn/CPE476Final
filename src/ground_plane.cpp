@@ -57,13 +57,15 @@ float GroundPlane::heightAt(const glm::vec3& position) const {
       auto pixel_packet = height_map_image_.getConstPixels(
             (int)round(pos.x * height_map_image_.columns()),
             (int)round(pos.z * height_map_image_.rows()), 1, 1);
+      //std::clog <<
+         //(int)round(pos.x * height_map_image_.columns()) <<
+         //", " << 
+         //(int)round(pos.z * height_map_image_.rows()) << ": " <<
+         //pixel_packet->red << std::endl;
       // find r/g/ or b value at given coordinate.
-      std::clog <<
-         (int)round(pos.x * height_map_image_.columns()) <<
-         ", " << 
-         (int)round(pos.z * height_map_image_.rows()) << ": " <<
-         pixel_packet->red << std::endl;
-      // return r * 5
+      // normalize the coordinate about [-.5,.5]
+      // multiply by 15.0f
+      return (pixel_packet->red / 65535.0f - 0.5f) * 15.0f;
    }
    // return a height of 0 if we are out of bounds (for testing).
    return 0.0f;

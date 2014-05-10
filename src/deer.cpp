@@ -7,6 +7,7 @@
 #include "graphics/location_maps.h"
 #include "graphics/shader_setup.h"
 #include "graphics/material.h"
+#include "ground_plane.h"
 
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
@@ -59,8 +60,8 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    texture_.disable();
 }
 
-void Deer::step(units::MS dt, const Camera& camera) {
-   mesh_.animation.step(dt);
+void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane) {
+   //mesh_.animation.step(dt);
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
       xz_velocity -= xz_velocity * (kFriction * dt);
@@ -104,11 +105,14 @@ void Deer::step(units::MS dt, const Camera& camera) {
    }
    if (is_jumping_) {
       velocity_.y -= kGravity * dt;
-      if (position_.y < 0) {
+      const auto ground_height = ground_plane.heightAt(position_);
+      if (position_.y < ground_height) {
          velocity_.y = 0.0f;
-         position_.y = 0.0f;
+         position_.y = ground_height;
          is_jumping_ = false;
       }
+   } else {
+      position_.y = ground_plane.heightAt(position_);
    }
 
    position_ += velocity_ * static_cast<float>(dt);
