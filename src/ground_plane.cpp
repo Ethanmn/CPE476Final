@@ -4,7 +4,7 @@
 #include "graphics/shaders.h"
 #include "graphics/shader_setup.h"
 
-const int GroundPlane::GROUND_SCALE = 500;
+const int GroundPlane::GROUND_SCALE = 10;
 
 const std::vector<unsigned short> ground_indices{
    0, 2, 1, 3, 1, 2
@@ -17,9 +17,8 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
    // Load it twice because textures confuse me.
    height_map_image_(texture_path(Textures::HEIGHT_MAP)) {
 
-   const glm::mat4 translate(glm::translate(glm::mat4(), glm::vec3(0, -7, 0)));
    const glm::mat4 scale(glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, 1, GROUND_SCALE)));
-   transform_ = translate * scale;
+   transform_ = scale;
 
 }
 

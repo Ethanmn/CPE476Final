@@ -46,18 +46,15 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
             position_));
    const glm::mat4 model_matrix(translate * rotate);
 
-   setupTextureShader(shader, uniform_locations, texture_);
+   //setupTextureShader(shader, uniform_locations, texture_);
 
    setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
-   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
-   shader.sendUniform(Uniform::BONES, uniform_locations,
-         mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
+   //shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
+   //shader.sendUniform(Uniform::BONES, uniform_locations,
+         //mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
    shader.drawMesh(mesh_);
-   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
-
-   bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);
-   glPolygonMode(GL_FRONT, GL_FILL);
-   texture_.disable();
+   //shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
+   //texture_.disable();
 }
 
 void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane) {
