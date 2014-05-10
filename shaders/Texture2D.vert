@@ -1,4 +1,6 @@
 #version 130
+uniform sampler2D uHeightMap;
+
 uniform mat4 uProjectionMatrix;
 uniform mat4 uModelViewMatrix;
 uniform mat4 uViewMatrix;
@@ -47,7 +49,9 @@ void main() {
       }
    }
 
-   vec4 vPosition = uModelViewMatrix * bone * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
+   vec4 heightColor = texture2D(uHeightMap, aTexCoord.xy);
+   heightColor = vec4(0.0);
+   vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
    gl_Position = uProjectionMatrix * vPosition;
    
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));

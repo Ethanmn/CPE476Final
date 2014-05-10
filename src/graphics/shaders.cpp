@@ -44,6 +44,7 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::PROJECTION,
    Uniform::NORMAL,
    Uniform::TEXTURE,
+   Uniform::HEIGHT_MAP,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
    Uniform::BONES,
