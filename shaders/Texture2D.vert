@@ -29,7 +29,6 @@ varying vec4 vPosition;
 varying vec2 vTexCoord;
 varying vec4 vViewer;
 varying vec3 vNormal;
-varying vec4 vColor;
 
 void main() {
    mat4 bone = mat4(1.0);
@@ -53,8 +52,7 @@ void main() {
 
    vec4 heightColor = vec4(0.0);
    if (uHasHeightMap != 0) {
-      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x, 0, 0.0) * 1;
-      vColor = heightColor;
+      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x, 0, 0.0) * 5;
    }
    vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
    gl_Position = uProjectionMatrix * vPosition;

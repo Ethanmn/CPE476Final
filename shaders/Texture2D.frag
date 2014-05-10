@@ -1,4 +1,6 @@
 uniform sampler2D uTexture;
+uniform sampler2D uHeightMap;
+uniform int uHasHeightMap;
 varying vec2 vTexCoord;
 
 uniform mat4 uViewMatrix;
@@ -7,11 +9,15 @@ uniform vec3 uSunDir;
 uniform float uSunIntensity;
 
 varying vec4 vViewer;
-varying vec4 vColor;
 varying vec3 vNormal;
 
 void main() {
-   vec4 texColor = texture2D(uTexture, vTexCoord);
+   /*vec4 texColor = texture2D(uTexture, vTexCoord);*/
+   vec4 texColor;
+   if (uHasHeightMap != 0)
+      texColor = texture2D(uHeightMap, vTexCoord);
+   else
+      texColor = texture2D(uTexture, vTexCoord);
 
    vec3 color;
    vec3 Refl, ReflDir;
