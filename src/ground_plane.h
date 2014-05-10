@@ -10,13 +10,13 @@ struct Shaders;
 
 struct GroundPlane {
    static const int GROUND_SCALE;
-   GroundPlane(AttributeLocationMap& locations);
-   Mesh mesh_;
+   GroundPlane(const Mesh& mesh);
    void draw(Shader& shader, const UniformLocationMap& uniform_locations,
              const glm::mat4& viewMatrix);
 
   private:
-   Texture texture_;
+   Texture texture_, height_map_;
+   Mesh mesh_;
 };
 
 #endif // GROUND_PLANE_H_

@@ -63,6 +63,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          aiProcess_SortByPType);
    if (!scene) {
       std::cerr << "Failed to load: " << path << std::endl;
+      std::cerr << importer.GetErrorString() << std::endl;
       exit(EXIT_FAILURE);
    }
 
