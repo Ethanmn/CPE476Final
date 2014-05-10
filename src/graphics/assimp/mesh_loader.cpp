@@ -115,6 +115,13 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
             mesh.mFaces[i].mIndices + kNumAxes);
    }
 
+   for (size_t i = 0; i < mesh.mNumVertices; ++i) {
+      for (size_t j = 0; j < 3; ++j) {
+         ret.min[j] = std::min(ret.min[j], mesh.mVertices[i][j]);
+         ret.max[j] = std::max(ret.max[j], mesh.mVertices[i][j]);
+      }
+   }
+
    // Get the bones/skinning.
    if (mesh.mNumBones > 0) {
       // Get the animations from the scene, but only if we have bones.

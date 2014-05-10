@@ -21,6 +21,8 @@ struct AssimpMesh {
    std::vector<float> uv_array;
    std::vector<unsigned short> index_array;
 
+   glm::vec3 min, max;
+
    // Array of bones for each vertex.
    std::vector<std::vector<BoneIDAndWeight>> bone_weights_array;
 
