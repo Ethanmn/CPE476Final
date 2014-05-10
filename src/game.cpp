@@ -13,7 +13,7 @@ Game::Game() :
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/ground_plane.blend"))),
+            mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
