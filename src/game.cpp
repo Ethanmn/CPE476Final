@@ -77,6 +77,8 @@ void Game::step(units::MS dt) {
       }
    }
 
+   ground_.heightAt(deer_.getPosition());
+
    for (auto& box : treeGen.getBoundingBoxes()) {
       treeColl = treeColl || deer_.bounding_rectangle().collidesWith(box);
    }
