@@ -1,10 +1,10 @@
-#include "tree.h"
+#include "Bush.h"
 #include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/material.h"
 
-void Tree::step(units::MS dt) {
+void Bush::step(units::MS dt) {
    if (rustle_time_ < kMaxRustleTime) {
       rustle_time_ += dt;
       elapsed_time_ += dt;
@@ -12,7 +12,7 @@ void Tree::step(units::MS dt) {
    }
 }
 
-void Tree::draw(
+void Bush::draw(
       Shader& shader,
       const UniformLocationMap& uniform_location_map,
       const glm::mat4& view_matrix) const {
@@ -40,6 +40,18 @@ void Tree::draw(
    bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);
 }
 
-void Tree::rustle() {
+void Bush::rustle() {
    rustle_time_ = 0;
+}
+
+BoundingRectangle Bush::getBoundingRectangle() {
+   return bounding_rectangle_;
+}
+
+bool Bush::isBlocker() {
+   return false;
+}
+
+void Bush::performObjectHit() {
+   rustle();
 }

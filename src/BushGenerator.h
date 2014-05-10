@@ -1,10 +1,10 @@
 /* 
-   TreeGenerator.h
+   BushGenerator.h
    Katie Keim
    Deer - CPE 476
 */
-#ifndef TREE_GEN_H_
-#define TREE_GEN_H_
+#ifndef BUSH_GEN_H_
+#define BUSH_GEN_H_
 
 #include "ground_plane.h"
 #include <cstdlib>
@@ -14,18 +14,17 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
 #include "bounding_rectangle.h"
-#include "Tree.h"
+#include "Bush.h"
 
-struct TreeGenerator {
-   TreeGenerator(const Mesh& mesh);
+struct BushGenerator {
+   BushGenerator(const Mesh& mesh);
 
    void generate();
-   std::vector<Tree> getTrees();
-   Tree getCenterTree();
+   std::vector<Bush> getBushes();
 
    private:
-      std::vector<Tree> trees;
-      Mesh treeMesh1;
+      std::vector<Bush> bushes;
+      Mesh bushMesh1;
 };
 
-#endif //TREE_GEN_H_
+#endif //BUSH_GEN_H_

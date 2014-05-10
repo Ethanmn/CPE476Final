@@ -1,32 +1,33 @@
 /* 
-   BVHNode.h (Bounding Volume Hierarchy Node)
+   BVHNode.h (Binary Spatial Partitioning Node)
    Katie Keim
    Deer - CPE 476
 */
+
 #ifndef BVHNODE_H_
 #define BVHNODE_H_
 
 #include "bounding_rectangle.h"
+#include "GameObject.h"
 
 struct BVHNode {
-   BVHNode(BoundingRectangle bRect);
+   BVHNode(BoundingRectangle bRect, GameObject *object);
 
+   GameObject *getGameObject();
    BoundingRectangle getRect();
 
    void setLeftNode(BVHNode *left);
    void setRightNode(BVHNode *right);
-   BVHNode getLeftNode();
-   BVHNode getRightNode();
-   bool hasLeft();
-   bool hasRight();
+   BVHNode *getLeftNode();
+   BVHNode *getRightNode();
+   bool hasLeftNode();
+   bool hasRightNode();
 
    private:
+      GameObject *object;
       BoundingRectangle bRect;
 
       BVHNode *leftNode;
       BVHNode *rightNode;
-
-      bool leftSet;
-      bool rightSet;
 };
 #endif //BVHNODE_H_

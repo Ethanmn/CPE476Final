@@ -15,10 +15,11 @@
 #include "DeerCam.h"
 #include "graphics/material.h"
 #include "TreeGenerator.h"
+#include "BushGenerator.h"
 #include "graphics/day_cycle.h"
-#include "tree.h"
+#include "Bush.h"
 #include "day_night_interaction.h"
-#include "BVHNode.h"
+#include "BVHTree.h"
 
 struct Game {
    Game();
@@ -36,12 +37,14 @@ struct Game {
    GroundPlane ground_;
    Deer deer_;
    DayNightInteraction day_night_boxes_;
-   TreeGenerator treeGen; //May want this in a world generator class later
+   
    DayCycle day_cycle_;
-   Mesh tree_mesh_;
-   std::vector<Tree> bushes_;
+
+   TreeGenerator treeGen; //May want this in a world generator class later
+   BushGenerator bushGen;
 
    glm::vec2 mousePos;
+   BVHTree objTree;
 
    void step(units::MS dt);
    void draw();

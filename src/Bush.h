@@ -1,16 +1,17 @@
-#ifndef TREE_H_
-#define TREE_H_
+#ifndef BUSH_H_
+#define BUSH_H_
 
 #include <glm/glm.hpp>
 
 #include "bounding_rectangle.h"
+#include "GameObject.h"
 #include "graphics/mesh.h"
 #include "units.h"
 
 struct Shader;
 
-struct Tree {
-   Tree(const Mesh& mesh, const glm::vec3& position, float scale, units::MS rustle_time) :
+struct Bush : public GameObject {
+   Bush(const Mesh& mesh, const glm::vec3& position, float scale, units::MS rustle_time) :
       position_(position),
       scale_(scale),
       rotate_(0.0f),
@@ -34,6 +35,10 @@ struct Tree {
          const UniformLocationMap& uniform_location_map,
          const glm::mat4& view_matrix) const;
 
+   BoundingRectangle getBoundingRectangle();
+   bool isBlocker();
+   void performObjectHit();
+
   private:
    glm::vec3 position_;
    float scale_;
@@ -44,4 +49,4 @@ struct Tree {
    Mesh mesh_;
 };
 
-#endif // TREE_H_
+#endif // BUSH_H_

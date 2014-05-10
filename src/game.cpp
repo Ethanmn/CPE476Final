@@ -19,27 +19,10 @@ Game::Game() :
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
-   tree_mesh_(Mesh::fromAssimpMesh(
+   bushGen(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   bushes_{
-      Tree(tree_mesh_,
-            glm::vec3(30 - 15, 0, 25 + 5),
-            1.2f,
-            300),
-      Tree(tree_mesh_,
-            glm::vec3(20 - 15, 0, 18 + 5),
-            0.8f,
-            450),
-      Tree(tree_mesh_,
-            glm::vec3(25 - 15, 0, 12 + 5),
-            0.9f,
-            150),
-      Tree(tree_mesh_,
-            glm::vec3(12 - 15, 0, 24 + 5),
-            1.3f,
-            400),
-   }
+   objTree(std::vector<GameObject*>())
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
@@ -59,29 +42,43 @@ Game::Game() :
 
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
    deerCam.initialize(deer_.getPosition());
-   treeGen.generateTrees();
-   //SDL_SetRelativeMouseMode(true);
+
+   treeGen.generate();
+   bushGen.generate();
+
+   std::vector<GameObject*> objects;
+   
+   for (auto& tree : treeGen.getTrees()) {
+      objects.push_back(&tree);
+   }
+
+   for (auto& bush : bushGen.getBushes()) {
+      objects.push_back(&bush);
+   }
+
+   //Pre-processing BVH Tree
+   objTree = BVHTree(objects);
 }
 
 void Game::step(units::MS dt) {
    bool treeColl = false;
 
    deer_.step(dt, deerCam);
-   for (auto& tree : bushes_) {
-      tree.step(dt);
+   for (auto& bush : bushGen.getBushes()) {
+      bush.step(dt);
    }
 
    if (deer_.isMoving()) {
       deerCam.move(deer_.getPosition());
-      for (auto& tree : bushes_) {
-         if (deer_.bounding_rectangle().collidesWith(tree.bounding_rectangle())) {
-            tree.rustle();
+      for (auto& bush : bushGen.getBushes()) {
+         if (deer_.bounding_rectangle().collidesWith(bush.bounding_rectangle())) {
+            bush.rustle();
          }
       }
    }
 
-   for (auto& box : treeGen.getBoundingBoxes()) {
-      treeColl = treeColl || deer_.bounding_rectangle().collidesWith(box);
+   for (auto& tree : treeGen.getTrees()) {
+      treeColl = treeColl || deer_.bounding_rectangle().collidesWith(tree.getBoundingRectangle());
    }
 
    if (treeColl)
@@ -129,10 +126,7 @@ void Game::draw() {
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
-         for (auto& bush : bushes_) {
-            bush.draw(shader, uniform_location_map_, viewMatrix);
-         }
-         treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
+         objTree.drawAll(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
