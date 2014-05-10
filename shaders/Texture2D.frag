@@ -14,10 +14,10 @@ varying vec3 vNormal;
 void main() {
    /*vec4 texColor = texture2D(uTexture, vTexCoord);*/
    vec4 texColor;
-   if (uHasHeightMap != 0)
-      texColor = texture2D(uHeightMap, vTexCoord);
-   else
-      texColor = texture2D(uTexture, vTexCoord);
+   texColor = texture2D(uTexture, vTexCoord);
+   /*if (uHasHeightMap != 0)*/
+      /*texColor = texture2D(uHeightMap, vTexCoord);*/
+   /*else*/
 
    vec3 color;
    vec3 Refl, ReflDir;

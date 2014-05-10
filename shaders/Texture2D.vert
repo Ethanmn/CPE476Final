@@ -51,8 +51,9 @@ void main() {
    }
 
    vec4 heightColor = vec4(0.0);
+   float HEIGHT_MAP_SCALE = 8.0f;
    if (uHasHeightMap != 0) {
-      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * 15;
+      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;
    }
    vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
    gl_Position = uProjectionMatrix * vPosition;
