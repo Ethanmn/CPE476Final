@@ -25,15 +25,18 @@ attribute int aBoneID4;
 attribute int aBoneWeight4;
 */
 
-uniform mat4 uProjectionMatrix;
+uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
+uniform mat4 uProjectionMatrix;
 uniform mat4 uModelViewMatrix;
 uniform mat4 uNormalMatrix;
-uniform mat4 uShadowMapInverse;
 
 varying vec3 vColor;
 varying vec4 vPosition;
 varying vec3 vNormal;
+
+//varying vec4 vShadow;
+//uniform mat4 uShadowMap;
 
 void main() {
   mat4 bone = mat4(1.0);
@@ -62,4 +65,5 @@ void main() {
 
   vNormal = vec3(uNormalMatrix * vec4(aNormal, 0.0));
   vPosition = position;
+  //vShadow = uShadowMap * uModelMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
 }

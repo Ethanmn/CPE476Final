@@ -7,10 +7,12 @@ const std::vector<Attribute> kSunAttrs{
 };
 const std::vector<Uniform> kSunUniforms{
    Uniform::MODEL_VIEW,
+   Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::NORMAL,
-   Uniform::SHADOW_MAP_INVERSE,
+   //Uniform::SHADOW_MAP,
+   //Uniform::SHADOW_MAP_TEXTURE,
    Uniform::M_AMB,
    Uniform::M_DIF,
    Uniform::M_SPEC,
@@ -41,10 +43,12 @@ const std::vector<Attribute> kTextureAttrs{
 };
 const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL_VIEW,
+   Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::NORMAL,
-   Uniform::SHADOW_MAP_INVERSE,
+   Uniform::SHADOW_MAP,
+   Uniform::SHADOW_MAP_TEXTURE,
    Uniform::TEXTURE,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
@@ -72,7 +76,7 @@ const std::vector<Uniform> kShadowUniforms{
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   /*
+   
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));

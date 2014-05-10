@@ -10,7 +10,6 @@ namespace {
 }
 
 Game::Game() :
-   texture_(texture_path(Textures::GRASS)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
    ground_(attribute_location_map_),
@@ -120,8 +119,8 @@ void Game::draw() {
 
       if(shaderPair.first == ShaderType::SHADOW) {
          
-         //shadow_map_fbo_.BindForWriting();
-         //glClear(GL_DEPTH_BUFFER_BIT);
+         shadow_map_fbo_.BindForWriting();
+         glClear(GL_DEPTH_BUFFER_BIT);
 
          deer_.shadowDraw(shader, uniform_location_map_, sunDir);
          day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir);
@@ -130,24 +129,23 @@ void Game::draw() {
          for (auto& bush : bushes_) {
             bush.shadowDraw(shader, uniform_location_map_, sunDir);
          }
-         //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         //shadow_map_fbo_.BindForReading();
+
+         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         shadow_map_fbo_.BindForReading();
          /* Note: glClearColor must be changed back in day_cycle */
       }
       else if(shaderPair.first == ShaderType::TEXTURE) {
+         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 2); 
          sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-         setupTextureShader(shader, uniform_location_map_, texture_.textureID());
-         texture_.enable();
-         ground_.draw(shader, uniform_location_map_, viewMatrix);
-         texture_.disable();
 
+         ground_.draw(shader, uniform_location_map_, viewMatrix);
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::SUN) {
-         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
+         //sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -175,12 +173,12 @@ void Game::mainLoop() {
    units::MS previous_time = SDL_GetTicks();
 
    printf("Before setup\n");
-   /*
+   
    if(!shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
       printf("FAILURE\n");
       return;
    }
-   */
+   
    SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
    mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
 

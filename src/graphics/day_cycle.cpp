@@ -56,11 +56,11 @@ void DayCycle::autoAdjustTime(units::MS dt) {
 
 void DayCycle::adjustSun() {
    float tempTimeOfDay = timeOfDay;
-   /*
+   
    glClearColor (0.05098 * sunIntensity, 
                  0.6274509 * sunIntensity,
                  sunIntensity, 1.0f);
-   */
+   
    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    if(tempTimeOfDay > 1.0)
       sunIntensity = 0.1;

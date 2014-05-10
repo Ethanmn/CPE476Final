@@ -24,5 +24,7 @@ void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
 
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations, 
                         glm::vec3 lightDir);
+void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
+                        glm::vec3 lightDir);
 
 #endif

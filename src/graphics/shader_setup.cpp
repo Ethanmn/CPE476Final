@@ -16,6 +16,7 @@ void setupModelView(Shader& shader, const UniformLocationMap& locations,
       shader.sendUniform(Uniform::NORMAL, locations,
          glm::transpose(glm::inverse(viewMatrix * modelMatrix)));
    }
+   shader.sendUniform(Uniform::MODEL, locations, modelMatrix);
 }
 
 void setupProjection(Shader& shader, const UniformLocationMap& locations) {
@@ -55,7 +56,7 @@ void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
    glPolygonMode(GL_FRONT, GL_FILL);
    glm::mat4 shadowProjection, shadowView, modelView;
 
-   shadowProjection = glm::ortho(-75.0f, 75.0f, -75.0f, 75.0f, -10.0f, 20.0f);
+   shadowProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, -40.0f, 20.0f);
    shadowView = glm::lookAt(lightDir, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
    modelView = shadowView * modelMatrix;
 
@@ -63,13 +64,18 @@ void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
    shader.sendUniform(Uniform::PROJECTION, locations, shadowProjection);
 }
 
+void sendInverseViewProjection(Shader& shader, const UniformLocationMap& locations) {
+   glPolygonMode(GL_FRONT, GL_FILL);
+   shader.sendUniform(Uniform::PROJECTION, locations, projection_matrix);
+}
+
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
       glm::vec3 lightDir) {
-   glm::mat4 inverseLight, shadowProjection, shadowView;
+   glm::mat4 lightMat, shadowProjection, shadowView;
    
-   shadowProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 200.0f);
+   shadowProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, -40.0f, 20.0f);
    shadowView = glm::lookAt(lightDir, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+   lightMat = shadowProjection * shadowView;
 
-   inverseLight = glm::inverse(shadowView) * glm::inverse(shadowProjection);
-   shader.sendUniform(Uniform::SHADOW_MAP_INVERSE, locations, inverseLight);
+   shader.sendUniform(Uniform::SHADOW_MAP, locations, lightMat);
 }

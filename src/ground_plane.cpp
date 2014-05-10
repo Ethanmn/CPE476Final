@@ -49,12 +49,16 @@ GroundPlane::GroundPlane(AttributeLocationMap& locations) :
       std::vector<Bone>(),
       Animation(),
       Material(),
-   } {}
+   },
+   texture_(texture_path(Textures::GRASS)) {}
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
                        const glm::mat4& viewMatrix) {
+   setupTextureShader(shader, uniform_locations, texture_.textureID());
+   texture_.enable();
    glm::mat4 transform = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -7.0, 0.0)) *
       glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE));
    setupModelView(shader, uniform_locations, transform, viewMatrix, true);
    shader.drawMesh(mesh_);
+   texture_.disable();
 }
