@@ -22,10 +22,6 @@ void main() {
    vec4 texColor = texture2D(uTexture, vTexCoord);
    vec4 shadowMapTexColor = texture2D(uShadowMapTexture, vec2(vShadow));
 
-
-   if(vShadow.z > gl_FragCoord.z)
-      gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-   else {
       /* temporary material values */
       vec3 amb = vec3(0.1, 0.1, 0.1);
       vec3 spec = vec3(0.01, 0.01, 0.01);
@@ -42,7 +38,6 @@ void main() {
       gl_FragColor = vec4(shadowMapTexColor.x * color.r, 
                           shadowMapTexColor.x * color.g, 
                           shadowMapTexColor.x * color.b, 1.0);
-   }
 
    //gl_FragColor = vec4(shadowMapTexColor.x, shadowMapTexColor.x, 
     //  shadowMapTexColor.x, 1.0);
