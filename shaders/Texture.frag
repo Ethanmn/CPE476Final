@@ -21,6 +21,9 @@ void main() {
    vec3 directionalColor = vec3(0.7*uSunIntensity);
    vec4 texColor = texture2D(uTexture, vTexCoord);
    vec4 shadowMapTexColor = texture2D(uShadowMapTexture, vec2(vShadow));
+   float applyShadow = 1.0;
+   if(vShadow.z <= gl_FragCoord.z)
+    applyShadow = shadowMapTexColor.x;
 
       /* temporary material values */
       vec3 amb = vec3(0.1, 0.1, 0.1);
@@ -35,10 +38,10 @@ void main() {
       Spec = directionalColor * spec * pow(dotVRDir, shine);
       color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + amb;
 
-      gl_FragColor = vec4(shadowMapTexColor.x * color.r, 
-                          shadowMapTexColor.x * color.g, 
-                          shadowMapTexColor.x * color.b, 1.0);
+      gl_FragColor = vec4(applyShadow * color.r, 
+                          applyShadow * color.g, 
+                          applyShadow * color.b, 1.0);
 
    //gl_FragColor = vec4(shadowMapTexColor.x, shadowMapTexColor.x, 
-    //  shadowMapTexColor.x, 1.0);
+   //   shadowMapTexColor.x, 1.0);
 }

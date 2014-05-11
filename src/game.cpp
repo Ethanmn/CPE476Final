@@ -47,12 +47,6 @@ Game::Game() :
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (1.0, 1.0, 1.0, 1.0f);
 
-   /*
-   glClearColor (0.05098 * sunIntensity, 
-              0.6274509 * sunIntensity,
-              sunIntensity, 1.0f);
-   */
-
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -110,6 +104,7 @@ void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
+   glm::vec3 deerPos = deer_.getPosition();
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -123,8 +118,8 @@ void Game::draw() {
          glClear(GL_DEPTH_BUFFER_BIT);
 
          deer_.shadowDraw(shader, uniform_location_map_, sunDir);
-         day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir);
-         day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir);
+         day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, deerPos);
+         day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, deerPos);
          /*
          treeGen.shadowDraw(shader, uniform_location_map_, sunDir);
          for (auto& bush : bushes_) {
@@ -135,11 +130,14 @@ void Game::draw() {
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          shadow_map_fbo_.BindForReading();
+         glClearColor (0.05098 * sunIntensity, 
+                    0.6274509 * sunIntensity,
+                    sunIntensity, 1.0f);
          /* Note: glClearColor must be changed back in day_cycle */
       }
       else if(shaderPair.first == ShaderType::TEXTURE) {
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 2); 
-         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
+         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 

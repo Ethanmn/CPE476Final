@@ -20,11 +20,9 @@ void setupTextureShader(Shader& shader, const UniformLocationMap& locations,
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
                         glm::vec4 color);
 void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
-                        glm::vec3 lightDir, glm::mat4 modelMatrix);
+                        glm::vec3 lightDir, glm::vec3 deerLoc, glm::mat4 modelMatrix);
 
-void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations, 
-                        glm::vec3 lightDir);
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
-                        glm::vec3 lightDir);
+                        glm::vec3 lightDir, glm::vec3 deerLoc);
 
 #endif

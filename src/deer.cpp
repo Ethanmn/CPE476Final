@@ -169,6 +169,6 @@ void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
             glm::mat4(1.0f),
             position_));
    glm::mat4 model_matrix = translate * rotate;
-   setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
+   setupShadowShader(shader, uniform_locations, sunDir, getPosition(), model_matrix);
    shader.drawMesh(mesh_);
 }

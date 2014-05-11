@@ -82,7 +82,7 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
 }
 
 void TreeGenerator::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir) {
+      glm::vec3 sunDir, glm::vec3 deerPos) {
    glm::mat4 rotateTreeUp;
    glm::mat4 translate;
    glm::mat4 scale;
@@ -105,7 +105,7 @@ void TreeGenerator::shadowDraw(Shader& shader, const UniformLocationMap& uniform
                glm::vec3(row * TREE_SIZE - groundSize, TREE_SCALE * TREE_SIZE / 2, col * TREE_SIZE - groundSize));
             model_matrix = translate * scale * rotateTreeUp;
 
-            setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
+            setupShadowShader(shader, uniform_locations, sunDir, deerPos, model_matrix);
             shader.drawMesh(treeMesh1);
          }
       }
