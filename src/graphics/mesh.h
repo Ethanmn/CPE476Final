@@ -15,6 +15,7 @@ struct Mesh {
    static Mesh fromAssimpMesh(AttributeLocationMap shaders, const AssimpMesh& mesh);
    IndexBufferObject index_buffer_object;
    std::vector<ArrayBufferObject> attribute_buffer_objects;
+   glm::vec3 min, max;
 
    std::vector<Bone> bone_array;
    Animation animation;
