@@ -88,10 +88,10 @@ void Game::step(units::MS dt) {
       deer_.jump();
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
-      day_cycle_.on();
+      day_cycle_.dayToNight();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
-      day_cycle_.off();
+      day_cycle_.nightToDay();
    }
 
    day_cycle_.autoAdjustTime(dt);
@@ -202,7 +202,6 @@ void Game::mainLoop() {
             const auto key_jump = SDL_SCANCODE_J;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
-               //day_cycle_.switchBoolean();
             }
          }
          { //handle quit
