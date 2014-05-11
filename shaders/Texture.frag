@@ -2,6 +2,7 @@ uniform sampler2D uShadowMapTexture;
 uniform sampler2D uTexture;
 
 uniform mat4 uViewMatrix;
+uniform mat4 uProjectionMatrix;
 uniform mat4 uNormalMatrix;
 uniform mat4 uShadowMap;
 uniform vec3 uSunDir;
@@ -22,7 +23,7 @@ void main() {
    vec4 texColor = texture2D(uTexture, vTexCoord);
    vec4 shadowMapTexColor = texture2D(uShadowMapTexture, vec2(vShadow));
    float applyShadow = 1.0;
-   if(vShadow.z < gl_FragCoord.z)
+   if(vShadow.z <= gl_FragCoord.z)
     applyShadow = shadowMapTexColor.x;
 
       /* temporary material values */
@@ -43,5 +44,5 @@ void main() {
                           applyShadow * color.b, 1.0);
 
    //gl_FragColor = vec4(shadowMapTexColor.x, shadowMapTexColor.x, 
-   //   shadowMapTexColor.x, 1.0);
+      //shadowMapTexColor.x, 1.0);
 }

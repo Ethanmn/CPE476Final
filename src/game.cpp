@@ -104,7 +104,7 @@ void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
-   glm::vec3 deerPos = deer_.getPosition();
+   glm::vec3 deerPos = deerCam.getPosition();
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -117,23 +117,25 @@ void Game::draw() {
          shadow_map_fbo_.BindForWriting();
          glClear(GL_DEPTH_BUFFER_BIT);
 
-         deer_.shadowDraw(shader, uniform_location_map_, sunDir);
          day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, deerPos);
          day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, deerPos);
+         
+         
+         deer_.shadowDraw(shader, uniform_location_map_, sunDir);
          /*
          treeGen.shadowDraw(shader, uniform_location_map_, sunDir);
          for (auto& bush : bushes_) {
-            bush.shadowDraw(shader, uniform_location_map_, sunDir);
+            bush.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
          }
          */
-
+         
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          shadow_map_fbo_.BindForReading();
          glClearColor (0.05098 * sunIntensity, 
                     0.6274509 * sunIntensity,
                     sunIntensity, 1.0f);
-         /* Note: glClearColor must be changed back in day_cycle */
+         
       }
       else if(shaderPair.first == ShaderType::TEXTURE) {
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 2); 
@@ -152,10 +154,12 @@ void Game::draw() {
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
+         /*
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
+         */
       }
       else if(shaderPair.first == ShaderType::WIREFRAME) {
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
