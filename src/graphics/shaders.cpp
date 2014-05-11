@@ -11,8 +11,8 @@ const std::vector<Uniform> kSunUniforms{
    Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::NORMAL,
-   //Uniform::SHADOW_MAP,
-   //Uniform::SHADOW_MAP_TEXTURE,
+   Uniform::SHADOW_MAP,
+   Uniform::SHADOW_MAP_TEXTURE,
    Uniform::M_AMB,
    Uniform::M_DIF,
    Uniform::M_SPEC,
@@ -77,7 +77,7 @@ Shaders::Shaders() {
 
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   
+
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));

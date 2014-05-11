@@ -35,8 +35,8 @@ varying vec3 vColor;
 varying vec4 vPosition;
 varying vec3 vNormal;
 
-//varying vec4 vShadow;
-//uniform mat4 uShadowMap;
+varying vec4 vShadow;
+uniform mat4 uShadowMap;
 
 void main() {
   mat4 bone = mat4(1.0);
@@ -65,5 +65,5 @@ void main() {
 
   vNormal = vec3(uNormalMatrix * vec4(aNormal, 0.0));
   vPosition = position;
-  //vShadow = uShadowMap * uModelMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
+  vShadow = uShadowMap * uModelMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
 }

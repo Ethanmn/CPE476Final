@@ -1,4 +1,4 @@
-//uniform sampler2D uShadowMapTexture;
+uniform sampler2D uShadowMapTexture;
 
 struct Material {
    vec3 ambient;
@@ -16,9 +16,7 @@ uniform float uSunIntensity;
 varying vec3 vColor;
 varying vec4 vPosition;
 varying vec3 vNormal;
-
-//varying vec4 vShadow;
-//uniform mat4 uShadowMap;
+varying vec4 vShadow;
 
 void main() {
    vec3 color;
@@ -27,6 +25,13 @@ void main() {
    float dotNLDir, dotVRDir;
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
    vec3 directionalColor = vec3(0.7*uSunIntensity);
+   vec4 shadowMapTexColor = texture2D(uShadowMapTexture, 
+                          vec2(vShadow.x, vShadow.y));
+   float applyShadow = 1.0;
+   float bias = 0.001;
+
+   if(shadowMapTexColor.z < vShadow.z - bias)
+      applyShadow = 0.7;
    
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));
    ReflDir = normalize(reflect(-1.0 * vec3(vLightAndDirectional), vNormal));
@@ -37,5 +42,5 @@ void main() {
    Spec = directionalColor * uMat.specular * pow(dotVRDir, uMat.shine) * vec3(0.0);
    color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + vec3(1.2) * uMat.ambient;
    
-   gl_FragColor = vec4(color.rgb, 1.0);
+   gl_FragColor = vec4(applyShadow * color.rgb, 1.0);
 }

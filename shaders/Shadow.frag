@@ -2,5 +2,5 @@ uniform vec2 uTexture;
 
 void main() {
    float depth = gl_FragCoord.z;
-   gl_FragColor = vec4(depth, depth, depth, 1.0);
+   gl_FragColor = vec4(depth - 0.01, depth- 0.01, depth- 0.01, 1.0);
 }

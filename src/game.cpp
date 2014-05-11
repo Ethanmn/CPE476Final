@@ -7,6 +7,7 @@
 
 namespace {
    DeerCam deerCam;
+   bool showTreeShadows;
 }
 
 Game::Game() :
@@ -122,12 +123,14 @@ void Game::draw() {
          
          
          deer_.shadowDraw(shader, uniform_location_map_, sunDir);
-         /*
-         treeGen.shadowDraw(shader, uniform_location_map_, sunDir);
+         
+         if(showTreeShadows)
+            treeGen.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
+
          for (auto& bush : bushes_) {
             bush.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
          }
-         */
+         
          
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -147,19 +150,19 @@ void Game::draw() {
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::SUN) {
-         //sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
+         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
-         /*
+         
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
-         */
+         
       }
       else if(shaderPair.first == ShaderType::WIREFRAME) {
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
@@ -171,6 +174,7 @@ void Game::draw() {
 
 void Game::mainLoop() {
    Input input;
+   showTreeShadows = false;
    int mX, mY;
    bool running = true;
    SDL_Event event;
@@ -238,6 +242,12 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
                day_cycle_.switchBoolean();
+            }
+         }
+         { // show or hide tree shadows
+            const auto key_tree = SDL_SCANCODE_T;
+            if (input.wasKeyPressed(key_tree)) {
+               showTreeShadows = !showTreeShadows;
             }
          }
          { //handle quit

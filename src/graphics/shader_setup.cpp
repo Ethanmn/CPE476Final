@@ -6,6 +6,11 @@
 
 namespace  {
    const glm::mat4 projection_matrix = glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f);
+   const glm::mat4 biasMatrix(
+      0.5, 0.0, 0.0, 0.0,
+      0.0, 0.5, 0.0, 0.0,
+      0.0, 0.0, 0.5, 0.0,
+      0.5, 0.5, 0.5, 1.0);
 }
 
 void setupModelView(Shader& shader, const UniformLocationMap& locations,
@@ -71,12 +76,7 @@ void sendInverseViewProjection(Shader& shader, const UniformLocationMap& locatio
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
       glm::vec3 lightDir, glm::vec3 deerLoc) {
    glm::mat4 lightMat, shadowProjection, shadowView;
-   
-   glm::mat4 biasMatrix(
-      0.5, 0.0, 0.0, 0.0,
-      0.0, 0.5, 0.0, 0.0,
-      0.0, 0.0, 0.5, 0.0,
-      0.5, 0.5, 0.5, 1.0);
+
    shadowProjection = biasMatrix * glm::ortho(-250.0f, 250.0f, -250.0f, 250.0f, -40.0f, 40.0f);
    shadowView = glm::lookAt(lightDir, glm::vec3(0.0,0.0,0.0), glm::vec3(0.0, 1.0, 0.0));
    lightMat = shadowProjection * shadowView;
