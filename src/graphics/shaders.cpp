@@ -74,9 +74,10 @@ const std::vector<Uniform> kShadowUniforms{
 };
 
 Shaders::Shaders() {
+
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   
+
    shaders_.insert(std::make_pair(
             ShaderType::SUN,
             Shader("Sun", kSunAttrs, kSunUniforms)));
