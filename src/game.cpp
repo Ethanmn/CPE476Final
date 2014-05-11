@@ -131,7 +131,7 @@ void Game::draw() {
             bush.shadowDraw(shader, uniform_location_map_, sunDir);
          }
          */
-/
+
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
          shadow_map_fbo_.BindForReading();
