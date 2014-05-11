@@ -57,7 +57,7 @@ void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
    glm::mat4 shadowProjection, shadowView, modelView;
 
    shadowProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, -40.0f, 20.0f);
-   shadowView = glm::lookAt(lightDir, deerLoc, glm::vec3(0.0, 1.0, 0.0));
+   shadowView = glm::lookAt(lightDir + deerLoc, deerLoc, glm::vec3(0.0, 1.0, 0.0));
    modelView = shadowView * modelMatrix;
 
    shader.sendUniform(Uniform::MODEL_VIEW, locations, modelView);

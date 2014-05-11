@@ -22,7 +22,7 @@ void main() {
    vec4 texColor = texture2D(uTexture, vTexCoord);
    vec4 shadowMapTexColor = texture2D(uShadowMapTexture, vec2(vShadow));
    float applyShadow = 1.0;
-   if(vShadow.z <= gl_FragCoord.z)
+   if(vShadow.z < gl_FragCoord.z)
     applyShadow = shadowMapTexColor.x;
 
       /* temporary material values */
