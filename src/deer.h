@@ -51,7 +51,9 @@ struct Deer {
    Texture texture_;
    glm::vec3 position_;
    glm::vec3 velocity_;
-   glm::vec3 last_facing_;
+   glm::vec2 last_facing_;
+   float desired_lean_;
+   float current_lean_;
 
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;

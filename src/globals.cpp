@@ -1,4 +1,4 @@
 #include "globals.h"
 
-const int kScreenWidth = 1024;
-const int kScreenHeight = 768;
+const int kScreenWidth = 640;
+const int kScreenHeight = 480;

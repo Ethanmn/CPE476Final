@@ -26,7 +26,9 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    texture_(texture_path(Textures::DEER)),
    position_(position),
    velocity_(0, 0, 0),
-   last_facing_(0, 0, 1),
+   last_facing_(0, 1),
+   desired_lean_(0.0f),
+   current_lean_(0.0f),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
@@ -37,17 +39,25 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
-            glm::vec3(last_facing_.x, last_facing_.y, -last_facing_.z),
+            glm::vec3(last_facing_.x, 0.0f, -last_facing_.y),
             glm::vec3(0, 1, 0)));
+
+   const glm::mat4 lean(
+         glm::rotate(
+            glm::mat4(),
+            current_lean_ * 5.0f,
+            glm::vec3(0, 0, 1)
+            ));
+
    const glm::mat4 translate(
       glm::translate(
             glm::mat4(1.0f),
             position_));
-   const glm::mat4 model_matrix(translate * rotate);
+   const glm::mat4 transform(translate * rotate * lean);
 
    setupTextureShader(shader, uniform_locations, texture_);
 
-   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
+   setupModelView(shader, uniform_locations, transform, viewMatrix, true);
    shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
    shader.sendUniform(Uniform::BONES, uniform_locations,
          mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
@@ -57,7 +67,8 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
 }
 
 void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane) {
-   mesh_.animation.step(dt);
+   //mesh_.animation.step(dt);
+   current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
       xz_velocity -= xz_velocity * (kFriction * dt);
@@ -93,10 +104,17 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
          }
          velocity_.x = xz_velocity.x;
          velocity_.z = xz_velocity.y;
-         last_facing_ = glm::normalize(glm::vec3(
-                  velocity_.x,
-                  0.0f,
-                  velocity_.z));
+         {
+            const auto old_facing = last_facing_;
+            last_facing_ = glm::normalize(glm::vec2(
+                     velocity_.x,
+                     velocity_.z));
+            desired_lean_ = glm::orientedAngle(old_facing, last_facing_);
+            if (desired_lean_ > 45.0f)
+               desired_lean_ = 45.0f;
+            if (desired_lean_ < -45.0f)
+               desired_lean_ = -45.0f;
+         }
       }
    }
    if (is_jumping_) {
@@ -114,8 +132,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
    position_ += velocity_ * static_cast<float>(dt);
 
    bounding_rectangle_.set_position(xz(position_));
-   const auto xz_last_facing(xz(last_facing_));
-   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-xz_last_facing.y, xz_last_facing.x)));
+   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
 }
 
 void Deer::walkForward() {
