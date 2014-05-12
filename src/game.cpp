@@ -71,7 +71,7 @@ Game::Game() :
 
    //Pre-processing BVH Tree
    objTree.calculateTree(objects);
-   objTree.printTree();
+   //objTree.printTree();
 }
 
 void Game::step(units::MS dt) {
