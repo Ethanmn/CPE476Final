@@ -67,7 +67,6 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
 }
 
 void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane) {
-   mesh_.animation.step(dt);
    current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
@@ -78,6 +77,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
       velocity_.x = xz_velocity.x;
       velocity_.z = xz_velocity.y;
    } else {
+      mesh_.animation.step(dt);
       glm::vec3 acceleration(0.0f);
       { // If walking add in walk based on camera's forward.
          const glm::vec2 forward(xz(camera.getCamForwardVec()));
