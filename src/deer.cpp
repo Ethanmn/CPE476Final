@@ -84,6 +84,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
       }
       velocity_.x = xz_velocity.x;
       velocity_.z = xz_velocity.y;
+      desired_lean_ = 0.0f;
    } else {
       mesh_.animation.step(dt);
       glm::vec3 acceleration(0.0f);
@@ -119,9 +120,9 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
                      velocity_.z));
             desired_lean_ = glm::orientedAngle(old_facing, last_facing_);
             if (desired_lean_ > 45.0f)
-               desired_lean_ = 45.0f;
+               desired_lean_ = 0.0f;
             if (desired_lean_ < -45.0f)
-               desired_lean_ = -45.0f;
+               desired_lean_ = 0.0f;
          }
       }
    }
@@ -193,13 +194,12 @@ glm::vec3 Deer::getPosition() const {
    return position_;
 }
 
-
 void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, bool betterShadow) {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
-            glm::vec3(last_facing_.x, last_facing_.y, -last_facing_.z),
+            glm::vec3(last_facing_.x, 0.0f, -last_facing_.y),
             glm::vec3(0, 1, 0)));
    const glm::mat4 translate(
       glm::translate(

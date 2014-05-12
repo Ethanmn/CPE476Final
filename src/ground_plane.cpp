@@ -7,7 +7,7 @@
 const int GroundPlane::GROUND_SCALE = 500;
 const int PLANE_SIZE = 50;
 
-const float HEIGHT_MAP_SCALE = 8.0f;
+const float HEIGHT_MAP_SCALE = 3.0f;
 
 const std::vector<unsigned short> ground_indices{
    0, 2, 1, 3, 1, 2

@@ -19,6 +19,7 @@ const std::vector<Uniform> kSunUniforms{
    Uniform::M_SHINE,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
+   Uniform::LIGHTNING,
 };
 
 const std::vector<Attribute> kTextureAttrs{
@@ -56,6 +57,7 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::SUN_INTENSITY,
    Uniform::BONES,
    Uniform::HAS_BONES,
+   Uniform::LIGHTNING
 };
 
 const std::vector<Attribute> kWireframeAttrs{
@@ -64,7 +66,7 @@ const std::vector<Attribute> kWireframeAttrs{
 const std::vector<Uniform> kWireframeUniforms{
    Uniform::MODEL_VIEW,
    Uniform::PROJECTION,
-   Uniform::COLOR,
+   Uniform::COLOR
 };
 
 const std::vector<Attribute> kShadowAttrs{

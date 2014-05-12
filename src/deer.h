@@ -22,8 +22,6 @@ struct Deer {
              const glm::mat4& viewMatrix) const;
 
    void step(units::MS dt, const Camera& camera, const GroundPlane& ground, SoundEngine& sound_engine);
-
-
    void walkForward();
    void walkBackward();
    void stopWalking();

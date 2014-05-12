@@ -10,6 +10,11 @@ namespace {
    bool showTreeShadows = false;
    bool debug = false;
    bool betterShadows = false;
+
+   int lighting = 0;
+   float countLightning = 0.0;
+   int numLightning = 0;
+
 }
 
 Game::Game() :
@@ -84,6 +89,23 @@ void Game::step(units::MS dt) {
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
    butterfly_system_.step(dt);
    rain_system_.step(dt);
+
+   if(numLightning) {
+      countLightning += dt/100.0;
+      if(countLightning < 0.0)
+         lighting = 0;
+      else if(countLightning >= 0.0 && countLightning <= 1.0) 
+         lighting = 1;
+      else if(countLightning > 1.0) {
+         countLightning = -2.0;
+         numLightning--;
+         if(numLightning == 1)
+            countLightning = -7.5;
+      }
+   }
+   else
+      lighting = 0;
+   
 
    for (auto& tree : bushes_) {
       tree.step(dt);
@@ -162,12 +184,17 @@ void Game::draw() {
          } 
       }
       else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
+
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 
+
             shadow_map_fbo_.texture_id()); 
          if(betterShadows)
             sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          else
             sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
+
+         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
+
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -179,18 +206,16 @@ void Game::draw() {
 
          butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);
       }
-      else if(shaderPair.first == ShaderType::SUN) {
+      else if(!debug && shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
          rain_system_.draw(shader, uniform_location_map_, viewMatrix);
-
          
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
-         
       }
       else if (!debug && shaderPair.first == ShaderType::WIREFRAME) {
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
@@ -300,6 +325,13 @@ void Game::mainLoop() {
             const auto key_quit = SDL_SCANCODE_4;
             if (input.wasKeyPressed(key_quit)) {
                day_cycle_.nightToDay();
+            }
+         }
+         { //handle quit
+            const auto key_quit = SDL_SCANCODE_L;
+            if (input.wasKeyPressed(key_quit)) {
+               lighting = 1;
+               numLightning = 3;
             }
          }
          { //handle quit

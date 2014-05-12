@@ -41,7 +41,6 @@ void Tree::draw(
    bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);
 }
 
-
 void Tree::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow) {
       const glm::mat4 translate(glm::translate(
@@ -72,6 +71,5 @@ void Tree::rustle(SoundEngine& sound_engine) {
          SoundEngine::SoundEffect::RUSTLE,
          false,
          position_);
->>>>>>> master
    rustle_time_ = 0;
 }
