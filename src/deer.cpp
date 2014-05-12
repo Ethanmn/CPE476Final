@@ -8,6 +8,7 @@
 #include "graphics/shader_setup.h"
 #include "graphics/material.h"
 #include "sound_engine.h"
+#include "ground_plane.h"
 
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
@@ -39,7 +40,7 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-                const glm::mat4& viewMatrix, float sunIntensity) const {
+                const glm::mat4& viewMatrix) const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
@@ -51,8 +52,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
             position_));
    const glm::mat4 model_matrix(translate * rotate);
 
-   setupTextureShader(shader, uniform_locations, sunIntensity, texture_.textureID());
-   texture_.enable();
+   setupTextureShader(shader, uniform_locations, texture_);
 
    setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
    shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
@@ -60,13 +60,10 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
          mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
    shader.drawMesh(mesh_);
    shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
-
-   bounding_rectangle_.draw(uniform_locations, shader, 0.0f, viewMatrix);
-   glPolygonMode(GL_FRONT, GL_FILL);
    texture_.disable();
 }
 
-void Deer::step(units::MS dt, const Camera& camera, SoundEngine& sound_engine) {
+void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    mesh_.animation.step(dt);
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
@@ -111,9 +108,10 @@ void Deer::step(units::MS dt, const Camera& camera, SoundEngine& sound_engine) {
    }
    if (is_jumping_) {
       velocity_.y -= kGravity * dt;
-      if (position_.y < 0) {
+      const auto ground_height = ground_plane.heightAt(position_);
+      if (position_.y + mesh_.min.y < ground_height) {
          velocity_.y = 0.0f;
-         position_.y = 0.0f;
+         position_.y = ground_height - mesh_.min.y;
          is_jumping_ = false;
          sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, false, position_);
       }
@@ -126,6 +124,7 @@ void Deer::step(units::MS dt, const Camera& camera, SoundEngine& sound_engine) {
       }
    } else {
       step_timer_ = 0;
+      position_.y = ground_plane.heightAt(position_) - mesh_.min.y;
    }
 
    position_ += velocity_ * static_cast<float>(dt);

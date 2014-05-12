@@ -30,6 +30,8 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
    return Mesh({
          IndexBufferObject::create(mesh.index_array),
          attributes,
+         mesh.min,
+         mesh.max,
          mesh.bone_array,
          mesh.animation,
          mesh.material,

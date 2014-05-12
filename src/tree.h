@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "bounding_rectangle.h"
+#include "ground_plane.h"
 #include "graphics/mesh.h"
 #include "units.h"
 
@@ -11,8 +12,8 @@ struct Shader;
 struct SoundEngine;
 
 struct Tree {
-   Tree(const Mesh& mesh, const glm::vec3& position, float scale, units::MS rustle_time) :
-      position_(position),
+   Tree(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale, units::MS rustle_time) :
+      position_(position.x, ground.heightAt(position) - mesh.min.y, position.z),
       scale_(scale),
       rotate_(0.0f),
       elapsed_time_(0),

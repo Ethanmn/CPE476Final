@@ -10,43 +10,45 @@ namespace {
 }
 
 Game::Game() :
-   texture_(texture_path(Textures::GRASS)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
-   ground_(attribute_location_map_),
+   ground_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
-   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   bushes_{
+   bushes_({
       Tree(tree_mesh_,
             glm::vec3(30 - 15, 0, 25 + 5),
+            ground_,
             1.2f,
             300),
       Tree(tree_mesh_,
             glm::vec3(20 - 15, 0, 18 + 5),
+            ground_,
             0.8f,
             450),
       Tree(tree_mesh_,
             glm::vec3(25 - 15, 0, 12 + 5),
+            ground_,
             0.9f,
             150),
       Tree(tree_mesh_,
             glm::vec3(12 - 15, 0, 24 + 5),
+            ground_,
             1.3f,
             400),
-   },
+   }),
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000)
 {
-   //glClearColor(0, 0, 0, 1); // Clear to solid blue.
-
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
@@ -64,7 +66,6 @@ Game::Game() :
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
    deerCam.initialize(deer_.getPosition());
    treeGen.generateTrees();
-   //SDL_SetRelativeMouseMode(true);
 }
 
 void Game::step(units::MS dt) {
@@ -74,7 +75,7 @@ void Game::step(units::MS dt) {
    canary2_bird_sound_.step(dt, sound_engine_);
    woodpecker_bird_sound_.step(dt, sound_engine_);
 
-   deer_.step(dt, deerCam, sound_engine_);
+   deer_.step(dt, deerCam, ground_, sound_engine_);
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
    for (auto& tree : bushes_) {
       tree.step(dt);
@@ -120,18 +121,14 @@ void Game::draw() {
 
       setupProjection(shader, uniform_location_map_);
 
-      if(shaderPair.first == ShaderType::TEXTURE) {
+      if (shaderPair.first == ShaderType::TEXTURE) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-         setupTextureShader(shader, uniform_location_map_, sunIntensity, texture_.textureID());
-         texture_.enable();
          ground_.draw(shader, uniform_location_map_, viewMatrix);
-         texture_.disable();
 
-         deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
+         deer_.draw(shader, uniform_location_map_, viewMatrix);
 
-      }
-      else if(shaderPair.first == ShaderType::SUN) {
+      } else if (shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -142,9 +139,9 @@ void Game::draw() {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
-      }
-      else if(shaderPair.first == ShaderType::WIREFRAME)
+      } else if (shaderPair.first == ShaderType::WIREFRAME) {
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
+      }
 
       //If pixel is under ground draw as blue (water)?
    }
