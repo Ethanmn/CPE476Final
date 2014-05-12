@@ -7,46 +7,49 @@
 
 namespace {
    DeerCam deerCam;
+   bool showTreeShadows;
+   bool debug = false;
 }
 
 Game::Game() :
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
-   ground_(attribute_location_map_),
+   ground_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
-   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
-      mesh_loader_.loadMesh("../models/cube.obj"))),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   bushes_{
+   bushes_({
       Tree(tree_mesh_,
             glm::vec3(30 - 15, 0, 25 + 5),
+            ground_,
             1.2f,
             300),
       Tree(tree_mesh_,
             glm::vec3(20 - 15, 0, 18 + 5),
+            ground_,
             0.8f,
             450),
       Tree(tree_mesh_,
             glm::vec3(25 - 15, 0, 12 + 5),
+            ground_,
             0.9f,
             150),
       Tree(tree_mesh_,
             glm::vec3(12 - 15, 0, 24 + 5),
+            ground_,
             1.3f,
             400),
-   }
+   })
 {
-   //glClearColor(0, 0, 0, 1); // Clear to solid blue.
-
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (1.0, 1.0, 1.0, 1.0f);
-
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -61,13 +64,12 @@ Game::Game() :
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
    deerCam.initialize(deer_.getPosition());
    treeGen.generateTrees();
-   //SDL_SetRelativeMouseMode(true);
 }
 
 void Game::step(units::MS dt) {
    bool treeColl = false;
 
-   deer_.step(dt, deerCam);
+   deer_.step(dt, deerCam, ground_);
    for (auto& tree : bushes_) {
       tree.step(dt);
    }
@@ -89,10 +91,10 @@ void Game::step(units::MS dt) {
       deer_.jump();
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
-      day_cycle_.on();
+      day_cycle_.dayToNight();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
-      day_cycle_.off();
+      day_cycle_.nightToDay();
    }
 
    day_cycle_.autoAdjustTime(dt);
@@ -104,38 +106,42 @@ void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
-   glm::vec3 deerPos = deer_.getPosition();
+   glm::vec3 deerPos = deerCam.getPosition();
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
       
       setupProjection(shader, uniform_location_map_);
-
-      if(shaderPair.first == ShaderType::SHADOW) {
-         
-         shadow_map_fbo_.BindForWriting();
-         glClear(GL_DEPTH_BUFFER_BIT);
-
+      if(shaderPair.first == ShaderType::SHADOW_TEX) {
+         if(!debug) {
+            shadow_map_fbo_.BindForWriting();
+            glClear(GL_DEPTH_BUFFER_BIT);
+         }
+         ground_.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
+      }
+      else if(shaderPair.first == ShaderType::SHADOW) {
          deer_.shadowDraw(shader, uniform_location_map_, sunDir);
          day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, deerPos);
          day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, deerPos);
-         /*
-         treeGen.shadowDraw(shader, uniform_location_map_, sunDir);
+         
+         if(showTreeShadows)
+            treeGen.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
          for (auto& bush : bushes_) {
-            bush.shadowDraw(shader, uniform_location_map_, sunDir);
+            bush.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
          }
-         */
 
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         shadow_map_fbo_.BindForReading();
-         glClearColor (0.05098 * sunIntensity, 
-                    0.6274509 * sunIntensity,
-                    sunIntensity, 1.0f);
-         /* Note: glClearColor must be changed back in day_cycle */
+         if(!debug) {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            shadow_map_fbo_.BindForReading();
+            glClearColor (0.05098 * sunIntensity, 
+                       0.6274509 * sunIntensity,
+                       sunIntensity, 1.0f);
+         }
+         
       }
-      else if(shaderPair.first == ShaderType::TEXTURE) {
+      else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 2); 
          sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
@@ -144,41 +150,45 @@ void Game::draw() {
          ground_.draw(shader, uniform_location_map_, viewMatrix);
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
-      else if(shaderPair.first == ShaderType::SUN) {
-         //sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
+      else if(!debug && shaderPair.first == ShaderType::SUN) {
+         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
+         
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
+         
       }
-      else if(shaderPair.first == ShaderType::WIREFRAME) {
+      else if (!debug && shaderPair.first == ShaderType::WIREFRAME) {
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
       }
-      //If pixel is under ground draw as blue (water)?
+
+      // If pixel is under ground draw as blue (water)?
 
    }
 }
 
 void Game::mainLoop() {
    Input input;
+   showTreeShadows = false;
    int mX, mY;
    bool running = true;
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
 
-   printf("Before setup\n");
-   
-   if(!shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
+
+   if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
       printf("FAILURE\n");
       return;
    }
-   
+
+
    SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
    mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
 
@@ -233,7 +243,12 @@ void Game::mainLoop() {
             const auto key_jump = SDL_SCANCODE_J;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
-               day_cycle_.switchBoolean();
+            }
+         }
+         { // show or hide tree shadows
+            const auto key_tree = SDL_SCANCODE_T;
+            if (input.wasKeyPressed(key_tree)) {
+               showTreeShadows = !showTreeShadows;
             }
          }
          { //handle quit

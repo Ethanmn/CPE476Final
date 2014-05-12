@@ -5,6 +5,7 @@
 #include <boost/optional.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <vector>
 
 #include <vector>
 
