@@ -72,7 +72,7 @@ void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
    glPolygonMode(GL_FRONT, GL_FILL);
    glm::mat4 shadowProjection, shadowView, modelView;
 
-   shadowProjection = glm::ortho(-250.0f, 250.0f, -250.0f, 250.0f, -40.0f, 40.0f);
+   shadowProjection = glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, -40.0f, 40.0f);
    shadowView = glm::lookAt(lightDir, glm::vec3(0.0,0.0,0.0), glm::vec3(0.0, 1.0, 0.0));
    modelView = shadowView * modelMatrix;
 
@@ -89,7 +89,7 @@ void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& l
       glm::vec3 lightDir, glm::vec3 deerLoc) {
    glm::mat4 lightMat, shadowProjection, shadowView;
 
-   shadowProjection = biasMatrix * glm::ortho(-250.0f, 250.0f, -250.0f, 250.0f, -40.0f, 40.0f);
+   shadowProjection = biasMatrix * glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, -40.0f, 40.0f);
    shadowView = glm::lookAt(lightDir, glm::vec3(0.0,0.0,0.0), glm::vec3(0.0, 1.0, 0.0));
    lightMat = shadowProjection * shadowView;
 
