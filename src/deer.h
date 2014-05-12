@@ -19,6 +19,7 @@ struct Deer {
    void draw(Shader& shader, const UniformLocationMap& locations,
              const glm::mat4& viewMatrix, float sunIntensity) const;
    void step(units::MS dt, const Camera& camera);
+   BoundingRectangle getNextBoundingBox(units::MS dt, const Camera& camera);
 
    void walkForward();
    void walkBackward();

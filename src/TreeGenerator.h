@@ -20,8 +20,8 @@ struct TreeGenerator {
    TreeGenerator(const Mesh& mesh);
 
    void generate();
-   std::vector<Tree> getTrees();
-   Tree getCenterTree();
+   std::vector<Tree>& getTrees();
+   void drawTrees(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix);
 
    private:
       std::vector<Tree> trees;

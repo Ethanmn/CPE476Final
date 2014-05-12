@@ -18,16 +18,20 @@
 #include "graphics/shader_setup.h"
 
 struct Tree : public GameObject {
-   Tree(int x, int z, Mesh mesh);
+   Tree(glm::vec3 position, Mesh mesh);
 
    void draw(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) const;
-   BoundingRectangle getBoundingRectangle();
+
+   BoundingRectangle getBoundingRectangle() {
+      return bRect;
+   }
+
    bool isBlocker();
    void performObjectHit();
 
    private:
       BoundingRectangle bRect;
-      glm::vec2 position;
+      glm::vec3 position;
       Mesh mesh;
 };
 

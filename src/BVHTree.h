@@ -12,13 +12,13 @@
 #include "BVHNode.h"
 
 struct BVHTree {
-   BVHTree(std::vector<GameObject*> objects);
-
+   BVHTree();
+   void calculateTree(std::vector<GameObject*> objects);
    std::vector<GameObject*> getCollidingObjects(BoundingRectangle bRect);
-   void drawAll(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) const;
 
    private:
       BVHNode *head;
+      std::vector<BVHNode> allNodes;
 };
 
 #endif //BVHTREE_H_

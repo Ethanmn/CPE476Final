@@ -5,12 +5,15 @@
 */
 #include "BVHNode.h"
 
-BVHNode::BVHNode(BoundingRectangle bRect, GameObject *object) :
+BVHNode::BVHNode(BoundingRectangle bRect, GameObject *object, int num) :
    object(object),
    bRect(bRect),
    leftNode(NULL),
-   rightNode(NULL)
-{}
+   rightNode(NULL),
+   num(num)
+{ 
+//printNode(); 
+}
 
 void BVHNode::setLeftNode(BVHNode *left) {
    leftNode = left;
@@ -39,9 +42,30 @@ BVHNode *BVHNode::getRightNode() {
 }
 
 bool BVHNode::hasLeftNode() {
-   return leftNode == NULL;
+   return leftNode != NULL;
 }
 
 bool BVHNode::hasRightNode() {
-   return rightNode == NULL;
+   return rightNode != NULL;
+}
+
+void BVHNode::printNode() {
+   printf("A node with center at (%f, %f) and dimensions (%f, %f)", bRect.getCenter().x, bRect.getCenter().y, bRect.getDimensions().x, bRect.getDimensions().y);
+
+   if (object == NULL) {
+      printf(" NO GO.\n");
+   }
+   else {
+      printf(" YES GO.\n");
+   }
+
+   if (hasLeftNode()) {
+      printf("LEFT NODE ");
+   }
+
+   if (hasRightNode()) {
+      printf("RIGHT NODE");
+   }
+
+   printf("\n");
 }

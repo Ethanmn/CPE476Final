@@ -44,10 +44,6 @@ void Bush::rustle() {
    rustle_time_ = 0;
 }
 
-BoundingRectangle Bush::getBoundingRectangle() {
-   return bounding_rectangle_;
-}
-
 bool Bush::isBlocker() {
    return false;
 }

@@ -22,7 +22,7 @@ Game::Game() :
    bushGen(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   objTree(std::vector<GameObject*>())
+   objTree()
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
@@ -52,37 +52,47 @@ Game::Game() :
       objects.push_back(&tree);
    }
 
+   printf("Adding %zu trees.\n", treeGen.getTrees().size());
+
    for (auto& bush : bushGen.getBushes()) {
       objects.push_back(&bush);
    }
 
+   printf("Adding %zu bushes.\n", bushGen.getBushes().size());
+   printf("There are %zu objects for tree creation.\n", objects.size());
+
    //Pre-processing BVH Tree
-   objTree = BVHTree(objects);
+   objTree.calculateTree(objects);
 }
 
 void Game::step(units::MS dt) {
-   bool treeColl = false;
+   bool deerBlocked = false;
+
+   if (deer_.isMoving()) {
+      std::vector<GameObject*> collObjs = objTree.getCollidingObjects(deer_.getNextBoundingBox(dt, deerCam));
+      printf("Num objs colliding is %zu.\n", collObjs.size());
+      for (int index = 0; index < collObjs.size(); index++) {
+         printf("COLLISION\n");
+         collObjs.at(index)->performObjectHit();
+         deerBlocked = deerBlocked || collObjs.at(index)->isBlocker();
+      }
+   }
+
+   if (deerBlocked) {
+      printf("DEER BLOCKED!\n");
+      deer_.stopWalking();
+      deer_.stopStrafing();
+   }
 
    deer_.step(dt, deerCam);
+
    for (auto& bush : bushGen.getBushes()) {
       bush.step(dt);
    }
 
    if (deer_.isMoving()) {
       deerCam.move(deer_.getPosition());
-      for (auto& bush : bushGen.getBushes()) {
-         if (deer_.bounding_rectangle().collidesWith(bush.bounding_rectangle())) {
-            bush.rustle();
-         }
-      }
    }
-
-   for (auto& tree : treeGen.getTrees()) {
-      treeColl = treeColl || deer_.bounding_rectangle().collidesWith(tree.getBoundingRectangle());
-   }
-
-   if (treeColl)
-      deer_.jump();
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
       day_cycle_.on();
@@ -126,7 +136,8 @@ void Game::draw() {
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
-         objTree.drawAll(shader, uniform_location_map_, viewMatrix);
+         treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
+         bushGen.drawBushes(shader, uniform_location_map_, viewMatrix);
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));

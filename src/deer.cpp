@@ -60,6 +60,70 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    texture_.disable();
 }
 
+BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
+   glm::vec3 tempPosition = position_;
+   glm::vec3 tempVelocity = velocity_;
+   glm::vec3 tempLastFace = last_facing_;
+   BoundingRectangle tempBoundingBox = bounding_rectangle_;
+
+   if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
+      glm::vec2 xz_velocity(xz(tempVelocity));
+      xz_velocity -= xz_velocity * (kFriction * dt);
+      if (glm::length(xz_velocity) < kSpeed / 4.0f) {
+         xz_velocity = glm::vec2(0.0f);
+      }
+      tempVelocity.x = xz_velocity.x;
+      tempVelocity.z = xz_velocity.y;
+   } else {
+      glm::vec3 acceleration(0.0f);
+      { // If walking add in walk based on camera's forward.
+         const glm::vec2 forward(xz(camera.getCamForwardVec()));
+         if (walk_direction_ == WalkDirection::FORWARD) {
+            acceleration = glm::vec3(forward.x, 0.0f, forward.y);
+         } else if (walk_direction_ == WalkDirection::BACKWARD) {
+            acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
+         }
+      }
+
+      { // Add in strafe from camera, if strafing.
+         const glm::vec3 left(camera.getCamLeftVec());
+         if (strafe_direction_ == StrafeDirection::LEFT) {
+            acceleration += glm::vec3(left.x, 0.0f, left.z);
+         } else if (strafe_direction_ == StrafeDirection::RIGHT) {
+            acceleration -= glm::vec3(left.x, 0.0f, left.z);
+         }
+      }
+      { // Accelerate velocity, capping at kSpeed.
+         tempVelocity += glm::normalize(acceleration) * (kAcceleration * dt);
+         glm::vec2 xz_velocity(xz(tempVelocity));
+         if (glm::length(xz_velocity) > kSpeed) {
+            xz_velocity = glm::normalize(xz_velocity) * kSpeed;
+         }
+         tempVelocity.x = xz_velocity.x;
+         tempVelocity.z = xz_velocity.y;
+         tempLastFace = glm::normalize(glm::vec3(
+                  tempVelocity.x,
+                  0.0f,
+                  tempVelocity.z));
+      }
+   }
+   if (is_jumping_) {
+      tempVelocity.y -= kGravity * dt;
+      if (tempPosition.y < 0) {
+         tempVelocity.y = 0.0f;
+         tempPosition.y = 0.0f;
+      }
+   }
+
+   tempPosition += tempVelocity * static_cast<float>(dt);
+
+   tempBoundingBox.set_position(xz(tempPosition));
+   const auto xz_last_facing(xz(tempLastFace));
+   tempBoundingBox.set_rotation(glm::degrees(std::atan2(-xz_last_facing.y, xz_last_facing.x)));
+
+   return tempBoundingBox;
+}
+
 void Deer::step(units::MS dt, const Camera& camera) {
    mesh_.animation.step(dt);
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {

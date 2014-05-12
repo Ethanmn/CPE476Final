@@ -25,16 +25,18 @@ void TreeGenerator::generate() {
    for (int row = 0; row < size; row++) {
       for (int col = 0; col < size; col++) {
          if (rand() % TREE_DENSITY == 0) {
-            trees.push_back(Tree(row, col, treeMesh1));
+            trees.push_back(Tree(glm::vec3(row * TREE_SIZE - groundSize, TREE_SCALE * TREE_SIZE / 2, col * TREE_SIZE - groundSize), treeMesh1));
          }
       }
    }
 }
 
-std::vector<Tree> TreeGenerator::getTrees() {
+std::vector<Tree>& TreeGenerator::getTrees() {
    return trees;
 }
 
-Tree TreeGenerator::getCenterTree() {
-   return trees.at(trees.size() / 2);
+void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) {
+   for (auto& tree : trees) {
+      tree.draw(shader, uniform_location_map, view_matrix);
+   }
 }

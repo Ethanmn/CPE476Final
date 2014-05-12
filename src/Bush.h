@@ -35,7 +35,10 @@ struct Bush : public GameObject {
          const UniformLocationMap& uniform_location_map,
          const glm::mat4& view_matrix) const;
 
-   BoundingRectangle getBoundingRectangle();
+   BoundingRectangle getBoundingRectangle() {
+      return bounding_rectangle_;
+   }
+
    bool isBlocker();
    void performObjectHit();
 

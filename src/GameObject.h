@@ -9,18 +9,12 @@
 #include "bounding_rectangle.h"
 
 struct GameObject {
-   virtual ~GameObject(){}
+   virtual BoundingRectangle getBoundingRectangle() = 0;
 
-   virtual BoundingRectangle getBoundingRectangle() {
-      return BoundingRectangle(glm::vec2(0, 0), glm::vec2(0, 0), 0.0f);
-   }
+   virtual bool isBlocker() = 0;
 
-   virtual bool isBlocker() {
-      return false;
-   }
+   virtual void performObjectHit() = 0;
 
-   virtual void performObjectHit() {}
-
-   virtual void draw(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) const {} 
+   virtual void draw(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) const = 0; 
 };
 #endif //GAME_OBJECT_H_

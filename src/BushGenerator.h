@@ -20,7 +20,8 @@ struct BushGenerator {
    BushGenerator(const Mesh& mesh);
 
    void generate();
-   std::vector<Bush> getBushes();
+   std::vector<Bush>& getBushes();
+   void drawBushes(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix);
 
    private:
       std::vector<Bush> bushes;
