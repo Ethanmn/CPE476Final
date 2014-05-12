@@ -9,7 +9,7 @@
 #include <ImageMagick-6/Magick++.h>
 #include <vector>
 
-#include <ImageMagick-6/Magick++.h>
+#include <Magick++.h>
 #include <vector>
 
 struct Shader;

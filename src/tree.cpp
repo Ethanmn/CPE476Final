@@ -3,6 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/material.h"
+#include "sound_engine.h"
 
 void Tree::step(units::MS dt) {
    if (rustle_time_ < kMaxRustleTime) {
@@ -40,6 +41,7 @@ void Tree::draw(
    bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);
 }
 
+
 void Tree::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow) {
       const glm::mat4 translate(glm::translate(
@@ -65,6 +67,11 @@ void Tree::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
    shader.drawMesh(mesh_);
 }
 
-void Tree::rustle() {
+void Tree::rustle(SoundEngine& sound_engine) {
+   sound_engine.playSoundEffect(
+         SoundEngine::SoundEffect::RUSTLE,
+         false,
+         position_);
+>>>>>>> master
    rustle_time_ = 0;
 }

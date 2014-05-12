@@ -13,6 +13,7 @@
 
 struct GroundPlane;
 struct Shader;
+struct SoundEngine;
 
 struct Deer {
    Deer(const Mesh& mesh, const glm::vec3& position);
@@ -20,7 +21,8 @@ struct Deer {
    void draw(Shader& shader, const UniformLocationMap& locations,
              const glm::mat4& viewMatrix) const;
 
-   void step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane);
+   void step(units::MS dt, const Camera& camera, const GroundPlane& ground, SoundEngine& sound_engine);
+
 
    void walkForward();
    void walkBackward();
@@ -32,7 +34,8 @@ struct Deer {
 
    void jump();
 
-   glm::vec3 getPosition();
+   glm::vec3 getPosition() const;
+   glm::vec3 getFacing() const;
 
    bool isMoving();
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
@@ -57,11 +60,15 @@ struct Deer {
    Texture texture_;
    glm::vec3 position_;
    glm::vec3 velocity_;
-   glm::vec3 last_facing_;
+   glm::vec2 last_facing_;
+   float desired_lean_;
+   float current_lean_;
 
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;
    BoundingRectangle bounding_rectangle_;
+
+   units::MS step_timer_;
 
    bool is_jumping_;
    bool is_walking_;

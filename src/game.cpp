@@ -18,8 +18,8 @@ Game::Game() :
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
-   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj")), ground_),
+            mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -46,7 +46,13 @@ Game::Game() :
             ground_,
             1.3f,
             400),
-   })
+   }),
+   cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
+   canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
+   canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
+   woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
+   butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_),
+   rain_system_(glm::vec3(0.0f, 100.0f, 0.0f), 2000, attribute_location_map_, mesh_loader_)
 {
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
@@ -69,8 +75,16 @@ Game::Game() :
 
 void Game::step(units::MS dt) {
    bool treeColl = false;
+   cardinal_bird_sound_.step(dt, sound_engine_);
+   canary_bird_sound_.step(dt, sound_engine_);
+   canary2_bird_sound_.step(dt, sound_engine_);
+   woodpecker_bird_sound_.step(dt, sound_engine_);
 
-   deer_.step(dt, deerCam, ground_);
+   deer_.step(dt, deerCam, ground_, sound_engine_);
+   sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
+   butterfly_system_.step(dt);
+   rain_system_.step(dt);
+
    for (auto& tree : bushes_) {
       tree.step(dt);
    }
@@ -79,7 +93,7 @@ void Game::step(units::MS dt) {
       deerCam.move(deer_.getPosition());
       for (auto& tree : bushes_) {
          if (deer_.bounding_rectangle().collidesWith(tree.bounding_rectangle())) {
-            tree.rustle();
+            tree.rustle(sound_engine_);
          }
       }
    }
@@ -159,19 +173,17 @@ void Game::draw() {
 
          ground_.draw(shader, uniform_location_map_, viewMatrix);
          deer_.draw(shader, uniform_location_map_, viewMatrix);
-      }
-      else if(!debug && shaderPair.first == ShaderType::SUN) {
-         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 
-            shadow_map_fbo_.texture_id()); 
-         if(betterShadows)
-            sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
-         else
-            sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
-         setupView(shader, uniform_location_map_, viewMatrix);
-         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
+
+         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);
+      }
+      else if(shaderPair.first == ShaderType::SUN) {
+         setupView(shader, uniform_location_map_, viewMatrix);
+         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
+
+         rain_system_.draw(shader, uniform_location_map_, viewMatrix);
 
          
          for (auto& bush : bushes_) {
