@@ -23,7 +23,6 @@ struct Deer {
 
    void step(units::MS dt, const Camera& camera, const GroundPlane& ground, SoundEngine& sound_engine);
 
-
    void walkForward();
    void walkBackward();
    void stopWalking();

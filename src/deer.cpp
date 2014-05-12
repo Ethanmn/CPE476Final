@@ -211,5 +211,4 @@ void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
 
 glm::vec3 Deer::getFacing() const {
    return glm::vec3(last_facing_.x, 0.0f, last_facing_.y);
-
 }

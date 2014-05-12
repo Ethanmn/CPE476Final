@@ -16,7 +16,6 @@ else
 	PKGS+=gl glu
 endif
 
-
 # The flags you want to use when compiling individual objects (.o files)
 # -g=generate information for debugging (used with debugging tools such as gdb
 #  or valgrind)
