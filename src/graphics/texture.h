@@ -20,7 +20,7 @@ inline std::string texture_path(Textures texture) {
       case Textures::DEER:
          return "../textures/deer1.bmp";
       case Textures::BUTTERFLY:
-         return "../textures/butterfly_texture.bmp";
+         return "../textures/butterfly.bmp";
    }
 }
 
