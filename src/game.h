@@ -17,6 +17,8 @@
 #include "TreeGenerator.h"
 #include "graphics/day_cycle.h"
 #include "tree.h"
+#include "sound_engine.h"
+#include "bird_sound.h"
 #include "day_night_interaction.h"
 #include "BVHNode.h"
 
@@ -39,6 +41,8 @@ struct Game {
    DayCycle day_cycle_;
    Mesh tree_mesh_;
    std::vector<Tree> bushes_;
+   SoundEngine sound_engine_;
+   BirdSound cardinal_bird_sound_, canary_bird_sound_, canary2_bird_sound_, woodpecker_bird_sound_;
 
    glm::vec2 mousePos;
 

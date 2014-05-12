@@ -7,6 +7,7 @@
 #include "graphics/location_maps.h"
 #include "graphics/shader_setup.h"
 #include "graphics/material.h"
+#include "sound_engine.h"
 #include "ground_plane.h"
 
 namespace {
@@ -21,6 +22,8 @@ const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
 const float kJumpSpeed = 0.015f;
 
+const float kStepTime = 300;
+
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
    texture_(texture_path(Textures::DEER)),
@@ -30,7 +33,11 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
-   is_jumping_(false) {}
+   step_timer_(0),
+   is_jumping_(false),
+   is_walking_(false),
+   is_strafing_(false)
+      {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
                 const glm::mat4& viewMatrix) const {
@@ -56,7 +63,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    texture_.disable();
 }
 
-void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane) {
+void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    mesh_.animation.step(dt);
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
@@ -106,8 +113,17 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
          velocity_.y = 0.0f;
          position_.y = ground_height - mesh_.min.y;
          is_jumping_ = false;
+         sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, false, position_);
+      }
+      step_timer_ = 0;
+   } else if (isMoving()) {
+      step_timer_ += dt;
+      if (step_timer_ > kStepTime) {
+         step_timer_ = 0;
+         sound_engine.playRandomWalkSound();
       }
    } else {
+      step_timer_ = 0;
       position_.y = ground_plane.heightAt(position_) - mesh_.min.y;
    }
 
@@ -155,6 +171,10 @@ bool Deer::isMoving() {
    return velocity_.x > 0 || velocity_.z > 0 || velocity_.x < 0 || velocity_.z < 0;
 }
 
-glm::vec3 Deer::getPosition() {
+glm::vec3 Deer::getPosition() const {
    return position_;
+}
+
+glm::vec3 Deer::getFacing() const {
+   return last_facing_;
 }

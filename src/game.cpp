@@ -43,7 +43,11 @@ Game::Game() :
             ground_,
             1.3f,
             400),
-   })
+   }),
+   cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
+   canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
+   canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
+   woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000)
 {
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
@@ -66,8 +70,13 @@ Game::Game() :
 
 void Game::step(units::MS dt) {
    bool treeColl = false;
+   cardinal_bird_sound_.step(dt, sound_engine_);
+   canary_bird_sound_.step(dt, sound_engine_);
+   canary2_bird_sound_.step(dt, sound_engine_);
+   woodpecker_bird_sound_.step(dt, sound_engine_);
 
-   deer_.step(dt, deerCam, ground_);
+   deer_.step(dt, deerCam, ground_, sound_engine_);
+   sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
    for (auto& tree : bushes_) {
       tree.step(dt);
    }
@@ -76,7 +85,7 @@ void Game::step(units::MS dt) {
       deerCam.move(deer_.getPosition());
       for (auto& tree : bushes_) {
          if (deer_.bounding_rectangle().collidesWith(tree.bounding_rectangle())) {
-            tree.rustle();
+            tree.rustle(sound_engine_);
          }
       }
    }
