@@ -175,6 +175,7 @@ void Game::draw() {
 
 void Game::mainLoop() {
    Input input;
+   showTreeShadows = false;
    int mX, mY;
    bool running = true;
    SDL_Event event;
@@ -249,7 +250,6 @@ void Game::mainLoop() {
                showTreeShadows = !showTreeShadows;
             }
          }
-
          { //handle debug for Katelyn
             const auto key_quit = SDL_SCANCODE_1;
             if (input.wasKeyPressed(key_quit)) {
@@ -269,7 +269,6 @@ void Game::mainLoop() {
                day_cycle_.nightToDay();
             }
          }
-
          { //handle quit
             const auto key_quit = SDL_SCANCODE_Q;
             if (input.wasKeyPressed(key_quit)) {
