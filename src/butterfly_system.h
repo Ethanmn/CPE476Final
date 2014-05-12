@@ -9,14 +9,14 @@
 
 struct ButterflySystem {
    ButterflySystem(const glm::vec3& origin, int numParticles,
-	       const AttributeLocationMap& attribute_location_map_, MeshLoader& mesh_loader_,
-	       const Texture& texture);
+	       const AttributeLocationMap& attribute_location_map_, MeshLoader& mesh_loader_);
 
    void step(units::MS dt);
 
    void draw(Shader& shader,
          const UniformLocationMap& uniform_location_map,
-         const glm::mat4& view_matrix);
+         const glm::mat4& view_matrix,
+         float sunIntensity);
    
    private:
       std::vector<Particle> particles_;

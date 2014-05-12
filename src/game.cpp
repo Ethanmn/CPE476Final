@@ -123,13 +123,12 @@ void Game::draw() {
          texture_.disable();
 
          deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
+         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
 
       }
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-
-         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);
 
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
