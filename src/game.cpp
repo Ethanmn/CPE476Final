@@ -10,13 +10,13 @@ namespace {
 }
 
 Game::Game() :
-   texture_(texture_path(Textures::GRASS)),
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
-   ground_(attribute_location_map_),
+   ground_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
-   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj"))),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -24,27 +24,29 @@ Game::Game() :
             mesh_loader_.loadMesh("../models/tree.3ds"))),
    butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_),
    rain_system_(glm::vec3(0.0f, 100.0f, 0.0f), 2000, attribute_location_map_, mesh_loader_),
-   bushes_{
+   bushes_({
       Tree(tree_mesh_,
             glm::vec3(30 - 15, 0, 25 + 5),
+            ground_,
             1.2f,
             300),
       Tree(tree_mesh_,
             glm::vec3(20 - 15, 0, 18 + 5),
+            ground_,
             0.8f,
             450),
       Tree(tree_mesh_,
             glm::vec3(25 - 15, 0, 12 + 5),
+            ground_,
             0.9f,
             150),
       Tree(tree_mesh_,
             glm::vec3(12 - 15, 0, 24 + 5),
+            ground_,
             1.3f,
             400),
-   }
+   })
 {
-   //glClearColor(0, 0, 0, 1); // Clear to solid blue.
-
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (0.05098 * 0.5, 0.6274509 * 0.5, 0.5, 1.0f);
@@ -62,7 +64,6 @@ Game::Game() :
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
    deerCam.initialize(deer_.getPosition());
    treeGen.generateTrees();
-   //SDL_SetRelativeMouseMode(true);
 }
 
 void Game::step(units::MS dt) {
@@ -71,7 +72,8 @@ void Game::step(units::MS dt) {
    butterfly_system_.step(dt);
    rain_system_.step(dt);
 
-   deer_.step(dt, deerCam);
+   deer_.step(dt, deerCam, ground_);
+
    for (auto& tree : bushes_) {
       tree.step(dt);
    }
@@ -93,10 +95,10 @@ void Game::step(units::MS dt) {
       deer_.jump();
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
-      day_cycle_.on();
+      day_cycle_.dayToNight();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
-      day_cycle_.off();
+      day_cycle_.nightToDay();
    }
 
    day_cycle_.autoAdjustTime(dt);
@@ -116,16 +118,12 @@ void Game::draw() {
 
       setupProjection(shader, uniform_location_map_);
 
-      if(shaderPair.first == ShaderType::TEXTURE) {
+      if (shaderPair.first == ShaderType::TEXTURE) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-         setupTextureShader(shader, uniform_location_map_, sunIntensity, texture_.textureID());
-         texture_.enable();
          ground_.draw(shader, uniform_location_map_, viewMatrix);
-         texture_.disable();
-
-         deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
-         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
+         deer_.draw(shader, uniform_location_map_, viewMatrix);
+         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);
       }
 
       else if(shaderPair.first == ShaderType::SUN) {
@@ -141,9 +139,9 @@ void Game::draw() {
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
-      
-      else if(shaderPair.first == ShaderType::WIREFRAME)
+      else if (shaderPair.first == ShaderType::WIREFRAME) {
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
+      }
 
       //If pixel is under ground draw as blue (water)?
    }
@@ -210,7 +208,6 @@ void Game::mainLoop() {
             const auto key_jump = SDL_SCANCODE_J;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
-               //day_cycle_.switchBoolean();
             }
          }
          { //handle quit

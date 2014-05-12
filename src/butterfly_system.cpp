@@ -24,6 +24,7 @@ ButterflySystem::ButterflySystem(const glm::vec3& origin, int numParticles,
                   float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
                   particles_.push_back(Particle(mesh, glm::vec3(origin_.x + rx, origin_.y + ry, origin_.z + rz), scale_,
                                        glm::vec3(rvx, 0.0f, rvz), acceleration_, texture_));
+
                }
             }
 
@@ -46,9 +47,8 @@ void ButterflySystem::step(units::MS dt) {
 
 void ButterflySystem::draw(Shader& shader,
          const UniformLocationMap& uniform_location_map,
-         const glm::mat4& view_matrix,
-         float sunIntensity) {
-   setupTextureShader(shader, uniform_location_map, sunIntensity, texture_.textureID());
+         const glm::mat4& view_matrix) {
+   setupTextureShader(shader, uniform_location_map, texture_);
    texture_.enable();
 
    for (auto& particle : particles_) {
