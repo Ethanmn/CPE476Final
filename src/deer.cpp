@@ -29,7 +29,8 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
-   is_jumping_(false)
+   is_jumping_(false),
+   blocked(false)
       {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
@@ -176,11 +177,14 @@ void Deer::step(units::MS dt, const Camera& camera) {
       }
    }
 
-   position_ += velocity_ * static_cast<float>(dt);
+   if (!blocked) {
+      position_ += velocity_ * static_cast<float>(dt);
 
-   bounding_rectangle_.set_position(xz(position_));
-   const auto xz_last_facing(xz(last_facing_));
-   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-xz_last_facing.y, xz_last_facing.x)));
+      bounding_rectangle_.set_position(xz(position_));
+      const auto xz_last_facing(xz(last_facing_));
+      bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-xz_last_facing.y, xz_last_facing.x)));
+   }
+   blocked = false;
 }
 
 void Deer::walkForward() {
@@ -228,4 +232,5 @@ void Deer::block() {
    stopWalking();
    stopStrafing();
    velocity_ = glm::vec3(0, 0, 0);
+   blocked = true;
 }

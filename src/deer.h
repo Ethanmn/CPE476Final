@@ -63,6 +63,7 @@ struct Deer {
    bool is_jumping_;
    bool is_walking_;
    bool is_strafing_;
+   bool blocked;
 };
 
 #endif // DEER_H_

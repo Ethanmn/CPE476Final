@@ -85,8 +85,11 @@ void Game::step(units::MS dt) {
       //printf("DEER BLOCKED!\n");
       deer_.block();
    }
+   else {
+      deer_.step(dt, deerCam);
+   }
 
-   deer_.step(dt, deerCam);
+   
 
    for (auto& bush : bushGen.getBushes()) {
       bush.step(dt);
