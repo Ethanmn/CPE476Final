@@ -5,7 +5,7 @@
 #include "glm/glm.hpp"
 #include "graphics/location_maps.h"
 
-#include <ImageMagick-6/Magick++.h>
+#include <Magick++.h>
 #include <vector>
 
 struct Shader;

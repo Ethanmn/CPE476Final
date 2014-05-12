@@ -7,6 +7,7 @@
 #include "graphics/location_maps.h"
 #include "graphics/shader_setup.h"
 #include "graphics/material.h"
+#include "sound_engine.h"
 #include "ground_plane.h"
 
 namespace {
@@ -21,33 +22,49 @@ const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
 const float kJumpSpeed = 0.015f;
 
+const float kStepTime = 300;
+
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    mesh_(mesh),
    texture_(texture_path(Textures::DEER)),
    position_(position),
    velocity_(0, 0, 0),
-   last_facing_(0, 0, 1),
+   last_facing_(0, 1),
+   desired_lean_(0.0f),
+   current_lean_(0.0f),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
-   is_jumping_(false) {}
+   step_timer_(0),
+   is_jumping_(false),
+   is_walking_(false),
+   is_strafing_(false)
+      {}
 
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
                 const glm::mat4& viewMatrix) const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
-            glm::vec3(last_facing_.x, last_facing_.y, -last_facing_.z),
+            glm::vec3(last_facing_.x, 0.0f, -last_facing_.y),
             glm::vec3(0, 1, 0)));
+
+   const glm::mat4 lean(
+         glm::rotate(
+            glm::mat4(),
+            current_lean_ * 5.0f,
+            glm::vec3(0, 0, 1)
+            ));
+
    const glm::mat4 translate(
       glm::translate(
             glm::mat4(1.0f),
             position_));
-   const glm::mat4 model_matrix(translate * rotate);
+   const glm::mat4 transform(translate * rotate * lean);
 
    setupTextureShader(shader, uniform_locations, texture_);
 
-   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
+   setupModelView(shader, uniform_locations, transform, viewMatrix, true);
    shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
    shader.sendUniform(Uniform::BONES, uniform_locations,
          mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
@@ -56,8 +73,8 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    texture_.disable();
 }
 
-void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane) {
-   mesh_.animation.step(dt);
+void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
+   current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
    if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
       glm::vec2 xz_velocity(xz(velocity_));
       xz_velocity -= xz_velocity * (kFriction * dt);
@@ -67,6 +84,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
       velocity_.x = xz_velocity.x;
       velocity_.z = xz_velocity.y;
    } else {
+      mesh_.animation.step(dt);
       glm::vec3 acceleration(0.0f);
       { // If walking add in walk based on camera's forward.
          const glm::vec2 forward(xz(camera.getCamForwardVec()));
@@ -93,10 +111,17 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
          }
          velocity_.x = xz_velocity.x;
          velocity_.z = xz_velocity.y;
-         last_facing_ = glm::normalize(glm::vec3(
-                  velocity_.x,
-                  0.0f,
-                  velocity_.z));
+         {
+            const auto old_facing = last_facing_;
+            last_facing_ = glm::normalize(glm::vec2(
+                     velocity_.x,
+                     velocity_.z));
+            desired_lean_ = glm::orientedAngle(old_facing, last_facing_);
+            if (desired_lean_ > 45.0f)
+               desired_lean_ = 45.0f;
+            if (desired_lean_ < -45.0f)
+               desired_lean_ = -45.0f;
+         }
       }
    }
    if (is_jumping_) {
@@ -106,16 +131,24 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
          velocity_.y = 0.0f;
          position_.y = ground_height - mesh_.min.y;
          is_jumping_ = false;
+         sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, false, position_);
+      }
+      step_timer_ = 0;
+   } else if (isMoving()) {
+      step_timer_ += dt;
+      if (step_timer_ > kStepTime) {
+         step_timer_ = 0;
+         sound_engine.playRandomWalkSound();
       }
    } else {
+      step_timer_ = 0;
       position_.y = ground_plane.heightAt(position_) - mesh_.min.y;
    }
 
    position_ += velocity_ * static_cast<float>(dt);
 
    bounding_rectangle_.set_position(xz(position_));
-   const auto xz_last_facing(xz(last_facing_));
-   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-xz_last_facing.y, xz_last_facing.x)));
+   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
 }
 
 void Deer::walkForward() {
@@ -155,6 +188,10 @@ bool Deer::isMoving() {
    return velocity_.x > 0 || velocity_.z > 0 || velocity_.x < 0 || velocity_.z < 0;
 }
 
-glm::vec3 Deer::getPosition() {
+glm::vec3 Deer::getPosition() const {
    return position_;
+}
+
+glm::vec3 Deer::getFacing() const {
+   return glm::vec3(last_facing_.x, 0.0f, last_facing_.y);
 }
