@@ -10,6 +10,8 @@ enum class Uniform {
    PROJECTION,
    NORMAL,
    TEXTURE,
+   HAS_HEIGHT_MAP,
+   HEIGHT_MAP,
    COLOR,
    SUN_DIR,
    SUN_INTENSITY,
@@ -17,6 +19,8 @@ enum class Uniform {
    M_DIF,
    M_SPEC,
    M_SHINE,
+   BONES,
+   HAS_BONES,
    LAST_UNIFORM,
 };
 
@@ -32,6 +36,10 @@ inline std::string uniform_name(Uniform uniform) {
          return "uNormalMatrix";
       case Uniform::TEXTURE:
          return "uTexture";
+      case Uniform::HEIGHT_MAP:
+         return "uHeightMap";
+      case Uniform::HAS_HEIGHT_MAP:
+         return "uHasHeightMap";
       case Uniform::COLOR:
          return "uColor";
       case Uniform::SUN_DIR:
@@ -46,6 +54,10 @@ inline std::string uniform_name(Uniform uniform) {
          return "uMat.specular";
       case Uniform::M_SHINE:
          return "uMat.shine";
+      case Uniform::BONES:
+         return "uBones";
+      case Uniform::HAS_BONES:
+         return "uHasBones";
       case Uniform::LAST_UNIFORM:
          throw "Unknown uniform type, shouldn't even compile";
    }

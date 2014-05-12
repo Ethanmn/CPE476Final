@@ -10,15 +10,15 @@
 #include "units.h"
 #include "graphics/texture.h"
 
-
+struct GroundPlane;
 struct Shader;
 
 struct Deer {
    Deer(const Mesh& mesh, const glm::vec3& position);
 
    void draw(Shader& shader, const UniformLocationMap& locations,
-             const glm::mat4& viewMatrix, float sunIntensity) const;
-   void step(units::MS dt, const Camera& camera);
+             const glm::mat4& viewMatrix) const;
+   void step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane);
 
    void walkForward();
    void walkBackward();
