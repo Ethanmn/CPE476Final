@@ -9,6 +9,10 @@ namespace {
    DeerCam deerCam;
    bool showTreeShadows = false;
    bool debug = false;
+   int lighting = 0;
+   float countLightning = 0.0;
+   int numLightning = 0;
+
 }
 
 Game::Game() :
@@ -68,6 +72,23 @@ Game::Game() :
 
 void Game::step(units::MS dt) {
    bool treeColl = false;
+
+   if(numLightning) {
+      countLightning += dt/100.0;
+      if(countLightning < 0.0)
+         lighting = 0;
+      else if(countLightning >= 0.0 && countLightning <= 1.0) 
+         lighting = 1;
+      else if(countLightning > 1.0) {
+         countLightning = -2.0;
+         numLightning--;
+         if(numLightning == 1)
+            countLightning = -7.5;
+      }
+   }
+   else
+      lighting = 0;
+   
 
    deer_.step(dt, deerCam, ground_);
    for (auto& tree : bushes_) {
@@ -144,8 +165,11 @@ void Game::draw() {
          } 
       }
       else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
+
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 
-            shadow_map_fbo_.texture_id()); 
+            shadow_map_fbo_.texture_id());
+         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
+
          sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
@@ -154,8 +178,11 @@ void Game::draw() {
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(!debug && shaderPair.first == ShaderType::SUN) {
+
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 
             shadow_map_fbo_.texture_id()); 
+         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
+
          sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
@@ -272,6 +299,13 @@ void Game::mainLoop() {
             const auto key_quit = SDL_SCANCODE_3;
             if (input.wasKeyPressed(key_quit)) {
                day_cycle_.nightToDay();
+            }
+         }
+         { //handle quit
+            const auto key_quit = SDL_SCANCODE_L;
+            if (input.wasKeyPressed(key_quit)) {
+               lighting = 1;
+               numLightning = 3;
             }
          }
          { //handle quit
