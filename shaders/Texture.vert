@@ -8,6 +8,9 @@ uniform mat4 uShadowMap;
 uniform int uHasBones;
 uniform mat4 uBones[100];
 
+uniform int uHasHeightMap;
+uniform sampler2D uHeightMap;
+
 attribute vec3 aShadowTexCoord;
 attribute vec3 aTexCoord;
 attribute vec3 aPosition;
@@ -54,11 +57,17 @@ void main() {
    }
 */
 
-   vec4 vPosition = uModelViewMatrix /* bone */ * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
+  vec4 heightColor = vec4(0.0);
+   float HEIGHT_MAP_SCALE = 8.0;
+   if (uHasHeightMap != 0) {
+      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;
+   }
+
+   vec4 vPosition = uModelViewMatrix * vec4(heightColor.xyz + aPosition, 1.0);
    vViewer = vPosition;
    gl_Position = uProjectionMatrix * vPosition;
 
   vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
   vTexCoord = vec2(aTexCoord.x, aTexCoord.y);
-  vShadow = uShadowMap * uModelMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
+  vShadow = uShadowMap * uModelMatrix * vec4(heightColor.xyz + aPosition, 1.0);
 }

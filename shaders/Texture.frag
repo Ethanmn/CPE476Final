@@ -1,6 +1,7 @@
 uniform sampler2D uShadowMapTexture;
 uniform sampler2D uTexture;
 
+
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform mat4 uNormalMatrix;
@@ -43,4 +44,6 @@ void main() {
       color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + amb;
 
       gl_FragColor = vec4(applyShadow * color.rgb, 1.0);
+      //gl_FragColor = vec4(applyShadow, applyShadow, applyShadow, 1.0);
+
 }

@@ -7,7 +7,7 @@
 
 namespace {
    DeerCam deerCam;
-   bool showTreeShadows;
+   bool showTreeShadows = false;
    bool debug = false;
 }
 
@@ -138,8 +138,7 @@ void Game::draw() {
             glClearColor (0.05098 * sunIntensity, 
                        0.6274509 * sunIntensity,
                        sunIntensity, 1.0f);
-         }
-         
+         } 
       }
       else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 2); 
@@ -176,7 +175,6 @@ void Game::draw() {
 
 void Game::mainLoop() {
    Input input;
-   showTreeShadows = false;
    int mX, mY;
    bool running = true;
    SDL_Event event;
@@ -245,12 +243,33 @@ void Game::mainLoop() {
                deer_.jump();
             }
          }
-         { // show or hide tree shadows
+         { // show or hide tree shadows -- Katelyn
             const auto key_tree = SDL_SCANCODE_T;
             if (input.wasKeyPressed(key_tree)) {
                showTreeShadows = !showTreeShadows;
             }
          }
+
+         { //handle debug for Katelyn
+            const auto key_quit = SDL_SCANCODE_1;
+            if (input.wasKeyPressed(key_quit)) {
+               debug = !debug;
+               glClearColor (1.0, 1.0, 1.0, 1.0f);
+            }
+         }
+         { //handle debug for Katelyn
+            const auto key_quit = SDL_SCANCODE_2;
+            if (input.wasKeyPressed(key_quit)) {
+               day_cycle_.dayToNight();
+            }
+         }
+         { //handle debug for Katelyn
+            const auto key_quit = SDL_SCANCODE_3;
+            if (input.wasKeyPressed(key_quit)) {
+               day_cycle_.nightToDay();
+            }
+         }
+
          { //handle quit
             const auto key_quit = SDL_SCANCODE_Q;
             if (input.wasKeyPressed(key_quit)) {
