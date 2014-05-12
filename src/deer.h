@@ -20,7 +20,6 @@ struct Deer {
 
    void draw(Shader& shader, const UniformLocationMap& locations,
              const glm::mat4& viewMatrix) const;
-   void step(units::MS dt, const Camera& camera);
    BoundingRectangle getNextBoundingBox(units::MS dt, const Camera& camera);
 
    void step(units::MS dt, const Camera& camera, const GroundPlane& ground, SoundEngine& sound_engine);

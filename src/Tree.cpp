@@ -50,5 +50,26 @@ bool Tree::isBlocker() {
    return true;
 }
 
+void Tree::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow) {
+   const auto scale = glm::scale(glm::mat4(1.0f), glm::vec3(TREE_SCALE));
+
+   const auto rotateTreeUp = glm::rotate(
+         glm::mat4(1.0f),
+         (float)(-90),
+         glm::vec3(1, 0, 0));
+
+   const auto translate = glm::translate(
+         glm::mat4(1.0f),
+         glm::vec3(position.x, position.y, position.z));
+   const glm::mat4 model_matrix(translate * scale * rotateTreeUp);
+
+   if(betterShadow)
+      setupBetterShadowShader(shader, uniform_locations, sunDir, deerPos, model_matrix);
+   else
+      setupShadowShader(shader, uniform_locations, sunDir, deerPos, model_matrix);
+   shader.drawMesh(mesh);
+}
+
 void Tree::performObjectHit(SoundEngine& sound_engine) {
 }

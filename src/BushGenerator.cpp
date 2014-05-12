@@ -22,7 +22,7 @@ BushGenerator::BushGenerator(const Mesh& mesh) {
 }
 
 //Generate the trees
-void BushGenerator::generate() {
+void BushGenerator::generate(const GroundPlane& ground) {
    int size = GroundPlane::GROUND_SCALE / BUSH_SIZE; 
    int groundSize = GroundPlane::GROUND_SCALE / 2;
 
@@ -31,7 +31,7 @@ void BushGenerator::generate() {
          if (rand() % BUSH_DENSITY == 0) {
             float scale = (rand() % (int)(BUSH_SCALE_MAX - BUSH_SCALE_MIN) + BUSH_SCALE_MIN)  / 100.0f;
             glm::vec3 pos = glm::vec3(row * BUSH_SIZE - groundSize,  0, col * BUSH_SIZE - groundSize);
-            bushes.push_back(Bush(bushMesh1, pos, scale, rand() % (int)(BUSH_RUSTLE_MAX - BUSH_RUSTLE_MIN) + BUSH_RUSTLE_MIN));
+            bushes.push_back(Bush(bushMesh1, pos, ground, scale, rand() % (int)(BUSH_RUSTLE_MAX - BUSH_RUSTLE_MIN) + BUSH_RUSTLE_MIN));
          }
       }
    }

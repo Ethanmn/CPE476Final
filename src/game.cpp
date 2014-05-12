@@ -58,7 +58,7 @@ Game::Game() :
    airCam.initialize(deer_.getPosition());
 
    treeGen.generate();
-   bushGen.generate();
+   bushGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
@@ -89,7 +89,6 @@ void Game::step(units::MS dt) {
       curCam = &deerCam;
    }
 
-   deer_.step(dt, *curCam, ground_, sound_engine_);
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
    butterfly_system_.step(dt);
    rain_system_.step(dt);
@@ -129,7 +128,7 @@ void Game::step(units::MS dt) {
       deer_.block();
    }
    else {
-      deer_.step(dt, *curCam);
+      deer_.step(dt, *curCam, ground_, sound_engine_);
    }
 
 

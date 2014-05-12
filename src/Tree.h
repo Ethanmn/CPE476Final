@@ -28,6 +28,8 @@ struct Tree : public GameObject {
 
    bool isBlocker();
    void performObjectHit(SoundEngine& sound_engine);
+   void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow);
 
    private:
       BoundingRectangle bRect;
