@@ -175,7 +175,6 @@ void Game::draw() {
       }
 
       // If pixel is under ground draw as blue (water)?
-
    }
 }
 

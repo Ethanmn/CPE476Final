@@ -9,7 +9,6 @@
 #include "graphics/material.h"
 #include "ground_plane.h"
 
-
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
       return std::move(glm::vec2(vec.x, vec.z));

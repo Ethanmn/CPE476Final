@@ -67,6 +67,7 @@ void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
    shader.sendUniform(Uniform::COLOR, locations, color);
 }
 
+
 void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
       glm::vec3 lightDir, glm::vec3 deerLoc, glm::mat4 modelMatrix) {
    glPolygonMode(GL_FRONT, GL_FILL);

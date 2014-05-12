@@ -31,7 +31,7 @@ void main() {
    float bias = 0.001;
 
    if(shadowMapTexColor.z < vShadow.z - bias)
-      applyShadow = 0.7;
+      applyShadow = 1.5 * shadowMapTexColor.x;
    
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));
    ReflDir = normalize(reflect(-1.0 * vec3(vLightAndDirectional), vNormal));

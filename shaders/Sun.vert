@@ -45,7 +45,7 @@ uniform mat4 uShadowMap;
 void main() {
   mat4 bone = mat4(1.0);
 
-/*
+  /*
   if (uHasBones != 0) {
      if (aBoneID0 != -1) {
         bone = uBones[aBoneID0] * aBoneWeight0;
@@ -63,7 +63,7 @@ void main() {
         bone += uBones[aBoneID4] * aBoneWeight4;
      }
   }
-*/
+  */
 
   vec4 position = uModelViewMatrix * bone * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
   gl_Position = uProjectionMatrix * position;

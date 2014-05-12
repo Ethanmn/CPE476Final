@@ -17,7 +17,10 @@ void setupView(Shader& shader, const UniformLocationMap& locations,
                         const glm::mat4& viewMatrix);
 void setupSunShader(Shader& shader, const UniformLocationMap& locations,
                     float sunIntensity, glm::vec3 sunDir);
+
 void setupNoHeightMap(Shader& shader, const UniformLocationMap& locations);
+
+
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture);
 void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const Texture& height_map);
 

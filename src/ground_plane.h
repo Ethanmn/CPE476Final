@@ -9,6 +9,9 @@
 #include <ImageMagick-6/Magick++.h>
 #include <vector>
 
+#include <ImageMagick-6/Magick++.h>
+#include <vector>
+
 struct Shader;
 struct Shaders;
 
@@ -19,6 +22,7 @@ struct GroundPlane {
              const glm::mat4& viewMatrix);
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, glm::vec3 deerLoc);
+
 
    float heightAt(const glm::vec3& position) const;
 

@@ -7,8 +7,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include <vector>
 
-#include <vector>
-
 typedef size_t BoneID;
 
 struct Vec3Key {

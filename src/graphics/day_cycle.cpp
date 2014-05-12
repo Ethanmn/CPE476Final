@@ -66,7 +66,7 @@ void DayCycle::adjustSun() {
    glClearColor (0.05098 * sunIntensity, 
                  0.6274509 * sunIntensity,
                  sunIntensity, 1.0f);
-   
+
    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    if(switchingTime && switchToNight && timeOfDay <= 0.1)
