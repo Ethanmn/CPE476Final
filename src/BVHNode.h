@@ -16,23 +16,24 @@ struct BVHNode {
    GameObject *getGameObject();
    BoundingRectangle getRect();
 
-   void setLeftNode(BVHNode *left);
-   void setRightNode(BVHNode *right);
-   BVHNode *getLeftNode();
-   BVHNode *getRightNode();
    bool hasLeftNode();
    bool hasRightNode();
 
    void printNode();
-int num;
+
+   void setLeftIndex(int left);
+   void setRightIndex(int right);
+
+   int getLeftIndex();
+   int getRightIndex();
+
+   int num;
 
    private:
       GameObject *object;
       BoundingRectangle bRect;
 
-      BVHNode *leftNode;
-      BVHNode *rightNode;
-
-      
+      int leftIndex;
+      int rightIndex;
 };
 #endif //BVHNODE_H_

@@ -18,10 +18,10 @@ struct Bush : public GameObject {
       elapsed_time_(0),
       rustle_time_(rustle_time),
       kMaxRustleTime(rustle_time),
-      bounding_rectangle_(
+      bounding_rectangle_(BoundingRectangle(
             glm::vec2(position.x, position.z),
             glm::vec2(8.0f, 8.0f),
-            0.0f),
+            0.0f)),
       mesh_(mesh) {
          mesh_.material = Material(glm::vec3(0.45, 0.24, 0.15));
       }

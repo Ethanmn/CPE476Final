@@ -36,6 +36,8 @@ struct Deer {
    bool isMoving();
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
+   void block();
+
   private:
    enum class WalkDirection {
       FORWARD,

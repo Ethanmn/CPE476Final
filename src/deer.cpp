@@ -223,3 +223,9 @@ bool Deer::isMoving() {
 glm::vec3 Deer::getPosition() {
    return position_;
 }
+
+void Deer::block() {
+   stopWalking();
+   stopStrafing();
+   velocity_ = glm::vec3(0, 0, 0);
+}

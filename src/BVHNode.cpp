@@ -8,19 +8,11 @@
 BVHNode::BVHNode(BoundingRectangle bRect, GameObject *object, int num) :
    object(object),
    bRect(bRect),
-   leftNode(NULL),
-   rightNode(NULL),
-   num(num)
+   num(num),
+   leftIndex(-1),
+   rightIndex(-1)
 { 
 //printNode(); 
-}
-
-void BVHNode::setLeftNode(BVHNode *left) {
-   leftNode = left;
-}
-
-void BVHNode::setRightNode(BVHNode *right) {
-   rightNode = right;
 }
 
 GameObject *BVHNode::getGameObject() {
@@ -31,22 +23,12 @@ BoundingRectangle BVHNode::getRect() {
    return bRect;
 }
 
-/* Do not call this if hasLeft() returns false */
-BVHNode *BVHNode::getLeftNode() {
-   return leftNode;
-}
-
-/* Do not call this if hasRight() returns false */
-BVHNode *BVHNode::getRightNode() {
-   return rightNode;
-}
-
 bool BVHNode::hasLeftNode() {
-   return leftNode != NULL;
+   return leftIndex >= 0;//leftNode != NULL;
 }
 
 bool BVHNode::hasRightNode() {
-   return rightNode != NULL;
+   return rightIndex >= 0;//rightNode != NULL;
 }
 
 void BVHNode::printNode() {
@@ -68,4 +50,20 @@ void BVHNode::printNode() {
    }
 
    printf("\n");
+}
+
+void BVHNode::setRightIndex(int right) {
+   rightIndex = right;
+}
+
+void BVHNode::setLeftIndex(int left) {
+   leftIndex = left;
+}
+
+int BVHNode::getLeftIndex() {
+   return leftIndex;
+}
+
+int BVHNode::getRightIndex() {
+   return rightIndex;
 }

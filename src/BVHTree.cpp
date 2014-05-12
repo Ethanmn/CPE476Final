@@ -31,8 +31,8 @@ void BVHTree::calculateTree(std::vector<GameObject*> objects) {
       //printf("Obj center: (%f, %f)\n", objects.at(index)->getBoundingRectangle().getCenter().x, objects.at(index)->getBoundingRectangle().getCenter().y); 
    }
 
-   for (auto& node : allNodes) {
-      nodeQ.push_back(&node);
+   for (int index = 0; index < (int)(allNodes.size()); index++) {
+      nodeQ.push_back(&(allNodes.at(index)));
    }
 
    while (nodeQ.size() > 1) {
@@ -60,16 +60,23 @@ void BVHTree::calculateTree(std::vector<GameObject*> objects) {
 
       BoundingRectangle curRect = curNode->getRect();
       BoundingRectangle closestRect = otherNode->getRect();
+      otherCenter = closestRect.getCenter();
 
       nodeQ.erase(nodeQ.begin() + closestIndex);
-      glm::vec2 newCenter = glm::vec2((curCenter.x + closestCenter.x) / 2, (curCenter.y + closestCenter.y) / 2);
+      glm::vec2 newCenter = glm::vec2((curCenter.x + closestCenter.x) / 2.0f, (curCenter.y + closestCenter.y) / 2.0f);
 
-      float newDimX = std::abs((curCenter - otherCenter).x) + curRect.getDimensions().x / 2 + closestRect.getDimensions().x / 2;
-      float newDimY = std::abs((curCenter - otherCenter).y) + curRect.getDimensions().y / 2 + closestRect.getDimensions().y / 2;
+      float newDimX = std::abs(curCenter.x - otherCenter.x) + curRect.getDimensions().x / 2.0f + closestRect.getDimensions().x / 2.0f;
+      float newDimY = std::abs(curCenter.y - otherCenter.y) + curRect.getDimensions().y / 2.0f + closestRect.getDimensions().y / 2.0f;
+
+      //printf("Centers: (%f, %f) (%f, %f)\n", curCenter.x, curCenter.y, otherCenter.x, otherCenter.y);
+      //printf("New dims: %f %f\n", std::abs(curCenter.x - otherCenter.x), std::abs(curCenter.y - otherCenter.y));
+
+      int curIndex = curNode->num;
+      int otherIndex = otherNode->num;
 
       allNodes.push_back(BVHNode(BoundingRectangle(newCenter, glm::vec2(newDimX, newDimY), 0), NULL, numNodes++));
-      allNodes.at(allNodes.size() - 1).setLeftNode(curNode);
-      allNodes.at(allNodes.size() - 1).setRightNode(otherNode);
+      allNodes.at(allNodes.size() - 1).setLeftIndex(curIndex);
+      allNodes.at(allNodes.size() - 1).setRightIndex(otherIndex);
 
       nodeQ.push_back(&(allNodes.at(allNodes.size() - 1)));
 
@@ -92,39 +99,49 @@ std::vector<GameObject*> BVHTree::getCollidingObjects(BoundingRectangle bRect) {
    nodeQ.push_back(head);
    int numChecks = 0;
 
-   printf("Checking for collision.\n");
+   //printf("Checking for collision.\n");
 
    while (nodeQ.size() > 0) {
-      printf("Check #%d\n", numChecks);
+      //printf("Check #%d\n", numChecks);
       numChecks++;
       curNode = nodeQ.at(0);
       nodeQ.erase(nodeQ.begin());
-      printf("Node %d popped.\n", curNode->num);
+      //printf("We have popped the node!\n");
+      //printf("Node %d popped.\n", curNode->num);
+      
 
       if (curNode->getRect().collidesWith(bRect)) {
+         //curNode->printNode();
          if (curNode->getGameObject() != NULL) {
-            printf("Hit an object.\n");
+            //printf("Hit an object.\n");
             collObjs.push_back(curNode->getGameObject());
          }
 
          if (curNode->hasLeftNode()) {
-            printf("Adding left node.\n");
-            nodeQ.push_back(curNode->getLeftNode());
+            //printf("Adding left node. ");
+            nodeQ.push_back(&(allNodes.at(curNode->getLeftIndex())));
+            //curNode->getLeftNode()->printNode();
          }
          
          if (curNode->hasRightNode()) {
-            printf("Adding right node.\n");
-            nodeQ.push_back(curNode->getRightNode());
+            //printf("Adding right node. ");
+            nodeQ.push_back(&(allNodes.at(curNode->getRightIndex())));
+            //curNode->getRightNode()->printNode();
          }
       }
    }
 
-   printf("Checked %d nodes. Found %zu collisions.\n", numChecks, collObjs.size());
+   /*printf("---ALL NODES---\n");
+   for (auto& node : allNodes) {
+      node.printNode();
+   }
+   printf("---------------\n");*/
+   //printf("Checked %d nodes. Found %zu collisions.\n", numChecks, collObjs.size());
 
    return collObjs;
 }
 
-/*void BVHTree::printTree() {
+void BVHTree::printTree() {
    std::vector<BVHNode*> nodeQ;
    BVHNode *curNode;
    nodeQ.push_back(head);
@@ -133,5 +150,6 @@ std::vector<GameObject*> BVHTree::getCollidingObjects(BoundingRectangle bRect) {
       curNode = nodeQ.at(0);
       nodeQ.erase(nodeQ.begin());
       curNode->printNode();
+
    }
-}*/
+}

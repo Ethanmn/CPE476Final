@@ -17,7 +17,7 @@ const int groundSize = GroundPlane::GROUND_SCALE / 2;
 Tree::Tree(glm::vec3 position, Mesh mesh) :
    position(position),
    mesh(mesh),
-   bRect(BoundingRectangle(glm::vec2(position.x * TREE_SIZE - groundSize + BOUNDING_ERR_X, position.z * TREE_SIZE - groundSize + BOUNDING_ERR_Z), 
+   bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
       glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f))
 {}
 
@@ -43,6 +43,7 @@ void Tree::draw(Shader& shader, const UniformLocationMap& uniform_location_map, 
    setupModelView(shader, uniform_location_map, model_matrix,
                            view_matrix, true);
    shader.drawMesh(mesh);
+   bRect.draw(uniform_location_map, shader, 0, view_matrix);
 }
 
 bool Tree::isBlocker() {

@@ -52,36 +52,38 @@ Game::Game() :
       objects.push_back(&tree);
    }
 
-   printf("Adding %zu trees.\n", treeGen.getTrees().size());
+   //printf("Adding %zu trees.\n", treeGen.getTrees().size());
 
    for (auto& bush : bushGen.getBushes()) {
       objects.push_back(&bush);
    }
 
-   printf("Adding %zu bushes.\n", bushGen.getBushes().size());
-   printf("There are %zu objects for tree creation.\n", objects.size());
+   //printf("Adding %zu bushes.\n", bushGen.getBushes().size());
+   //printf("There are %zu objects for tree creation.\n", objects.size());
 
    //Pre-processing BVH Tree
    objTree.calculateTree(objects);
+   //objTree.printTree();
 }
 
 void Game::step(units::MS dt) {
    bool deerBlocked = false;
+   glm::vec3 dPos = deer_.getPosition();
 
    if (deer_.isMoving()) {
+      //printf("Deer position (%f, %f, %f)\n", dPos.x, dPos.y, dPos.z);
       std::vector<GameObject*> collObjs = objTree.getCollidingObjects(deer_.getNextBoundingBox(dt, deerCam));
-      printf("Num objs colliding is %zu.\n", collObjs.size());
-      for (int index = 0; index < collObjs.size(); index++) {
-         printf("COLLISION\n");
+      //printf("Num objs colliding is %zu.\n", collObjs.size());
+      for (int index = 0; index < (int)(collObjs.size()); index++) {
+         //printf("COLLISION\n");
          collObjs.at(index)->performObjectHit();
          deerBlocked = deerBlocked || collObjs.at(index)->isBlocker();
       }
    }
 
    if (deerBlocked) {
-      printf("DEER BLOCKED!\n");
-      deer_.stopWalking();
-      deer_.stopStrafing();
+      //printf("DEER BLOCKED!\n");
+      deer_.block();
    }
 
    deer_.step(dt, deerCam);
