@@ -13,6 +13,7 @@
 #include "ground_plane.h"
 #include "graphics/texture.h"
 #include "DeerCam.h"
+#include "AirCam.h"
 #include "graphics/material.h"
 #include "TreeGenerator.h"
 #include "BushGenerator.h"
@@ -45,6 +46,8 @@ struct Game {
 
    glm::vec2 mousePos;
    BVHTree objTree;
+
+   bool airMode;
 
    void step(units::MS dt);
    void draw();

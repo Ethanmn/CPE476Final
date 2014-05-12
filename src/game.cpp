@@ -7,6 +7,7 @@
 
 namespace {
    DeerCam deerCam;
+   AirCam airCam;
 }
 
 Game::Game() :
@@ -22,7 +23,8 @@ Game::Game() :
    bushGen(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   objTree()
+   objTree(),
+   airMode(false)
 {
    //glClearColor(0, 0, 0, 1); // Clear to solid blue.
 
@@ -42,6 +44,7 @@ Game::Game() :
 
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
    deerCam.initialize(deer_.getPosition());
+   airCam.initialize(deer_.getPosition());
 
    treeGen.generate();
    bushGen.generate();
@@ -63,19 +66,33 @@ void Game::step(units::MS dt) {
    bool deerBlocked = false;
    glm::vec3 dPos = deer_.getPosition();
 
+   Camera *curCam;
+
+   if (airMode) {
+      curCam = &airCam;
+   }
+   else {
+      curCam = &deerCam;
+   }
+
    if (deer_.isMoving()) {
-      std::vector<GameObject*> collObjs = objTree.getCollidingObjects(deer_.getNextBoundingBox(dt, deerCam));
+      BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt, *curCam);
+      std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
       for (int index = 0; index < (int)(collObjs.size()); index++) {
          collObjs.at(index)->performObjectHit();
          deerBlocked = deerBlocked || collObjs.at(index)->isBlocker();
       }
+
+      glm::vec2 center = nextDeerRect.getCenter();
+
+      deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
    }
 
    if (deerBlocked) {
       deer_.block();
    }
    else {
-      deer_.step(dt, deerCam);
+      deer_.step(dt, *curCam);
    }
 
    
@@ -86,6 +103,7 @@ void Game::step(units::MS dt) {
 
    if (deer_.isMoving()) {
       deerCam.move(deer_.getPosition());
+      airCam.move(deer_.getPosition());
    }
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
@@ -103,8 +121,15 @@ void Game::draw() {
 
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
-   glm::mat4 viewMatrix = deerCam.getViewMatrix();
+   glm::mat4 viewMatrix; 
    glm::mat4 boxModelMatrix;
+
+   if (airMode) {
+      viewMatrix = airCam.getViewMatrix();
+   }
+   else {
+      viewMatrix = deerCam.getViewMatrix();
+   }
 
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
@@ -202,6 +227,12 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
                //day_cycle_.switchBoolean();
+            }
+         }
+         { //handle toggle between cameras
+            const auto key_air_mode = SDL_SCANCODE_V;
+            if (input.wasKeyPressed(key_air_mode)) {
+               airMode = !airMode;
             }
          }
          { //handle quit
