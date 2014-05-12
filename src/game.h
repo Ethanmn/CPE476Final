@@ -19,6 +19,7 @@
 #include "tree.h"
 #include "day_night_interaction.h"
 #include "BVHNode.h"
+#include "butterfly_system.h"
 
 struct Game {
    Game();
@@ -40,6 +41,7 @@ struct Game {
    DayCycle day_cycle_;
    Mesh tree_mesh_;
    std::vector<Tree> bushes_;
+   ButterflySystem butterfly_system_;
 
    glm::vec2 mousePos;
 

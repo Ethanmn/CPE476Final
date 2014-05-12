@@ -34,6 +34,10 @@ void Particle::draw(
 
 
 void Particle::setAccel(float x, float y, float z) {
+   acceleration_ = glm::vec3(x, y, z);
+}
+
+void Particle::setVel(float x, float y, float z) {
    velocity_ = glm::vec3(x, y, z);
 }
 

@@ -22,6 +22,7 @@ Game::Game() :
    tree_mesh_(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
+   butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_, texture_),
    bushes_{
       Tree(tree_mesh_,
             glm::vec3(30 - 15, 0, 25 + 5),
@@ -65,6 +66,8 @@ Game::Game() :
 
 void Game::step(units::MS dt) {
    bool treeColl = false;
+
+   butterfly_system_.step(dt);
 
    deer_.step(dt, deerCam);
    for (auto& tree : bushes_) {
@@ -125,6 +128,8 @@ void Game::draw() {
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
+
+         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);
 
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);

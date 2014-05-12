@@ -32,6 +32,8 @@ struct Particle {
    
    void setAccel(float x, float y ,float z);
 
+   void setVel(float x, float y ,float z);
+
    void setPos(float x, float y ,float z);
 
    void setMeshMaterial(float x, float y ,float z);
