@@ -109,9 +109,10 @@ std::vector<GameObject*> BVHTree::getCollidingObjects(BoundingRectangle bRect) {
       //printf("We have popped the node!\n");
       //printf("Node %d popped.\n", curNode->num);
       
-
+      //curNode->printNode();
       if (curNode->getRect().collidesWith(bRect)) {
-         //curNode->printNode();
+         //printf("COLLIDES\n");
+         
          if (curNode->getGameObject() != NULL) {
             //printf("Hit an object.\n");
             collObjs.push_back(curNode->getGameObject());
@@ -151,5 +152,16 @@ void BVHTree::printTree() {
       nodeQ.erase(nodeQ.begin());
       curNode->printNode();
 
+      if (curNode->hasLeftNode()) {
+            //printf("Adding left node. ");
+            nodeQ.push_back(&(allNodes.at(curNode->getLeftIndex())));
+            //curNode->getLeftNode()->printNode();
+         }
+         
+         if (curNode->hasRightNode()) {
+            //printf("Adding right node. ");
+            nodeQ.push_back(&(allNodes.at(curNode->getRightIndex())));
+            //curNode->getRightNode()->printNode();
+         }
    }
 }

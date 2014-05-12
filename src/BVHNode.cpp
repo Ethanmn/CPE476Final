@@ -32,7 +32,7 @@ bool BVHNode::hasRightNode() {
 }
 
 void BVHNode::printNode() {
-   printf("A node with center at (%f, %f) and dimensions (%f, %f)", bRect.getCenter().x, bRect.getCenter().y, bRect.getDimensions().x, bRect.getDimensions().y);
+   printf("#%d node with center at (%f, %f) and dimensions (%f, %f)", num, bRect.getCenter().x, bRect.getCenter().y, bRect.getDimensions().x, bRect.getDimensions().y);
 
    if (object == NULL) {
       printf(" NO GO.\n");
@@ -42,11 +42,11 @@ void BVHNode::printNode() {
    }
 
    if (hasLeftNode()) {
-      printf("LEFT NODE ");
+      printf("LEFT NODE %d ", leftIndex);
    }
 
    if (hasRightNode()) {
-      printf("RIGHT NODE");
+      printf("RIGHT NODE %d", rightIndex);
    }
 
    printf("\n");

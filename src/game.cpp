@@ -60,6 +60,7 @@ Game::Game() :
 
    //Pre-processing BVH Tree
    objTree.calculateTree(objects);
+   objTree.printTree();
 }
 
 void Game::step(units::MS dt) {
@@ -86,6 +87,8 @@ void Game::step(units::MS dt) {
       glm::vec2 center = nextDeerRect.getCenter();
 
       deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
+
+      //printf("Next deer rect at (%f, %f) with dim (%f, %f)\n", center.x, center.y, nextDeerRect.getDimensions().x, nextDeerRect.getDimensions().y);
    }
 
    if (deerBlocked) {
@@ -214,10 +217,10 @@ void Game::mainLoop() {
             const auto key_right = SDL_SCANCODE_D;
             if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
                deer_.strafeLeft();
-               deerCam.rotatePositionWithDrag(-90, 0, kScreenWidth, kScreenHeight);
+               deerCam.rotatePositionWithDrag(-20, 0, kScreenWidth, kScreenHeight);
             } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
                deer_.strafeRight();
-               deerCam.rotatePositionWithDrag(90, 0, kScreenWidth, kScreenHeight);
+               deerCam.rotatePositionWithDrag(20, 0, kScreenWidth, kScreenHeight);
             } else {
                deer_.stopStrafing();
             }
