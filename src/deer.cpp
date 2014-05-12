@@ -198,7 +198,7 @@ void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
-            glm::vec3(last_facing_.x, last_facing_.y, -last_facing_.z),
+            glm::vec3(last_facing_.x, 0, -last_facing_.y),
             glm::vec3(0, 1, 0)));
    const glm::mat4 translate(
       glm::translate(

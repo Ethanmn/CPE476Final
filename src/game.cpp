@@ -106,8 +106,6 @@ void Game::step(units::MS dt) {
       lighting = 0;
    
 
-   deer_.step(dt, deerCam, ground_);
-
    for (auto& tree : bushes_) {
       tree.step(dt);
    }
