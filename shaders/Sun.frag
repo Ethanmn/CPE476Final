@@ -26,7 +26,7 @@ void main() {
    float dotNLDir, dotVRDir, average;
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
    vec3 directionalColor = vec3(0.7*uSunIntensity);
-   vec4 shadowMapTexColor = texture2D(uShadowMapTexture, 
+   vec4 shadowMapTexColor = texture2D(uShadowMapTexture,
                           vec2(vShadow.x, vShadow.y));
    float applyShadow = 1.0;
    float bias = 0.001;
@@ -37,12 +37,12 @@ void main() {
 
    if(shadowMapTexColor.z < vShadow.z - bias)
       applyShadow = 0.7;
-   
+
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));
    ReflDir = normalize(reflect(-1.0 * vec3(vLightAndDirectional), vNormal));
-   dotVRDir = dot(-1.0 * normalize(vec3(vPosition.x, vPosition.y, vPosition.z)), 
+   dotVRDir = dot(-1.0 * normalize(vec3(vPosition.x, vPosition.y, vPosition.z)),
       normalize(ReflDir));
-   
+
    Diffuse = directionalColor * uMat.diffuse * dotNLDir;
    Spec = directionalColor * uMat.specular * pow(dotVRDir, uMat.shine) * vec3(0.0);
 

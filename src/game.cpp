@@ -215,6 +215,7 @@ void Game::draw() {
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
+         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
       else if (!debug && shaderPair.first == ShaderType::WIREFRAME) {
