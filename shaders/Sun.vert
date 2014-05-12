@@ -1,4 +1,6 @@
-//#version 120
+
+//#version 130
+
 
 struct Material {
   vec3 ambient;

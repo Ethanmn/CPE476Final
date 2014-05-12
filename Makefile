@@ -10,7 +10,11 @@ OBJDIR=obj
 OBJECTS=$(patsubst %.$(CPP_EXT),$(OBJDIR)/%.o,$(SRCS))
 
 # The packages loaded by pkg-config.
-PKGS=glew assimp 
+PKGS=glew assimp irrKlang
+ifeq ($(shell uname -s),Darwin)
+else
+	PKGS+=gl glu
+endif
 
 # The flags you want to use when compiling individual objects (.o files)
 # -g=generate information for debugging (used with debugging tools such as gdb
