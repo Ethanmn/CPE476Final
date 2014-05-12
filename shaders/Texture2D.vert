@@ -1,4 +1,4 @@
-//#version 120
+#version 130
 
 uniform int uHasHeightMap;
 uniform sampler2D uHeightMap;
@@ -8,16 +8,13 @@ uniform mat4 uModelViewMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uNormalMatrix;
 
-/*
 uniform int uHasBones;
 uniform mat4 uBones[100];
-*/
 
 attribute vec3 aTexCoord;
 attribute vec3 aPosition;
 attribute vec3 aNormal;
 
-/*
 attribute int aBoneID0;
 attribute int aBoneWeight0;
 attribute int aBoneID1;
@@ -28,7 +25,6 @@ attribute int aBoneID3;
 attribute int aBoneWeight3;
 attribute int aBoneID4;
 attribute int aBoneWeight4;
-*/
 
 varying vec4 vPosition;
 varying vec2 vTexCoord;
@@ -37,7 +33,6 @@ varying vec3 vNormal;
 
 void main() {
    mat4 bone = mat4(1.0);
-   /*
    if (uHasBones != 0) {
       if (aBoneID0 != -1) {
          bone = uBones[aBoneID0] * aBoneWeight0;
@@ -55,7 +50,6 @@ void main() {
          bone += uBones[aBoneID4] * aBoneWeight4;
       }
    }
-   */
 
    vec4 heightColor = vec4(0.0);
    float HEIGHT_MAP_SCALE = 8.0;

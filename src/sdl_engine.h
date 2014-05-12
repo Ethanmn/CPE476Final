@@ -1,6 +1,7 @@
 #ifndef SDL_ENGINE_H_
 #define SDL_ENGINE_H_
 
+#include <iostream>
 #include <SDL.h>
 #include <GL/glew.h>
 #ifdef _WIN32
@@ -18,6 +19,8 @@ struct SDLEngine {
       context_ = SDL_GL_CreateContext(window_);
       SDL_GL_MakeCurrent(window_, context_);
       glewInit();
+      std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
+      std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    }
 
    ~SDLEngine() {

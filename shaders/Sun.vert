@@ -1,4 +1,3 @@
-
 //#version 120
 
 struct Material {

@@ -1,5 +1,5 @@
-#ifndef BUTTERFLY_SYSTEM_H_
-#define BUTTERFLY_SYSTEM_H_
+#ifndef RAIN_SYSTEM_H_
+#define RAIN_SYSTEM_H_
 
 #include "particle.h"
 #include "units.h"
@@ -7,8 +7,8 @@
 #include "graphics/assimp/mesh_loader.h"
 #include "graphics/texture.h"
 
-struct ButterflySystem {
-   ButterflySystem(const glm::vec3& origin, int numParticles,
+struct RainSystem {
+   RainSystem(const glm::vec3& origin, int numParticles,
 	       const AttributeLocationMap& attribute_location_map_, MeshLoader& mesh_loader_);
 
    void step(units::MS dt);
@@ -16,6 +16,8 @@ struct ButterflySystem {
    void draw(Shader& shader,
          const UniformLocationMap& uniform_location_map,
          const glm::mat4& view_matrix);
+
+   void reset();
    
    private:
       std::vector<Particle> particles_;
@@ -26,4 +28,4 @@ struct ButterflySystem {
       glm::vec3 acceleration_;
 };
 
-#endif // BUTTERFLY_SYSTEM_H_
+#endif // RAIN_SYSTEM_H_
