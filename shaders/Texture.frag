@@ -14,6 +14,7 @@ varying vec2 vTexCoord;
 varying vec4 vViewer;
 varying vec3 vNormal;
 varying vec4 vShadow;
+varying float below;
 
 void main() {
    vec3 color;
@@ -29,7 +30,7 @@ void main() {
    float bias = 0.005;
 
    if(shadowMapTexColor.z <= vShadow.z - bias)
-      applyShadow = 0.75;
+      applyShadow = 0.75 * shadowMapTexColor.x;
 
       /* temporary material values */
       vec3 amb = vec3(0.15, 0.15, 0.15);
@@ -45,6 +46,13 @@ void main() {
       color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + amb;
 
    gl_FragColor = vec4(applyShadow * color.rgb, 1.0);
+
+   Spec = directionalColor * spec * pow(dotVRDir, 10.0);
+   if(below > 0.0)
+      gl_FragColor = vec4(0.0, 
+                     uSunIntensity * 0.6 * gl_FragColor.y + applyShadow * 0.2, 
+                     uSunIntensity * 0.6 * gl_FragColor.z + applyShadow * 0.4, 
+                     1.0);
 
    if(uLightning != 0) {
       average = 1.2 * (color.r + color.g + color.b) / 3.0;

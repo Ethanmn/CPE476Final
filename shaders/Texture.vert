@@ -38,6 +38,7 @@ varying vec2 vTexCoord;
 varying vec4 vViewer;
 varying vec3 vNormal;
 varying vec4 vShadow;
+varying float below;
 
 void main() {
    mat4 bone = mat4(1.0);
@@ -62,14 +63,21 @@ void main() {
    */
 
    vec4 heightColor = vec4(0.0);
-   float HEIGHT_MAP_SCALE = 5.0;
+   float HEIGHT_MAP_SCALE = 3.0;
    if (uHasHeightMap != 0) {
       heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;
    }
 
+   if(heightColor.y < 0.0)
+      below = 1.0;
+   else
+      below = 0.0;
+
    vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
+
    vViewer = vPosition;
    gl_Position = uProjectionMatrix * vPosition;
+
 
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = vec2(aTexCoord.x, aTexCoord.y);
