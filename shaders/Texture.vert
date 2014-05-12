@@ -1,4 +1,4 @@
-//#version 120
+//#version 130
 
 uniform int uHasHeightMap;
 uniform sampler2D uHeightMap;
@@ -10,10 +10,8 @@ uniform mat4 uModelViewMatrix;
 uniform mat4 uNormalMatrix;
 uniform mat4 uShadowMap;
 
-/*
 uniform int uHasBones;
 uniform mat4 uBones[100];
-*/
 
 attribute vec3 aShadowTexCoord;
 attribute vec3 aTexCoord;
