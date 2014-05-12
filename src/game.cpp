@@ -22,7 +22,7 @@ Game::Game() :
    tree_mesh_(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_, texture_),
+   butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_),
    bushes_{
       Tree(tree_mesh_,
             glm::vec3(30 - 15, 0, 25 + 5),

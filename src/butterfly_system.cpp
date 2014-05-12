@@ -8,8 +8,8 @@
 #define Y_MAX 0.00007f
 
 ButterflySystem::ButterflySystem(const glm::vec3& origin, int numParticles,
-         const AttributeLocationMap& attribute_location_map_, MeshLoader& mesh_loader_,
-         const Texture& texture) :
+         const AttributeLocationMap& attribute_location_map_, MeshLoader& mesh_loader_) :
+            texture_(texture_path(Textures::BUTTERFLY))
             origin_(origin),
             scale_(0.3f),
             velocity_(glm::vec3(0.001f, 0.0f, 0.0f)),

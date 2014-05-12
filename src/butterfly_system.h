@@ -5,6 +5,7 @@
 #include "units.h"
 #include "graphics/location_maps.h"
 #include "graphics/assimp/mesh_loader.h"
+#include "graphics/texture.h"
 
 struct ButterflySystem {
    ButterflySystem(const glm::vec3& origin, int numParticles,
@@ -19,6 +20,7 @@ struct ButterflySystem {
    
    private:
       std::vector<Particle> particles_;
+      Texture texture_;
       glm::vec3 origin_;
       float scale_;
       glm::vec3 velocity_;
