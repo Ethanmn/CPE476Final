@@ -28,7 +28,7 @@ void main() {
    float bias = 0.01;
 
    if(shadowMapTexColor.z <= vShadow.z)
-      applyShadow = 1.5 * shadowMapTexColor.x;
+      applyShadow = 0.7;
 
       /* temporary material values */
       vec3 amb = vec3(0.1, 0.1, 0.1);
