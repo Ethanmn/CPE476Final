@@ -8,12 +8,14 @@
 
 #include "bounding_rectangle.h"
 
+struct SoundEngine;
+
 struct GameObject {
    virtual BoundingRectangle getBoundingRectangle() = 0;
 
    virtual bool isBlocker() = 0;
 
-   virtual void performObjectHit() = 0;
+   virtual void performObjectHit(SoundEngine& sound_engine) = 0;
 
    virtual void draw(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) const = 0; 
 };

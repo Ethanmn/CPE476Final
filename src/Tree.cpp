@@ -50,5 +50,5 @@ bool Tree::isBlocker() {
    return true;
 }
 
-void Tree::performObjectHit() {
+void Tree::performObjectHit(SoundEngine& sound_engine) {
 }

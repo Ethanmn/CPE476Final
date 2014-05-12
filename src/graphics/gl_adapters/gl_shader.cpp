@@ -132,7 +132,6 @@ void GLShader::sendUniform<float>(const GLUniformLocationMap& uniforms, const fl
    glUniform1f(uniforms.at(program_), data);
 }
 
-
 template <>
 void GLShader::sendUniform<int>(const GLUniformLocationMap& uniforms, const int& data) {
    glUniform1i(uniforms.at(program_), data);

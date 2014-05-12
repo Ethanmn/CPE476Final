@@ -1,4 +1,5 @@
-#version 120
+#version 130
+
 attribute vec3 aPosition;
 
 uniform mat4 uProjectionMatrix;

@@ -6,21 +6,24 @@
 #include "bounding_rectangle.h"
 #include "Camera.h"
 #include "graphics/mesh.h"
+#include "graphics/texture.h"
 #include "graphics/location_maps.h"
 #include "units.h"
 #include "graphics/texture.h"
 
-
+struct GroundPlane;
 struct Shader;
+struct SoundEngine;
 
 struct Deer {
    Deer(const Mesh& mesh, const glm::vec3& position);
 
    void draw(Shader& shader, const UniformLocationMap& locations,
-             const glm::mat4& viewMatrix, float sunIntensity) const;
+             const glm::mat4& viewMatrix) const;
    void step(units::MS dt, const Camera& camera);
    BoundingRectangle getNextBoundingBox(units::MS dt, const Camera& camera);
 
+   void step(units::MS dt, const Camera& camera, const GroundPlane& ground, SoundEngine& sound_engine);
    void walkForward();
    void walkBackward();
    void stopWalking();
@@ -31,12 +34,16 @@ struct Deer {
 
    void jump();
 
-   glm::vec3 getPosition();
+   glm::vec3 getPosition() const;
+   glm::vec3 getFacing() const;
 
    bool isMoving();
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
    void block();
+   /* helper functions for shadows */
+   void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      glm::vec3 sunDir, bool betterShadow);
 
   private:
    enum class WalkDirection {
@@ -54,11 +61,15 @@ struct Deer {
    Texture texture_;
    glm::vec3 position_;
    glm::vec3 velocity_;
-   glm::vec3 last_facing_;
+   glm::vec2 last_facing_;
+   float desired_lean_;
+   float current_lean_;
 
    WalkDirection walk_direction_;
    StrafeDirection strafe_direction_;
    BoundingRectangle bounding_rectangle_;
+
+   units::MS step_timer_;
 
    bool is_jumping_;
    bool is_walking_;

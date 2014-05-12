@@ -7,7 +7,11 @@
 enum class Textures {
    WATER,
    GRASS,
-   DEER
+   DEER,
+   BUTTERFLY,
+   HEIGHT_MAP,
+   MOON_STONE,
+   SUN_STONE
 };
 
 inline std::string texture_path(Textures texture) {
@@ -18,6 +22,14 @@ inline std::string texture_path(Textures texture) {
          return "../textures/grass.bmp";
       case Textures::DEER:
          return "../textures/deer1.bmp";
+      case Textures::BUTTERFLY:
+         return "../textures/butterfly.bmp";
+      case Textures::HEIGHT_MAP:
+         return "../textures/height_map.bmp";
+      case Textures::MOON_STONE:
+         return "../textures/stone_moon.bmp";
+      case Textures::SUN_STONE:
+         return "../textures/stone_sun.bmp";
    }
 }
 
@@ -26,9 +38,10 @@ struct Texture {
    void enable() const;
    void disable() const;
    GLTextureID textureID() const;
-   
+
    private:
       GLTextureID texture_id;
+
 };
 
 

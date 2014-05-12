@@ -21,6 +21,12 @@
 #include "Bush.h"
 #include "day_night_interaction.h"
 #include "BVHTree.h"
+#include "graphics/shadow_map.h"
+#include "sound_engine.h"
+#include "bird_sound.h"
+#include "day_night_interaction.h"
+#include "butterfly_system.h"
+#include "rain_system.h"
 
 struct Game {
    Game();
@@ -32,17 +38,21 @@ struct Game {
    Input input_;
    Shaders shaders_;
    MeshLoader mesh_loader_;
-   Texture texture_;
    AttributeLocationMap attribute_location_map_;
    UniformLocationMap uniform_location_map_;
    GroundPlane ground_;
    Deer deer_;
    DayNightInteraction day_night_boxes_;
-   
+
    DayCycle day_cycle_;
 
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
+   ShadowMapFBO shadow_map_fbo_;
+   SoundEngine sound_engine_;
+   BirdSound cardinal_bird_sound_, canary_bird_sound_, canary2_bird_sound_, woodpecker_bird_sound_;
+   ButterflySystem butterfly_system_;
+   RainSystem rain_system_;
 
    glm::vec2 mousePos;
    BVHTree objTree;

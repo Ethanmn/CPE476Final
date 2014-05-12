@@ -27,7 +27,7 @@ struct Tree : public GameObject {
    }
 
    bool isBlocker();
-   void performObjectHit();
+   void performObjectHit(SoundEngine& sound_engine);
 
    private:
       BoundingRectangle bRect;

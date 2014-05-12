@@ -10,7 +10,10 @@
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
 
-enum class ShaderType {
+enum class ShaderType { 
+   /* Ordering is important, shadow must be first */
+   SHADOW_TEX,
+   SHADOW,
    SUN,
    TEXTURE,
    WIREFRAME

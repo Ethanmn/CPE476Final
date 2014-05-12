@@ -5,14 +5,16 @@
 
 #include "bounding_rectangle.h"
 #include "GameObject.h"
+#include "ground_plane.h"
 #include "graphics/mesh.h"
 #include "units.h"
 
 struct Shader;
+struct SoundEngine;
 
 struct Bush : public GameObject {
-   Bush(const Mesh& mesh, const glm::vec3& position, float scale, units::MS rustle_time) :
-      position_(position),
+   Bush(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale, units::MS rustle_time) :
+      position_(position.x, ground.heightAt(position) - mesh.min.y, position.z),
       scale_(scale),
       rotate_(0.0f),
       elapsed_time_(0),
@@ -27,20 +29,22 @@ struct Bush : public GameObject {
       }
 
    void step(units::MS dt);
-   void rustle();
+   void rustle(SoundEngine& sound_engine);
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
    void draw(
          Shader& shader,
          const UniformLocationMap& uniform_location_map,
          const glm::mat4& view_matrix) const;
+   void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow);
 
    BoundingRectangle getBoundingRectangle() {
       return bounding_rectangle_;
    }
 
    bool isBlocker();
-   void performObjectHit();
+   void performObjectHit(SoundEngine& sound_engine);
 
   private:
    glm::vec3 position_;
