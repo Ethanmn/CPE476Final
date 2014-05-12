@@ -51,19 +51,12 @@ Game::Game() :
    for (auto& tree : treeGen.getTrees()) {
       objects.push_back(&tree);
    }
-
-   //printf("Adding %zu trees.\n", treeGen.getTrees().size());
-
    for (auto& bush : bushGen.getBushes()) {
       objects.push_back(&bush);
    }
 
-   //printf("Adding %zu bushes.\n", bushGen.getBushes().size());
-   //printf("There are %zu objects for tree creation.\n", objects.size());
-
    //Pre-processing BVH Tree
    objTree.calculateTree(objects);
-   //objTree.printTree();
 }
 
 void Game::step(units::MS dt) {
@@ -71,18 +64,14 @@ void Game::step(units::MS dt) {
    glm::vec3 dPos = deer_.getPosition();
 
    if (deer_.isMoving()) {
-      //printf("Deer position (%f, %f, %f)\n", dPos.x, dPos.y, dPos.z);
       std::vector<GameObject*> collObjs = objTree.getCollidingObjects(deer_.getNextBoundingBox(dt, deerCam));
-      //printf("Num objs colliding is %zu.\n", collObjs.size());
       for (int index = 0; index < (int)(collObjs.size()); index++) {
-         //printf("COLLISION\n");
          collObjs.at(index)->performObjectHit();
          deerBlocked = deerBlocked || collObjs.at(index)->isBlocker();
       }
    }
 
    if (deerBlocked) {
-      //printf("DEER BLOCKED!\n");
       deer_.block();
    }
    else {
@@ -146,8 +135,6 @@ void Game::draw() {
       }
       else if(shaderPair.first == ShaderType::WIREFRAME)
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
-
-      //If pixel is under ground draw as blue (water)?
    }
 }
 
@@ -175,11 +162,11 @@ void Game::mainLoop() {
                input.keyUp(event.key);
             }
 
-            if (event.type == SDL_MOUSEMOTION) {
+            /*if (event.type == SDL_MOUSEMOTION) {
                SDL_GetRelativeMouseState(&mX, &mY);
                deerCam.rotatePositionWithDrag(mX, mY, kScreenWidth, kScreenHeight);
                mousePos = glm::vec2(mX, mY);
-            }
+            }*/
          }
       }
       { // Handle input
@@ -202,8 +189,10 @@ void Game::mainLoop() {
             const auto key_right = SDL_SCANCODE_D;
             if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
                deer_.strafeLeft();
+               deerCam.rotatePositionWithDrag(-90, 0, kScreenWidth, kScreenHeight);
             } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
                deer_.strafeRight();
+               deerCam.rotatePositionWithDrag(90, 0, kScreenWidth, kScreenHeight);
             } else {
                deer_.stopStrafing();
             }

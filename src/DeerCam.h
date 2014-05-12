@@ -3,6 +3,9 @@
    Katie Keim
    Deer - CPE 476
 */
+#ifndef DEER_CAM_H_
+#define DEER_CAM_H_
+
 #include "Camera.h"
 
 struct DeerCam : public Camera {
@@ -15,3 +18,5 @@ struct DeerCam : public Camera {
    private:
       float lookAtHeight;
 };
+
+#endif //DEER_CAM_H_
