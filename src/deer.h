@@ -39,7 +39,7 @@ struct Deer {
 
    /* helper functions for shadows */
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir);
+      glm::vec3 sunDir, bool betterShadow);
 
   private:
    enum class WalkDirection {

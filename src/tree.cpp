@@ -41,7 +41,7 @@ void Tree::draw(
 }
 
 void Tree::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerPos) {
+      glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow) {
       const glm::mat4 translate(glm::translate(
             glm::mat4(),
             position_));
@@ -57,7 +57,11 @@ void Tree::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
             -90.0f,
             glm::vec3(1, 0, 0)));
    const glm::mat4 model_matrix(translate * scale * rotate);
-   setupShadowShader(shader, uniform_locations, sunDir, deerPos, model_matrix);
+
+   if(betterShadow)
+      setupBetterShadowShader(shader, uniform_locations, sunDir, deerPos, model_matrix);
+   else
+      setupShadowShader(shader, uniform_locations, sunDir, deerPos, model_matrix);
    shader.drawMesh(mesh_);
 }
 

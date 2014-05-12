@@ -27,11 +27,13 @@ void main() {
    float applyShadow = 1.0;
    float bias = 0.01;
 
-   if(shadowMapTexColor.z <= vShadow.z)
+   if(shadowMapTexColor.z <= vShadow.z - bias)
       applyShadow = 1.5 * shadowMapTexColor.x;
 
       /* temporary material values */
       vec3 amb = vec3(0.1, 0.1, 0.1);
+      if(uSunIntensity < 0.2)
+         amb = vec3(0.15, 0.15, 0.15);
       vec3 spec = vec3(0.01, 0.01, 0.01);
       float shine = 100.0;
       

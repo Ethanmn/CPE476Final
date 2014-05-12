@@ -46,11 +46,15 @@ void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locatio
 }
 
 void GroundPlane::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerLoc) {
+      glm::vec3 sunDir, glm::vec3 deerLoc, bool betterShadow) {
    setupHeightMap(shader, uniform_locations, height_map_);
 
    for (auto& t : transforms_) {
-      setupShadowShader(shader, uniform_locations, sunDir, deerLoc, t);
+      if(betterShadow)
+         setupBetterShadowShader(shader, uniform_locations, sunDir, deerLoc, t);
+      else
+         setupShadowShader(shader, uniform_locations, sunDir, deerLoc, t);
+      
       shader.drawMesh(mesh_);
    }
 

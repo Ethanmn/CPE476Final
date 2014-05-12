@@ -21,7 +21,7 @@ struct GroundPlane {
    void draw(Shader& shader, const UniformLocationMap& uniform_locations,
              const glm::mat4& viewMatrix);
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerLoc);
+      glm::vec3 sunDir, glm::vec3 deerLoc, bool betterShadow);
 
 
    float heightAt(const glm::vec3& position) const;

@@ -9,6 +9,7 @@ namespace {
    DeerCam deerCam;
    bool showTreeShadows = false;
    bool debug = false;
+   bool betterShadows = false;
 }
 
 Game::Game() :
@@ -104,6 +105,8 @@ void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    float sunIntensity = day_cycle_.getSunIntensity();
+   if(sunIntensity < 0.3)
+      sunIntensity = 0.3;
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    glm::vec3 deerPos = deerCam.getPosition();
@@ -113,24 +116,25 @@ void Game::draw() {
       shader.use();
       
       setupProjection(shader, uniform_location_map_);
+
       if(shaderPair.first == ShaderType::SHADOW_TEX) {
          if(!debug) {
             shadow_map_fbo_.BindForWriting();
             glClear(GL_DEPTH_BUFFER_BIT);
          }
-         ground_.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
+         ground_.shadowDraw(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
       }
       else if(shaderPair.first == ShaderType::SHADOW) {
-         deer_.shadowDraw(shader, uniform_location_map_, sunDir);
+         deer_.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
          
-         day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, deerPos);
-         day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, deerPos);
+         day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
+         day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
 
          
          if(showTreeShadows)
-            treeGen.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
+            treeGen.shadowDraw(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
          for (auto& bush : bushes_) {
-            bush.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
+            bush.shadowDraw(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
          }
          
 
@@ -146,7 +150,10 @@ void Game::draw() {
       else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 
             shadow_map_fbo_.texture_id()); 
-         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
+         if(betterShadows)
+            sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
+         else
+            sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -156,7 +163,10 @@ void Game::draw() {
       else if(!debug && shaderPair.first == ShaderType::SUN) {
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 
             shadow_map_fbo_.texture_id()); 
-         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
+         if(betterShadows)
+            sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
+         else
+            sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
@@ -265,11 +275,17 @@ void Game::mainLoop() {
          { //handle debug for Katelyn
             const auto key_quit = SDL_SCANCODE_2;
             if (input.wasKeyPressed(key_quit)) {
-               day_cycle_.dayToNight();
+               betterShadows = !betterShadows;
             }
          }
          { //handle debug for Katelyn
             const auto key_quit = SDL_SCANCODE_3;
+            if (input.wasKeyPressed(key_quit)) {
+               day_cycle_.dayToNight();
+            }
+         }
+         { //handle debug for Katelyn
+            const auto key_quit = SDL_SCANCODE_4;
             if (input.wasKeyPressed(key_quit)) {
                day_cycle_.nightToDay();
             }

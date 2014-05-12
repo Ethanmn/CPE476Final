@@ -32,9 +32,9 @@ struct DayNightInteraction {
                        const glm::mat4& viewMatrix);
 
    void shadowDrawRed(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerLoc);
+      glm::vec3 sunDir, glm::vec3 deerLoc, bool betterShadow);
    void shadowDrawGreen(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerLoc);
+      glm::vec3 sunDir, glm::vec3 deerLoc, bool betterShadow);
    
    BoundingRectangle bounding_rectangle_stop() const { return bounding_rectangle_stop_; }
    BoundingRectangle bounding_rectangle_start() const { return bounding_rectangle_start_; }

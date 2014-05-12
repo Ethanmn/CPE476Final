@@ -32,4 +32,12 @@ void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
                         glm::vec3 lightDir, glm::vec3 deerLoc);
 
+
+void setupBetterShadowShader(Shader& shader, const UniformLocationMap& locations,
+                        glm::vec3 lightDir, glm::vec3 deerLoc, glm::mat4 modelMatrix);
+
+void sendBetterShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
+                        glm::vec3 lightDir, glm::vec3 deerLoc);
+
+
 #endif

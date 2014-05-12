@@ -161,7 +161,7 @@ glm::vec3 Deer::getPosition() {
 }
 
 void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir) {
+      glm::vec3 sunDir, bool betterShadow) {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
@@ -172,6 +172,9 @@ void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
             glm::mat4(1.0f),
             position_));
    glm::mat4 model_matrix = translate * rotate;
-   setupShadowShader(shader, uniform_locations, sunDir, getPosition(), model_matrix);
+   if(betterShadow)
+      setupBetterShadowShader(shader, uniform_locations, sunDir, getPosition(), model_matrix);
+   else
+      setupShadowShader(shader, uniform_locations, sunDir, getPosition(), model_matrix);
    shader.drawMesh(mesh_);
 }
