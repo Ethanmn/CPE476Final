@@ -10,7 +10,7 @@ OBJDIR=obj
 OBJECTS=$(patsubst %.$(CPP_EXT),$(OBJDIR)/%.o,$(SRCS))
 
 # The packages loaded by pkg-config.
-PKGS=glew assimp
+PKGS=glew assimp gl glu
 
 # The flags you want to use when compiling individual objects (.o files)
 # -g=generate information for debugging (used with debugging tools such as gdb
@@ -21,8 +21,8 @@ PKGS=glew assimp
 #  want to be more up-to-date).
 # -MMD=Create a .d file to store the rule for the header dependencies of each object.
 CFLAGS=-g -Wall -Wextra -std=c++11 -MMD -I$(SRCDIR)
-CFLAGS+=`Magick++-config --cppflags --cxxflags`
 CFLAGS+=`sdl2-config --cflags`
+CFLAGS+=`Magick++-config --cxxflags --cppflags`
 CFLAGS+=`pkg-config --cflags $(PKGS)`
 
 # LDLIBS (Load Libraries)
