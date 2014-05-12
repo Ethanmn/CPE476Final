@@ -15,8 +15,9 @@ struct RainSystem {
 
    void draw(Shader& shader,
          const UniformLocationMap& uniform_location_map,
-         const glm::mat4& view_matrix,
-         float sunIntensity);
+         const glm::mat4& view_matrix);
+
+   void reset();
    
    private:
       std::vector<Particle> particles_;

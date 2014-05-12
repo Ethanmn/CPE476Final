@@ -27,7 +27,6 @@ void Particle::draw(
          const glm::mat4 model_matrix(translate * scale * rotate);
    
          setupModelView(shader, uniform_location_map, model_matrix, view_matrix, true);
-   
          shader.drawMesh(mesh_);
       }
 

@@ -22,8 +22,8 @@ Game::Game() :
    tree_mesh_(Mesh::fromAssimpMesh(
             attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   //butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_),
-   rain_system_(glm::vec3(0.0f, 10.0f, 0.0f), 5, attribute_location_map_, mesh_loader_),
+   butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_),
+   rain_system_(glm::vec3(0.0f, 100.0f, 0.0f), 2000, attribute_location_map_, mesh_loader_),
    bushes_{
       Tree(tree_mesh_,
             glm::vec3(30 - 15, 0, 25 + 5),
@@ -68,7 +68,7 @@ Game::Game() :
 void Game::step(units::MS dt) {
    bool treeColl = false;
 
-   //butterfly_system_.step(dt);
+   butterfly_system_.step(dt);
    rain_system_.step(dt);
 
    deer_.step(dt, deerCam);
@@ -125,22 +125,23 @@ void Game::draw() {
          texture_.disable();
 
          deer_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
-         //butterfly_system_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
-         rain_system_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
-
+         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix, sunIntensity);
       }
+
       else if(shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
          day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
+         rain_system_.draw(shader, uniform_location_map_, viewMatrix);
 
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);
          }
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
       }
+      
       else if(shaderPair.first == ShaderType::WIREFRAME)
          setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
 
