@@ -122,14 +122,17 @@ void Game::draw() {
       }
       else if(shaderPair.first == ShaderType::SHADOW) {
          deer_.shadowDraw(shader, uniform_location_map_, sunDir);
+         
          day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, deerPos);
          day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, deerPos);
+
          
          if(showTreeShadows)
             treeGen.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
          for (auto& bush : bushes_) {
             bush.shadowDraw(shader, uniform_location_map_, sunDir, deerPos);
          }
+         
 
          if(!debug) {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -141,7 +144,8 @@ void Game::draw() {
          } 
       }
       else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
-         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 2); 
+         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 
+            shadow_map_fbo_.texture_id()); 
          sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
@@ -150,6 +154,8 @@ void Game::draw() {
          deer_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(!debug && shaderPair.first == ShaderType::SUN) {
+         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_, 
+            shadow_map_fbo_.texture_id()); 
          sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);

@@ -23,12 +23,12 @@ void main() {
    vec3 directionalColor = vec3(0.7*uSunIntensity);
    vec4 texColor = texture2D(uTexture, vTexCoord);
    vec4 shadowMapTexColor = texture2D(uShadowMapTexture, 
-                          vec2(vShadow.x, vShadow.y));
+                          vec2(vShadow));
    float applyShadow = 1.0;
    float bias = 0.01;
 
-   if(shadowMapTexColor.z <= vShadow.z - bias)
-      applyShadow = 0.7;
+   if(shadowMapTexColor.z <= vShadow.z)
+      applyShadow = 1.5 * shadowMapTexColor.x;
 
       /* temporary material values */
       vec3 amb = vec3(0.1, 0.1, 0.1);
@@ -44,6 +44,4 @@ void main() {
       color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + amb;
 
       gl_FragColor = vec4(applyShadow * color.rgb, 1.0);
-      //gl_FragColor = vec4(applyShadow, applyShadow, applyShadow, 1.0);
-
 }

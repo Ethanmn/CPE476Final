@@ -8,7 +8,6 @@ enum class Textures {
    WATER,
    GRASS,
    DEER,
-
    HEIGHT_MAP,
 };
 

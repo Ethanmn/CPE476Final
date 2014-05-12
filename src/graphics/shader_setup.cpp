@@ -9,11 +9,10 @@
 
 namespace  {
    const glm::mat4 projection_matrix = glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f);
-   const glm::mat4 biasMatrix(
-      0.5, 0.0, 0.0, 0.0,
-      0.0, 0.5, 0.0, 0.0,
-      0.0, 0.0, 0.5, 0.0,
-      0.5, 0.5, 0.5, 1.0);
+   const glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0,
+                              0.0, 0.5, 0.0, 0.0,
+                              0.0, 0.0, 0.5, 0.0,
+                              0.5, 0.5, 0.5, 1.0);
 }
 
 void setupModelView(Shader& shader, const UniformLocationMap& locations,
