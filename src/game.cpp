@@ -16,7 +16,7 @@ Game::Game() :
             mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f)),
-   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/cube.obj")), ground_),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    tree_mesh_(Mesh::fromAssimpMesh(
@@ -118,13 +118,12 @@ void Game::draw() {
          ground_.draw(shader, uniform_location_map_, viewMatrix);
 
          deer_.draw(shader, uniform_location_map_, viewMatrix);
+         day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
+         day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
       } else if (shaderPair.first == ShaderType::SUN) {
          setupView(shader, uniform_location_map_, viewMatrix);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-
-         day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
-         day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
          for (auto& bush : bushes_) {
             bush.draw(shader, uniform_location_map_, viewMatrix);

@@ -1,4 +1,4 @@
-#version 130
+//#version 130
 struct Material {
   vec3 ambient;
   vec3 diffuse;
@@ -13,6 +13,7 @@ uniform mat4 uBones[100];
 attribute vec3 aPosition;
 attribute vec3 aNormal;
 
+/*
 attribute int aBoneID0;
 attribute int aBoneWeight0;
 attribute int aBoneID1;
@@ -23,6 +24,7 @@ attribute int aBoneID3;
 attribute int aBoneWeight3;
 attribute int aBoneID4;
 attribute int aBoneWeight4;
+*/
 
 uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
@@ -35,6 +37,7 @@ varying vec3 vNormal;
 
 void main() {
   mat4 bone = mat4(1.0);
+  /*
   if (uHasBones != 0) {
      if (aBoneID0 != -1) {
         bone = uBones[aBoneID0] * aBoneWeight0;
@@ -52,6 +55,7 @@ void main() {
         bone += uBones[aBoneID4] * aBoneWeight4;
      }
   }
+  */
 
   vec4 position = uModelViewMatrix * bone * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
   gl_Position = uProjectionMatrix * position;
