@@ -21,9 +21,9 @@ struct Bush : public GameObject {
       rustle_time_(rustle_time),
       kMaxRustleTime(rustle_time),
       bounding_rectangle_(BoundingRectangle(
-            glm::vec2(position.x, position.z),
-            glm::vec2(8.0f, 8.0f),
-            0.0f)),
+               glm::vec2(position.x, position.z),
+               glm::vec2(8.0f, 8.0f),
+               0.0f)),
       mesh_(mesh) {
          mesh_.material = Material(glm::vec3(0.45, 0.24, 0.15));
       }
@@ -37,7 +37,7 @@ struct Bush : public GameObject {
          const UniformLocationMap& uniform_location_map,
          const glm::mat4& view_matrix) const;
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow);
+         glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow);
 
    BoundingRectangle getBoundingRectangle() {
       return bounding_rectangle_;

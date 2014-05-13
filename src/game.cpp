@@ -122,6 +122,8 @@ void Game::step(units::MS dt) {
       deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
 
       //printf("Next deer rect at (%f, %f) with dim (%f, %f)\n", center.x, center.y, nextDeerRect.getDimensions().x, nextDeerRect.getDimensions().y);
+      deerCam.move(deer_.getPosition());
+      airCam.move(deer_.getPosition());
    }
 
    if (deerBlocked) {
@@ -131,15 +133,8 @@ void Game::step(units::MS dt) {
       deer_.step(dt, *curCam, ground_, sound_engine_);
    }
 
-
-
    for (auto& bush : bushGen.getBushes()) {
       bush.step(dt);
-   }
-
-   if (deer_.isMoving()) {
-      deerCam.move(deer_.getPosition());
-      airCam.move(deer_.getPosition());
    }
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
@@ -156,7 +151,7 @@ void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
    float sunIntensity = day_cycle_.getSunIntensity();
-   if(sunIntensity < 0.3)
+   if (sunIntensity < 0.3)
       sunIntensity = 0.3;
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
@@ -206,9 +201,7 @@ void Game::draw() {
          }
       }
       else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
-
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_,
-
             shadow_map_fbo_.texture_id());
          if(betterShadows)
             sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
@@ -234,15 +227,9 @@ void Game::draw() {
 
          rain_system_.draw(shader, uniform_location_map_, viewMatrix);
 
-         for (auto& bush : bushGen.getBushes()) {
-            bush.draw(shader, uniform_location_map_, viewMatrix);
-         }
          shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
          bushGen.drawBushes(shader, uniform_location_map_, viewMatrix);
-      }
-      else if (!debug && shaderPair.first == ShaderType::WIREFRAME) {
-         setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
       }
 
       // If pixel is under ground draw as blue (water)?
@@ -256,15 +243,10 @@ void Game::mainLoop() {
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
 
-
    if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
       printf("FAILURE\n");
       return;
    }
-
-
-   SDL_WarpMouseInWindow(NULL, kScreenWidth / 2, kScreenHeight / 2);
-   mousePos = glm::vec2(kScreenWidth / 2, kScreenHeight / 2);
 
    while (running) {
       {  // Collect input
@@ -279,12 +261,6 @@ void Game::mainLoop() {
             } else if (event.type == SDL_KEYUP) {
                input.keyUp(event.key);
             }
-
-            /*if (event.type == SDL_MOUSEMOTION) {
-               SDL_GetRelativeMouseState(&mX, &mY);
-               deerCam.rotatePositionWithDrag(mX, mY, kScreenWidth, kScreenHeight);
-               mousePos = glm::vec2(mX, mY);
-            }*/
          }
       }
       { // Handle input
