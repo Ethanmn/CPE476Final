@@ -6,7 +6,7 @@
 #include "graphics/location_maps.h"
 #include "graphics/texture.h"
 
-#include <ImageMagick-6/Magick++.h>
+#include <Magick++.h>
 #include <vector>
 
 #include <Magick++.h>
