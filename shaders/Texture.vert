@@ -1,6 +1,6 @@
 #version 120
 uniform int uHasHeightMap;
-/*uniform sampler2D uHeightMap;*/
+uniform sampler2D uHeightMap;
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
@@ -58,7 +58,7 @@ void main() {
    vec4 heightColor = vec4(0.0);
    float HEIGHT_MAP_SCALE = 3.0;
    if (uHasHeightMap != 0) {
-      /*heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;*/
+      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;
    }
 
    if(heightColor.y < 0.0)
