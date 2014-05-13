@@ -1,4 +1,4 @@
-#version 130
+#version 120
 struct Material {
   vec3 ambient;
   vec3 diffuse;
@@ -13,16 +13,16 @@ uniform mat4 uBones[100];
 attribute vec3 aPosition;
 attribute vec3 aNormal;
 
-attribute int aBoneID0;
-attribute int aBoneWeight0;
-attribute int aBoneID1;
-attribute int aBoneWeight1;
-attribute int aBoneID2;
-attribute int aBoneWeight2;
-attribute int aBoneID3;
-attribute int aBoneWeight3;
-attribute int aBoneID4;
-attribute int aBoneWeight4;
+attribute float aBoneID0;
+attribute float aBoneWeight0;
+attribute float aBoneID1;
+attribute float aBoneWeight1;
+attribute float aBoneID2;
+attribute float aBoneWeight2;
+attribute float aBoneID3;
+attribute float aBoneWeight3;
+attribute float aBoneID4;
+attribute float aBoneWeight4;
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
@@ -42,19 +42,19 @@ void main() {
 
   if (uHasBones != 0) {
      if (aBoneID0 != -1) {
-        bone = uBones[aBoneID0] * aBoneWeight0;
+        bone = uBones[int(aBoneID0)] * aBoneWeight0;
      }
      if (aBoneID1 != -1) {
-        bone += uBones[aBoneID1] * aBoneWeight1;
+        bone += uBones[int(aBoneID1)] * aBoneWeight1;
      }
      if (aBoneID2 != -1) {
-        bone += uBones[aBoneID2] * aBoneWeight2;
+        bone += uBones[int(aBoneID2)] * aBoneWeight2;
      }
      if (aBoneID3 != -1) {
-        bone += uBones[aBoneID3] * aBoneWeight3;
+        bone += uBones[int(aBoneID3)] * aBoneWeight3;
      }
      if (aBoneID4 != -1) {
-        bone += uBones[aBoneID4] * aBoneWeight4;
+        bone += uBones[int(aBoneID4)] * aBoneWeight4;
      }
   }
 

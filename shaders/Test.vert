@@ -1,5 +1,4 @@
-#version 130
-
+#version 120
 attribute vec3 aPosition;
 attribute vec3 aNormal;
 

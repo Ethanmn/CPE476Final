@@ -1,4 +1,4 @@
-#version 130
+#version 120
 uniform int uHasHeightMap;
 uniform sampler2D uHeightMap;
 attribute vec3 aTexCoord;
@@ -16,5 +16,5 @@ void main() {
    }
 
    vec4 vPosition = uModelViewMatrix * vec4(heightColor.xyz + aPosition, 1.0);
-   gl_Position = uProjectionMatrix * vPosition; 
+   gl_Position = uProjectionMatrix * vPosition;
 }
