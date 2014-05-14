@@ -75,16 +75,17 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    texture_.disable();
 }
 
+glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
+   return position_ + velocity * static_cast<float>(dt);
+}
+
 BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
-   glm::vec3 tempPosition = position_;
-   glm::vec3 tempVelocity(predictVelocity(dt, camera));
-   BoundingRectangle tempBoundingBox = bounding_rectangle_;
-
-   tempPosition += tempVelocity * static_cast<float>(dt);
-
+   auto velocity(predictVelocity(dt, acceleration(camera)));
+   auto facing(predictFacing(velocity));
+   auto tempPosition(predictPosition(dt, velocity));
+   auto tempBoundingBox(bounding_rectangle_);
    tempBoundingBox.set_position(xz(tempPosition));
-   tempBoundingBox.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
-
+   tempBoundingBox.set_rotation(glm::degrees(std::atan2(-facing.y, facing.x)));
    return tempBoundingBox;
 }
 
@@ -110,9 +111,9 @@ glm::vec3 Deer::acceleration(const Camera& camera) const {
    return acceleration;
 }
 
-glm::vec3 Deer::predictVelocity(units::MS dt, const Camera& camera) const {
+glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) const {
    glm::vec3 velocity(velocity_);
-   if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
+   if (!has_acceleration()) {
       glm::vec2 xz_velocity(xz(velocity));
       xz_velocity -= xz_velocity * (kFriction * dt);
       if (glm::length(xz_velocity) < kSpeed / 4.0f) {
@@ -121,9 +122,8 @@ glm::vec3 Deer::predictVelocity(units::MS dt, const Camera& camera) const {
       velocity.x = xz_velocity.x;
       velocity.z = xz_velocity.y;
    } else {
-      glm::vec3 accel(acceleration(camera));
       { // Accelerate velocity, capping at kSpeed.
-         velocity += glm::normalize(accel) * (kAcceleration * dt);
+         velocity += glm::normalize(acceleration) * (kAcceleration * dt);
          glm::vec2 xz_velocity(xz(velocity));
          if (glm::length(xz_velocity) > kSpeed) {
             xz_velocity = glm::normalize(xz_velocity) * kSpeed;
@@ -138,20 +138,27 @@ glm::vec3 Deer::predictVelocity(units::MS dt, const Camera& camera) const {
    return velocity;
 }
 
+glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
+   if (has_acceleration()) {
+      return glm::normalize(glm::vec2(
+               velocity.x,
+               velocity.z));
+   }
+   return last_facing_;
+}
+
 void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    mesh_.animation.step(dt);
    current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
-   velocity_ = predictVelocity(dt, camera);
-   if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
+   velocity_ = predictVelocity(dt, acceleration(camera));
+   if (!has_acceleration()) {
       desired_lean_ = 0.0f;
    } else {
       mesh_.animation.step(dt);
       { // Accelerate velocity, capping at kSpeed.
-         const auto old_facing = last_facing_;
-         last_facing_ = glm::normalize(glm::vec2(
-                  velocity_.x,
-                  velocity_.z));
-         desired_lean_ = glm::orientedAngle(old_facing, last_facing_);
+         const auto next_facing(predictFacing(velocity_));
+         desired_lean_ = glm::orientedAngle(last_facing_, next_facing);
+         last_facing_ = next_facing;
          if (desired_lean_ > 45.0f)
             desired_lean_ = 0.0f;
          if (desired_lean_ < -45.0f)
@@ -182,8 +189,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
       position_ += velocity_ * static_cast<float>(dt);
 
       bounding_rectangle_.set_position(xz(position_));
-      const auto xz_last_facing(last_facing_);
-      bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-xz_last_facing.y, xz_last_facing.x)));
+      bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
    }
    blocked = false;
    bounding_rectangle_.set_position(xz(position_));

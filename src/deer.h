@@ -56,8 +56,14 @@ struct Deer {
       NONE
    };
 
+   bool has_acceleration() const {
+      return walk_direction_ != WalkDirection::NONE || strafe_direction_ != StrafeDirection::NONE;
+   }
+
    glm::vec3 acceleration(const Camera& camera) const;
-   glm::vec3 predictVelocity(units::MS dt, const Camera& camera) const;
+   glm::vec3 predictVelocity(units::MS dt, const glm::vec3& acceleration) const;
+   glm::vec2 predictFacing(const glm::vec3& velocity) const;
+   glm::vec3 predictPosition(units::MS dt, const glm::vec3& velocity) const;
 
    Mesh mesh_;
    Texture texture_;
