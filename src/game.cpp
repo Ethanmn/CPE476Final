@@ -175,7 +175,6 @@ void Game::draw() {
             shadow_map_fbo_.BindForWriting();
             glClear(GL_DEPTH_BUFFER_BIT);
          }
-         ground_.shadowDraw(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
       }
       else if(shaderPair.first == ShaderType::SHADOW) {
          deer_.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
