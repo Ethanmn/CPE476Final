@@ -1,4 +1,3 @@
-#version 120
 uniform int uHasHeightMap;
 uniform sampler2D uHeightMap;
 

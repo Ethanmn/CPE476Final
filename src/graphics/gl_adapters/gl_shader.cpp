@@ -31,7 +31,11 @@ namespace {
    }
 
    GLuint compileShaderFromSource(GLenum shader_type, const std::string& path) {
-      std::string file_source(read_file(path));
+      std::string version_prefix;
+#ifndef __APPLE__
+      version_prefix = "#version 120\n";
+#endif
+      std::string file_source(version_prefix + read_file(path));
 
       GLuint shader = glCreateShader(shader_type);
       const char *source = file_source.c_str();
