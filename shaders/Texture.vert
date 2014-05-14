@@ -38,19 +38,19 @@ varying float below;
 void main() {
    mat4 bone = mat4(1.0);
    if (uHasBones != 0) {
-      if (aBoneID0 != -1) {
+      if (int(aBoneID0) != -1) {
          bone = uBones[int(aBoneID0)] * aBoneWeight0;
       }
-      if (aBoneID1 != -1) {
+      if (int(aBoneID1) != -1) {
          bone += uBones[int(aBoneID1)] * aBoneWeight1;
       }
-      if (aBoneID2 != -1) {
+      if (int(aBoneID2) != -1) {
          bone += uBones[int(aBoneID2)] * aBoneWeight2;
       }
-      if (aBoneID3 != -1) {
+      if (int(aBoneID3) != -1) {
          bone += uBones[int(aBoneID3)] * aBoneWeight3;
       }
-      if (aBoneID4 != -1) {
+      if (int(aBoneID4) != -1) {
          bone += uBones[int(aBoneID4)] * aBoneWeight4;
       }
    }
