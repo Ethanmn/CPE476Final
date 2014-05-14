@@ -6,7 +6,6 @@ obj/
 notes
 tags
 cscope.*
-.ycm_extra_conf.py
 *.pyc
 .lvimrc
 docs
