@@ -56,6 +56,8 @@ struct Deer {
       NONE
    };
 
+   glm::vec3 acceleration(const Camera& camera) const;
+
    Mesh mesh_;
    Texture texture_;
    glm::vec3 position_;

@@ -90,26 +90,9 @@ BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
       tempVelocity.x = xz_velocity.x;
       tempVelocity.z = xz_velocity.y;
    } else {
-      glm::vec3 acceleration(0.0f);
-      { // If walking add in walk based on camera's forward.
-         const glm::vec2 forward(xz(camera.getCamForwardVec()));
-         if (walk_direction_ == WalkDirection::FORWARD) {
-            acceleration = glm::vec3(forward.x, 0.0f, forward.y);
-         } else if (walk_direction_ == WalkDirection::BACKWARD) {
-            acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
-         }
-      }
-
-      { // Add in strafe from camera, if strafing.
-         const glm::vec3 left(camera.getCamLeftVec());
-         if (strafe_direction_ == StrafeDirection::LEFT) {
-            acceleration += glm::vec3(left.x, 0.0f, left.z);
-         } else if (strafe_direction_ == StrafeDirection::RIGHT) {
-            acceleration -= glm::vec3(left.x, 0.0f, left.z);
-         }
-      }
+      glm::vec3 accel(acceleration(camera));
       { // Accelerate velocity, capping at kSpeed.
-         tempVelocity += glm::normalize(acceleration) * (kAcceleration * dt);
+         tempVelocity += glm::normalize(accel) * (kAcceleration * dt);
          glm::vec2 xz_velocity(xz(tempVelocity));
          if (glm::length(xz_velocity) > kSpeed) {
             xz_velocity = glm::normalize(xz_velocity) * kSpeed;
@@ -137,6 +120,28 @@ BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
    return tempBoundingBox;
 }
 
+glm::vec3 Deer::acceleration(const Camera& camera) const {
+   glm::vec3 acceleration(0.0f);
+   { // If walking add in walk based on camera's forward.
+      const glm::vec2 forward(xz(camera.getCamForwardVec()));
+      if (walk_direction_ == WalkDirection::FORWARD) {
+         acceleration = glm::vec3(forward.x, 0.0f, forward.y);
+      } else if (walk_direction_ == WalkDirection::BACKWARD) {
+         acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
+      }
+   }
+
+   { // Add in strafe from camera, if strafing.
+      const glm::vec3 left(camera.getCamLeftVec());
+      if (strafe_direction_ == StrafeDirection::LEFT) {
+         acceleration += glm::vec3(left.x, 0.0f, left.z);
+      } else if (strafe_direction_ == StrafeDirection::RIGHT) {
+         acceleration -= glm::vec3(left.x, 0.0f, left.z);
+      }
+   }
+   return acceleration;
+}
+
 void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    mesh_.animation.step(dt);
    current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
@@ -151,26 +156,9 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
       desired_lean_ = 0.0f;
    } else {
       mesh_.animation.step(dt);
-      glm::vec3 acceleration(0.0f);
-      { // If walking add in walk based on camera's forward.
-         const glm::vec2 forward(xz(camera.getCamForwardVec()));
-         if (walk_direction_ == WalkDirection::FORWARD) {
-            acceleration = glm::vec3(forward.x, 0.0f, forward.y);
-         } else if (walk_direction_ == WalkDirection::BACKWARD) {
-            acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
-         }
-      }
-
-      { // Add in strafe from camera, if strafing.
-         const glm::vec3 left(camera.getCamLeftVec());
-         if (strafe_direction_ == StrafeDirection::LEFT) {
-            acceleration += glm::vec3(left.x, 0.0f, left.z);
-         } else if (strafe_direction_ == StrafeDirection::RIGHT) {
-            acceleration -= glm::vec3(left.x, 0.0f, left.z);
-         }
-      }
+      glm::vec3 accel(acceleration(camera));
       { // Accelerate velocity, capping at kSpeed.
-         velocity_ += glm::normalize(acceleration) * (kAcceleration * dt);
+         velocity_ += glm::normalize(accel) * (kAcceleration * dt);
          glm::vec2 xz_velocity(xz(velocity_));
          if (glm::length(xz_velocity) > kSpeed) {
             xz_velocity = glm::normalize(xz_velocity) * kSpeed;
