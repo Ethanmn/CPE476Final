@@ -44,6 +44,8 @@ struct Deer {
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, bool betterShadow);
 
+   glm::mat4 calculateModel() const;
+
   private:
    enum class WalkDirection {
       FORWARD,

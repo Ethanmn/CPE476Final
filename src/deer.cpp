@@ -21,6 +21,7 @@ const float kFriction = 0.005f;
 const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
 const float kJumpSpeed = 0.015f;
+const float kLeanFactor = 2.0f;
 
 const float kStepTime = 300;
 
@@ -42,8 +43,7 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    blocked(false)
       {}
 
-void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-                const glm::mat4& viewMatrix) const {
+glm::mat4 Deer::calculateModel() const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
@@ -53,7 +53,7 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
    const glm::mat4 lean(
          glm::rotate(
             glm::mat4(),
-            current_lean_ * 5.0f,
+            current_lean_ * kLeanFactor,
             glm::vec3(0, 0, 1)
             ));
 
@@ -61,8 +61,13 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::translate(
             glm::mat4(1.0f),
             position_));
-   const glm::mat4 transform(translate * rotate * lean);
 
+   return glm::mat4(translate * rotate * lean);
+}
+
+void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
+                const glm::mat4& viewMatrix) const {
+   const auto transform(calculateModel());
    setupTextureShader(shader, uniform_locations, texture_);
 
    setupModelView(shader, uniform_locations, transform, viewMatrix, true);
@@ -148,7 +153,6 @@ glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
 }
 
 void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
-   mesh_.animation.step(dt);
    current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
    velocity_ = predictVelocity(dt, acceleration(camera));
    if (!has_acceleration()) {
@@ -163,6 +167,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
             desired_lean_ = 0.0f;
          if (desired_lean_ < -45.0f)
             desired_lean_ = 0.0f;
+         std::clog << "desired_lean=" << desired_lean_ << std::endl;
       }
    }
    if (is_jumping_) {
@@ -186,7 +191,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
    }
 
    if (!blocked) {
-      position_ += velocity_ * static_cast<float>(dt);
+      position_ = predictPosition(dt, velocity_);
 
       bounding_rectangle_.set_position(xz(position_));
       bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
@@ -230,7 +235,7 @@ void Deer::jump() {
 }
 
 bool Deer::isMoving() {
-   return velocity_.x > 0 || velocity_.z > 0 || velocity_.x < 0 || velocity_.z < 0;
+   return velocity_.x != 0.0 && velocity_.z != 0.0;
 }
 
 glm::vec3 Deer::getPosition() const {
@@ -246,16 +251,7 @@ void Deer::block() {
 
 void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, bool betterShadow) {
-   const glm::mat4 rotate(
-         glm::lookAt(
-            glm::vec3(0.0f),
-            glm::vec3(last_facing_.x, 0.0f, -last_facing_.y),
-            glm::vec3(0, 1, 0)));
-   const glm::mat4 translate(
-      glm::translate(
-            glm::mat4(1.0f),
-            position_));
-   glm::mat4 model_matrix = translate * rotate;
+   const auto model_matrix(calculateModel());
    if(betterShadow)
       setupBetterShadowShader(shader, uniform_locations, sunDir, getPosition(), model_matrix);
    else
