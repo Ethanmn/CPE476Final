@@ -9,7 +9,7 @@ namespace {
    DeerCam deerCam;
    AirCam airCam;
    bool showTreeShadows = false;
-   bool debug = false;
+   bool debug = true;
    bool betterShadows = false;
 
    int lighting = 0;
@@ -165,7 +165,6 @@ void Game::draw() {
 
    drawables.push_back(deer_.drawable());
 
-   
    if (airMode) {
       viewMatrix = airCam.getViewMatrix();
    }

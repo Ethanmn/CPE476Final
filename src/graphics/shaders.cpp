@@ -46,20 +46,20 @@ const std::vector<Attribute> kTextureAttrs{
 const std::vector<Uniform> kTextureUniforms{
    Uniform::MODEL_VIEW,
    Uniform::MODEL,
-   Uniform::VIEW,                //sent
-   Uniform::PROJECTION,          //sent
+   Uniform::VIEW,
+   Uniform::PROJECTION,
    Uniform::NORMAL,
-   Uniform::SHADOW_MAP,          //sent
-   Uniform::HAS_SHADOWS,         //sent
-   Uniform::SHADOW_MAP_TEXTURE,  //sent
+   Uniform::SHADOW_MAP,
+   Uniform::HAS_SHADOWS,
+   Uniform::SHADOW_MAP_TEXTURE,
    Uniform::TEXTURE,
-   Uniform::HEIGHT_MAP,          
-   Uniform::HAS_HEIGHT_MAP,      //sent
-   Uniform::SUN_DIR,             //sent
-   Uniform::SUN_INTENSITY,       //sent
+   Uniform::HEIGHT_MAP,
+   Uniform::HAS_HEIGHT_MAP,
+   Uniform::SUN_DIR,
+   Uniform::SUN_INTENSITY,
    Uniform::BONES,
    Uniform::HAS_BONES,
-   Uniform::LIGHTNING            //sent
+   Uniform::LIGHTNING
 };
 
 const std::vector<Attribute> kWireframeAttrs{
@@ -80,11 +80,11 @@ const std::vector<Uniform> kShadowUniforms{
 };
 
 Shaders::Shaders() {
-   shaders_.insert(std::make_pair(ShaderType::SHADOW, 
-            Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   shaders_.insert(std::make_pair(
-            ShaderType::SUN,
-            Shader("Sun", kSunAttrs, kSunUniforms)));
+   //shaders_.insert(std::make_pair(ShaderType::SHADOW, 
+            //Shader("Shadow", kShadowAttrs, kShadowUniforms)));
+   //shaders_.insert(std::make_pair(
+            //ShaderType::SUN,
+            //Shader("Sun", kSunAttrs, kSunUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
