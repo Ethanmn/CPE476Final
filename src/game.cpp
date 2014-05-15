@@ -20,12 +20,16 @@ namespace {
 Game::Game() :
    attribute_location_map_(shaders_.getAttributeLocationMap()),
    uniform_location_map_(shaders_.getUniformLocationMap()),
+   //ground_(Mesh::fromAssimpMesh(attribute_location_map_,
+            //mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/ground_plane.obj"))),
+            mesh_loader_.loadMesh("../models/deer_butt.dae"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
+   //day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
+                     //mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
-                     mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
+                     mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    bushGen(Mesh::fromAssimpMesh(
@@ -197,17 +201,19 @@ void Game::draw() {
          }
       }
       else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
-         //shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_,
-            //shadow_map_fbo_.texture_id()); 
-         //sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
-         //shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
-         //shader.sendUniform(Uniform::HAS_SHADOWS, uniform_location_map_, 1);
-         //setupView(shader, uniform_location_map_, viewMatrix);
-         //setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
+         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_,
+            shadow_map_fbo_.texture_id()); 
+         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
+         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
+         shader.sendUniform(Uniform::HAS_SHADOWS, uniform_location_map_, 1);
+         setupView(shader, uniform_location_map_, viewMatrix);
+         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
-         //ground_.draw(shader, uniform_location_map_, viewMatrix);
-         //deer_.draw(shader, uniform_location_map_, viewMatrix);
-         //day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
+         shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniform_location_map_, 0);
+         
+         ground_.draw(shader, uniform_location_map_, viewMatrix);
+         deer_.draw(shader, uniform_location_map_, viewMatrix);
+         day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
          //day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
          //butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);

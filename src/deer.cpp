@@ -69,7 +69,6 @@ void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
                 const glm::mat4& viewMatrix) const {
    const auto transform(calculateModel());
    setupTextureShader(shader, uniform_locations, texture_);
-
    setupModelView(shader, uniform_locations, transform, viewMatrix, true);
    shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
    shader.sendUniform(Uniform::BONES, uniform_locations,

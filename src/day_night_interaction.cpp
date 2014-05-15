@@ -9,12 +9,14 @@ void DayNightInteraction::drawStart(Shader& shader, const UniformLocationMap& un
    setupModelView(shader, uniform_locations, start_transform_, viewMatrix, true);
    setupTextureShader(shader, uniform_locations, moon_texture_);
    shader.drawMesh(mesh_);
+   moon_texture_.disable();
 }
 void DayNightInteraction::drawStop(Shader& shader, const UniformLocationMap& uniform_locations,
                        const glm::mat4& viewMatrix) {
    setupModelView(shader, uniform_locations, stop_transform_, viewMatrix, true);
    setupTextureShader(shader, uniform_locations, sun_texture_);
    shader.drawMesh(mesh_);
+   sun_texture_.disable();
 }
 
 void DayNightInteraction::shadowDrawGreen(Shader& shader, const UniformLocationMap& uniform_locations,

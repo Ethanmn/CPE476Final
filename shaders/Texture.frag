@@ -3,7 +3,6 @@ uniform int uHasShadows;
 uniform sampler2D uTexture;
 uniform int uLightning;
 
-
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform mat4 uNormalMatrix;
@@ -55,7 +54,6 @@ void main() {
    color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + amb;
 
    gl_FragColor = vec4(applyShadow * color.rgb, 1.0);
-
    Spec = directionalColor * spec * pow(dotVRDir, 10.0);
    if(below > 0.0)
       gl_FragColor = vec4(0.0, 
@@ -68,5 +66,4 @@ void main() {
       average = 0.85;
       gl_FragColor = vec4(average, average, average, 1.0);
    }
-
 }
