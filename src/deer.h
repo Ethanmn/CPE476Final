@@ -45,6 +45,7 @@ struct Deer {
 
    glm::mat4 calculateModel() const;
    DrawTemplate draw_template() const { return draw_template_; }
+   Drawable drawable() const;
 
   private:
    enum class WalkDirection {
@@ -68,6 +69,7 @@ struct Deer {
    glm::vec3 predictPosition(units::MS dt, const glm::vec3& velocity) const;
 
    DrawTemplate draw_template_;
+
    glm::vec3 position_;
    glm::vec3 velocity_;
    glm::vec2 last_facing_;

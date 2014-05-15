@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
-
+#include "graphics/draw_shaders.h"
 #include "graphics/assimp/mesh_loader.h"
 #include "deer.h"
 #include "input.h"
@@ -36,10 +36,11 @@ struct Game {
   private:
    SDLEngine engine_;
    Input input_;
-   Shaders shaders_;
+   DrawShader draw_shader_;
+   //Shaders shaders_;
    MeshLoader mesh_loader_;
    AttributeLocationMap attribute_location_map_;
-   UniformLocationMap uniform_location_map_;
+   //UniformLocationMap uniform_location_map_;
    GroundPlane ground_;
    Deer deer_;
    DayNightInteraction day_night_boxes_;

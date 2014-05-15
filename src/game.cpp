@@ -18,8 +18,8 @@ namespace {
 }
 
 Game::Game() :
-   attribute_location_map_(shaders_.getAttributeLocationMap()),
-   uniform_location_map_(shaders_.getUniformLocationMap()),
+   attribute_location_map_({draw_shader_.getShaders().getAttributeLocationMap()}),
+   //uniform_location_map_({draw_shader_.getShaders().getUniformLocationMap()}),
    //ground_(Mesh::fromAssimpMesh(attribute_location_map_,
             //mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -44,6 +44,7 @@ Game::Game() :
    objTree(),
    airMode(false)
 {
+
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (1.0, 1.0, 1.0, 1.0f);
@@ -160,7 +161,11 @@ void Game::draw() {
       sunIntensity = 0.3;
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
+   std::vector<Drawable> drawables;
 
+   drawables.push_back(deer_.drawable());
+
+   
    if (airMode) {
       viewMatrix = airCam.getViewMatrix();
    }
@@ -168,6 +173,9 @@ void Game::draw() {
       viewMatrix = deerCam.getViewMatrix();
    }
 
+   draw_shader_.Draw(viewMatrix, drawables);
+}
+/*
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
@@ -239,7 +247,7 @@ void Game::draw() {
 
       // If pixel is under ground draw as blue (water)?
    }
-}
+   */ 
 
 void Game::mainLoop() {
    Input input;
@@ -251,7 +259,7 @@ void Game::mainLoop() {
   if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
       printf("FAILURE\n");
       return;
-   }
+  }   
 
    while (running) {
       {  // Collect input

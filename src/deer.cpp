@@ -64,6 +64,12 @@ glm::mat4 Deer::calculateModel() const {
    return glm::mat4(translate * rotate * lean);
 }
 
+Drawable Deer::drawable() const {
+   std::vector<glm::mat4> model_matrices;
+   model_matrices.push_back(calculateModel());
+   return Drawable({draw_template_, model_matrices});
+} 
+
 void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
                 const glm::mat4& viewMatrix) const {
    const auto transform(calculateModel());
