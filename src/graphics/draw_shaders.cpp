@@ -9,10 +9,9 @@ void DrawShader::Draw(glm::mat4 viewMatrix, vector<Drawable> drawables) {
    for(auto& currentShader : shaders.getMap()) {
        for(auto& currentDraw : drawables) {
           Shader& shader = currentShader.second;
-
+          shader.use();
           /* instead of 0, put shadow_map_fbo.textureID() */
           shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, 0);
-          
           shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
           shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
 
@@ -20,14 +19,14 @@ void DrawShader::Draw(glm::mat4 viewMatrix, vector<Drawable> drawables) {
 
           shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
           sendShadowInverseProjectionView(shader,uniforms, glm::vec3(0, 1, 0));
+          setupSunShader(shader, uniforms, day_cycle.getSunIntensity(), day_cycle.getSunDir());       
           shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0); 
           
-          if(currentDraw.draw_template.shaderType == currentShader.first) {
+          if(currentDraw.draw_template.shader_type == currentShader.first) {
             setupTextureShader(shader, uniforms, currentDraw.draw_template.texture);
             shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
             shader.sendUniform(Uniform::BONES, uniforms,
-
-            currentDraw.draw_template.mesh.animation.calculateBoneTransformations(
+               currentDraw.draw_template.mesh.animation.calculateBoneTransformations(
                currentDraw.draw_template.mesh.bone_array));
             
             for(auto& mt : currentDraw.model_transforms) {
@@ -42,3 +41,14 @@ void DrawShader::Draw(glm::mat4 viewMatrix, vector<Drawable> drawables) {
    }   
 }
 
+void DrawShader::dayToNight() {
+   day_cycle.dayToNight();
+}
+
+void DrawShader::nightToDay() {
+   day_cycle.nightToDay();
+}
+
+void DrawShader::autoAdjustTime(units::MS dt) {
+   day_cycle.autoAdjustTime(dt);
+}

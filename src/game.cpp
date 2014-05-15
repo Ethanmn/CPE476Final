@@ -9,7 +9,7 @@ namespace {
    DeerCam deerCam;
    AirCam airCam;
    bool showTreeShadows = false;
-   bool debug = true;
+   bool debug = false;
    bool betterShadows = false;
 
    int lighting = 0;
@@ -144,25 +144,19 @@ void Game::step(units::MS dt) {
    }
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
-      day_cycle_.dayToNight();
+      draw_shader_.dayToNight();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
-      day_cycle_.nightToDay();
+      draw_shader_.nightToDay();
    }
 
-   day_cycle_.autoAdjustTime(dt);
+   draw_shader_.autoAdjustTime(dt);
 }
 
 void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-   float sunIntensity = day_cycle_.getSunIntensity();
-   if (sunIntensity < 0.3)
-      sunIntensity = 0.3;
-   glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
-
    drawables.push_back(deer_.drawable());
 
    if (airMode) {
@@ -174,7 +168,7 @@ void Game::draw() {
 
    draw_shader_.Draw(viewMatrix, drawables);
 }
-/*
+/* PLEASE DON'T DELETE
    for (auto& shaderPair: shaders_.getMap()) {
       Shader& shader = shaderPair.second;
       shader.use();
@@ -255,10 +249,10 @@ void Game::mainLoop() {
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
 
-  if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
-      printf("FAILURE\n");
-      return;
-  }   
+  //if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
+      //printf("FAILURE\n");
+      //return;
+  //}   
 
    while (running) {
       {  // Collect input
@@ -331,13 +325,13 @@ void Game::mainLoop() {
          { //handle debug for Katelyn
             const auto key_quit = SDL_SCANCODE_3;
             if (input.wasKeyPressed(key_quit)) {
-               day_cycle_.dayToNight();
+               draw_shader_.dayToNight();
             }
          }
          { //handle debug for Katelyn
             const auto key_quit = SDL_SCANCODE_4;
             if (input.wasKeyPressed(key_quit)) {
-               day_cycle_.nightToDay();
+               draw_shader_.nightToDay();
             }
          }
          { //handle quit

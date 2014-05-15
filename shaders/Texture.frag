@@ -66,4 +66,5 @@ void main() {
       average = 0.85;
       gl_FragColor = vec4(average, average, average, 1.0);
    }
+
 }

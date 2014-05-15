@@ -10,7 +10,7 @@ struct Material;
 struct Bone; 
    
 struct DrawTemplate {
-   ShaderType shaderType;
+   ShaderType shader_type;
    Mesh mesh;
    Texture texture;
    /* Material and Bones are currently in Mesh */

@@ -17,7 +17,6 @@
 #include "graphics/material.h"
 #include "TreeGenerator.h"
 #include "BushGenerator.h"
-#include "graphics/day_cycle.h"
 #include "Bush.h"
 #include "day_night_interaction.h"
 #include "BVHTree.h"
@@ -45,7 +44,7 @@ struct Game {
    Deer deer_;
    DayNightInteraction day_night_boxes_;
 
-   DayCycle day_cycle_;
+   //DayCycle day_cycle_;
 
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
