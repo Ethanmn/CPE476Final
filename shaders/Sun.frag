@@ -1,5 +1,7 @@
 uniform sampler2D uShadowMapTexture;
+uniform int uHasShadows;
 uniform int uLightning;
+
 
 struct Material {
    vec3 ambient;
@@ -26,8 +28,12 @@ void main() {
    float dotNLDir, dotVRDir, average;
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
    vec3 directionalColor = vec3(0.7*uSunIntensity);
-   vec4 shadowMapTexColor = texture2D(uShadowMapTexture,
+
+   vec4 shadowMapTexColor = vec4(1.0);
+   if(uHasShadows != 0)
+      shadowMapTexColor = texture2D(uShadowMapTexture,
                           vec2(vShadow.x, vShadow.y));
+
    float applyShadow = 1.0;
    float bias = 0.001;
 
@@ -55,5 +61,4 @@ void main() {
    color =  Diffuse + vec3(vec4(Spec, 1.0) * uViewMatrix) + vec3(1.2) * amb;
 
    gl_FragColor = vec4(applyShadow * color.rgb, 1.0);
-
 }

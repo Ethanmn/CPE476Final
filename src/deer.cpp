@@ -251,10 +251,7 @@ void Deer::block() {
 void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, bool betterShadow) {
    const auto model_matrix(calculateModel());
-   if(betterShadow)
-      setupBetterShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   else
-      setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
+   setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
    shader.drawMesh(mesh_);
 }
 

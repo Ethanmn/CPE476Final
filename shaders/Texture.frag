@@ -1,4 +1,5 @@
 uniform sampler2D uShadowMapTexture;
+uniform int uHasShadows;
 uniform sampler2D uTexture;
 uniform int uLightning;
 
@@ -24,8 +25,13 @@ void main() {
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
    vec3 directionalColor = vec3(0.8*uSunIntensity);
    vec4 texColor = texture2D(uTexture, vTexCoord);
-   vec4 shadowMapTexColor = texture2D(uShadowMapTexture, 
-                          vec2(vShadow));
+   
+   vec4 shadowMapTexColor = vec4(1.0);
+   if(uHasShadows != 0)
+      shadowMapTexColor = texture2D(uShadowMapTexture,
+                          vec2(vShadow.x, vShadow.y));
+ 
+   
    float applyShadow = 1.0;
    float bias = 0.005;
 

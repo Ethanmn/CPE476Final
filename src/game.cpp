@@ -197,35 +197,37 @@ void Game::draw() {
          }
       }
       else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
-         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_,
-            shadow_map_fbo_.texture_id());
-         if(betterShadows)
-            sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
-         else
-            sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
+         //shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_,
+            //shadow_map_fbo_.texture_id()); 
+         //sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
+         //shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
+         //shader.sendUniform(Uniform::HAS_SHADOWS, uniform_location_map_, 1);
+         //setupView(shader, uniform_location_map_, viewMatrix);
+         //setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
 
-         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
+         //ground_.draw(shader, uniform_location_map_, viewMatrix);
+         //deer_.draw(shader, uniform_location_map_, viewMatrix);
+         //day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
+         //day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
 
-         setupView(shader, uniform_location_map_, viewMatrix);
-         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-
-         ground_.draw(shader, uniform_location_map_, viewMatrix);
-         deer_.draw(shader, uniform_location_map_, viewMatrix);
-
-         day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
-         day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
-
-         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);
+         //butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);
       }
       else if(!debug && shaderPair.first == ShaderType::SUN) {
+         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_,
+            shadow_map_fbo_.texture_id());
          setupView(shader, uniform_location_map_, viewMatrix);
+         sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
          setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
+         shader.sendUniform(Uniform::HAS_SHADOWS, uniform_location_map_, 1);
+         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
 
          rain_system_.draw(shader, uniform_location_map_, viewMatrix);
-
-         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
          treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
          bushGen.drawBushes(shader, uniform_location_map_, viewMatrix);
+      } else if (shaderPair.first == ShaderType::WIREFRAME) {
+         setupWireframeShader(shader, uniform_location_map_, glm::vec4(1, 0, 0, 1));
+         setupView(shader, uniform_location_map_, viewMatrix);
+         ground_.draw(shader, uniform_location_map_, viewMatrix);
       }
 
       // If pixel is under ground draw as blue (water)?

@@ -48,7 +48,6 @@ struct Game {
 
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
-   ShadowMapFBO shadow_map_fbo_;
    SoundEngine sound_engine_;
    BirdSound cardinal_bird_sound_, canary_bird_sound_, canary2_bird_sound_, woodpecker_bird_sound_;
    ButterflySystem butterfly_system_;
@@ -58,7 +57,7 @@ struct Game {
    BVHTree objTree;
 
    bool airMode;
-
+   ShadowMapFBO shadow_map_fbo_;
    void step(units::MS dt);
    void draw();
 };

@@ -25,6 +25,7 @@ enum class Uniform {
    SHADOW_MAP,
    SHADOW_MAP_TEXTURE,
    LIGHTNING,
+   HAS_SHADOWS,
    LAST_UNIFORM,
 };
 
@@ -70,6 +71,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uShadowMapTexture";
       case Uniform::LIGHTNING:
          return "uLightning";
+      case Uniform::HAS_SHADOWS:
+         return "uHasShadows";
       case Uniform::LAST_UNIFORM:
          throw "Unknown uniform type, shouldn't even compile";
    }
