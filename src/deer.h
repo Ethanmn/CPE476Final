@@ -5,15 +5,14 @@
 
 #include "bounding_rectangle.h"
 #include "Camera.h"
-#include "graphics/mesh.h"
-#include "graphics/texture.h"
+#include "graphics/draw_template.h"
 #include "graphics/location_maps.h"
 #include "units.h"
-#include "graphics/texture.h"
 
 struct GroundPlane;
 struct Shader;
 struct SoundEngine;
+
 
 struct Deer {
    Deer(const Mesh& mesh, const glm::vec3& position);
@@ -42,9 +41,10 @@ struct Deer {
    void block();
    /* helper functions for shadows */
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, bool betterShadow);
+      glm::vec3 sunDir);
 
    glm::mat4 calculateModel() const;
+   DrawTemplate draw_template() const { return draw_template_; }
 
   private:
    enum class WalkDirection {
@@ -67,8 +67,7 @@ struct Deer {
    glm::vec2 predictFacing(const glm::vec3& velocity) const;
    glm::vec3 predictPosition(units::MS dt, const glm::vec3& velocity) const;
 
-   Mesh mesh_;
-   Texture texture_;
+   DrawTemplate draw_template_;
    glm::vec3 position_;
    glm::vec3 velocity_;
    glm::vec2 last_facing_;

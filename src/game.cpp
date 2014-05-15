@@ -180,7 +180,8 @@ void Game::draw() {
             glClear(GL_DEPTH_BUFFER_BIT);
          }
 
-         deer_.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
+         
+         deer_.shadowDraw(shader, uniform_location_map_, sunDir);
          day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, betterShadows);
          day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, betterShadows);
 
