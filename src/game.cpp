@@ -331,6 +331,7 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_quit)) {
                lighting = 1;
                numLightning = 3;
+               sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
             }
          }
          { //handle toggle between cameras

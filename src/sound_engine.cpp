@@ -101,6 +101,12 @@ SoundEngine::SoundEngine() {
             irrklang::ESM_NO_STREAMING,
             should_preload);
    sound_effect_sources_[SoundEffect::WOODPECKER0]->setDefaultVolume(0.2f);
+
+   sound_effect_sources_[SoundEffect::THUNDER_STRIKE] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/thunder_strike.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
 }
 
 void SoundEngine::set_listener_position(const glm::vec3& position, const glm::vec3& orientation) {
