@@ -12,7 +12,7 @@
 
 enum class ShaderType { 
    /* Ordering is important, shadow must be first */
-   SHADOW_TEX,
+//   SHADOW_TEX,
    SHADOW,
    SUN,
    TEXTURE,

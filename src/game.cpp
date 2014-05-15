@@ -24,7 +24,8 @@ Game::Game() :
             mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
-   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
+                     mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    bushGen(Mesh::fromAssimpMesh(
@@ -169,15 +170,13 @@ void Game::draw() {
 
       setupProjection(shader, uniform_location_map_);
 
-      if(shaderPair.first == ShaderType::SHADOW_TEX) {
+      if(shaderPair.first == ShaderType::SHADOW) {
          if(!debug) {
             shadow_map_fbo_.BindForWriting();
             glClear(GL_DEPTH_BUFFER_BIT);
          }
-      }
-      else if(shaderPair.first == ShaderType::SHADOW) {
-         deer_.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
 
+         deer_.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
          day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, betterShadows);
          day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, betterShadows);
 
@@ -187,7 +186,6 @@ void Game::draw() {
          for (auto& bush : bushGen.getBushes()) {
             bush.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
          }
-
 
          if(!debug) {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -241,7 +239,7 @@ void Game::mainLoop() {
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
 
-   if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
+  if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
       printf("FAILURE\n");
       return;
    }
