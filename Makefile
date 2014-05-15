@@ -24,7 +24,7 @@ endif
 # -std=c++11=Enforce C++11 standard compliance. (You could also use C++11 if you
 #  want to be more up-to-date).
 # -MMD=Create a .d file to store the rule for the header dependencies of each object.
-CFLAGS=-g -Wall -Wextra -std=c++11 -MMD -I$(SRCDIR)
+CFLAGS=-g -Wall -Wextra -std=c++11 -MMD -I$(SRCDIR) -Qunused-arguments
 CFLAGS+=`sdl2-config --cflags`
 CFLAGS+=`Magick++-config --cxxflags --cppflags`
 CFLAGS+=`pkg-config --cflags $(PKGS)`

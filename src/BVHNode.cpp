@@ -6,9 +6,9 @@
 #include "BVHNode.h"
 
 BVHNode::BVHNode(BoundingRectangle bRect, GameObject *object, int num) :
+   num(num),
    object(object),
    bRect(bRect),
-   num(num),
    leftIndex(-1),
    rightIndex(-1)
 { 

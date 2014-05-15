@@ -167,7 +167,6 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
             desired_lean_ = 0.0f;
          if (desired_lean_ < -45.0f)
             desired_lean_ = 0.0f;
-         std::clog << "desired_lean=" << desired_lean_ << std::endl;
       }
    }
    if (is_jumping_) {
@@ -253,9 +252,9 @@ void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
       glm::vec3 sunDir, bool betterShadow) {
    const auto model_matrix(calculateModel());
    if(betterShadow)
-      setupBetterShadowShader(shader, uniform_locations, sunDir, getPosition(), model_matrix);
+      setupBetterShadowShader(shader, uniform_locations, sunDir, model_matrix);
    else
-      setupShadowShader(shader, uniform_locations, sunDir, getPosition(), model_matrix);
+      setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
    shader.drawMesh(mesh_);
 }
 

@@ -109,7 +109,7 @@ void SoundEngine::set_listener_position(const glm::vec3& position, const glm::ve
          irrklang::vec3df(orientation.x, orientation.y, orientation.z));
 }
 
-void SoundEngine::playSoundEffect(SoundEffect sound, bool should_loop, const glm::vec3& source_position) {
+void SoundEngine::playSoundEffect(SoundEffect sound, bool should_loop, const glm::vec3& /*source_position*/) {
    if (!engine_->isCurrentlyPlaying(sound_effect_sources_[sound])) {
       /* TODO(chebert): 3d Sound sound legitimately bad. I think i has to do
        * with the listener direction.

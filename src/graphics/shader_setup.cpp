@@ -69,7 +69,7 @@ void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
 
 
 void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
-      glm::vec3 lightDir, glm::vec3 deerLoc, glm::mat4 modelMatrix) {
+      glm::vec3 lightDir, glm::mat4 modelMatrix) {
    glPolygonMode(GL_FRONT, GL_FILL);
    glm::mat4 shadowProjection, shadowView, modelView;
 
@@ -87,7 +87,7 @@ void sendInverseViewProjection(Shader& shader, const UniformLocationMap& locatio
 }
 
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
-      glm::vec3 lightDir, glm::vec3 deerLoc) {
+      glm::vec3 lightDir) {
    glm::mat4 lightMat, shadowProjection, shadowView;
 
    shadowProjection = biasMatrix * glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, -40.0f, 40.0f);
@@ -99,7 +99,7 @@ void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& l
 
 /* Closer to deer, for better shadows */
 void setupBetterShadowShader(Shader& shader, const UniformLocationMap& locations,
-      glm::vec3 lightDir, glm::vec3 deerLoc, glm::mat4 modelMatrix) {
+      glm::vec3 lightDir, glm::mat4 modelMatrix) {
    glPolygonMode(GL_FRONT, GL_FILL);
    glm::mat4 shadowProjection, shadowView, modelView;
 
@@ -112,7 +112,7 @@ void setupBetterShadowShader(Shader& shader, const UniformLocationMap& locations
 }
 
 void sendBetterShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
-      glm::vec3 lightDir, glm::vec3 deerLoc) {
+      glm::vec3 lightDir) {
    glm::mat4 lightMat, shadowProjection, shadowView;
 
    shadowProjection = biasMatrix * glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, -40.0f, 40.0f);

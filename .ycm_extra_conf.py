@@ -30,7 +30,7 @@ flags = [
 '-I',
 '/usr/include/freetype2',
 '-I',
-'/usr/include/irrKlang',
+'/usr/local/include/irrKlang',
 '-I',
 '/usr/include/ImageMagick-6',
 ]
