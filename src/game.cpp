@@ -156,7 +156,6 @@ void Game::draw() {
       sunIntensity = 0.3;
    glm::vec3 sunDir = day_cycle_.getSunDir();
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
-   glm::vec3 deerPos = deerCam.getPosition();
 
    if (airMode) {
       viewMatrix = airCam.getViewMatrix();
@@ -180,14 +179,14 @@ void Game::draw() {
       else if(shaderPair.first == ShaderType::SHADOW) {
          deer_.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
 
-         day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
-         day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
+         day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, betterShadows);
+         day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, betterShadows);
 
 
          if(showTreeShadows)
-            treeGen.shadowDraw(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
+            treeGen.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
          for (auto& bush : bushGen.getBushes()) {
-            bush.shadowDraw(shader, uniform_location_map_, sunDir, deerPos, betterShadows);
+            bush.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
          }
 
 
@@ -204,9 +203,9 @@ void Game::draw() {
          shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_,
             shadow_map_fbo_.texture_id());
          if(betterShadows)
-            sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
+            sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
          else
-            sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir, deerPos);
+            sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
 
          shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
 

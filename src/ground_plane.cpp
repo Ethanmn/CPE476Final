@@ -20,18 +20,18 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
    // TODO(chebert): Loaded it twice because textures confuse me.
    height_map_image_(texture_path(Textures::HEIGHT_MAP)) {
 
-   const glm::mat4 scale(glm::scale(glm::mat4(1.0), glm::vec3(PLANE_SIZE, 1, PLANE_SIZE)));
-   //COLUMN MAJOR
-   for (int x = -GROUND_SCALE/2; x < GROUND_SCALE/2; x += PLANE_SIZE) {
-      for (int y = -GROUND_SCALE/2; y < GROUND_SCALE/2; y += PLANE_SIZE) {
-         transforms_.push_back(
-               glm::translate(glm::mat4(), glm::vec3(x, 0, y)) * scale);
+      const glm::mat4 scale(glm::scale(glm::mat4(1.0), glm::vec3(PLANE_SIZE, 1, PLANE_SIZE)));
+      //COLUMN MAJOR
+      for (int x = -GROUND_SCALE/2; x < GROUND_SCALE/2; x += PLANE_SIZE) {
+         for (int y = -GROUND_SCALE/2; y < GROUND_SCALE/2; y += PLANE_SIZE) {
+            transforms_.push_back(
+                  glm::translate(glm::mat4(), glm::vec3(x, 0, y)) * scale);
+         }
       }
    }
-}
 
 void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-                       const glm::mat4& viewMatrix) {
+      const glm::mat4& viewMatrix) {
    setupTextureShader(shader, uniform_locations, texture_);
    setupHeightMap(shader, uniform_locations, height_map_);
 
@@ -46,15 +46,15 @@ void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locatio
 }
 
 void GroundPlane::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerLoc, bool betterShadow) {
+      glm::vec3 sunDir, bool betterShadow) {
    setupHeightMap(shader, uniform_locations, height_map_);
 
    for (auto& t : transforms_) {
       if(betterShadow)
-         setupBetterShadowShader(shader, uniform_locations, sunDir, deerLoc, t);
+         setupBetterShadowShader(shader, uniform_locations, sunDir, t);
       else
-         setupShadowShader(shader, uniform_locations, sunDir, deerLoc, t);
-      
+         setupShadowShader(shader, uniform_locations, sunDir, t);
+
       shader.drawMesh(mesh_);
    }
 
@@ -65,7 +65,7 @@ void GroundPlane::shadowDraw(Shader& shader, const UniformLocationMap& uniform_l
 float GroundPlane::heightAt(const glm::vec3& position) const {
    glm::vec4 pos(position, 1.0f);
    // 1.translate position from world into texture space.
-      // a. determine which ground plane to test.
+   // a. determine which ground plane to test.
    const int row = (pos.z + GROUND_SCALE / 2) / PLANE_SIZE;
    const int col = (pos.x + GROUND_SCALE / 2) / PLANE_SIZE;
    const int index = (col * GROUND_SCALE / PLANE_SIZE) + row;
@@ -73,18 +73,18 @@ float GroundPlane::heightAt(const glm::vec3& position) const {
       std::clog << "Warning: out of bounds" << std::endl;
       return 0.0f;
    }
-      // b. translate position from world into mesh space.
+   // b. translate position from world into mesh space.
    pos = glm::inverse(transforms_.at(index)) * pos;
-      // c. translate position from mesh into texture space.
-      // TODO(chebert): this is a total hack. we assume that the mesh is 2x2x0
-      // centered at the origin, and rotated (C?)CW 90 degrees. deadline is monday.
+   // c. translate position from mesh into texture space.
+   // TODO(chebert): this is a total hack. we assume that the mesh is 2x2x0
+   // centered at the origin, and rotated (C?)CW 90 degrees. deadline is monday.
    pos = glm::translate(glm::mat4(), glm::vec3(0.5f, 0, 0.5f)) *
-         glm::rotate(glm::mat4(), -90.0f, glm::vec3(0, 1, 0)) *
-         glm::scale(glm::mat4(), glm::vec3(0.5f)) * pos;
+      glm::rotate(glm::mat4(), -90.0f, glm::vec3(0, 1, 0)) *
+      glm::scale(glm::mat4(), glm::vec3(0.5f)) * pos;
 
    // if within  [0-1], [0-1]
    if (0.0f <= pos.x && pos.x <= 1.0f &&
-       0.0f <= pos.z && pos.z <= 1.0f) {
+         0.0f <= pos.z && pos.z <= 1.0f) {
       // Translate from texture space to image space.
       auto pixel_packet = height_map_image_.getConstPixels(
             (int)round(pos.x * height_map_image_.columns()),

@@ -9,9 +9,6 @@ const int TREE_SIZE = 20;
 const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
 const int TREE_SCALE = 5;
 
-const float BOUNDING_ERR_X = 7.26;
-const float BOUNDING_ERR_Z = -1.75;
-
 TreeGenerator::TreeGenerator(const Mesh& mesh) {
    treeMesh1 = mesh;
    treeMesh1.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
@@ -36,9 +33,9 @@ std::vector<Tree>& TreeGenerator::getTrees() {
 }
 
 void TreeGenerator::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow) {
+      glm::vec3 sunDir, bool betterShadow) {
    for (auto& tree : trees) {
-      tree.shadowDraw(shader, uniform_locations, sunDir, deerPos, betterShadow);
+      tree.shadowDraw(shader, uniform_locations, sunDir, betterShadow);
    }
 }
 

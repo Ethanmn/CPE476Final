@@ -23,7 +23,7 @@ struct TreeGenerator {
    std::vector<Tree>& getTrees();
    void drawTrees(Shader& shader, const UniformLocationMap& uniform_locations, const glm::mat4& viewMatrix);
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow);
+      glm::vec3 sunDir, bool betterShadow);
 
    private:
       std::vector<Tree> trees;

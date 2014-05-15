@@ -27,17 +27,17 @@ void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const T
 void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
                         glm::vec4 color);
 void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
-                        glm::vec3 lightDir, glm::vec3 deerLoc, glm::mat4 modelMatrix);
+                        glm::vec3 lightDir, glm::mat4 modelMatrix);
 
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
-                        glm::vec3 lightDir, glm::vec3 deerLoc);
+                        glm::vec3 lightDir);
 
 
 void setupBetterShadowShader(Shader& shader, const UniformLocationMap& locations,
-                        glm::vec3 lightDir, glm::vec3 deerLoc, glm::mat4 modelMatrix);
+                        glm::vec3 lightDir, glm::mat4 modelMatrix);
 
 void sendBetterShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
-                        glm::vec3 lightDir, glm::vec3 deerLoc);
+                        glm::vec3 lightDir);
 
 
 #endif

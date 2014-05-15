@@ -42,7 +42,7 @@ void Bush::draw(
 }
 
 void Bush::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, glm::vec3 deerPos, bool betterShadow) {
+      glm::vec3 sunDir, bool betterShadow) {
       const glm::mat4 translate(glm::translate(
             glm::mat4(),
             position_));
@@ -60,9 +60,9 @@ void Bush::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
    const glm::mat4 model_matrix(translate * scale * rotate);
 
    if(betterShadow)
-      setupBetterShadowShader(shader, uniform_locations, sunDir, deerPos, model_matrix);
+      setupBetterShadowShader(shader, uniform_locations, sunDir, model_matrix);
    else
-      setupShadowShader(shader, uniform_locations, sunDir, deerPos, model_matrix);
+      setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
    shader.drawMesh(mesh_);
 }
 
