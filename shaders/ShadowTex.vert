@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-//#version 120
-=======
->>>>>>> 287a7b506543a8b09061d9ea47b6630d76373352
 uniform int uHasHeightMap;
 uniform sampler2D uHeightMap;
 attribute vec3 aTexCoord;

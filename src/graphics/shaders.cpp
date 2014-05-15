@@ -77,20 +77,20 @@ const std::vector<Uniform> kShadowUniforms{
    Uniform::PROJECTION,
 };
 
-const std::vector<Attribute> kShadowTexAttrs{
-   Attribute::VERTEX,
-   Attribute::TEX_COORD
-};
-const std::vector<Uniform> kShadowTexUniforms{
-   Uniform::MODEL_VIEW,
-   Uniform::PROJECTION,
-   Uniform::HEIGHT_MAP,
-   Uniform::HAS_HEIGHT_MAP
-};
+//const std::vector<Attribute> kShadowTexAttrs{
+   //Attribute::VERTEX,
+   //Attribute::TEX_COORD
+//};
+//const std::vector<Uniform> kShadowTexUniforms{
+   //Uniform::MODEL_VIEW,
+   //Uniform::PROJECTION,
+   //Uniform::HEIGHT_MAP,
+   //Uniform::HAS_HEIGHT_MAP
+//};
 
 Shaders::Shaders() {
-   shaders_.insert(std::make_pair(ShaderType::SHADOW_TEX, 
-            Shader("ShadowTex", kShadowTexAttrs, kShadowTexUniforms)));
+   //shaders_.insert(std::make_pair(ShaderType::SHADOW_TEX, 
+            //Shader("ShadowTex", kShadowTexAttrs, kShadowTexUniforms)));
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
    shaders_.insert(std::make_pair(
