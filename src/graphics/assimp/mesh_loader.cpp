@@ -80,7 +80,10 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
       ret.uv_array = std::vector<float>(
                (float*)(mesh.mTextureCoords[0]),
                (float*)(mesh.mTextureCoords[0]) + mesh.mNumVertices * kNumAxes);
+   } else {
+      std::clog << "No texture coordinates found for mesh: " << path << std::endl;
    }
+
 
    if (mesh.HasNormals()) {
       ret.normal_array =
