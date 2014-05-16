@@ -16,6 +16,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
 #include "graphics/shader_setup.h"
+#include "graphics/draw_template.h"
 
 struct Tree : public GameObject {
    Tree(glm::vec3 position, Mesh mesh);
@@ -31,11 +32,13 @@ struct Tree : public GameObject {
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, bool betterShadow);
 
+   glm::mat4 calculateModel() const;
+   Drawable drawable() const;
+
    private:
       BoundingRectangle bRect;
       glm::vec3 position;
-      Mesh mesh;
-
+      DrawTemplate draw_template_; 
 };
 
 #endif //TREE_H_

@@ -153,7 +153,14 @@ void Game::step(units::MS dt) {
 }
 
 void Game::draw() {
+   float sunIntensity = day_cycle_.getSunIntensity();
+   glm::vec3 sunDir = day_cycle_.getSunDir();
+
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glClearColor (0.05098 * sunIntensity,
+                 0.6274509 * sunIntensity,
+                 sunIntensity, 1.0f);
+
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
    drawables.push_back(deer_.drawable());
@@ -168,7 +175,7 @@ void Game::draw() {
       viewMatrix = deerCam.getViewMatrix();
    }
 
-   draw_shader_.Draw(day_cycle_.getSunDir(), day_cycle_.getSunIntensity(), viewMatrix, drawables);
+   draw_shader_.Draw(sunDir, sunIntensity, viewMatrix, drawables);
 }
 /* PLEASE DON'T DELETE
    for (auto& shaderPair: shaders_.getMap()) {

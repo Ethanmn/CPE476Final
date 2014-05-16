@@ -25,7 +25,7 @@ struct Bush : public GameObject {
                glm::vec2(8.0f, 8.0f),
                0.0f)),
       draw_template_({ShaderType::SUN, mesh, Texture()}) {
-         draw_template_.mesh.material = Material(glm::vec3(0.45, 0.24, 0.15));
+      draw_template_.mesh.material = Material(glm::vec3(0.45, 0.24, 0.15));
       }
 
    void step(units::MS dt);

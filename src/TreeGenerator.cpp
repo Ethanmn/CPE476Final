@@ -44,3 +44,5 @@ void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_
       tree.draw(shader, uniform_location_map, view_matrix);
    }
 }
+
+
