@@ -21,7 +21,6 @@ struct BushGenerator {
 
    void generate(const GroundPlane& ground);
    std::vector<Bush>& getBushes();
-   void drawBushes(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix);
 
    private:
       std::vector<Bush> bushes;

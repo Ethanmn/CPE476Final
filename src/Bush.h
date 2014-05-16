@@ -32,10 +32,6 @@ struct Bush : public GameObject {
    void rustle(SoundEngine& sound_engine);
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
-   void draw(
-         Shader& shader,
-         const UniformLocationMap& uniform_location_map,
-         const glm::mat4& view_matrix) const;
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
          glm::vec3 sunDir, bool betterShadow);
 
@@ -46,6 +42,7 @@ struct Bush : public GameObject {
    bool isBlocker();
    void performObjectHit(SoundEngine& sound_engine);
 
+   DrawTemplate draw_template() const { return draw_template_; }
    glm::mat4 calculateModel() const;
    Drawable drawable() const;
 

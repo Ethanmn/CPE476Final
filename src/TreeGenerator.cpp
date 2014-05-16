@@ -41,12 +41,6 @@ void TreeGenerator::shadowDraw(Shader& shader, const UniformLocationMap& uniform
    }
 }
 
-void TreeGenerator::drawTrees(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) {
-   for (auto& tree : trees) {
-      tree.draw(shader, uniform_location_map, view_matrix);
-   }
-}
-
 Drawable TreeGenerator::drawable() const {
    std::vector<glm::mat4> model_matrices;
    for (auto& tree : trees) 

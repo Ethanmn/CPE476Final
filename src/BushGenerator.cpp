@@ -41,8 +41,3 @@ std::vector<Bush>& BushGenerator::getBushes() {
    return bushes;
 }
 
-void BushGenerator::drawBushes(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) {
-   for (auto& bush : bushes) {
-      bush.draw(shader, uniform_location_map, view_matrix);
-   }
-}

@@ -17,8 +17,6 @@ struct SoundEngine;
 struct Deer {
    Deer(const Mesh& mesh, const glm::vec3& position);
 
-   void draw(Shader& shader, const UniformLocationMap& locations,
-             const glm::mat4& viewMatrix) const;
    BoundingRectangle getNextBoundingBox(units::MS dt, const Camera& camera);
 
    void step(units::MS dt, const Camera& camera, const GroundPlane& ground, SoundEngine& sound_engine);
