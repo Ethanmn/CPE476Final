@@ -41,6 +41,31 @@ void Bush::draw(
    bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);
 }
 
+glm::mat4 Bush::calculateModel() const {
+   const glm::mat4 translate(glm::translate(
+            glm::mat4(),
+            position_));
+   const glm::mat4 scale(glm::scale(
+            glm::mat4(),
+            glm::vec3(scale_)));
+   const glm::mat4 rotate(glm::rotate(
+            glm::rotate(
+               glm::mat4(),
+               rotate_,
+               glm::vec3(0, 1, 0)
+               ),
+            -90.0f,
+            glm::vec3(1, 0, 0)));
+   return glm::mat4(translate * scale * rotate);
+} 
+
+Drawable Bush::drawable() const {
+   std::vector<glm::mat4> model_matrices;
+   model_matrices.push_back(calculateModel());
+   return Drawable({draw_template_, model_matrices});
+} 
+
+
 void Bush::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, bool betterShadow) {
       const glm::mat4 translate(glm::translate(

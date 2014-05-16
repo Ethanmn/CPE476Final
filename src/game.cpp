@@ -19,7 +19,6 @@ namespace {
 
 Game::Game() :
    attribute_location_map_({draw_shader_.getShaders().getAttributeLocationMap()}),
-   //uniform_location_map_({draw_shader_.getShaders().getUniformLocationMap()}),
    //ground_(Mesh::fromAssimpMesh(attribute_location_map_,
             //mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -144,13 +143,13 @@ void Game::step(units::MS dt) {
    }
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
-      draw_shader_.dayToNight();
+      day_cycle_.dayToNight();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
-      draw_shader_.nightToDay();
+      day_cycle_.nightToDay();
    }
 
-   draw_shader_.autoAdjustTime(dt);
+   day_cycle_.autoAdjustTime(dt);
 }
 
 void Game::draw() {
@@ -158,6 +157,9 @@ void Game::draw() {
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
    drawables.push_back(deer_.drawable());
+   for (auto& bush : bushGen.getBushes()) {
+      drawables.push_back(bush.drawable());
+   }
 
    if (airMode) {
       viewMatrix = airCam.getViewMatrix();
@@ -166,7 +168,7 @@ void Game::draw() {
       viewMatrix = deerCam.getViewMatrix();
    }
 
-   draw_shader_.Draw(viewMatrix, drawables);
+   draw_shader_.Draw(day_cycle_.getSunDir(), day_cycle_.getSunIntensity(), viewMatrix, drawables);
 }
 /* PLEASE DON'T DELETE
    for (auto& shaderPair: shaders_.getMap()) {
@@ -325,13 +327,13 @@ void Game::mainLoop() {
          { //handle debug for Katelyn
             const auto key_quit = SDL_SCANCODE_3;
             if (input.wasKeyPressed(key_quit)) {
-               draw_shader_.dayToNight();
+               day_cycle_.dayToNight();
             }
          }
          { //handle debug for Katelyn
             const auto key_quit = SDL_SCANCODE_4;
             if (input.wasKeyPressed(key_quit)) {
-               draw_shader_.nightToDay();
+               day_cycle_.nightToDay();
             }
          }
          { //handle quit

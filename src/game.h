@@ -36,15 +36,12 @@ struct Game {
    SDLEngine engine_;
    Input input_;
    DrawShader draw_shader_;
-   //Shaders shaders_;
    MeshLoader mesh_loader_;
    AttributeLocationMap attribute_location_map_;
-   //UniformLocationMap uniform_location_map_;
    GroundPlane ground_;
    Deer deer_;
    DayNightInteraction day_night_boxes_;
-
-   //DayCycle day_cycle_;
+   DayCycle day_cycle_;
 
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
