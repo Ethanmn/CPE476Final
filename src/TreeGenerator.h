@@ -15,6 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp> 
 #include "bounding_rectangle.h"
 #include "Tree.h"
+#include "graphics/draw_template.h"
 
 struct TreeGenerator {
    TreeGenerator(const Mesh& mesh);
@@ -24,10 +25,12 @@ struct TreeGenerator {
    void drawTrees(Shader& shader, const UniformLocationMap& uniform_locations, const glm::mat4& viewMatrix);
    void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, bool betterShadow);
+   DrawTemplate draw_template() const { return draw_template_; }
+   Drawable drawable() const; 
 
    private:
       std::vector<Tree> trees;
-      Mesh treeMesh1;
+      DrawTemplate draw_template_;
 };
 
 #endif //TREE_GEN_H_

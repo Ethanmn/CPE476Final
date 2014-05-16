@@ -167,6 +167,7 @@ void Game::draw() {
    for (auto& bush : bushGen.getBushes()) {
       drawables.push_back(bush.drawable());
    }
+   drawables.push_back(treeGen.drawable());
 
    if (airMode) {
       viewMatrix = airCam.getViewMatrix();
