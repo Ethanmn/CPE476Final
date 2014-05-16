@@ -2,7 +2,6 @@
 #define BUSH_H_
 
 #include <glm/glm.hpp>
-#include "graphics/draw_template.h"
 #include "bounding_rectangle.h"
 #include "GameObject.h"
 #include "ground_plane.h"
@@ -23,17 +22,12 @@ struct Bush : public GameObject {
       bounding_rectangle_(BoundingRectangle(
                glm::vec2(position.x, position.z),
                glm::vec2(8.0f, 8.0f),
-               0.0f)),
-      draw_template_({ShaderType::SUN, mesh, boost::none}) {
-      draw_template_.mesh.material = Material(glm::vec3(0.45, 0.24, 0.15));
-      }
+               0.0f)) {}
+
 
    void step(units::MS dt);
    void rustle(SoundEngine& sound_engine);
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
-
-   void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-         glm::vec3 sunDir, bool betterShadow);
 
    BoundingRectangle getBoundingRectangle() {
       return bounding_rectangle_;
@@ -42,9 +36,7 @@ struct Bush : public GameObject {
    bool isBlocker();
    void performObjectHit(SoundEngine& sound_engine);
 
-   DrawTemplate draw_template() const { return draw_template_; }
    glm::mat4 calculateModel() const;
-   Drawable drawable() const;
 
 
   private: 
@@ -54,7 +46,6 @@ struct Bush : public GameObject {
    units::MS elapsed_time_, rustle_time_;
    const units::MS kMaxRustleTime;
    BoundingRectangle bounding_rectangle_;
-   DrawTemplate draw_template_; 
 };
 
 #endif // BUSH_H_

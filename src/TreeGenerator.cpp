@@ -24,7 +24,7 @@ void TreeGenerator::generate() {
    for (int row = 0; row < size; row++) {
       for (int col = 0; col < size; col++) {
          if (rand() % TREE_DENSITY == 0) {
-            trees.push_back(Tree(glm::vec3(row * TREE_SIZE - groundSize, TREE_SCALE * TREE_SIZE / 2, col * TREE_SIZE - groundSize), draw_template_.mesh));
+            trees.push_back(Tree(glm::vec3(row * TREE_SIZE - groundSize, TREE_SCALE * TREE_SIZE / 2, col * TREE_SIZE - groundSize)));
          }
       }
    }
@@ -34,12 +34,12 @@ std::vector<Tree>& TreeGenerator::getTrees() {
    return trees;
 }
 
-void TreeGenerator::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, bool betterShadow) {
-   for (auto& tree : trees) {
-      tree.shadowDraw(shader, uniform_locations, sunDir, betterShadow);
-   }
-}
+//void TreeGenerator::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      //glm::vec3 sunDir, bool betterShadow) {
+   //for (auto& tree : trees) {
+      //tree.shadowDraw(shader, uniform_locations, sunDir, betterShadow);
+   //}
+//}
 
 Drawable TreeGenerator::drawable() const {
    std::vector<glm::mat4> model_matrices;

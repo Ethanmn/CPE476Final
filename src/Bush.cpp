@@ -31,13 +31,7 @@ glm::mat4 Bush::calculateModel() const {
    return glm::mat4(translate * scale * rotate);
 } 
 
-Drawable Bush::drawable() const {
-   std::vector<glm::mat4> model_matrices;
-   model_matrices.push_back(calculateModel());
-   return Drawable({draw_template_, model_matrices});
-} 
-
-
+/*
 void Bush::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
       glm::vec3 sunDir, bool betterShadow) {
       const glm::mat4 translate(glm::translate(
@@ -62,6 +56,7 @@ void Bush::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
       setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
    shader.drawMesh(draw_template_.mesh);
 }
+*/
 
 void Bush::rustle(SoundEngine& sound_engine) {
    sound_engine.playSoundEffect(

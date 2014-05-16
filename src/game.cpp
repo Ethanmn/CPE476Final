@@ -166,9 +166,7 @@ void Game::draw() {
    drawables.push_back(deer_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
-   for (auto& bush : bushGen.getBushes()) {
-      drawables.push_back(bush.drawable());
-   }
+   drawables.push_back(bushGen.drawable());
    drawables.push_back(treeGen.drawable());
 
    if (airMode) {

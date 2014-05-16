@@ -22,8 +22,6 @@ struct TreeGenerator {
 
    void generate();
    std::vector<Tree>& getTrees();
-   void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, bool betterShadow);
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const; 
 
