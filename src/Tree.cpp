@@ -15,7 +15,7 @@ Tree::Tree(glm::vec3 position, Mesh mesh) :
    bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
    position(position),
-   draw_template_({ShaderType::SUN, mesh, Texture()})
+   draw_template_({ShaderType::SUN, mesh, boost::none})
 {}
 
 void Tree::draw(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) const{

@@ -70,20 +70,6 @@ Drawable Deer::drawable() const {
    return Drawable({draw_template_, model_matrices});
 } 
 
-void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-                const glm::mat4& viewMatrix) const {
-   const auto transform(calculateModel());
-   setupTextureShader(shader, uniform_locations, draw_template_.texture);
-   setupModelView(shader, uniform_locations, transform, viewMatrix, true);
-   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
-   shader.sendUniform(Uniform::BONES, uniform_locations,
-         draw_template_.mesh.animation.calculateBoneTransformations(draw_template_.mesh.bone_array));
-   shader.drawMesh(draw_template_.mesh);
-
-   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
-   draw_template_.texture.disable();
-}
-
 glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
    return position_ + velocity * static_cast<float>(dt);
 }

@@ -28,7 +28,8 @@ void DrawShader::Draw(glm::vec3 sunDir, float sunIntensity, glm::mat4 viewMatrix
                  shader.sendUniform(Uniform::BONES, uniforms,
                     currentDraw.draw_template.mesh.animation.calculateBoneTransformations(
                     currentDraw.draw_template.mesh.bone_array));
-                 setupTextureShader(shader, uniforms, currentDraw.draw_template.texture);
+                 assert(currentDraw.draw_template.texture);
+                 setupTextureShader(shader, uniforms, *currentDraw.draw_template.texture);
              }
              if(currentShader.first == ShaderType::SUN)
                  currentDraw.draw_template.mesh.material.sendMaterial(shader, uniforms);
@@ -40,7 +41,7 @@ void DrawShader::Draw(glm::vec3 sunDir, float sunIntensity, glm::mat4 viewMatrix
 
             if(currentShader.first == ShaderType::TEXTURE) {
                shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-               currentDraw.draw_template.texture.disable();
+               currentDraw.draw_template.texture->disable();
             }
          }
       }
