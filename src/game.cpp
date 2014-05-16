@@ -142,10 +142,10 @@ void Game::step(units::MS dt) {
       bush.step(dt);
    }
 
-   if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
+   if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       day_cycle_.dayToNight();
    }
-   else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
+   else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
       day_cycle_.nightToDay();
    }
 
@@ -164,6 +164,8 @@ void Game::draw() {
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
    drawables.push_back(deer_.drawable());
+   drawables.push_back(day_night_boxes_.drawableSun());
+   drawables.push_back(day_night_boxes_.drawableMoon());
    for (auto& bush : bushGen.getBushes()) {
       drawables.push_back(bush.drawable());
    }
