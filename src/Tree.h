@@ -35,6 +35,7 @@ struct Tree : public GameObject {
       BoundingRectangle bRect;
       glm::vec3 position;
       Mesh mesh;
+
 };
 
 #endif //TREE_H_

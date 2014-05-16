@@ -35,9 +35,9 @@ void Bush::draw(
 
    setupModelView(shader, uniform_location_map, model_matrix, view_matrix, true);
 
-   mesh_.material.sendMaterial(shader, uniform_location_map);
+   draw_template_.mesh.material.sendMaterial(shader, uniform_location_map);
 
-   shader.drawMesh(mesh_);
+   shader.drawMesh(draw_template_.mesh);
    bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);
 }
 
@@ -88,7 +88,7 @@ void Bush::shadowDraw(Shader& shader, const UniformLocationMap& uniform_location
       setupBetterShadowShader(shader, uniform_locations, sunDir, model_matrix);
    else
       setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   shader.drawMesh(mesh_);
+   shader.drawMesh(draw_template_.mesh);
 }
 
 void Bush::rustle(SoundEngine& sound_engine) {

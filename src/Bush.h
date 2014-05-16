@@ -24,9 +24,8 @@ struct Bush : public GameObject {
                glm::vec2(position.x, position.z),
                glm::vec2(8.0f, 8.0f),
                0.0f)),
-      mesh_(mesh),
       draw_template_({ShaderType::SUN, mesh, Texture()}) {
-         mesh_.material = Material(glm::vec3(0.45, 0.24, 0.15));
+         draw_template_.mesh.material = Material(glm::vec3(0.45, 0.24, 0.15));
       }
 
    void step(units::MS dt);
@@ -58,7 +57,6 @@ struct Bush : public GameObject {
    units::MS elapsed_time_, rustle_time_;
    const units::MS kMaxRustleTime;
    BoundingRectangle bounding_rectangle_;
-   Mesh mesh_;
    DrawTemplate draw_template_; 
 };
 

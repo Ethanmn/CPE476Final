@@ -17,11 +17,9 @@ void DrawShader::Draw(glm::vec3 sunDir, float sunIntensity, glm::mat4 viewMatrix
           shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
 
           shader.sendUniform(Uniform::LIGHTNING, uniforms, 0);
-
           shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
           sendShadowInverseProjectionView(shader,uniforms, glm::vec3(0, 1, 0));
           setupSunShader(shader, uniforms, sunIntensity, sunDir);       
-           
           
           if(currentDraw.draw_template.shader_type == currentShader.first) {
              if(currentShader.first == ShaderType::TEXTURE) {
@@ -39,6 +37,7 @@ void DrawShader::Draw(glm::vec3 sunDir, float sunIntensity, glm::mat4 viewMatrix
                setupModelView(shader, uniforms, mt, viewMatrix, true);
                shader.drawMesh(currentDraw.draw_template.mesh);
             }
+
             if(currentShader.first == ShaderType::TEXTURE) {
                shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
                currentDraw.draw_template.texture.disable();
