@@ -38,8 +38,11 @@ Game::Game() :
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
-   butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_),
-   rain_system_(glm::vec3(0.0f, 100.0f, 0.0f), 2000, attribute_location_map_, mesh_loader_),
+   butterfly_system_(Mesh::fromAssimpMesh(attribute_location_map_, 
+            mesh_loader_.loadMesh("../models/butterfly.dae")), glm::vec3(0.0f), 10),
+   rain_system_(Mesh::fromAssimpMesh(attribute_location_map_, 
+            mesh_loader_.loadMesh("../models/deer_butt.dae")), 
+            glm::vec3(0.0f, 100.0f, 0.0f), 2000),
    objTree(),
    airMode(false)
 {
@@ -168,6 +171,7 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableMoon());
    drawables.push_back(bushGen.drawable());
    drawables.push_back(treeGen.drawable());
+   drawables.push_back(rain_system_.drawable());
 
    if (airMode) {
       viewMatrix = airCam.getViewMatrix();

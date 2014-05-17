@@ -5,15 +5,18 @@
 #include "units.h"
 #include "graphics/location_maps.h"
 #include "graphics/assimp/mesh_loader.h"
+#include "graphics/draw_template.h"
 
 struct Dust {
-   Dust(const glm::vec3& origin, int numParticles,
-	       const AttributeLocationMap& attribute_location_map_, MeshLoader& mesh_loader_,
-	       const Texture& texture);
+   Dust(const Mesh& mesh, const glm::vec3& origin, int numParticles);
 
    void step(units::MS dt);
+
+   DrawTemplate draw_template() const { return draw_template_; }
+   Drawable drawable() const;
    
    private:
+      DrawTemplate draw_template_;
       std::vector<Particle> particles_;
       glm::vec3 origin_;
       float scale_;
