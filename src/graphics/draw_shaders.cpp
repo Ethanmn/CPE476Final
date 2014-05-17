@@ -16,7 +16,6 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
           Shader& shader = currentShader.second;
           shader.use();
              if(currentShader.first == ShaderType::SHADOW && currentDraw.draw_template.include_in_shadows) {
-                glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
                 if(!debug) {
                   shadow_map_fbo_.BindForWriting();
                   glClear(GL_DEPTH_BUFFER_BIT);
@@ -31,11 +30,9 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
                    glBindFramebuffer(GL_FRAMEBUFFER, 0);
                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                    shadow_map_fbo_.BindForReading();
-                   glClearColor (0.05098 * sunIntensity,
-                                 0.6274509 * sunIntensity,
-                                 sunIntensity, 1.0f);
                 } 
              }
+             /* All shaders that are not SHADOW */
              else if(!debug && currentDraw.draw_template.shader_type == currentShader.first) {
                shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
                shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_id());
@@ -48,9 +45,8 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
                setupSunShader(shader, uniforms, sunIntensity, sunDir); 
               
                if(currentShader.first == ShaderType::TEXTURE) {
-                  if(currentDraw.draw_template.height_map) {
+                  if(currentDraw.draw_template.height_map) 
                      setupHeightMap(shader, uniforms, *currentDraw.draw_template.height_map); 
-                  }
                   else
                      shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
 
@@ -63,11 +59,11 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
                   else
                      shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
 
-                     assert(currentDraw.draw_template.texture);
-                     setupTextureShader(shader, uniforms, *currentDraw.draw_template.texture);
-                  }
+                  assert(currentDraw.draw_template.texture);
+                  setupTextureShader(shader, uniforms, *currentDraw.draw_template.texture);
+               }
                else if(currentShader.first == ShaderType::SUN)
-                     currentDraw.draw_template.mesh.material.sendMaterial(shader, uniforms);
+                  currentDraw.draw_template.mesh.material.sendMaterial(shader, uniforms);
              
                for(auto& mt : currentDraw.model_transforms) {
                   setupModelView(shader, uniforms, mt, viewMatrix, true);
@@ -78,6 +74,9 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
                   shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
                   currentDraw.draw_template.texture->disable();
                }
+
+               if(currentDraw.draw_template.height_map) 
+                  currentDraw.draw_template.height_map->disable(); 
             }
          }
       
