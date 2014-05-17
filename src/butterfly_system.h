@@ -18,7 +18,6 @@ struct ButterflySystem {
 
    private:
       std::vector<Particle> particles_;
-      Texture texture_;
       DrawTemplate draw_template_;
       glm::vec3 origin_;
       float scale_;
