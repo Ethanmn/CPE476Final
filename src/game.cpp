@@ -10,9 +10,10 @@ namespace {
    AirCam airCam;
    bool showTreeShadows = false;
    bool debug = false;
-   bool betterShadows = false;
 
    int lighting = 0;
+   int raining = 0;
+
    float countLightning = 0.0;
    int numLightning = 0;
 }
@@ -169,12 +170,13 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableMoon());
    drawables.push_back(bushGen.drawable());
    drawables.push_back(treeGen.drawable());
-   drawables.push_back(rain_system_.drawable());
+   if(raining)
+      drawables.push_back(rain_system_.drawable());
 //   drawables.push_back(butterfly_system_.drawable());
 
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
 
-   draw_shader_.Draw(sunDir, sunIntensity, viewMatrix, drawables);
+   draw_shader_.Draw(drawables, viewMatrix, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {
@@ -251,29 +253,29 @@ void Game::mainLoop() {
                glClearColor (1.0, 1.0, 1.0, 1.0f);
             }
          }
-         { //handle debug for Katelyn
-            const auto key_quit = SDL_SCANCODE_2;
-            if (input.wasKeyPressed(key_quit)) {
-               betterShadows = !betterShadows;
-            }
-         }
-         { //handle debug for Katelyn
-            const auto key_quit = SDL_SCANCODE_3;
-            if (input.wasKeyPressed(key_quit)) {
+         {
+            const auto key_toNight = SDL_SCANCODE_3;
+            if (input.wasKeyPressed(key_toNight)) {
                day_cycle_.dayToNight();
             }
          }
-         { //handle debug for Katelyn
-            const auto key_quit = SDL_SCANCODE_4;
-            if (input.wasKeyPressed(key_quit)) {
+         {
+            const auto key_toDay = SDL_SCANCODE_4;
+            if (input.wasKeyPressed(key_toDay)) {
                day_cycle_.nightToDay();
             }
          }
-         { //handle quit
-            const auto key_quit = SDL_SCANCODE_L;
-            if (input.wasKeyPressed(key_quit)) {
+         { // Lightning
+            const auto key_lightning = SDL_SCANCODE_L;
+            if (input.wasKeyPressed(key_lightning)) {
                lighting = 1;
                numLightning = 3;
+            }
+         }
+         { // Rain
+            const auto key_rain = SDL_SCANCODE_R;
+            if (input.wasKeyPressed(key_rain)) {
+               raining = !raining;
             }
          }
          { //handle toggle between cameras

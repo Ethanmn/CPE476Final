@@ -9,7 +9,8 @@
 struct DrawShader {
    DrawShader() : uniforms(shaders.getUniformLocationMap()), 
       projectionMatrix(glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f)) {}
-   void Draw(glm::vec3 sunDir, float sunIntensity, glm::mat4 viewMatrix, std::vector<Drawable>);
+   void Draw(std::vector<Drawable> drawables, glm::mat4 viewMatrix,
+      glm::vec3 sunDir, float sunIntensity, int lightning);
    void SunInformation(glm::vec3 direction, float intensity);
    Shaders getShaders() const { return shaders; }
 

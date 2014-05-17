@@ -5,8 +5,8 @@
 
 using namespace std;
 
-void DrawShader::Draw(glm::vec3 sunDir, float sunIntensity, glm::mat4 viewMatrix, 
-      vector<Drawable> drawables) {
+void DrawShader::Draw(vector<Drawable> drawables, glm::mat4 viewMatrix,
+      glm::vec3 sunDir, float sunIntensity, int lightning) {
    for(auto& currentShader : shaders.getMap()) {
        for(auto& currentDraw : drawables) {
           Shader& shader = currentShader.second;
@@ -15,8 +15,8 @@ void DrawShader::Draw(glm::vec3 sunDir, float sunIntensity, glm::mat4 viewMatrix
           shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, 0);
           shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
           shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
-
-          shader.sendUniform(Uniform::LIGHTNING, uniforms, 0);
+ 
+          shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
           shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
           sendShadowInverseProjectionView(shader,uniforms, glm::vec3(0, 1, 0));
           setupSunShader(shader, uniforms, sunIntensity, sunDir);       
