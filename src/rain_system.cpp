@@ -7,7 +7,7 @@
 #define RAIN_MIN -200.0f
 
 RainSystem::RainSystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) : 
-            draw_template_({ShaderType::SUN, mesh, boost::none, false}),
+            draw_template_({ShaderType::SUN, mesh, boost::none, false, false}),
             origin_(origin),
             scale_(0.3f),
             velocity_(glm::vec3(0.0f, 0.0f, 0.0f)),
@@ -33,18 +33,6 @@ void RainSystem::step(units::MS dt) {
       particle.step(dt);
    }
 }
-
-/*
-void RainSystem::draw(Shader& shader,
-         const UniformLocationMap& uniform_location_map,
-         const glm::mat4& view_matrix) {
-
-   for (auto& particle : particles_) {
-      Material(glm::vec3(0.1, 0.4f, 0.9f)).sendMaterial(shader, uniform_location_map);
-      particle.draw(shader, uniform_location_map, view_matrix);
-   }
-}
-*/
 
 void RainSystem::reset() {
    for (auto& particle : particles_) {

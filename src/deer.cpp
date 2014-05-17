@@ -26,7 +26,7 @@ const float kLeanFactor = 2.0f;
 const float kStepTime = 300;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
-   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::DEER)), true}),
+   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::DEER)), true, true}),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 1),
@@ -236,13 +236,6 @@ void Deer::block() {
    stopStrafing();
    velocity_ = glm::vec3(0, 0, 0);
    blocked = true;
-}
-
-void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir) {
-   const auto model_matrix(calculateModel());
-   setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   shader.drawMesh(draw_template_.mesh);
 }
 
 glm::vec3 Deer::getFacing() const {

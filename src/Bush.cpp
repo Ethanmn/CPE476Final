@@ -31,33 +31,6 @@ glm::mat4 Bush::calculateModel() const {
    return glm::mat4(translate * scale * rotate);
 } 
 
-/*
-void Bush::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, bool betterShadow) {
-      const glm::mat4 translate(glm::translate(
-            glm::mat4(),
-            position_));
-   const glm::mat4 scale(glm::scale(
-            glm::mat4(),
-            glm::vec3(scale_)));
-   const glm::mat4 rotate(glm::rotate(
-            glm::rotate(
-               glm::mat4(),
-               rotate_,
-               glm::vec3(0, 1, 0)
-               ),
-            -90.0f,
-            glm::vec3(1, 0, 0)));
-   const glm::mat4 model_matrix(translate * scale * rotate);
-
-   if(betterShadow)
-      setupBetterShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   else
-      setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   shader.drawMesh(draw_template_.mesh);
-}
-*/
-
 void Bush::rustle(SoundEngine& sound_engine) {
    sound_engine.playSoundEffect(
          SoundEngine::SoundEffect::RUSTLE,

@@ -176,7 +176,7 @@ void Game::draw() {
 
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
 
-   draw_shader_.Draw(drawables, viewMatrix, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_, drawables, viewMatrix, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {
@@ -186,10 +186,10 @@ void Game::mainLoop() {
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
 
-  //if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
-      //printf("FAILURE\n");
-      //return;
-  //}   
+  if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
+      printf("FAILURE\n");
+      return;
+  }   
 
    while (running) {
       {  // Collect input
@@ -244,6 +244,7 @@ void Game::mainLoop() {
             const auto key_tree = SDL_SCANCODE_T;
             if (input.wasKeyPressed(key_tree)) {
                showTreeShadows = !showTreeShadows;
+               treeGen.includeInShadows(showTreeShadows); 
             }
          }
          { //handle debug for Katelyn

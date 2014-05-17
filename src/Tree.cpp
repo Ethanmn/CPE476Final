@@ -34,29 +34,6 @@ glm::mat4 Tree::calculateModel() const {
 bool Tree::isBlocker() {
    return true;
 }
-/*
-void Tree::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir) {
-   const auto scale = glm::scale(glm::mat4(1.0f), glm::vec3(TREE_SCALE));
-
-   const auto rotateTreeUp = glm::rotate(
-         glm::mat4(1.0f),
-         (float)(-90),
-         glm::vec3(1, 0, 0));
-
-   const auto translate = glm::translate(
-         glm::mat4(1.0f),
-         glm::vec3(position.x, position.y, position.z));
-   const glm::mat4 model_matrix(translate * scale * rotateTreeUp);
-
-   if(betterShadow)
-      setupBetterShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   else
-      setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   shader.drawMesh(draw_template_.mesh);
-}
-*/
-
 
 void Tree::performObjectHit(SoundEngine&) {
 }

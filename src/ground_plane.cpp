@@ -15,7 +15,7 @@ const std::vector<unsigned short> ground_indices{
 };
 
 GroundPlane::GroundPlane(const Mesh& mesh) :
-   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::GRASS)), false}),
+   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::GRASS)), false, false}),
    height_map_(texture_path(Textures::HEIGHT_MAP)),
    // TODO(chebert): Loaded it twice because textures confuse me.
    height_map_image_(texture_path(Textures::HEIGHT_MAP)) {
@@ -37,37 +37,6 @@ Drawable GroundPlane::drawable() const {
    return Drawable({draw_template_, model_matrices});
  
 }
-//void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-      //const glm::mat4& viewMatrix) {
-   //setupTextureShader(shader, uniform_locations, texture_);
-   //setupHeightMap(shader, uniform_locations, height_map_);
-
-   //for (auto& t : transforms_) {
-      //setupModelView(shader, uniform_locations, t, viewMatrix, true);
-      //shader.drawMesh(mesh_);
-   //}
-
-   //height_map_.disable();
-   //shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniform_locations, 0);
-   //texture_.disable();
-//}
-
-//void GroundPlane::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      //glm::vec3 sunDir, bool betterShadow) {
-   //setupHeightMap(shader, uniform_locations, height_map_);
-
-   //for (auto& t : transforms_) {
-      //if(betterShadow)
-         //setupBetterShadowShader(shader, uniform_locations, sunDir, t);
-      //else
-         //setupShadowShader(shader, uniform_locations, sunDir, t);
-
-      //shader.drawMesh(mesh_);
-   //}
-
-   //height_map_.disable();
-   //shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniform_locations, 0);
-//}
 
 float GroundPlane::heightAt(const glm::vec3& position) const {
    glm::vec4 pos(position, 1.0f);

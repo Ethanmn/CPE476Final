@@ -9,7 +9,8 @@
 #define Y_MAX 0.00007f
 
 ButterflySystem::ButterflySystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) :
-            draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::BUTTERFLY)), false}),
+            draw_template_({ShaderType::TEXTURE, mesh, 
+                  Texture(texture_path(Textures::BUTTERFLY)), true, false}),
             origin_(origin),
             scale_(0.3f),
             velocity_(glm::vec3(0.001f, 0.0f, 0.0f)),
@@ -44,20 +45,6 @@ void ButterflySystem::step(units::MS dt) {
       particle.step(dt);
    }
 }
-/*
-void ButterflySystem::draw(Shader& shader,
-         const UniformLocationMap& uniform_location_map,
-         const glm::mat4& view_matrix) {
-   setupTextureShader(shader, uniform_location_map, texture_);
-   texture_.enable();
-
-   for (auto& particle : particles_) {
-      particle.draw(shader, uniform_location_map, view_matrix);
-   }
-
-   texture_.disable();
-}
-*/
 
 Drawable ButterflySystem::drawable() const {
    std::vector<glm::mat4> model_matrices;

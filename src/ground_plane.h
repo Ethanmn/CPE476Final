@@ -18,10 +18,6 @@ struct Shaders;
 struct GroundPlane {
    static const int GROUND_SCALE;
    GroundPlane(const Mesh& mesh);
-   //void draw(Shader& shader, const UniformLocationMap& uniform_locations,
-             //const glm::mat4& viewMatrix);
-   //void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      //glm::vec3 sunDir, bool betterShadow);
 
    float heightAt(const glm::vec3& position) const;
 

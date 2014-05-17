@@ -37,9 +37,6 @@ struct Deer {
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
    void block();
-   /* helper functions for shadows */
-   void shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir);
 
    glm::mat4 calculateModel() const;
    DrawTemplate draw_template() const { return draw_template_; }

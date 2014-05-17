@@ -10,7 +10,7 @@ const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
 const int TREE_SCALE = 5;
 
 TreeGenerator::TreeGenerator(const Mesh& mesh) :
-   draw_template_({ShaderType::SUN, mesh, boost::none, false})
+   draw_template_({ShaderType::SUN, mesh, boost::none, false, false})
 {
    draw_template_.mesh.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
    
@@ -28,6 +28,10 @@ void TreeGenerator::generate() {
          }
       }
    }
+}
+
+void TreeGenerator::includeInShadows(bool value) {
+   draw_template_.includeInShadows = value;
 }
 
 std::vector<Tree>& TreeGenerator::getTrees() {
