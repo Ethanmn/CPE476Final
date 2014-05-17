@@ -166,6 +166,7 @@ void Game::draw() {
 
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
+   
    drawables.push_back(deer_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
@@ -174,12 +175,7 @@ void Game::draw() {
    drawables.push_back(rain_system_.drawable());
    //drawables.push_back(butterfly_system_.drawable());
 
-   if (airMode) {
-      viewMatrix = airCam.getViewMatrix();
-   }
-   else {
-      viewMatrix = deerCam.getViewMatrix();
-   }
+   viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
 
    draw_shader_.Draw(sunDir, sunIntensity, viewMatrix, drawables);
 }

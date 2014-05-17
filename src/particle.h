@@ -12,17 +12,12 @@ struct Shader;
 struct Particle {
    Particle(const glm::vec3& position, float scale, const glm::vec3& velocity,
          const glm::vec3& accleration) :
-      //mesh_(mesh),
-      //texture_(texture),
       position_(position),
       velocity_(velocity),
       acceleration_(accleration),
       scale_(scale),
       rotate_(0.0f),
-      life_time_(0) 
-{
-   //draw_template_.mesh.material = Material(glm::vec3(0.7, 0.24, 0.15));
-}
+      life_time_(0) {}
 
    void step(units::MS dt);
 
@@ -40,9 +35,6 @@ struct Particle {
    glm::mat4 calculateModel() const;
 
   private:
-   //Mesh mesh_;
-   //boost::optional<Texture> texture_;
-
    glm::vec3 position_;
    glm::vec3 velocity_;
    glm::vec3 acceleration_;

@@ -9,7 +9,7 @@
 #define Y_MAX 0.00007f
 
 ButterflySystem::ButterflySystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) :
-            draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::DEER))}),
+            draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::BUTTERFLY))}),
             origin_(origin),
             scale_(0.3f),
             velocity_(glm::vec3(0.001f, 0.0f, 0.0f)),
@@ -24,7 +24,9 @@ ButterflySystem::ButterflySystem(const Mesh& mesh, const glm::vec3& origin, int 
                                        glm::vec3(rvx, 0.0f, rvz), acceleration_));
 
                }
+               //draw_template_.mesh.material = Material(glm::vec3(0.7, 0.24, 0.15));
             }
+
 
 void ButterflySystem::step(units::MS dt) {
    for (auto& particle : particles_) {
