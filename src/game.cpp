@@ -21,11 +21,11 @@ namespace {
 Game::Game() :
    attribute_location_map_({draw_shader_.getShaders().getAttributeLocationMap()}),
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/deer_butt.dae"))),
+            mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
-                     mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
+                     mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    bushGen(Mesh::fromAssimpMesh(
@@ -36,7 +36,7 @@ Game::Game() :
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
    butterfly_system_(Mesh::fromAssimpMesh(attribute_location_map_, 
-            mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f), 10),
+            mesh_loader_.loadMesh("../models/butterfly.dae")), glm::vec3(0.0f), 10),
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_, 
             mesh_loader_.loadMesh("../models/box.dae")), 
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
@@ -169,8 +169,8 @@ void Game::draw() {
    drawables.push_back(deer_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
-   drawables.push_back(bushGen.drawable());
-   drawables.push_back(treeGen.drawable());
+   //drawables.push_back(bushGen.drawable());
+   //drawables.push_back(treeGen.drawable());
    if(raining)
       drawables.push_back(rain_system_.drawable());
    drawables.push_back(butterfly_system_.drawable());
