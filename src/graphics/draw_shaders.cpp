@@ -24,10 +24,16 @@ void DrawShader::Draw(glm::vec3 sunDir, float sunIntensity, glm::mat4 viewMatrix
           if(currentDraw.draw_template.shader_type == currentShader.first) {
              if(currentShader.first == ShaderType::TEXTURE) {
                  shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
-                 shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
-                 shader.sendUniform(Uniform::BONES, uniforms,
-                    currentDraw.draw_template.mesh.animation.calculateBoneTransformations(
-                    currentDraw.draw_template.mesh.bone_array));
+
+                 if(currentDraw.draw_template.hasBones) {
+                    shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
+                    shader.sendUniform(Uniform::BONES, uniforms,
+                       currentDraw.draw_template.mesh.animation.calculateBoneTransformations(
+                       currentDraw.draw_template.mesh.bone_array));
+                 }
+                 else
+                    shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+
                  assert(currentDraw.draw_template.texture);
                  setupTextureShader(shader, uniforms, *currentDraw.draw_template.texture);
              }

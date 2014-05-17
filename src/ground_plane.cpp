@@ -3,6 +3,7 @@
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
 #include "graphics/shader_setup.h"
+#include "graphics/texture.h"
 
 const int GroundPlane::GROUND_SCALE = 500;
 const int PLANE_SIZE = 50;
@@ -14,9 +15,8 @@ const std::vector<unsigned short> ground_indices{
 };
 
 GroundPlane::GroundPlane(const Mesh& mesh) :
-   texture_(texture_path(Textures::GRASS)),
+   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::GRASS)), false}),
    height_map_(texture_path(Textures::HEIGHT_MAP)),
-   mesh_(mesh),
    // TODO(chebert): Loaded it twice because textures confuse me.
    height_map_image_(texture_path(Textures::HEIGHT_MAP)) {
 
@@ -30,37 +30,44 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
       }
    }
 
-void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-      const glm::mat4& viewMatrix) {
-   setupTextureShader(shader, uniform_locations, texture_);
-   setupHeightMap(shader, uniform_locations, height_map_);
-
-   for (auto& t : transforms_) {
-      setupModelView(shader, uniform_locations, t, viewMatrix, true);
-      shader.drawMesh(mesh_);
-   }
-
-   height_map_.disable();
-   shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniform_locations, 0);
-   texture_.disable();
+Drawable GroundPlane::drawable() const {
+   std::vector<glm::mat4> model_matrices;
+   for (auto& transform : transforms_) 
+      model_matrices.push_back(transform);
+   return Drawable({draw_template_, model_matrices});
+ 
 }
+//void GroundPlane::draw(Shader& shader, const UniformLocationMap& uniform_locations,
+      //const glm::mat4& viewMatrix) {
+   //setupTextureShader(shader, uniform_locations, texture_);
+   //setupHeightMap(shader, uniform_locations, height_map_);
 
-void GroundPlane::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, bool betterShadow) {
-   setupHeightMap(shader, uniform_locations, height_map_);
+   //for (auto& t : transforms_) {
+      //setupModelView(shader, uniform_locations, t, viewMatrix, true);
+      //shader.drawMesh(mesh_);
+   //}
 
-   for (auto& t : transforms_) {
-      if(betterShadow)
-         setupBetterShadowShader(shader, uniform_locations, sunDir, t);
-      else
-         setupShadowShader(shader, uniform_locations, sunDir, t);
+   //height_map_.disable();
+   //shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniform_locations, 0);
+   //texture_.disable();
+//}
 
-      shader.drawMesh(mesh_);
-   }
+//void GroundPlane::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
+      //glm::vec3 sunDir, bool betterShadow) {
+   //setupHeightMap(shader, uniform_locations, height_map_);
 
-   height_map_.disable();
-   shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniform_locations, 0);
-}
+   //for (auto& t : transforms_) {
+      //if(betterShadow)
+         //setupBetterShadowShader(shader, uniform_locations, sunDir, t);
+      //else
+         //setupShadowShader(shader, uniform_locations, sunDir, t);
+
+      //shader.drawMesh(mesh_);
+   //}
+
+   //height_map_.disable();
+   //shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniform_locations, 0);
+//}
 
 float GroundPlane::heightAt(const glm::vec3& position) const {
    glm::vec4 pos(position, 1.0f);

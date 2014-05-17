@@ -19,14 +19,10 @@ namespace {
 
 Game::Game() :
    attribute_location_map_({draw_shader_.getShaders().getAttributeLocationMap()}),
-   //ground_(Mesh::fromAssimpMesh(attribute_location_map_,
-            //mesh_loader_.loadMesh("../models/ground_plane.obj"))),
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
-   //day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
-                     //mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
                      mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -166,14 +162,15 @@ void Game::draw() {
 
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
-   
+ 
+   drawables.push_back(ground_.drawable());  
    drawables.push_back(deer_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
    drawables.push_back(bushGen.drawable());
    drawables.push_back(treeGen.drawable());
    drawables.push_back(rain_system_.drawable());
-   //drawables.push_back(butterfly_system_.drawable());
+//   drawables.push_back(butterfly_system_.drawable());
 
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
 

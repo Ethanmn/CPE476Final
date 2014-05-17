@@ -14,6 +14,7 @@ struct DrawTemplate {
    ShaderType shader_type;
    Mesh mesh;
    boost::optional<Texture> texture;
+   bool hasBones;
    /* Material and Bones are currently in Mesh */
    //Material material;
    //Bone bones;   
