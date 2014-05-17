@@ -27,7 +27,6 @@ struct GroundPlane {
   private:
    DrawTemplate draw_template_;
    std::vector<glm::mat4> transforms_;
-   Texture height_map_;
    Magick::Image height_map_image_;
 };
 

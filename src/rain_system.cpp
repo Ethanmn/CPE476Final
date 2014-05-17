@@ -7,7 +7,7 @@
 #define RAIN_MIN -200.0f
 
 RainSystem::RainSystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) : 
-            draw_template_({ShaderType::SUN, mesh, boost::none, false, false}),
+            draw_template_({ShaderType::SUN, mesh, boost::none, boost::none, false, false}),
             origin_(origin),
             scale_(0.3f),
             velocity_(glm::vec3(0.0f, 0.0f, 0.0f)),

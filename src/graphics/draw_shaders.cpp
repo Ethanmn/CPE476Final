@@ -15,9 +15,7 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
        for(auto& currentDraw : drawables) {
           Shader& shader = currentShader.second;
           shader.use();
-          /* instead of 0, put shadow_map_fbo.textureID() */ 
-          
-             if(currentShader.first == ShaderType::SHADOW && currentDraw.draw_template.includeInShadows) {
+             if(currentShader.first == ShaderType::SHADOW && currentDraw.draw_template.include_in_shadows) {
                 if(!debug) {
                   shadow_map_fbo_.BindForWriting();
                   glClear(GL_DEPTH_BUFFER_BIT);
@@ -46,13 +44,16 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
                shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
  
                shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-
                setupSunShader(shader, uniforms, sunIntensity, sunDir); 
               
                if(currentShader.first == ShaderType::TEXTURE) {
-                  shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
+                  if(currentDraw.draw_template.height_map) {
+                     setupHeightMap(shader, uniforms, *currentDraw.draw_template.height_map); 
+                  }
+                  else
+                     shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
 
-                  if(currentDraw.draw_template.hasBones) {
+                  if(currentDraw.draw_template.has_bones) {
                      shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
                      shader.sendUniform(Uniform::BONES, uniforms,
                      currentDraw.draw_template.mesh.animation.calculateBoneTransformations(
