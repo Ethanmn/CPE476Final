@@ -41,7 +41,7 @@ Game::Game() :
    butterfly_system_(Mesh::fromAssimpMesh(attribute_location_map_, 
             mesh_loader_.loadMesh("../models/butterfly.dae")), glm::vec3(0.0f), 10),
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_, 
-            mesh_loader_.loadMesh("../models/deer_butt.dae")), 
+            mesh_loader_.loadMesh("../models/box.dae")), 
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
    objTree(),
    airMode(false)
