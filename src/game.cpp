@@ -46,7 +46,9 @@ Game::Game() :
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-   glClearColor (1.0, 1.0, 1.0, 1.0f);
+   glClearColor (0.05098, 
+                 0.6274509,
+                 1.0,  1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -164,7 +166,6 @@ void Game::draw() {
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
  
-   drawables.push_back(ground_.drawable());  
    drawables.push_back(deer_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
@@ -173,6 +174,7 @@ void Game::draw() {
    if(raining)
       drawables.push_back(rain_system_.drawable());
    drawables.push_back(butterfly_system_.drawable());
+   drawables.push_back(ground_.drawable());
 
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
 
@@ -251,7 +253,6 @@ void Game::mainLoop() {
             const auto key_quit = SDL_SCANCODE_1;
             if (input.wasKeyPressed(key_quit)) {
                debug = !debug;
-               glClearColor (1.0, 1.0, 1.0, 1.0f);
             }
          }
          {

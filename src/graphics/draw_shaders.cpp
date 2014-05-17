@@ -16,6 +16,7 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
           Shader& shader = currentShader.second;
           shader.use();
              if(currentShader.first == ShaderType::SHADOW && currentDraw.draw_template.include_in_shadows) {
+                glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
                 if(!debug) {
                   shadow_map_fbo_.BindForWriting();
                   glClear(GL_DEPTH_BUFFER_BIT);
