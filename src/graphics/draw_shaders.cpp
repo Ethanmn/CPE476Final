@@ -60,7 +60,7 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
                      else
                         shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
 
-                     if (drawable.draw_template.has_bones) {
+                     if (drawable.draw_template.has_bones()) {
                         shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
                         shader.sendUniform(Uniform::BONES, uniforms,
                               drawable.draw_template.mesh.animation.calculateBoneTransformations(

@@ -26,7 +26,7 @@ const float kLeanFactor = 2.0f;
 const float kStepTime = 300;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
-   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::DEER)), boost::none, true, true}),
+   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::DEER)), boost::none, true }),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 1),
