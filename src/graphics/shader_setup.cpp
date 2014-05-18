@@ -7,6 +7,8 @@
 #include "texture.h"
 #include "uniforms.h"
 
+#define ORTHO_PROJ_AMOUNT 70.0f
+
 namespace  {
    const glm::mat4 projection_matrix = glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f);
    const glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0,
@@ -64,12 +66,14 @@ void setupWireframeShader(Shader& shader, const UniformLocationMap& locations,
 
 
 void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
-      glm::vec3 lightDir, glm::mat4 modelMatrix) {
+      glm::vec3 lightDir, glm::vec3 deerPos, glm::mat4 modelMatrix) {
    glPolygonMode(GL_FRONT, GL_FILL);
    glm::mat4 shadowProjection, shadowView, modelView;
 
-   shadowProjection = glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, -40.0f, 40.0f);
-   shadowView = glm::lookAt(lightDir, glm::vec3(0.0,0.0,0.0), glm::vec3(0.0, 1.0, 0.0));
+   shadowProjection = glm::ortho(-ORTHO_PROJ_AMOUNT, ORTHO_PROJ_AMOUNT, 
+                                 -ORTHO_PROJ_AMOUNT, ORTHO_PROJ_AMOUNT,
+                                 -40.0f, 40.0f);
+   shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
    modelView = shadowView * modelMatrix;
 
    shader.sendUniform(Uniform::MODEL_VIEW, locations, modelView);
@@ -82,11 +86,13 @@ void sendInverseViewProjection(Shader& shader, const UniformLocationMap& locatio
 }
 
 void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
-      glm::vec3 lightDir) {
+      glm::vec3 lightDir, glm::vec3 deerPos) {
    glm::mat4 lightMat, shadowProjection, shadowView;
 
-   shadowProjection = biasMatrix * glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, -40.0f, 40.0f);
-   shadowView = glm::lookAt(lightDir, glm::vec3(0.0,0.0,0.0), glm::vec3(0.0, 1.0, 0.0));
+   shadowProjection = biasMatrix * glm::ortho(-ORTHO_PROJ_AMOUNT, ORTHO_PROJ_AMOUNT, 
+                                              -ORTHO_PROJ_AMOUNT, ORTHO_PROJ_AMOUNT,
+                                              -40.0f, 40.0f);
+   shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
    lightMat = shadowProjection * shadowView;
 
    shader.sendUniform(Uniform::SHADOW_MAP, locations, lightMat);

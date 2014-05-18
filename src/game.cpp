@@ -21,11 +21,11 @@ namespace {
 Game::Game() :
    attribute_location_map_({draw_shader_.getShaders().getAttributeLocationMap()}),
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/ground_plane.obj"))),
+            mesh_loader_.loadMesh("../models/deer_butt.dae"))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
-                     mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
+                     mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
    bushGen(Mesh::fromAssimpMesh(
@@ -36,7 +36,7 @@ Game::Game() :
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
    butterfly_system_(Mesh::fromAssimpMesh(attribute_location_map_, 
-            mesh_loader_.loadMesh("../models/butterfly.dae")), glm::vec3(0.0f), 10),
+            mesh_loader_.loadMesh("../models/deer_butt.dae")), glm::vec3(0.0f), 10),
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_, 
             mesh_loader_.loadMesh("../models/box.dae")), 
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
@@ -157,6 +157,7 @@ void Game::step(units::MS dt) {
 void Game::draw() {
    float sunIntensity = day_cycle_.getSunIntensity();
    glm::vec3 sunDir = day_cycle_.getSunDir();
+   glm::vec3 deerPos;
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glClearColor (0.05098 * sunIntensity,
@@ -177,8 +178,9 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
 
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
+   deerPos = deer_.getPosition();
 
-   draw_shader_.Draw(shadow_map_fbo_, drawables, viewMatrix, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_, drawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {

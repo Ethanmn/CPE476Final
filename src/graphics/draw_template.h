@@ -17,9 +17,6 @@ struct DrawTemplate {
    boost::optional<Texture> height_map;
    bool include_in_shadows;
    bool has_bones() const { return !mesh.bone_array.empty(); }
-   /* Material and Bones are currently in Mesh */
-   //Material material;
-   //Bone bones;   
 };
 
 struct Drawable {

@@ -42,7 +42,7 @@ void main() {
    vec3 spec = vec3(0.01, 0.01, 0.01);
    float shine = 100.0;
       
-   if(shadowMapTexColor.z <= vShadow.z)
+   if(shadowMapTexColor.z <= vShadow.z - bias)
       applyShadow = 0.7;
    
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));
