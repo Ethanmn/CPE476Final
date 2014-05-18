@@ -9,76 +9,104 @@ namespace {
    bool debug = false;
 }
 
+// Setup common to both Texture/Sun Shaders
+void DrawShader::setupDrawShader(Shader& shader, ShadowMapFBO shadow_map_fbo_, glm::mat4 viewMatrix,
+      glm::vec3 sunDir, float sunIntensity, int lightning) {
+   shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
+   shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_id());
+   sendShadowInverseProjectionView(shader,uniforms, sunDir);
+
+   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+   shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
+
+   shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
+   setupSunShader(shader, uniforms, sunIntensity, sunDir); 
+}
+
 void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, glm::mat4 viewMatrix,
       glm::vec3 sunDir, float sunIntensity, int lightning) {
-   for(auto& currentShader : shaders.getMap()) {
-      for(auto& currentDraw : drawables) {
-         Shader& shader = currentShader.second;
-         shader.use();
-         if(currentShader.first == ShaderType::SHADOW && currentDraw.draw_template.include_in_shadows) {
+   for(auto& shader_pair : shaders.getMap()) {
+      Shader& shader = shader_pair.second;
+      shader.use();
+      switch (shader_pair.first) {
+         case ShaderType::SHADOW:
             if(!debug) {
                shadow_map_fbo_.BindForWriting();
                glClear(GL_DEPTH_BUFFER_BIT);
             }
 
-            for(auto& mt : currentDraw.model_transforms) { 
-               setupShadowShader(shader, uniforms, sunDir, mt); 
-               shader.drawMesh(currentDraw.draw_template.mesh);
+            for (auto& drawable : drawables) {
+               if (drawable.draw_template.include_in_shadows) {
+                  for(auto& mt : drawable.model_transforms) {
+                     setupShadowShader(shader, uniforms, sunDir, mt);
+                     shader.drawMesh(drawable.draw_template.mesh);
+                  }
+               }
             }
 
             if(!debug) {
                glBindFramebuffer(GL_FRAMEBUFFER, 0);
                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                shadow_map_fbo_.BindForReading();
-            } 
-         }
-         /* All shaders that are not SHADOW */
-         else if(!debug && currentDraw.draw_template.shader_type == currentShader.first) {
-            shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
-            shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_id());
-            sendShadowInverseProjectionView(shader,uniforms, sunDir);
+            }
+            break;
+         case ShaderType::TEXTURE:
+            setupDrawShader(shader, shadow_map_fbo_, viewMatrix, sunDir, sunIntensity, lightning);
+            for (auto& drawable : drawables) {
+               if (drawable.draw_template.shader_type == shader_pair.first) {
+                  { // Per-Drawable Texture Shader Setup
+                     if (drawable.draw_template.height_map) 
+                        setupHeightMap(shader, uniforms, *drawable.draw_template.height_map);
+                     else
+                        shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
 
-            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
-            shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
+                     if (drawable.draw_template.has_bones) {
+                        shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
+                        shader.sendUniform(Uniform::BONES, uniforms,
+                              drawable.draw_template.mesh.animation.calculateBoneTransformations(
+                                 drawable.draw_template.mesh.bone_array));
+                     }
+                     else
+                        shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
 
-            shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-            setupSunShader(shader, uniforms, sunIntensity, sunDir); 
+                     assert(drawable.draw_template.texture);
+                     setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
+                  }
 
-            if(currentShader.first == ShaderType::TEXTURE) {
-               if(currentDraw.draw_template.height_map) 
-                  setupHeightMap(shader, uniforms, *currentDraw.draw_template.height_map);
-               else
-                  shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
+                  drawModelTransforms(shader, drawable, viewMatrix);
 
-               if(currentDraw.draw_template.has_bones) {
-                  shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
-                  shader.sendUniform(Uniform::BONES, uniforms,
-                        currentDraw.draw_template.mesh.animation.calculateBoneTransformations(
-                           currentDraw.draw_template.mesh.bone_array));
+                  { // Per-drawable Texture Shader teardown
+                     shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+                     drawable.draw_template.texture->disable();
+
+                     if(drawable.draw_template.height_map) {
+                        drawable.draw_template.height_map->disable();
+                     }
+                  }
                }
-               else
-                  shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-
-               assert(currentDraw.draw_template.texture);
-               setupTextureShader(shader, uniforms, *currentDraw.draw_template.texture);
             }
-            else if(currentShader.first == ShaderType::SUN)
-               currentDraw.draw_template.mesh.material.sendMaterial(shader, uniforms);
-
-            for(auto& mt : currentDraw.model_transforms) {
-               setupModelView(shader, uniforms, mt, viewMatrix, true);
-               shader.drawMesh(currentDraw.draw_template.mesh);
+            break;
+         case ShaderType::SUN:
+            setupDrawShader(shader, shadow_map_fbo_, viewMatrix, sunDir, sunIntensity, lightning);
+            for (auto& drawable : drawables) {
+               if (drawable.draw_template.shader_type == shader_pair.first) {
+                  { // Per-drawable sun shader setup
+                     drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
+                  }
+                  drawModelTransforms(shader, drawable, viewMatrix);
+               }
             }
+            break;
 
-            if(currentShader.first == ShaderType::TEXTURE) {
-               shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-               currentDraw.draw_template.texture->disable();
-            }
-
-            if(currentDraw.draw_template.height_map) 
-               currentDraw.draw_template.height_map->disable(); 
-         }
+         case ShaderType::WIREFRAME:
+            break;
       }
+   }
+}
 
-   }   
+void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view) {
+   for(const auto& mt : drawable.model_transforms) {
+      setupModelView(shader, uniforms, mt, view, true);
+      shader.drawMesh(drawable.draw_template.mesh);
+   }
 }
