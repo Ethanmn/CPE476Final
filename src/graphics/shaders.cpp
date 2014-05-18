@@ -79,6 +79,14 @@ const std::vector<Uniform> kShadowUniforms{
    Uniform::PROJECTION,
 };
 
+const std::vector<Attribute> kSkyboxAttrs{
+
+};
+const std::vector<Uniform> kSkyboxUniforms{
+   Uniform::MODEL_VIEW,
+   Uniform::PROJECTION
+};
+
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
@@ -89,8 +97,8 @@ Shaders::Shaders() {
             ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
    //shaders_.insert(std::make_pair(
-            //ShaderType::WIREFRAME,
-            //Shader("wireframe", kWireframeAttrs, kWireframeUniforms)));
+            //ShaderType::SKYBOX,
+            //Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

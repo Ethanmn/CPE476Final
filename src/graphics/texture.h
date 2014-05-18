@@ -11,7 +11,8 @@ enum class Textures {
    BUTTERFLY,
    HEIGHT_MAP,
    MOON_STONE,
-   SUN_STONE
+   SUN_STONE,
+   SKYBOX
 };
 
 inline std::string texture_path(Textures texture) {
@@ -30,6 +31,9 @@ inline std::string texture_path(Textures texture) {
          return "../textures/stone_moon.bmp";
       case Textures::SUN_STONE:
          return "../textures/stone_sun.bmp";
+      case Textures::SKYBOX:
+         return "../textures/skybox.bmp";
+
    }
 }
 

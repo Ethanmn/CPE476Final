@@ -100,6 +100,8 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
 
          case ShaderType::WIREFRAME:
             break;
+         case ShaderType::SKYBOX:
+            break;
       }
    }
 }
