@@ -7,7 +7,7 @@ struct Material {
 uniform Material uMat;
 
 uniform int uHasBones;
-uniform mat4 uBones[100];
+uniform mat4 uBones[30];
 
 attribute vec3 aPosition;
 attribute vec3 aNormal;

@@ -1,5 +1,4 @@
 uniform int uHasHeightMap;
-uniform sampler2D uHeightMap;
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
@@ -9,7 +8,7 @@ uniform mat4 uNormalMatrix;
 uniform mat4 uShadowMap;
 
 uniform int uHasBones;
-uniform mat4 uBones[100];
+uniform mat4 uBones[30];
 
 attribute vec3 aShadowTexCoord;
 attribute vec3 aTexCoord;
@@ -55,10 +54,10 @@ void main() {
    }
 
    vec4 heightColor = vec4(0.0);
-   float HEIGHT_MAP_SCALE = 3.0;
+   /*float HEIGHT_MAP_SCALE = 3.0;
    if (uHasHeightMap != 0) {
       heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;
-   }
+   }*/
 
    if(heightColor.y < 0.0)
       below = 1.0;
