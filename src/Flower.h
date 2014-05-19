@@ -1,6 +1,9 @@
 #ifndef FLOWER_H_
 #define FLOWER_H_
 
+/*
+ * http://stackoverflow.com/questions/2874441/deleting-elements-from-stl-set-while-iterating
+ */
 #include <glm/glm.hpp>
 #include "bounding_rectangle.h"
 #include "GameObject.h"

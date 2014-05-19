@@ -25,14 +25,12 @@ Game::Game() :
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
-                     mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
+            mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
-   bushGen(Mesh::fromAssimpMesh(
-            attribute_location_map_,
+   bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
-   flowerGen(Mesh::fromAssimpMesh(
-            attribute_location_map_,
+   flowerGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae"))),
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
