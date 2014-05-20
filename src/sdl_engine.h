@@ -21,10 +21,6 @@ struct SDLEngine {
       glewInit();
       std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
       std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-
-      int MaxVertexTextureImageUnits;
-      glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &MaxVertexTextureImageUnits);
-      std::cout << "Max Vertex Texture Image Units: " << MaxVertexTextureImageUnits << std::endl;
    }
 
    ~SDLEngine() {
