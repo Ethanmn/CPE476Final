@@ -25,12 +25,13 @@ Game::Game() :
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
-                     mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
+            mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree2.3ds"))),
-   bushGen(Mesh::fromAssimpMesh(
-            attribute_location_map_,
+   bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/tree.3ds"))),
+   flowerGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh("../models/deer_butt.dae"))),
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
@@ -66,6 +67,7 @@ Game::Game() :
 
    treeGen.generate();
    bushGen.generate(ground_);
+   flowerGen.generate();
 
    std::vector<GameObject*> objects;
 
@@ -74,6 +76,9 @@ Game::Game() :
    }
    for (auto& bush : bushGen.getBushes()) {
       objects.push_back(&bush);
+   }
+   for (auto& flower : flowerGen.getFlowers()) {
+      objects.push_back(&flower);
    }
 
    //Pre-processing BVH Tree
@@ -172,6 +177,7 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableMoon());
    drawables.push_back(bushGen.drawable());
    drawables.push_back(treeGen.drawable());
+   drawables.push_back(flowerGen.drawable());
    if(raining)
       drawables.push_back(rain_system_.drawable());
    drawables.push_back(butterfly_system_.drawable());

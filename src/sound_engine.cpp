@@ -52,6 +52,7 @@ SoundEngine::SoundEngine() {
             irrklang::ESM_NO_STREAMING,
             should_preload);
 
+
    const auto kGrassVolume = 0.3f;
    sound_effect_sources_[SoundEffect::GRASS_LAND]->setDefaultVolume(kGrassVolume);
    sound_effect_sources_[SoundEffect::GRASS_WALK0]->setDefaultVolume(kGrassVolume);
@@ -101,6 +102,13 @@ SoundEngine::SoundEngine() {
             irrklang::ESM_NO_STREAMING,
             should_preload);
    sound_effect_sources_[SoundEffect::WOODPECKER0]->setDefaultVolume(0.2f);
+
+   sound_effect_sources_[SoundEffect::EAT_FLOWER] =
+   engine_->addSoundSourceFromFile(
+            "../sounds/eating.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
+   sound_effect_sources_[SoundEffect::EAT_FLOWER]->setDefaultVolume(0.5f);
 }
 
 void SoundEngine::set_listener_position(const glm::vec3& position, const glm::vec3& orientation) {
