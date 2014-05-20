@@ -8,7 +8,7 @@ uniform mat4 uNormalMatrix;
 uniform mat4 uShadowMap;
 
 uniform int uHasBones;
-uniform mat4 uBones[30];
+uniform mat4 uBones[40];
 
 attribute vec3 aShadowTexCoord;
 attribute vec3 aTexCoord;
