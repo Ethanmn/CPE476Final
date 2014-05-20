@@ -9,10 +9,12 @@ uniform int uHasTexture;
 uniform mat4 uShadowMap;
 
 uniform int uHasBones;
-uniform mat4 uBones[100];
+uniform mat4 uBones[40];
 
 uniform int uHasHeightMap;
+#ifdef USE_HEIGHT_MAP
 uniform sampler2D uHeightMap;
+#endif
 
 attribute vec3 aTexCoord;
 attribute vec3 aPosition;
@@ -57,10 +59,12 @@ void main() {
    }
 
    vec4 heightColor = vec4(0.0);
+#ifdef USE_HEIGHT_MAP
    float HEIGHT_MAP_SCALE = 3.0;
    if (uHasHeightMap != 0) {
       heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;
    }
+#endif
 
    vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
    vViewer = vPosition;

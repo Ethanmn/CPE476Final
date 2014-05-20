@@ -121,15 +121,17 @@ std::vector<GameObject*> BVHTree::getCollidingObjects(BoundingRectangle bRect) {
          if (curNode->hasLeftNode()) {
             //printf("Adding left node. ");
             nodeQ.push_back(&(allNodes.at(curNode->getLeftIndex())));
-            //curNode->getLeftNode()->printNode();
+            //allNodes.at(curNode->getLeftIndex()).printNode();
          }
          
          if (curNode->hasRightNode()) {
             //printf("Adding right node. ");
             nodeQ.push_back(&(allNodes.at(curNode->getRightIndex())));
-            //curNode->getRightNode()->printNode();
+            //allNodes.at(curNode->getRightIndex()).printNode();
          }
       }
+
+      //printf("Checking against bRect at (%f, %f) with dim (%f, %f)\n", bRect.getCenter().x, bRect.getCenter().y, bRect.getDimensions().x, bRect.getDimensions().y);
    }
 
    /*printf("---ALL NODES---\n");
