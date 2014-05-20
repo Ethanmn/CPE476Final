@@ -27,9 +27,9 @@ Game::Game() :
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
             mesh_loader_.loadMesh("../models/deer_butt.dae")), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/tree2.3ds"))),
+            mesh_loader_.loadMesh("../models/deer_butt.dae"))),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/tree.3ds"))),
+            mesh_loader_.loadMesh("../models/deer_butt.dae"))),
    flowerGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh("../models/deer_butt.dae"))),
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
@@ -176,11 +176,11 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
    drawables.push_back(bushGen.drawable());
-   drawables.push_back(treeGen.drawable());
-   drawables.push_back(flowerGen.drawable());
-   if(raining)
-      drawables.push_back(rain_system_.drawable());
-   drawables.push_back(butterfly_system_.drawable());
+   //drawables.push_back(treeGen.drawable());
+   //drawables.push_back(flowerGen.drawable());
+   //if(raining)
+      //drawables.push_back(rain_system_.drawable());
+   //drawables.push_back(butterfly_system_.drawable());
    drawables.push_back(ground_.drawable());
 
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();

@@ -13,9 +13,7 @@
 enum class ShaderType { 
    /* Ordering is important, shadow must be first */
    SHADOW,
-   SUN,
    TEXTURE,
-   WIREFRAME,
    SKYBOX
 };
 

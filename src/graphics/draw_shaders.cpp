@@ -55,6 +55,7 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
             for (auto& drawable : drawables) {
                if (drawable.draw_template.shader_type == shader_pair.first) {
                   { // Per-Drawable Texture Shader Setup
+            
                      if (drawable.draw_template.height_map) 
                         setupHeightMap(shader, uniforms, *drawable.draw_template.height_map);
                      else
@@ -69,36 +70,29 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
                      else
                         shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
 
-                     assert(drawable.draw_template.texture);
-                     setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
+                     if(drawable.draw_template.texture)
+                        setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
+                     else {
+                        shader.sendUniform(Uniform::HAS_TEXTURE, uniforms, 0);
+                        shader.sendUniform(Uniform::TEXTURE, uniforms, 0);
+                     }
+
+                     drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
                   }
 
                   drawModelTransforms(shader, drawable, viewMatrix);
 
                   { // Per-drawable Texture Shader teardown
                      shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-                     drawable.draw_template.texture->disable();
 
-                     if(drawable.draw_template.height_map) {
+                     if(drawable.draw_template.texture)
+                        drawable.draw_template.texture->disable();
+
+                     if(drawable.draw_template.height_map) 
                         drawable.draw_template.height_map->disable();
-                     }
                   }
                }
             }
-            break;
-         case ShaderType::SUN:
-            setupDrawShader(shader, shadow_map_fbo_, viewMatrix, deerPos, sunDir, sunIntensity, lightning);
-            for (auto& drawable : drawables) {
-               if (drawable.draw_template.shader_type == shader_pair.first) {
-                  { // Per-drawable sun shader setup
-                     drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
-                  }
-                  drawModelTransforms(shader, drawable, viewMatrix);
-               }
-            }
-            break;
-
-         case ShaderType::WIREFRAME:
             break;
          case ShaderType::SKYBOX:
             break;

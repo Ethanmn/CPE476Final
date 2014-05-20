@@ -1,28 +1,6 @@
 #include "graphics/shaders.h"
 #include <assert.h>
 
-const std::vector<Attribute> kSunAttrs{
-   Attribute::VERTEX,
-   Attribute::NORMAL,
-};
-const std::vector<Uniform> kSunUniforms{
-   Uniform::MODEL_VIEW,        
-   Uniform::MODEL,              
-   Uniform::VIEW,                
-   Uniform::PROJECTION,          
-   Uniform::NORMAL,              
-   Uniform::SHADOW_MAP,          
-   Uniform::HAS_SHADOWS,         
-   Uniform::SHADOW_MAP_TEXTURE,  
-   Uniform::M_AMB,
-   Uniform::M_DIF,
-   Uniform::M_SPEC,
-   Uniform::M_SHINE,
-   Uniform::SUN_DIR,             
-   Uniform::SUN_INTENSITY,       
-   Uniform::LIGHTNING,           
-};
-
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
    Attribute::TEX_COORD,
@@ -49,26 +27,29 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::VIEW,
    Uniform::PROJECTION,
    Uniform::NORMAL,
-   Uniform::SHADOW_MAP,
+
+   Uniform::M_AMB,
+   Uniform::M_DIF,
+   Uniform::M_SPEC,
+   Uniform::M_SHINE,
+   
    Uniform::HAS_SHADOWS,
+   Uniform::SHADOW_MAP,
    Uniform::SHADOW_MAP_TEXTURE,
+   
+   Uniform::HAS_TEXTURE,
    Uniform::TEXTURE,
+   
    Uniform::HEIGHT_MAP,
    Uniform::HAS_HEIGHT_MAP,
+   
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
+   
    Uniform::BONES,
    Uniform::HAS_BONES,
+  
    Uniform::LIGHTNING
-};
-
-const std::vector<Attribute> kWireframeAttrs{
-   Attribute::VERTEX
-};
-const std::vector<Uniform> kWireframeUniforms{
-   Uniform::MODEL_VIEW,
-   Uniform::PROJECTION,
-   Uniform::COLOR
 };
 
 const std::vector<Attribute> kShadowAttrs{
@@ -90,9 +71,6 @@ const std::vector<Uniform> kSkyboxUniforms{
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   shaders_.insert(std::make_pair(
-            ShaderType::SUN,
-            Shader("Sun", kSunAttrs, kSunUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));

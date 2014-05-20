@@ -2,7 +2,6 @@ uniform sampler2D uShadowMapTexture;
 uniform int uHasShadows;
 uniform int uLightning;
 
-
 struct Material {
    vec3 ambient;
    vec3 diffuse;

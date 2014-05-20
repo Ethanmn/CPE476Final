@@ -47,6 +47,7 @@ void setupSunShader(Shader& shader, const UniformLocationMap& locations,
 }
 
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture) {
+   shader.sendUniform(Uniform::HAS_TEXTURE, locations, 1);
    shader.sendUniform(Uniform::TEXTURE, locations, texture.textureID());
    texture.enable();
 }
