@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ai_utils.h"
+#include "globals.h"
 
 namespace {
    aiNode* findAiNodeForBone(aiBone* bone, aiNode* root) {
@@ -47,6 +48,35 @@ namespace {
       }
       return child_bone.bone_id;
    }
+}
+
+const std::string kMeshPath("../models/");
+
+std::string mesh_path(MeshType mesh) {
+   if (kDebugUseDeerModels)
+      return kMeshPath + "deer_walk.dae";
+   switch (mesh) {
+      case MeshType::GROUND:
+         return kMeshPath + "ground_plane.obj";
+      case MeshType::DEER:
+         return kMeshPath + "deer_walk.dae";
+      case MeshType::TIME_STONE:
+         return kMeshPath + "time_stone.dae";
+      case MeshType::TREE:
+         return kMeshPath + "tree2.3ds";
+      case MeshType::BUSH:
+         return kMeshPath + "tree.3ds";
+      case MeshType::FLOWER:
+         return kMeshPath + "deer_butt.dae";
+      case MeshType::RAIN:
+         return kMeshPath + "box.dae";
+      case MeshType::BUTTERFLY:
+         return kMeshPath + "butterfly.dae";
+   }
+}
+
+AssimpMesh MeshLoader::loadMesh(MeshType mesh) {
+   return loadMesh(mesh_path(mesh));
 }
 
 AssimpMesh MeshLoader::loadMesh(const std::string& path) {

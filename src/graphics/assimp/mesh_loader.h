@@ -14,6 +14,20 @@
 #include "graphics/animation.h"
 #include "graphics/material.h"
 
+// List of the available meshes.
+enum class MeshType {
+   GROUND,
+   DEER,
+   TIME_STONE,
+   TREE,
+   BUSH,
+   FLOWER,
+   RAIN,
+   BUTTERFLY
+};
+
+std::string mesh_path(MeshType mesh);
+
 struct AssimpMesh {
    typedef std::pair<BoneID, float> BoneIDAndWeight;
    std::vector<float> vertex_array;
@@ -36,6 +50,7 @@ struct AssimpMesh {
 
 struct MeshLoader {
    AssimpMesh loadMesh(const std::string& path);
+   AssimpMesh loadMesh(MeshType mesh);
 
   private:
    std::map<std::string, AssimpMesh> meshes_;
