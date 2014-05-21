@@ -6,6 +6,7 @@ ShadowMapFBO::ShadowMapFBO(unsigned int WindowWidth, unsigned int WindowHeight) 
 	glGenFramebuffers(1, &fbo_id);
 	glGenTextures(1, &shadow_map_texture);
    glBindTexture(GL_TEXTURE_2D, shadow_map_texture);
+
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WindowWidth, 
 		WindowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
