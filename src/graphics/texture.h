@@ -43,9 +43,9 @@ struct Texture {
    void disable() const;
    GLTextureID textureID() const;
 
-   private:
-      GLTextureID texture_id;
-
+  private:
+   GLTextureID texture_id;
+   GLTextureID texture_slot;
 };
 
 
