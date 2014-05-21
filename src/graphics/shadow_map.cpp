@@ -1,11 +1,9 @@
 #include "shadow_map.h"
 #include <stdio.h>
+#include <assert.h>
 
-ShadowMapFBO::ShadowMapFBO() {
+ShadowMapFBO::ShadowMapFBO(unsigned int WindowWidth, unsigned int WindowHeight) {
 	glGenFramebuffers(1, &fbo_id);
-}
-
-bool ShadowMapFBO::setup(unsigned int WindowWidth, unsigned int WindowHeight) {
 	glGenTextures(1, &shadow_map_texture);
    glBindTexture(GL_TEXTURE_2D, shadow_map_texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, WindowWidth, 
@@ -23,7 +21,7 @@ bool ShadowMapFBO::setup(unsigned int WindowWidth, unsigned int WindowHeight) {
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 
-	return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
 
 void ShadowMapFBO::BindForWriting() {

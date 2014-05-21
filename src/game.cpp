@@ -43,7 +43,8 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
    objTree(),
-   airMode(false)
+   airMode(false),
+   shadow_map_fbo_(kScreenWidth, kScreenHeight)
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
@@ -220,11 +221,6 @@ void Game::mainLoop() {
    bool running = true;
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
-
-  if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
-      printf("FAILURE\n");
-      return;
-  }   
 
    while (running) {
       {  // Collect input

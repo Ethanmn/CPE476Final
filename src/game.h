@@ -58,6 +58,7 @@ struct Game {
 
    bool airMode;
    ShadowMapFBO shadow_map_fbo_;
+
    void step(units::MS dt);
    void draw();
 };

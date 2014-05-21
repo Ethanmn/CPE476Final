@@ -6,8 +6,7 @@
 class ShadowMapFBO
 {
     public:
-        ShadowMapFBO();
-        bool setup(unsigned int WindowWidth, unsigned int WindowHeight);
+        ShadowMapFBO(unsigned int WindowWidth, unsigned int WindowHeight);
         void BindForWriting();
         void BindForReading();
         int texture_id();
