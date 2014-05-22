@@ -119,6 +119,11 @@ Texture::Texture(const std::string& path) {
    texture_id = load(path);
 }
 
+Texture::Texture(GLTextureID id) {
+   texture_slot = texture_slots++;
+   texture_id = id;
+}
+
 void Texture::enable() const {
    glActiveTexture(GL_TEXTURE0 + texture_slot);
    glBindTexture(GL_TEXTURE_2D, texture_slot);

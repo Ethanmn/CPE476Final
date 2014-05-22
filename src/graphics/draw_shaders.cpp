@@ -31,7 +31,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawab
       switch (shader_pair.first) {
          case ShaderType::SHADOW:
             if(!debug) {
-               shadow_map_fbo_.BindForWriting();
+               shadow_map_fbo_.bind();
                glClear(GL_DEPTH_BUFFER_BIT);
             }
 

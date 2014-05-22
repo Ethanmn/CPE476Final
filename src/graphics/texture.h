@@ -39,6 +39,7 @@ inline std::string texture_path(Textures texture) {
 
 struct Texture {
    Texture(const std::string& path);
+   Texture(GLTextureID texture_id);
    void enable() const;
    void disable() const;
    GLTextureID textureID() const;
