@@ -44,7 +44,7 @@ Game::Game() :
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
    objTree(),
    airMode(false),
-   shadow_map_fbo_(kScreenWidth, kScreenHeight)
+   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE)
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;

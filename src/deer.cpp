@@ -29,7 +29,7 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    draw_template_({
          ShaderType::TEXTURE,
          mesh,
-         Texture(texture_path(Textures::DEER)),
+         Texture(texture_path(Textures::DEER), DIFFUSE_TEXTURE),
          boost::none,
          EffectSet({EffectType::CASTS_SHADOW})}),
    position_(position),

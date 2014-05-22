@@ -28,8 +28,8 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height) {
    return texture_id;
 }
 
-FrameBufferObject::FrameBufferObject(unsigned int width, unsigned int height) :
-   texture_(static_cast<GLTextureID>(initialize(width, height)))
+FrameBufferObject::FrameBufferObject(unsigned int width, unsigned int height, TextureSlot texture_slot) :
+   texture_(static_cast<GLTextureID>(initialize(width, height)), texture_slot)
 {
 }
 
@@ -38,6 +38,5 @@ void FrameBufferObject::bind() {
 }
 
 void FrameBufferObject::BindForReading() {
-   glActiveTexture(GL_TEXTURE0 + texture_id());
-   glBindTexture(GL_TEXTURE_2D, texture_id());
+   texture_.enable();
 }

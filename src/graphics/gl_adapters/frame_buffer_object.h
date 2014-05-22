@@ -5,13 +5,12 @@
 #include "graphics/texture.h"
 
 struct FrameBufferObject {
-   FrameBufferObject(unsigned int width, unsigned int height);
+   FrameBufferObject(unsigned int width, unsigned int height, TextureSlot texture_slot);
 
    GLuint initialize(unsigned int width, unsigned int height);
    void bind();
    void BindForReading();
-   int texture_id() { return texture_.textureID(); }
-   //Texture texture() { return texture_; }
+   int texture_slot() { return texture_.texture_slot(); }
 
   private:
    GLuint fbo_id_;
