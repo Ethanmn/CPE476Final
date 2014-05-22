@@ -36,7 +36,7 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
             }
 
             for (auto& drawable : drawables) {
-               if (drawable.draw_template.include_in_shadows) {
+               if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                   for(auto& mt : drawable.model_transforms) {
                      setupShadowShader(shader, uniforms, sunDir, deerPos, mt);
                      shader.drawMesh(drawable.draw_template.mesh);
@@ -55,7 +55,6 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
             for (auto& drawable : drawables) {
                if (drawable.draw_template.shader_type == shader_pair.first) {
                   { // Per-Drawable Texture Shader Setup
-            
                      if (drawable.draw_template.height_map) 
                         setupHeightMap(shader, uniforms, *drawable.draw_template.height_map);
                      else
