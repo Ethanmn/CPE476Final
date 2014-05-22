@@ -83,12 +83,6 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawab
 
                   { // Per-drawable Texture Shader teardown
                      shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-
-                     if(drawable.draw_template.texture)
-                        drawable.draw_template.texture->disable();
-
-                     if(drawable.draw_template.height_map) 
-                        drawable.draw_template.height_map->disable();
                   }
                }
             }

@@ -110,7 +110,6 @@ int imageLoad(const std::string& path, Image &image) {
 }
 
 Texture::Texture(const std::string& path) {
-   glEnable(GL_TEXTURE_2D);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -127,10 +126,6 @@ Texture::Texture(GLTextureID id) {
 void Texture::enable() const {
    glActiveTexture(GL_TEXTURE0 + texture_slot);
    glBindTexture(GL_TEXTURE_2D, texture_slot);
-}
-
-void Texture::disable() const {
-   glDisable(GL_TEXTURE_2D);
 }
 
 GLTextureID Texture::textureID() const {
