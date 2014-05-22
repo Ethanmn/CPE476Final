@@ -13,10 +13,16 @@ struct Shaders;
 
 struct DayNightInteraction {
    DayNightInteraction(const Mesh& mesh, const GroundPlane& ground) :
-      draw_template_moon_({ShaderType::TEXTURE, mesh, 
-            Texture(texture_path(Textures::MOON_STONE)), boost::none, true }),
-      draw_template_sun_({ShaderType::TEXTURE, mesh, 
-            Texture(texture_path(Textures::SUN_STONE)), boost::none, true }),
+      draw_template_moon_({ShaderType::TEXTURE,
+            mesh,
+            Texture(texture_path(Textures::MOON_STONE)),
+            boost::none,
+            EffectSet({EffectType::CASTS_SHADOW})
+            }),
+      draw_template_sun_({ShaderType::TEXTURE, mesh,
+            Texture(texture_path(Textures::SUN_STONE)),
+            boost::none,
+            EffectSet({EffectType::CASTS_SHADOW}) }),
       bounding_rectangle_sun_(glm::vec2(-30.0f, -30.0f), glm::vec2(8.0f, 8.0f),
             0.0f),
       bounding_rectangle_moon_(glm::vec2(20.0f, 20.0f), glm::vec2(8.0f, 8.0f),

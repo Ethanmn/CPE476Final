@@ -8,7 +8,7 @@ const float FLOWER_SCALE_MIN = 0.8 * 100;
 const float FLOWER_SCALE_MAX = 1.3 * 100;
 
 FlowerGenerator::FlowerGenerator(const Mesh& mesh) : 
-   draw_template_({ShaderType::TEXTURE, mesh, boost::none, boost::none, false}) 
+   draw_template_({ShaderType::TEXTURE, mesh, boost::none, boost::none, EffectSet() }) 
 {
    draw_template_.mesh.material = Material(glm::vec3(0.45, 0.0, 0.45));
 }
