@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <SDL.h>
+#define GL_GLEXT_PROTOTYPES
 #include <GL/glew.h>
 #ifdef _WIN32
     #undef main
@@ -18,9 +19,15 @@ struct SDLEngine {
       window_ = SDL_CreateWindow("Deer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, kScreenWidth, kScreenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED);
       context_ = SDL_GL_CreateContext(window_);
       SDL_GL_MakeCurrent(window_, context_);
-      glewInit();
+      if (GLEW_OK != glewInit()) {
+         std::cerr << "Glew did not init right" << std::endl;
+         exit(EXIT_FAILURE);
+      }
       std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
       std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+      if (glewGetExtension("GL_EXT_framebuffer_object")) {
+         std::cout << "framebuffer is available" << std::endl;
+      }
    }
 
    ~SDLEngine() {

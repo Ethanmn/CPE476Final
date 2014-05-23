@@ -21,7 +21,7 @@
 #include "Bush.h"
 #include "day_night_interaction.h"
 #include "BVHTree.h"
-#include "graphics/shadow_map.h"
+#include "graphics/gl_adapters/frame_buffer_object.h"
 #include "sound_engine.h"
 #include "bird_sound.h"
 #include "day_night_interaction.h"
@@ -57,7 +57,7 @@ struct Game {
    BVHTree objTree;
 
    bool airMode;
-   ShadowMapFBO shadow_map_fbo_;
+   FrameBufferObject shadow_map_fbo_;
 
    void step(units::MS dt);
    void draw();

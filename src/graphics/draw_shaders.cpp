@@ -10,7 +10,7 @@ namespace {
 }
 
 // Setup common to both Texture/Sun Shaders
-void DrawShader::setupDrawShader(Shader& shader, ShadowMapFBO shadow_map_fbo_, glm::mat4 viewMatrix, glm::vec3 deerPos,
+void DrawShader::setupDrawShader(Shader& shader, FrameBufferObject shadow_map_fbo_, glm::mat4 viewMatrix, glm::vec3 deerPos,
       glm::vec3 sunDir, float sunIntensity, int lightning) {
    shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
    shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_id());
@@ -23,7 +23,7 @@ void DrawShader::setupDrawShader(Shader& shader, ShadowMapFBO shadow_map_fbo_, g
    setupSunShader(shader, uniforms, sunIntensity, sunDir); 
 }
 
-void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, glm::mat4 viewMatrix, glm::vec3 deerPos,
+void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawables, glm::mat4 viewMatrix, glm::vec3 deerPos,
       glm::vec3 sunDir, float sunIntensity, int lightning) {
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
@@ -31,12 +31,12 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
       switch (shader_pair.first) {
          case ShaderType::SHADOW:
             if(!debug) {
-               shadow_map_fbo_.BindForWriting();
+               shadow_map_fbo_.bind();
                glClear(GL_DEPTH_BUFFER_BIT);
             }
 
             for (auto& drawable : drawables) {
-               if (drawable.draw_template.include_in_shadows) {
+               if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                   for(auto& mt : drawable.model_transforms) {
                      setupShadowShader(shader, uniforms, sunDir, deerPos, mt);
                      shader.drawMesh(drawable.draw_template.mesh);
@@ -55,7 +55,6 @@ void DrawShader::Draw(ShadowMapFBO shadow_map_fbo_, vector<Drawable> drawables, 
             for (auto& drawable : drawables) {
                if (drawable.draw_template.shader_type == shader_pair.first) {
                   { // Per-Drawable Texture Shader Setup
-            
                      if (drawable.draw_template.height_map) 
                         setupHeightMap(shader, uniforms, *drawable.draw_template.height_map);
                      else

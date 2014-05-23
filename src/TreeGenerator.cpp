@@ -10,10 +10,9 @@ const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
 const int TREE_SCALE = 5;
 
 TreeGenerator::TreeGenerator(const Mesh& mesh) :
-   draw_template_({ShaderType::TEXTURE, mesh, boost::none, boost::none, false })
+   draw_template_({ShaderType::TEXTURE, mesh, boost::none, boost::none, EffectSet() })
 {
    draw_template_.mesh.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
-   
 }
 
 //Generate the trees
@@ -31,23 +30,19 @@ void TreeGenerator::generate() {
 }
 
 void TreeGenerator::includeInShadows(bool value) {
-   draw_template_.include_in_shadows = value;
+   if (value)
+      draw_template_.effects.insert(EffectType::CASTS_SHADOW);
+   else
+      draw_template_.effects.erase(EffectType::CASTS_SHADOW);
 }
 
 std::vector<Tree>& TreeGenerator::getTrees() {
    return trees;
 }
 
-//void TreeGenerator::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      //glm::vec3 sunDir, bool betterShadow) {
-   //for (auto& tree : trees) {
-      //tree.shadowDraw(shader, uniform_locations, sunDir, betterShadow);
-   //}
-//}
-
 Drawable TreeGenerator::drawable() const {
    std::vector<glm::mat4> model_matrices;
    for (auto& tree : trees) 
       model_matrices.push_back(tree.calculateModel());
    return Drawable({draw_template_, model_matrices});
-} 
+}
