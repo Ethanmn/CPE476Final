@@ -14,7 +14,6 @@ struct Image {
 };
 
 namespace {
-   int texture_slots = 0;
    unsigned int getint(FILE *fp) {
       int c, c1, c2, c3;
       
@@ -109,32 +108,24 @@ int imageLoad(const std::string& path, Image &image) {
    return 1;
 }
 
-Texture::Texture(const std::string& path) {
-   glEnable(GL_TEXTURE_2D);
+Texture::Texture(const std::string& path, TextureSlot slot) {
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   texture_slot = texture_slots++;
+   texture_slot_ = slot;
    texture_id = load(path);
 }
 
-Texture::Texture(GLTextureID id) {
-   texture_slot = texture_slots++;
-   texture_id = id;
+Texture::Texture(GLTextureID texture_id, TextureSlot texture_slot) :
+   texture_id(texture_id),
+   texture_slot_(texture_slot)
+{
 }
 
 void Texture::enable() const {
-   glActiveTexture(GL_TEXTURE0 + texture_slot);
-   glBindTexture(GL_TEXTURE_2D, texture_slot);
-}
-
-void Texture::disable() const {
-   glDisable(GL_TEXTURE_2D);
-}
-
-GLTextureID Texture::textureID() const {
-   return texture_id;
+   glActiveTexture(GL_TEXTURE0 + texture_slot_);
+   glBindTexture(GL_TEXTURE_2D, texture_id);
 }
 
 GLTextureID load(const std::string& path) {
