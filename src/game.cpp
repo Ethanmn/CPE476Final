@@ -205,7 +205,7 @@ void Game::draw() {
    
    drawables.push_back(butterfly_system_.drawable());
    
-   //drawables.push_back(ground_.drawable());
+   drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
    if (draw_collision_box)
       drawables.push_back(br_drawable);

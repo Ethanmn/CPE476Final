@@ -84,6 +84,16 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             setupTexture(shader, shadow_map_fbo_, viewMatrix, deerPos, sunDir, sunIntensity, lightning);
             drawTextureShader(shader, drawables, viewMatrix);
             break;
+         case ShaderType::WATER:
+            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+            shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
+            for (auto& drawable : drawables) {
+               if (drawable.draw_template.shader_type == ShaderType::WATER) {
+                  setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
+                  drawModelTransforms(shader, drawable, viewMatrix);
+               }
+            }
+            break;
          case ShaderType::SKYBOX:
             break;
       }

@@ -16,7 +16,8 @@ enum class ShaderType {
    /* Reflection generates a texture, so must be before TEXTURE */
    REFLECTION,
    TEXTURE,
-   SKYBOX
+   SKYBOX,
+   WATER,
 };
 
 struct Shaders {

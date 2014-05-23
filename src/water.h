@@ -10,13 +10,13 @@
 struct Water {
    Water(const Mesh& mesh) :
       mesh_(mesh),
-      reflection_fbo_(kScreenWidth, kScreenHeight, REFLECTION_TEXTURE, FBOType::COLOR)
+      reflection_fbo_(kScreenWidth, kScreenHeight, DIFFUSE_TEXTURE, FBOType::COLOR)
    {}
 
    Drawable drawable() const {
       return Drawable({
             DrawTemplate({
-               ShaderType::TEXTURE,
+               ShaderType::WATER,
                mesh_,
                reflection_fbo_.texture(),
                boost::none,
