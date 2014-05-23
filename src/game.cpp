@@ -42,9 +42,8 @@ Game::Game() :
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
-   objTree(),
    airMode(false),
-   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE)
+   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH)
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;

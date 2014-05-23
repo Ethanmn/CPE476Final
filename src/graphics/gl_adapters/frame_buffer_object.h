@@ -4,10 +4,14 @@
 #include "graphics/gl_adapters/gl_types.h"
 #include "graphics/texture.h"
 
-struct FrameBufferObject {
-   FrameBufferObject(unsigned int width, unsigned int height, TextureSlot texture_slot);
+enum class FBOType {
+   DEPTH
+};
 
-   GLuint initialize(unsigned int width, unsigned int height);
+struct FrameBufferObject {
+   FrameBufferObject(unsigned int width, unsigned int height, TextureSlot texture_slot, FBOType fbo_type);
+
+   GLuint initialize(unsigned int width, unsigned int height, FBOType fbo_type);
    void bind();
    void BindForReading();
    int texture_slot() { return texture_.texture_slot(); }
