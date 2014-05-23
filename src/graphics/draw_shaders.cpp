@@ -10,11 +10,22 @@ namespace {
 }
 
 // Setup common to both Texture/Sun Shaders
-void DrawShader::setupDrawShader(Shader& shader, FrameBufferObject shadow_map_fbo_, glm::mat4 viewMatrix, glm::vec3 deerPos,
+void DrawShader::setupTexture(Shader& shader, FrameBufferObject shadow_map_fbo_, glm::mat4 viewMatrix, glm::vec3 deerPos,
       glm::vec3 sunDir, float sunIntensity, int lightning) {
    shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
    shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
    sendShadowInverseProjectionView(shader, uniforms, sunDir, deerPos);
+
+   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+   shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
+
+   shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
+   setupSunShader(shader, uniforms, sunIntensity, sunDir); 
+}
+
+void DrawShader::setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
+      glm::vec3 sunDir, float sunIntensity, int lightning) {
+   shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
 
    shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
@@ -50,42 +61,23 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawab
                shadow_map_fbo_.BindForReading();
             }
             break;
-         case ShaderType::TEXTURE:
-            setupDrawShader(shader, shadow_map_fbo_, viewMatrix, deerPos, sunDir, sunIntensity, lightning);
-            for (auto& drawable : drawables) {
-               if (drawable.draw_template.shader_type == shader_pair.first) {
-                  { // Per-Drawable Texture Shader Setup
-                     if (drawable.draw_template.height_map) 
-                        setupHeightMap(shader, uniforms, *drawable.draw_template.height_map);
-                     else
-                        shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
-
-                     if (drawable.draw_template.has_bones()) {
-                        shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
-                        shader.sendUniform(Uniform::BONES, uniforms,
-                              drawable.draw_template.mesh.animation.calculateBoneTransformations(
-                                 drawable.draw_template.mesh.bone_array));
-                     }
-                     else
-                        shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-
-                     if(drawable.draw_template.texture)
-                        setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
-                     else {
-                        shader.sendUniform(Uniform::HAS_TEXTURE, uniforms, 0);
-                        shader.sendUniform(Uniform::TEXTURE, uniforms, 0);
-                     }
-
-                     drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
-                  }
-
-                  drawModelTransforms(shader, drawable, viewMatrix);
-
-                  { // Per-drawable Texture Shader teardown
-                     shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+         case ShaderType::REFLECTION:
+            setupReflectionShader(shader, viewMatrix, sunDir, sunIntensity, lightning);
+            {
+               std::vector<Drawable> reflected;
+               const auto scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
+               for (auto& drawable : drawables) {
+                  reflected.push_back(drawable);
+                  for (auto& mt : reflected.back().model_transforms) {
+                     mt = scale * mt;
                   }
                }
+               drawTextureShader(shader, reflected, viewMatrix);
             }
+            break;
+         case ShaderType::TEXTURE:
+            setupTexture(shader, shadow_map_fbo_, viewMatrix, deerPos, sunDir, sunIntensity, lightning);
+            drawTextureShader(shader, drawables, viewMatrix);
             break;
          case ShaderType::SKYBOX:
             break;
@@ -97,5 +89,42 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
    for(const auto& mt : drawable.model_transforms) {
       setupModelView(shader, uniforms, mt, view, true);
       shader.drawMesh(drawable.draw_template.mesh);
+   }
+}
+
+void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix) {
+   for (auto& drawable : drawables) {
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) {
+         { // Per-Drawable Texture Shader Setup
+            if (drawable.draw_template.height_map) 
+               setupHeightMap(shader, uniforms, *drawable.draw_template.height_map);
+            else
+               shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
+
+            if (drawable.draw_template.has_bones()) {
+               shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
+               shader.sendUniform(Uniform::BONES, uniforms,
+                     drawable.draw_template.mesh.animation.calculateBoneTransformations(
+                        drawable.draw_template.mesh.bone_array));
+            }
+            else
+               shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+
+            if(drawable.draw_template.texture)
+               setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
+            else {
+               shader.sendUniform(Uniform::HAS_TEXTURE, uniforms, 0);
+               shader.sendUniform(Uniform::TEXTURE, uniforms, 0);
+            }
+
+            drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
+         }
+
+         drawModelTransforms(shader, drawable, viewMatrix);
+
+         { // Per-drawable Texture Shader teardown
+            shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+         }
+      }
    }
 }

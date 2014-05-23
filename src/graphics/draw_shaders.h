@@ -17,7 +17,11 @@ struct DrawShader {
    Shaders getShaders() const { return shaders; }
 
   private:
-   void setupDrawShader(Shader& shader, FrameBufferObject shadow_map_fbo_, glm::mat4 viewMatrix, glm::vec3 deerPos,
+   void setupTexture(Shader& shader, FrameBufferObject shadow_map_fbo_, glm::mat4 viewMatrix, glm::vec3 deerPos,
+      glm::vec3 sunDir, float sunIntensity, int lightning);
+   void drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix);
+
+   void setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
       glm::vec3 sunDir, float sunIntensity, int lightning);
    void drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view);
 

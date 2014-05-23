@@ -43,7 +43,8 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
    airMode(false),
-   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH)
+   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
+   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND)))
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
@@ -204,7 +205,8 @@ void Game::draw() {
    
    drawables.push_back(butterfly_system_.drawable());
    
-   drawables.push_back(ground_.drawable());
+   //drawables.push_back(ground_.drawable());
+   drawables.push_back(water_.drawable());
    if (draw_collision_box)
       drawables.push_back(br_drawable);
 

@@ -27,6 +27,7 @@
 #include "day_night_interaction.h"
 #include "butterfly_system.h"
 #include "rain_system.h"
+#include "water.h"
 
 struct Game {
    Game();
@@ -58,6 +59,7 @@ struct Game {
 
    bool airMode;
    FrameBufferObject shadow_map_fbo_;
+   Water water_;
 
    void step(units::MS dt);
    void draw();

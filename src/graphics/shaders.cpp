@@ -74,6 +74,9 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   shaders_.insert(std::make_pair(
+            ShaderType::REFLECTION,
+            Shader("Texture", kTextureAttrs, kTextureUniforms)));
    //shaders_.insert(std::make_pair(
             //ShaderType::SKYBOX,
             //Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
