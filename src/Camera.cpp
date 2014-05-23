@@ -65,12 +65,6 @@ void Camera::rotatePositionWithDrag(const glm::vec2& startPoint, const glm::vec2
    updatePosition(glm::length(position - lookAt));
 }
 
-/*
-   Rotates the camera around the current lookAt point, changing the camera's position.
-   Parameters should be the starting mouse point,
-   the ending mouse point, tthe width of the window,
-   and the height of the window.
-*/
 void Camera::rotatePositionWithDrag(float diffX, float diffY, int width, int height) {
    changeRotationAngles(diffX, diffY, width, height);
    updatePosition(glm::length(position - lookAt));

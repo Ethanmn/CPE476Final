@@ -10,10 +10,11 @@
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
 
-enum class ShaderType {
-   SUN,
+enum class ShaderType { 
+   /* Ordering is important, shadow must be first */
+   SHADOW,
    TEXTURE,
-   WIREFRAME
+   SKYBOX
 };
 
 struct Shaders {

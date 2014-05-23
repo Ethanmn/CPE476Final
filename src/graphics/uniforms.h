@@ -6,6 +6,7 @@
 enum class Uniform {
    FIRST_UNIFORM,
    MODEL_VIEW = FIRST_UNIFORM,
+   MODEL,
    VIEW,
    PROJECTION,
    NORMAL,
@@ -21,6 +22,11 @@ enum class Uniform {
    M_SHINE,
    BONES,
    HAS_BONES,
+   SHADOW_MAP,
+   SHADOW_MAP_TEXTURE,
+   LIGHTNING,
+   HAS_SHADOWS,
+   HAS_TEXTURE,
    LAST_UNIFORM,
 };
 
@@ -30,6 +36,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uViewMatrix";
       case Uniform::MODEL_VIEW:
          return "uModelViewMatrix";
+      case Uniform::MODEL:
+         return "uModelMatrix";
       case Uniform::PROJECTION:
          return "uProjectionMatrix";
       case Uniform::NORMAL:
@@ -58,6 +66,16 @@ inline std::string uniform_name(Uniform uniform) {
          return "uBones";
       case Uniform::HAS_BONES:
          return "uHasBones";
+      case Uniform::SHADOW_MAP:
+         return "uShadowMap";
+      case Uniform::SHADOW_MAP_TEXTURE:
+         return "uShadowMapTexture";
+      case Uniform::LIGHTNING:
+         return "uLightning";
+      case Uniform::HAS_SHADOWS:
+         return "uHasShadows";
+      case Uniform::HAS_TEXTURE:
+         return "uHasTexture";
       case Uniform::LAST_UNIFORM:
          throw "Unknown uniform type, shouldn't even compile";
    }

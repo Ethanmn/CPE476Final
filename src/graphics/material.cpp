@@ -3,6 +3,7 @@
 #include "shader.h"
 #include "shaders.h"
 
+
 Material::Material(const glm::vec3& diff, const glm::vec3& amb,
          const glm::vec3& spec, float shineVal) {
    diffuse = diff;

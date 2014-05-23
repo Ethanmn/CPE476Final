@@ -7,6 +7,7 @@
 #include "graphics/location_maps.h"
 #include "graphics/shader_setup.h"
 #include "graphics/material.h"
+#include "sound_engine.h"
 #include "ground_plane.h"
 
 namespace {
@@ -20,102 +21,178 @@ const float kFriction = 0.005f;
 const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
 const float kJumpSpeed = 0.015f;
+const float kLeanFactor = 2.0f;
+
+const float kStepTime = 300;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
-   mesh_(mesh),
-   texture_(texture_path(Textures::DEER)),
+   draw_template_({
+         ShaderType::TEXTURE,
+         mesh,
+         Texture(texture_path(Textures::DEER)),
+         boost::none,
+         EffectSet({EffectType::CASTS_SHADOW})}),
    position_(position),
    velocity_(0, 0, 0),
-   last_facing_(0, 0, 1),
+   last_facing_(0, 1),
+   desired_lean_(0.0f),
+   current_lean_(0.0f),
    walk_direction_(WalkDirection::NONE),
    strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
-   is_jumping_(false) {}
+   step_timer_(0),
+   is_jumping_(false),
+   is_walking_(false),
+   is_strafing_(false),
+   blocked(false)
+      {}
 
-void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-                const glm::mat4& viewMatrix) const {
+glm::mat4 Deer::calculateModel() const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
-            glm::vec3(last_facing_.x, last_facing_.y, -last_facing_.z),
+            glm::vec3(last_facing_.x, 0.0f, -last_facing_.y),
             glm::vec3(0, 1, 0)));
+
+   const glm::mat4 lean(
+         glm::rotate(
+            glm::mat4(),
+            current_lean_ * kLeanFactor,
+            glm::vec3(0, 0, 1)
+            ));
+
    const glm::mat4 translate(
       glm::translate(
             glm::mat4(1.0f),
             position_));
-   const glm::mat4 model_matrix(translate * rotate);
 
-   setupTextureShader(shader, uniform_locations, texture_);
-
-   setupModelView(shader, uniform_locations, model_matrix, viewMatrix, true);
-   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
-   shader.sendUniform(Uniform::BONES, uniform_locations,
-         mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
-   shader.drawMesh(mesh_);
-   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
-   texture_.disable();
+   return glm::mat4(translate * rotate * lean);
 }
 
-void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane) {
-   mesh_.animation.step(dt);
-   if (walk_direction_ == WalkDirection::NONE && strafe_direction_ == StrafeDirection::NONE) {
-      glm::vec2 xz_velocity(xz(velocity_));
+Drawable Deer::drawable() const {
+   std::vector<glm::mat4> model_matrices;
+   model_matrices.push_back(calculateModel());
+   return Drawable({draw_template_, model_matrices});
+} 
+
+glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
+   return position_ + velocity * static_cast<float>(dt);
+}
+
+BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
+   auto velocity(predictVelocity(dt, acceleration(camera)));
+   auto facing(predictFacing(velocity));
+   auto tempPosition(predictPosition(dt, velocity));
+   auto tempBoundingBox(bounding_rectangle_);
+   tempBoundingBox.set_position(xz(tempPosition));
+   tempBoundingBox.set_rotation(glm::degrees(std::atan2(-facing.y, facing.x)));
+   return tempBoundingBox;
+}
+
+glm::vec3 Deer::acceleration(const Camera& camera) const {
+   glm::vec3 acceleration(0.0f);
+   { // If walking add in walk based on camera's forward.
+      const glm::vec2 forward(xz(camera.getCamForwardVec()));
+      if (walk_direction_ == WalkDirection::FORWARD) {
+         acceleration = glm::vec3(forward.x, 0.0f, forward.y);
+      } else if (walk_direction_ == WalkDirection::BACKWARD) {
+         acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
+      }
+   }
+
+   { // Add in strafe from camera, if strafing.
+      const glm::vec3 left(camera.getCamLeftVec());
+      if (strafe_direction_ == StrafeDirection::LEFT) {
+         acceleration += glm::vec3(left.x, 0.0f, left.z);
+      } else if (strafe_direction_ == StrafeDirection::RIGHT) {
+         acceleration -= glm::vec3(left.x, 0.0f, left.z);
+      }
+   }
+   return acceleration;
+}
+
+glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) const {
+   glm::vec3 velocity(velocity_);
+   if (!has_acceleration()) {
+      glm::vec2 xz_velocity(xz(velocity));
       xz_velocity -= xz_velocity * (kFriction * dt);
       if (glm::length(xz_velocity) < kSpeed / 4.0f) {
          xz_velocity = glm::vec2(0.0f);
       }
-      velocity_.x = xz_velocity.x;
-      velocity_.z = xz_velocity.y;
+      velocity.x = xz_velocity.x;
+      velocity.z = xz_velocity.y;
    } else {
-      glm::vec3 acceleration(0.0f);
-      { // If walking add in walk based on camera's forward.
-         const glm::vec2 forward(xz(camera.getCamForwardVec()));
-         if (walk_direction_ == WalkDirection::FORWARD) {
-            acceleration = glm::vec3(forward.x, 0.0f, forward.y);
-         } else if (walk_direction_ == WalkDirection::BACKWARD) {
-            acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
-         }
-      }
-
-      { // Add in strafe from camera, if strafing.
-         const glm::vec3 left(camera.getCamLeftVec());
-         if (strafe_direction_ == StrafeDirection::LEFT) {
-            acceleration += glm::vec3(left.x, 0.0f, left.z);
-         } else if (strafe_direction_ == StrafeDirection::RIGHT) {
-            acceleration -= glm::vec3(left.x, 0.0f, left.z);
-         }
-      }
       { // Accelerate velocity, capping at kSpeed.
-         velocity_ += glm::normalize(acceleration) * (kAcceleration * dt);
-         glm::vec2 xz_velocity(xz(velocity_));
+         velocity += glm::normalize(acceleration) * (kAcceleration * dt);
+         glm::vec2 xz_velocity(xz(velocity));
          if (glm::length(xz_velocity) > kSpeed) {
             xz_velocity = glm::normalize(xz_velocity) * kSpeed;
          }
-         velocity_.x = xz_velocity.x;
-         velocity_.z = xz_velocity.y;
-         last_facing_ = glm::normalize(glm::vec3(
-                  velocity_.x,
-                  0.0f,
-                  velocity_.z));
+         velocity.x = xz_velocity.x;
+         velocity.z = xz_velocity.y;
       }
    }
    if (is_jumping_) {
-      velocity_.y -= kGravity * dt;
+      velocity.y -= kGravity * dt;
+   }
+   return velocity;
+}
+
+glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
+   if (has_acceleration()) {
+      return glm::normalize(glm::vec2(
+               velocity.x,
+               velocity.z));
+   }
+   return last_facing_;
+}
+
+void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
+   current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
+   velocity_ = predictVelocity(dt, acceleration(camera));
+   if (!has_acceleration()) {
+      desired_lean_ = 0.0f;
+   } else {
+      draw_template_.mesh.animation.step(dt);
+      { // Accelerate velocity, capping at kSpeed.
+         const auto next_facing(predictFacing(velocity_));
+         desired_lean_ = glm::orientedAngle(last_facing_, next_facing);
+         last_facing_ = next_facing;
+         if (desired_lean_ > 45.0f)
+            desired_lean_ = 0.0f;
+         if (desired_lean_ < -45.0f)
+            desired_lean_ = 0.0f;
+      }
+   }
+   if (is_jumping_) {
       const auto ground_height = ground_plane.heightAt(position_);
-      if (position_.y + mesh_.min.y < ground_height) {
+      if (position_.y + draw_template_.mesh.min.y < ground_height) {
          velocity_.y = 0.0f;
-         position_.y = ground_height - mesh_.min.y;
+         position_.y = ground_height - draw_template_.mesh.min.y;
          is_jumping_ = false;
+         sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, false, position_);
+      }
+      step_timer_ = 0;
+   } else if (isMoving()) {
+      step_timer_ += dt;
+      if (step_timer_ > kStepTime) {
+         step_timer_ = 0;
+         sound_engine.playRandomWalkSound();
       }
    } else {
-      position_.y = ground_plane.heightAt(position_) - mesh_.min.y;
+      step_timer_ = 0;
+      position_.y = ground_plane.heightAt(position_) - draw_template_.mesh.min.y;
    }
 
-   position_ += velocity_ * static_cast<float>(dt);
+   if (!blocked) {
+      position_ = predictPosition(dt, velocity_);
 
+      bounding_rectangle_.set_position(xz(position_));
+      bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
+   }
+   blocked = false;
    bounding_rectangle_.set_position(xz(position_));
-   const auto xz_last_facing(xz(last_facing_));
-   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-xz_last_facing.y, xz_last_facing.x)));
+   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
 }
 
 void Deer::walkForward() {
@@ -152,9 +229,20 @@ void Deer::jump() {
 }
 
 bool Deer::isMoving() {
-   return velocity_.x > 0 || velocity_.z > 0 || velocity_.x < 0 || velocity_.z < 0;
+   return velocity_.x != 0.0 && velocity_.z != 0.0;
 }
 
-glm::vec3 Deer::getPosition() {
+glm::vec3 Deer::getPosition() const {
    return position_;
+}
+
+void Deer::block() {
+   stopWalking();
+   stopStrafing();
+   velocity_ = glm::vec3(0, 0, 0);
+   blocked = true;
+}
+
+glm::vec3 Deer::getFacing() const {
+   return glm::vec3(last_facing_.x, 0.0f, last_facing_.y);
 }

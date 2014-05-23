@@ -1,10 +1,11 @@
-#include "tree.h"
+#include "Bush.h"
 #include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/material.h"
+#include "sound_engine.h"
 
-void Tree::step(units::MS dt) {
+void Bush::step(units::MS dt) {
    if (rustle_time_ < kMaxRustleTime) {
       rustle_time_ += dt;
       elapsed_time_ += dt;
@@ -12,10 +13,7 @@ void Tree::step(units::MS dt) {
    }
 }
 
-void Tree::draw(
-      Shader& shader,
-      const UniformLocationMap& uniform_location_map,
-      const glm::mat4& view_matrix) const {
+glm::mat4 Bush::calculateModel() const {
    const glm::mat4 translate(glm::translate(
             glm::mat4(),
             position_));
@@ -30,16 +28,21 @@ void Tree::draw(
                ),
             -90.0f,
             glm::vec3(1, 0, 0)));
-   const glm::mat4 model_matrix(translate * scale * rotate);
+   return glm::mat4(translate * scale * rotate);
+} 
 
-   setupModelView(shader, uniform_location_map, model_matrix, view_matrix, true);
-
-   mesh_.material.sendMaterial(shader, uniform_location_map);
-
-   shader.drawMesh(mesh_);
-   bounding_rectangle_.draw(uniform_location_map, shader, 0, view_matrix);
+void Bush::rustle(SoundEngine& sound_engine) {
+   sound_engine.playSoundEffect(
+         SoundEngine::SoundEffect::RUSTLE,
+         false,
+         position_);
+   rustle_time_ = 0;
 }
 
-void Tree::rustle() {
-   rustle_time_ = 0;
+bool Bush::isBlocker() {
+   return false;
+}
+
+void Bush::performObjectHit(SoundEngine& sound_engine) {
+   rustle(sound_engine);
 }

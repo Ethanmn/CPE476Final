@@ -14,7 +14,7 @@ struct Image {
 };
 
 namespace {
-   int texture_ids = 0;
+   int texture_slots = 0;
    unsigned int getint(FILE *fp) {
       int c, c1, c2, c3;
       
@@ -115,14 +115,18 @@ Texture::Texture(const std::string& path) {
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   texture_id = texture_ids;
-   load(path);
+   texture_slot = texture_slots++;
+   texture_id = load(path);
+}
+
+Texture::Texture(GLTextureID id) {
+   texture_slot = texture_slots++;
+   texture_id = id;
 }
 
 void Texture::enable() const {
-   glEnable(GL_TEXTURE_2D);
-   glActiveTexture(GL_TEXTURE0 + texture_id);
-   glBindTexture(GL_TEXTURE_2D, texture_id);
+   glActiveTexture(GL_TEXTURE0 + texture_slot);
+   glBindTexture(GL_TEXTURE_2D, texture_slot);
 }
 
 void Texture::disable() const {
@@ -139,11 +143,13 @@ GLTextureID load(const std::string& path) {
    if (!imageLoad(path, image)) {
       exit(1);
    }
-   glBindTexture(GL_TEXTURE_2D, texture_ids);
+   GLuint texture_id;
+   glGenTextures(1, &texture_id);
+   glBindTexture(GL_TEXTURE_2D, texture_id);
    glTexImage2D(GL_TEXTURE_2D, 0, 3, image.sizeX, image.sizeY, 0,
                 GL_RGB, GL_UNSIGNED_BYTE, image.data);
    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    free(image.data);
-   return (GLTextureID)texture_ids++;
+   return static_cast<GLTextureID>(texture_id);
 }

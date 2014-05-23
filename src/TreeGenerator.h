@@ -3,6 +3,9 @@
    Katie Keim
    Deer - CPE 476
 */
+#ifndef TREE_GEN_H_
+#define TREE_GEN_H_
+
 #include "ground_plane.h"
 #include <cstdlib>
 #include "graphics/shader.h"
@@ -11,18 +14,21 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
 #include "bounding_rectangle.h"
+#include "Tree.h"
+#include "graphics/draw_template.h"
 
 struct TreeGenerator {
    TreeGenerator(const Mesh& mesh);
 
-   void generateTrees();
-   void drawTrees(Shader& shader, const UniformLocationMap& uniform_locations, const glm::mat4& viewMatrix);
-   std::vector<BoundingRectangle> getBoundingBoxes();
+   void generate();
+   std::vector<Tree>& getTrees();
+   DrawTemplate draw_template() const { return draw_template_; }
+   Drawable drawable() const;
+   void includeInShadows(bool value); 
 
    private:
-      Mesh treeMesh1;
-
-      std::vector<std::vector<bool>> trees;
-      void printConsoleTreeMap(); 
-      std::vector<BoundingRectangle> boxes;
+      std::vector<Tree> trees;
+      DrawTemplate draw_template_;
 };
+
+#endif //TREE_GEN_H_

@@ -1,46 +1,69 @@
 /* 
-   BVHNode.h (Bounding Volume Hierarchy Node)
+   BVHNode.h (Binary Spatial Partitioning Node)
    Katie Keim
    Deer - CPE 476
 */
 #include "BVHNode.h"
 
-BVHNode::BVHNode(BoundingRectangle rect) :
-   bRect(rect),
-   leftNode(NULL),
-   rightNode(NULL),
-   leftSet(false),
-   rightSet(false)
-{}
-
-void BVHNode::setLeftNode(BVHNode *left) {
-   leftNode = left;
-   leftSet = true;
+BVHNode::BVHNode(BoundingRectangle bRect, GameObject *object, int num) :
+   num(num),
+   object(object),
+   bRect(bRect),
+   leftIndex(-1),
+   rightIndex(-1)
+{ 
+//printNode(); 
 }
 
-void BVHNode::setRightNode(BVHNode *right) {
-   rightNode = right;
-   rightSet = true;
+GameObject *BVHNode::getGameObject() {
+   return object;
 }
 
 BoundingRectangle BVHNode::getRect() {
    return bRect;
 }
 
-/* Do not call this if hasLeft() returns false */
-BVHNode BVHNode::getLeftNode() {
-   return *leftNode;
+bool BVHNode::hasLeftNode() {
+   return leftIndex >= 0;//leftNode != NULL;
 }
 
-/* Do not call this if hasRight() returns false */
-BVHNode BVHNode::getRightNode() {
-   return *rightNode;
+bool BVHNode::hasRightNode() {
+   return rightIndex >= 0;//rightNode != NULL;
 }
 
-bool BVHNode::hasLeft() {
-   return leftSet;
+void BVHNode::printNode() {
+   printf("#%d node with center at (%f, %f) and dimensions (%f, %f)", num, bRect.getCenter().x, bRect.getCenter().y, bRect.getDimensions().x, bRect.getDimensions().y);
+
+   if (object == NULL) {
+      printf(" NO GO.\n");
+   }
+   else {
+      printf(" YES GO.\n");
+   }
+
+   if (hasLeftNode()) {
+      printf("LEFT NODE %d ", leftIndex);
+   }
+
+   if (hasRightNode()) {
+      printf("RIGHT NODE %d", rightIndex);
+   }
+
+   printf("\n");
 }
 
-bool BVHNode::hasRight() {
-   return rightSet;
+void BVHNode::setRightIndex(int right) {
+   rightIndex = right;
+}
+
+void BVHNode::setLeftIndex(int left) {
+   leftIndex = left;
+}
+
+int BVHNode::getLeftIndex() {
+   return leftIndex;
+}
+
+int BVHNode::getRightIndex() {
+   return rightIndex;
 }

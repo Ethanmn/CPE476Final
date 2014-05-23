@@ -14,7 +14,7 @@ using namespace std;
 DayCycle::DayCycle() :
    sunDir(glm::vec3(0.0, 1.0, 0.2)),
    sunIntensity(1.0),
-   dayToNight(false),
+   switchingTime(false),
    timeOfDay(0.5)
 {}
 
@@ -23,7 +23,7 @@ glm::vec3 DayCycle::getSunDir() {
 }
 
 float DayCycle::getSunIntensity() {
-   return sunIntensity;
+   return sunIntensity > 0.3 ? sunIntensity : 0.3;
 }
 
 void DayCycle::adjustToTime(float newTime) {
@@ -31,22 +31,28 @@ void DayCycle::adjustToTime(float newTime) {
    adjustSun();
 }
 
-void DayCycle::switchBoolean() {
-   dayToNight = !dayToNight;
+void DayCycle::dayToNight() {
+   switchingTime = true;
+   switchToNight = false;
+}
+
+void DayCycle::nightToDay() {
+   switchingTime = true;
+   switchToNight = true;
 }
 
 
 void DayCycle::on() {
-   dayToNight = true;
+   switchingTime = true;
 }
 
 
 void DayCycle::off() {
-   dayToNight = false;
+   switchingTime = false;
 }
 
 void DayCycle::autoAdjustTime(units::MS dt) {
-   if(dayToNight) {
+   if(switchingTime) {
          timeOfDay += dt * 0.0001;
       if(timeOfDay >= 1.0)
          timeOfDay = 0.0;
@@ -56,12 +62,21 @@ void DayCycle::autoAdjustTime(units::MS dt) {
 
 void DayCycle::adjustSun() {
    float tempTimeOfDay = timeOfDay;
-   glClearColor (0.05098 * sunIntensity, 0.6274509 * sunIntensity,
+   
+   glClearColor (0.05098 * sunIntensity, 
+                 0.6274509 * sunIntensity,
                  sunIntensity, 1.0f);
+
    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   if(tempTimeOfDay > 1.0)
-      sunIntensity = 0.1;
-   else {
+
+   if(switchingTime && switchToNight && timeOfDay <= 0.1)
+      switchingTime = false;
+   else if(switchingTime && !switchToNight && timeOfDay >= 0.35 && timeOfDay <= 0.65)
+      switchingTime = false; 
+ 
+   if(switchingTime) {
+      if(tempTimeOfDay > 1.0)
+         sunIntensity = 0.1;
       sunDir.x = cos(glm::pi<float>() * tempTimeOfDay);
       sunDir.y = sin(glm::pi<float>() * tempTimeOfDay);
       if(tempTimeOfDay > 0.5)

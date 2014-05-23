@@ -4,17 +4,14 @@
 #include "graphics/shader_setup.h"
 #include "graphics/material.h"
 
-void DayNightInteraction::drawStart(Shader& shader, const UniformLocationMap& uniform_locations,
-                       const glm::mat4& viewMatrix) {
-   setupModelView(shader, uniform_locations, start_transform_, viewMatrix, true);
-   mesh_.material = Material(glm::vec3(0.5f, 0.7f, 0.5f));
-   mesh_.material.sendMaterial(shader, uniform_locations);
-   shader.drawMesh(mesh_);
+Drawable DayNightInteraction::drawableSun() const {
+   std::vector<glm::mat4> model_matrices;
+   model_matrices.push_back(sun_transform_);
+   return Drawable({draw_template_sun_, model_matrices});
 }
-void DayNightInteraction::drawStop(Shader& shader, const UniformLocationMap& uniform_locations,
-                       const glm::mat4& viewMatrix) {
-   setupModelView(shader, uniform_locations, stop_transform_, viewMatrix, true);
-   mesh_.material = Material(glm::vec3(0.7f, 0.5f, 0.5f));
-   mesh_.material.sendMaterial(shader, uniform_locations);
-   shader.drawMesh(mesh_);
-}
+
+Drawable DayNightInteraction::drawableMoon() const {
+   std::vector<glm::mat4> model_matrices;
+   model_matrices.push_back(moon_transform_);
+   return Drawable({draw_template_moon_, model_matrices});
+} 

@@ -6,14 +6,14 @@
 #include "DeerCam.h"
 #include <iostream>
 
-const float DIST_FROM_DEER = 16;
+const float DIST_FROM_DEER = 20;
 
 DeerCam::DeerCam(float lookHeight) {
    lookAtHeight = lookHeight;
 }
 
 void DeerCam::initialize(glm::vec3 deerPos) {
-   lookAtHeight = deerPos.y;
+   lookAtHeight = deerPos.y + 4;
    setLookAt(deerPos);
    updatePosition(DIST_FROM_DEER);
 }
