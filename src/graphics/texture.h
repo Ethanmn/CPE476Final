@@ -50,6 +50,7 @@ enum TextureSlot {
    DIFFUSE_TEXTURE,
    HEIGHT_MAP_TEXTURE,
    SHADOW_MAP_TEXTURE,
+   REFLECTION_TEXTURE,
 };
 
 struct Texture {

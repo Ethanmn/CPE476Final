@@ -5,7 +5,8 @@
 #include "graphics/texture.h"
 
 enum class FBOType {
-   DEPTH
+   DEPTH,
+   COLOR
 };
 
 struct FrameBufferObject {

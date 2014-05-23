@@ -14,6 +14,10 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height, FB
          glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width,
                height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
          break;
+      case FBOType::COLOR:
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width,
+               height, 0, GL_RGB, GL_FLOAT, NULL);
+         break;
    }
 
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -29,6 +33,10 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height, FB
 
          glDrawBuffer(GL_NONE);
          glReadBuffer(GL_NONE);
+         break;
+      case FBOType::COLOR:
+         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
+               GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
          break;
    }
 
