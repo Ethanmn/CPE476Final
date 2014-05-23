@@ -69,9 +69,11 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
                std::vector<Drawable> reflected;
                const auto scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
                for (auto& drawable : drawables) {
-                  reflected.push_back(drawable);
-                  for (auto& mt : reflected.back().model_transforms) {
-                     mt = scale * mt;
+                  if (drawable.draw_template.effects.count(EffectType::CASTS_REFLECTION)) {
+                     reflected.push_back(drawable);
+                     for (auto& mt : reflected.back().model_transforms) {
+                        mt = scale * mt;
+                     }
                   }
                }
                drawTextureShader(shader, reflected, viewMatrix);
