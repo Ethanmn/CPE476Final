@@ -6,7 +6,7 @@
 
 enum class FBOType {
    DEPTH,
-   COLOR
+   COLOR,
 };
 
 struct FrameBufferObject {

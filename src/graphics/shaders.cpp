@@ -66,6 +66,8 @@ const std::vector<Attribute> kWaterAttrs{
 const std::vector<Uniform> kWaterUniforms{
    Uniform::MODEL_VIEW,
    Uniform::PROJECTION,
+   Uniform::SCREEN_WIDTH,
+   Uniform::SCREEN_HEIGHT,
 };
 
 const std::vector<Attribute> kSkyboxAttrs{
