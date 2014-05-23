@@ -34,7 +34,8 @@ void DrawShader::setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
    setupSunShader(shader, uniforms, sunIntensity, sunDir); 
 }
 
-void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawables, glm::mat4 viewMatrix, glm::vec3 deerPos,
+void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject reflection_fbo,
+      vector<Drawable> drawables, glm::mat4 viewMatrix, glm::vec3 deerPos,
       glm::vec3 sunDir, float sunIntensity, int lightning) {
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
@@ -57,11 +58,12 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawab
 
             if(!debug) {
                glBindFramebuffer(GL_FRAMEBUFFER, 0);
-               glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                shadow_map_fbo_.BindForReading();
             }
             break;
          case ShaderType::REFLECTION:
+            reflection_fbo.bind();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             setupReflectionShader(shader, viewMatrix, sunDir, sunIntensity, lightning);
             {
                std::vector<Drawable> reflected;
@@ -74,6 +76,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawab
                }
                drawTextureShader(shader, reflected, viewMatrix);
             }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
          case ShaderType::TEXTURE:
             setupTexture(shader, shadow_map_fbo_, viewMatrix, deerPos, sunDir, sunIntensity, lightning);

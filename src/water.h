@@ -26,6 +26,8 @@ struct Water {
             });
    }
 
+   FrameBufferObject fbo() const { return reflection_fbo_; }
+
   private:
    Mesh mesh_;
    FrameBufferObject reflection_fbo_;

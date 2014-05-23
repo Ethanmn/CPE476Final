@@ -213,7 +213,7 @@ void Game::draw() {
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
    deerPos = deer_.getPosition();
 
-   draw_shader_.Draw(shadow_map_fbo_, drawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), drawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {
