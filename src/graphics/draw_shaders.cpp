@@ -3,7 +3,6 @@
 #include "uniforms.h"
 #include "shader_setup.h"
 
-
 using namespace std;
 namespace {
    bool debug = false;
@@ -87,6 +86,8 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
          case ShaderType::WATER:
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
             shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
+            shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
+            shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
             for (auto& drawable : drawables) {
                if (drawable.draw_template.shader_type == ShaderType::WATER) {
                   setupTextureShader(shader, uniforms, *drawable.draw_template.texture);

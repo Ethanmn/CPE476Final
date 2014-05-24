@@ -66,12 +66,12 @@ const std::vector<Attribute> kWaterAttrs{
 const std::vector<Uniform> kWaterUniforms{
    Uniform::MODEL_VIEW,
    Uniform::PROJECTION,
+   Uniform::TEXTURE,
    Uniform::SCREEN_WIDTH,
    Uniform::SCREEN_HEIGHT,
 };
 
 const std::vector<Attribute> kSkyboxAttrs{
-
 };
 const std::vector<Uniform> kSkyboxUniforms{
    Uniform::MODEL_VIEW,
