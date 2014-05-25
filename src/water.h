@@ -10,7 +10,7 @@
 struct Water {
    Water(const Mesh& mesh) :
       mesh_(mesh),
-      reflection_fbo_(kScreenWidth, kScreenHeight, DIFFUSE_TEXTURE, FBOType::COLOR)
+      reflection_fbo_(kScreenWidth, kScreenHeight, DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH)
    {}
 
    Drawable drawable() const {
