@@ -30,5 +30,6 @@ struct Drawable {
    DrawTemplate draw_template;
    std::vector<glm::mat4> model_transforms;
 };
+void switchTextureAndBlinn(Drawable *drawObj);
 
 #endif

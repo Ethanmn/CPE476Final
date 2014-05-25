@@ -50,6 +50,11 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawab
                shadow_map_fbo_.BindForReading();
             }
             break;
+         case ShaderType::TEXTURE_BLINN: 
+            /* 
+             * Blinn-Phong handles all of the uniforms the same as texture, just
+             * changes how the uniforms are used in the fragment shader 
+             */
          case ShaderType::TEXTURE:
             setupDrawShader(shader, shadow_map_fbo_, viewMatrix, deerPos, sunDir, sunIntensity, lightning);
             for (auto& drawable : drawables) {
@@ -86,8 +91,6 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, vector<Drawable> drawab
                   }
                }
             }
-            break;
-         case ShaderType::SKYBOX:
             break;
       }
    }

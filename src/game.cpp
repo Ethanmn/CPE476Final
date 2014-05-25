@@ -10,6 +10,7 @@ namespace {
    AirCam airCam;
    bool showTreeShadows = false;
    bool draw_collision_box = false;
+   bool switchBlinnPhongShading = false;
    bool debug = false;
 
    int lighting = 0;
@@ -210,6 +211,10 @@ void Game::draw() {
 
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
    deerPos = deer_.getPosition();
+   if(switchBlinnPhongShading) {
+      for(auto& drawable : drawables)
+         switchTextureAndBlinn(&drawable);
+   }   
 
    draw_shader_.Draw(shadow_map_fbo_, drawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
 }
@@ -312,6 +317,12 @@ void Game::mainLoop() {
             const auto key_air_mode = SDL_SCANCODE_V;
             if (input.wasKeyPressed(key_air_mode)) {
                airMode = !airMode;
+            }
+         }
+         { //Change shading models
+            const auto key_blinn = SDL_SCANCODE_B;
+            if (input.wasKeyPressed(key_blinn)) {
+               switchBlinnPhongShading = !switchBlinnPhongShading;   
             }
          }
          { //handle quit

@@ -14,7 +14,7 @@ enum class ShaderType {
    /* Ordering is important, shadow must be first */
    SHADOW,
    TEXTURE,
-   SKYBOX
+   TEXTURE_BLINN
 };
 
 struct Shaders {

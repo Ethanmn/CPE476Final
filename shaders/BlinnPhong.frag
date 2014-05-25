@@ -31,9 +31,13 @@ void main() {
    vec3 color;
    vec3 Refl, ReflDir;
    vec3 Specular, Diffuse, Ambient;
-   float dotNLDir, dotVRDir, average, shine = 30.0;
+   float dotNLDir, average, shine = 30.0;
+
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
-   vec3 directionalColor = vec3(0.8 * uSunIntensity);
+   vec3 halfAngle = normalize(vec3(vLightAndDirectional) + -1.0 * vec3(vViewer));
+   float blinnValue = pow(dot(halfAngle, vNormal), 0.1);
+
+   vec3 directionalColor = vec3(0.8*uSunIntensity);
    float applyShadow = 1.0;
    float bias = 0.005;
    
@@ -61,11 +65,9 @@ void main() {
       Ambient = vec3(0.15, 0.15, 0.15);
    
    dotNLDir = dot(normalize(vNormal), vec3(vLightAndDirectional));
-   ReflDir = normalize(reflect(-1.0 * vec3(vLightAndDirectional), vNormal));
-   dotVRDir = dot(-1.0 * normalize(vec3(vViewer.x, vViewer.y, vViewer.z)), ReflDir);
-   
+    
    Diffuse = directionalColor * Diffuse * dotNLDir;
-   Specular = directionalColor * Specular * pow(dotVRDir, shine);
+   Specular = directionalColor * Specular * blinnValue;
    color =  Diffuse + vec3(vec4(Specular, 1.0) * uViewMatrix) + Ambient;
 
    gl_FragColor = vec4(applyShadow * color.rgb, 1.0);
