@@ -5,7 +5,6 @@
 
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
-#include "graphics/shader_setup.h"
 #include "graphics/material.h"
 #include "sound_engine.h"
 #include "ground_plane.h"

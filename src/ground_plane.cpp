@@ -2,7 +2,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
-#include "graphics/shader_setup.h"
 #include "graphics/texture.h"
 
 const int GroundPlane::GROUND_SCALE = 500;

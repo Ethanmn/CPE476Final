@@ -1,6 +1,5 @@
 #include "game.h"
 #include "graphics/mesh.h"
-#include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <graphics/material.h>
 #include <iostream>
