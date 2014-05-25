@@ -14,16 +14,16 @@ FlowerGenerator::FlowerGenerator(const Mesh& mesh) :
 }
 
 //Generate the trees
-void FlowerGenerator::generate() {
+void FlowerGenerator::generate(const GroundPlane& ground) {
    int size = GroundPlane::GROUND_SCALE / FLOWER_SIZE; 
    int groundSize = GroundPlane::GROUND_SCALE / 2;
 
    for (int row = 0; row < size; row++) {
       for (int col = 0; col < size; col++) {
          if (rand() % FLOWER_DENSITY == 0) {
-            float scale = (rand() % (int)(FLOWER_SCALE_MAX - FLOWER_SCALE_MIN) + FLOWER_SCALE_MIN)  / 100.0f;
+            float scale = (rand() % (int)(FLOWER_SCALE_MAX - FLOWER_SCALE_MIN) + FLOWER_SCALE_MIN)  / 50.0f;
             glm::vec3 pos = glm::vec3(row * FLOWER_SIZE - groundSize,  0, col * FLOWER_SIZE - groundSize);
-            flowers.push_back(Flower(pos, scale));
+            flowers.push_back(Flower(draw_template_.mesh, pos, ground, scale));
          }
       }
    }

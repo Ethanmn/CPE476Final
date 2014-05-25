@@ -27,7 +27,7 @@ glm::mat4 Flower::calculateModel() const {
             glm::rotate(
                glm::mat4(),
                rotate_,
-               glm::vec3(0, 1, 0)
+               glm::vec3(1, 0, 0)
                ),
             -90.0f,
             glm::vec3(1, 0, 0)));

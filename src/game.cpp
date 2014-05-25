@@ -73,7 +73,7 @@ Game::Game() :
 
    treeGen.generate();
    bushGen.generate(ground_);
-   flowerGen.generate();
+   flowerGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
