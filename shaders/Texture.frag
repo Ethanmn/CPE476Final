@@ -39,9 +39,16 @@ void main() {
    float bias = 0.005;
    
    vec4 shadowMapTexColor = vec4(1.0);
-   if(uHasShadows != 0)
+   if(uHasShadows != 0) {
       shadowMapTexColor = texture2D(uShadowMapTexture,
                           vec2(vShadow.x, vShadow.y));
+      if(vShadow.x > 1.0 || vShadow.y > 1.0 || vShadow.x < 0.0 || vShadow.y < 0.0) {
+         /*gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);*/
+         /*return;*/
+         shadowMapTexColor.z = 1.0;
+      }
+
+   }
    if(shadowMapTexColor.z <= vShadow.z - bias)
       applyShadow = 0.7;
    
