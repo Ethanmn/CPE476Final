@@ -186,8 +186,9 @@ void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawabl
                      drawable.draw_template.mesh.animation.calculateBoneTransformations(
                         drawable.draw_template.mesh.bone_array));
             }
-            else
+            else {
                shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+            }
 
             if(drawable.draw_template.texture)
                setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
@@ -200,10 +201,6 @@ void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawabl
          }
 
          drawModelTransforms(shader, drawable, viewMatrix);
-
-         { // Per-drawable Texture Shader teardown
-            shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-         }
       }
    }
 }
