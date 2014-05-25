@@ -50,8 +50,6 @@ namespace {
 const std::string kMeshPath("../models/");
 
 std::string mesh_path(MeshType mesh) {
-   if (kDebugUseDeerModels)
-      return kMeshPath + "deer_walk.dae";
    switch (mesh) {
       case MeshType::GROUND:
          return kMeshPath + "ground_plane.obj";
@@ -158,6 +156,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    }
 
    // Get the bones/skinning.
+   ret.bone_weights_array.resize(mesh.mNumVertices);
    if (mesh.mNumBones > 0) {
       // Get the animations from the scene, but only if we have bones.
       std::map<std::string, aiNodeAnim*> channel_map;
@@ -170,7 +169,6 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          }
       }
 
-      ret.bone_weights_array.resize(mesh.mNumVertices);
       std::vector<AssimpBone> assimp_bones;
       for (size_t i = 0; i < mesh.mNumBones; ++i) {
          auto& bone = mesh.mBones[i];
