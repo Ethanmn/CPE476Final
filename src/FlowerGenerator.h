@@ -15,7 +15,7 @@
 struct FlowerGenerator {
    FlowerGenerator(const Mesh& mesh);
 
-   void generate();
+   void generate(const GroundPlane& ground);
    std::vector<Flower>& getFlowers();
 
    DrawTemplate draw_template() const { return draw_template_; }

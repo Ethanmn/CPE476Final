@@ -1,6 +1,5 @@
 #include "particle.h"
 #include "rain_system.h"
-#include "graphics/shader_setup.h"
 #include <stdlib.h>
 
 #define RAIN_MAX 200.0f

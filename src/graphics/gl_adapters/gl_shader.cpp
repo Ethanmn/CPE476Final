@@ -8,6 +8,8 @@
 
 #include "graphics/gl_adapters/array_buffer_object.h"
 
+const bool kShouldUseBones = true;
+
 namespace {
    void uniformMatrix4fv(GLint location, const GLfloat *value) {
       glUniformMatrix4fv(location, 1, GL_FALSE, value);
@@ -41,6 +43,11 @@ namespace {
          defines += "#define USE_HEIGHT_MAP\n";
       } else {
          std::clog << "ignoring heightmap" << std::endl;
+      }
+      if (kShouldUseBones) {
+         defines += "#define USE_BONES\n";
+      } else {
+         std::clog << "ignoring bones" << std::endl;
       }
 
       std::string version_prefix;

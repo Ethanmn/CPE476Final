@@ -1,9 +1,12 @@
 #include "game.h"
 #include "graphics/mesh.h"
-#include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <graphics/material.h>
 #include <iostream>
+
+#include "graphics/texture.h"
+#include "DeerCam.h"
+#include "AirCam.h"
 
 namespace {
    DeerCam deerCam;
@@ -44,7 +47,8 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
    airMode(false),
-   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH)
+   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
+   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND)))
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
@@ -69,7 +73,7 @@ Game::Game() :
 
    treeGen.generate();
    bushGen.generate(ground_);
-   flowerGen.generate();
+   flowerGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
@@ -206,17 +210,15 @@ void Game::draw() {
    drawables.push_back(butterfly_system_.drawable());
    
    drawables.push_back(ground_.drawable());
+   drawables.push_back(water_.drawable());
    if (draw_collision_box)
       drawables.push_back(br_drawable);
 
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
    deerPos = deer_.getPosition();
-   if(switchBlinnPhongShading) {
-      for(auto& drawable : drawables)
-         switchTextureAndBlinn(&drawable);
-   }   
 
-   draw_shader_.Draw(shadow_map_fbo_, drawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), drawables, viewMatrix, switchBlinnPhongShading, 
+         deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {
