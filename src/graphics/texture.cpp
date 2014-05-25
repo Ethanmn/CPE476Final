@@ -21,8 +21,12 @@ std::string texture_path(Textures texture) {
          return "../textures/grass.bmp";
       case Textures::DEER:
          return "../textures/deer1.bmp";
-      case Textures::BUTTERFLY:
-         return "../textures/butterfly.bmp";
+      case Textures::BUTTERFLY1:
+         return "../textures/butterfly1.bmp";
+      case Textures::BUTTERFLY2:
+         return "../textures/butterfly2.bmp";
+      case Textures::BUTTERFLY3:
+         return "../textures/butterfly3.bmp";
       case Textures::HEIGHT_MAP:
          return "../textures/height_map.bmp";
       case Textures::MOON_STONE:
