@@ -1,6 +1,5 @@
 #include "particle.h"
 #include "butterfly_system.h"
-#include "graphics/shader_setup.h"
 #include <stdlib.h>
 
 #define MAX 0.005f
