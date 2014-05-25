@@ -35,6 +35,16 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height, FB
          glReadBuffer(GL_NONE);
          break;
       case FBOType::COLOR:
+         {
+            GLuint depth_rbo;
+            glGenRenderbuffers(1, &depth_rbo);
+            glBindRenderbuffer(GL_RENDERBUFFER, depth_rbo);
+
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_rbo);
+
+            glBindRenderbuffer(GL_RENDERBUFFER, 0);
+         }
          glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
          break;
