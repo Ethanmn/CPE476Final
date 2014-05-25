@@ -5,6 +5,10 @@
 #include <graphics/material.h>
 #include <iostream>
 
+#include "graphics/texture.h"
+#include "DeerCam.h"
+#include "AirCam.h"
+
 namespace {
    DeerCam deerCam;
    AirCam airCam;

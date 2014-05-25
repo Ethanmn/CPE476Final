@@ -1,25 +1,17 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-#include <glm/glm.hpp>
-#include <vector>
 #include "graphics/draw_shaders.h"
 #include "graphics/assimp/mesh_loader.h"
 #include "deer.h"
 #include "input.h"
 #include "sdl_engine.h"
 #include "units.h"
-#include "graphics/shaders.h"
 #include "ground_plane.h"
-#include "graphics/texture.h"
-#include "DeerCam.h"
-#include "AirCam.h"
 #include "graphics/material.h"
 #include "TreeGenerator.h"
 #include "BushGenerator.h"
 #include "FlowerGenerator.h"
-#include "Bush.h"
-#include "day_night_interaction.h"
 #include "BVHTree.h"
 #include "graphics/gl_adapters/frame_buffer_object.h"
 #include "sound_engine.h"
@@ -54,7 +46,6 @@ struct Game {
    ButterflySystem butterfly_system_;
    RainSystem rain_system_;
 
-   glm::vec2 mousePos;
    BVHTree objTree;
 
    bool airMode;

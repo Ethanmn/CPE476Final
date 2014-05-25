@@ -6,10 +6,7 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
-#include <set>
-#include <memory>
 
-#include "ai_utils.h"
 #include "globals.h"
 
 namespace {
