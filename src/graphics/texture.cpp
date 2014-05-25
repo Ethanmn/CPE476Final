@@ -13,6 +13,28 @@ struct Image {
    char *data;
 };
 
+std::string texture_path(Textures texture) {
+   switch (texture) {
+      case Textures::WATER:
+         return "../textures/water.bmp";
+      case Textures::GRASS:
+         return "../textures/grass.bmp";
+      case Textures::DEER:
+         return "../textures/deer1.bmp";
+      case Textures::BUTTERFLY:
+         return "../textures/butterfly.bmp";
+      case Textures::HEIGHT_MAP:
+         return "../textures/height_map.bmp";
+      case Textures::MOON_STONE:
+         return "../textures/stone_moon.bmp";
+      case Textures::SUN_STONE:
+         return "../textures/stone_sun.bmp";
+      case Textures::SKYBOX:
+         return "../textures/skybox.bmp";
+
+   }
+}
+
 namespace {
    unsigned int getint(FILE *fp) {
       int c, c1, c2, c3;
