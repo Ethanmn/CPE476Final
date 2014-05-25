@@ -12,6 +12,7 @@ enum class Textures {
    HEIGHT_MAP,
    MOON_STONE,
    SUN_STONE,
+   TREE,
    SKYBOX
 };
 

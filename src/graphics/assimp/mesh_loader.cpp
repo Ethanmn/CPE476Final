@@ -58,7 +58,7 @@ std::string mesh_path(MeshType mesh) {
       case MeshType::TIME_STONE:
          return kMeshPath + "time_stone.dae";
       case MeshType::TREE:
-         return kMeshPath + "tree2.3ds";
+         return kMeshPath + "tree1.3ds";
       case MeshType::BUSH:
          return kMeshPath + "tree.3ds";
       case MeshType::FLOWER:

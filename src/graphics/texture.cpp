@@ -31,6 +31,8 @@ std::string texture_path(Textures texture) {
          return "../textures/stone_sun.bmp";
       case Textures::SKYBOX:
          return "../textures/skybox.bmp";
+      case Textures::TREE:
+         return "../textures/tree.bmp";
 
    }
 }
