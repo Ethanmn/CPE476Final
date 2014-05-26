@@ -15,12 +15,14 @@ struct Image {
 
 std::string texture_path(TextureType texture) {
    switch (texture) {
-      case TextureType::WATER:
-         return "../textures/water.bmp";
       case TextureType::GRASS:
          return "../textures/grass.bmp";
       case TextureType::DEER:
          return "../textures/deer1.bmp";
+      case TextureType::FLOWER1:
+         return "../textures/flower1.bmp";
+      case TextureType::FLOWER2:
+         return "../textures/flower2.bmp";
       case TextureType::BUTTERFLY1:
          return "../textures/butterfly1.bmp";
       case TextureType::BUTTERFLY2:
