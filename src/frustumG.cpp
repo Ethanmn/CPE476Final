@@ -78,7 +78,6 @@ int FrustumG::sphereInFrustum(glm::vec3 &p, float radius) {
 
 	for (int i = 0; i < 6; i++) {
 		distance = pl[i].distance(p);
-		std::cout << "dist: " << distance << std::endl;
 		if (distance < -radius)
 			return OUTSIDE;
 		else if (distance < radius)
