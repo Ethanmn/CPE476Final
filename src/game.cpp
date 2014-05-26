@@ -216,44 +216,53 @@ void Game::draw() {
    if (draw_collision_box)
       drawables.push_back(br_drawable);
 
+/*
+   drawables.push_back(Drawable({DrawTemplate({ShaderType::TEXTURE, 
+                          Mesh::fromAssimpMesh(attribute_location_map_,
+                             mesh_loader_.loadMesh(MeshType::DEER)),
+                          boost::none,
+                           boost::none,
+                          EffectSet()}), std::vector<glm::mat4>({glm::mat4(),
+                                                                 glm::translate(glm::mat4(1.0), glm::vec3(100.0f, 0.0f, 0.0f)),
+                                                                 glm::translate(glm::mat4(1.0), glm::vec3(23.0f, 0.0f, 0.0f)),
+                                                                 glm::translate(glm::mat4(1.0), glm::vec3(8.0f, 0.0f, 0.0f))})}));
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
    deerPos = deer_.getPosition();
+*/
 
-   // Iterate through drawables
-   //create spheres
-   //test if in VF
-
+// View Frustum Culling
    FrustumG viewFrust;
    int culledObject = 0;
-
-   viewFrust.setCamInternals(10.0, 1.0, 1.0, 5.0);
+   // Set up values used to construct planes
+   viewFrust.setCamInternals(kFieldOfView, kAspectRatio, kNear, kFar);
+   // Use camera values to construch planes
    viewFrust.setCamDef(curCam->getPosition(),
                        curCam->getLookAt(),
                        curCam->up);
 
    for (auto& drawable : drawables) {
-      glm::vec3 min, max, med;
+      glm::vec3 min, max, mid;
 
       CulledDrawable culledDrawable;
-      CulledTransform culledTransform;
       for (auto& transform : drawable.model_transforms) {
-         min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 0));
-         max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 0));
-         med = glm::vec3((min.x + max.x) / 2,
-                         (min.y + max.y) / 2,
-                         (min.z + max.z) / 2);
+         CulledTransform culledTransform;
          culledTransform.model = transform;
-         std::cout << "in sphere: " << viewFrust.sphereInFrustum(med, dist(max, med)) << std::endl;
-         if (!viewFrust.sphereInFrustum(med, dist(max, med))) {
+
+         min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
+         max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
+         mid = (min + max) / 2.0f;
+         //std::cout << "in sphere: " << max.x << std::endl;
+         if (!viewFrust.sphereInFrustum(mid, glm::length(max - mid))) {
             culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
             culledObject++;
          }
          // Test for reflection
-         if (!viewFrust.sphereInFrustum(med, dist(max, med))) {
-            culledTransform.cullFlag.insert(CullType::REFLECT_CULLING);
-         }
+         // if (!viewFrust.sphereInFrustum(mid, dist(max, mid))) {
+         //    culledTransform.cullFlag.insert(CullType::REFLECT_CULLING);
+         // }
          culledDrawable.model_transforms.push_back(culledTransform);
       }
+      culledDrawable.draw_template = drawable.draw_template;
       culledDrawables.push_back(culledDrawable);
    }
    std::cout << "culledObjects: " << culledObject << std::endl;

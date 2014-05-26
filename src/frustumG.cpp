@@ -79,7 +79,7 @@ int FrustumG::sphereInFrustum(glm::vec3 &p, float radius) {
 
 	for (int i = 0; i < 6; i++) {
 		distance = pl[i].distance(p);
-		if (distance < -radius)
+		if (distance < (-radius - 15))
 			return OUTSIDE;
 		else if (distance < radius)
 			result = INTERSECT;

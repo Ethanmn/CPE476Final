@@ -7,7 +7,7 @@ void Plane::set3Points(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2) {
    A = n.x;
    B = n.y;
    C = n.z;
-   D = glm::dot(glm::vec3(-A, -B, -C), p0);
+   D = glm::dot(-n, p0);
 }
 
 float Plane::distance(glm::vec3 p) {
