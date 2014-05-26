@@ -12,11 +12,11 @@ const int PI_IN_DEGREES = 180;
 Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    position(pos),
    lookAt(look),
-   up(glm::vec3(0, 1, 0)),
+   up(glm::vec3(0.0f, 1.0f, 0.0f)),
    target(pos),
    direction(0.0f, 0.0f, 0.0f),
-   springStrength(0.1),
-   dampConst(0.00065),
+   springStrength(0.1f),
+   dampConst(0.00065f),
    angle(PI),
    vertAngle(asin(position.y / glm::length(look - pos)) * PI_IN_DEGREES / PI),
    movingFoward(false),
@@ -87,11 +87,11 @@ void Camera::step(float dT) {
    float scalar = 0.0f;
 
    if (turningLeft) {
-      angle -= 90.0f * dT / 100.0f;
+      angle -= PI / 2 * dT / 100.0f;
    }
    
    if (turningRight) {
-      angle += 90.0f * dT / 100.0f;
+      angle += PI / 2 * dT / 100.0f;
    }
 
    if (vertAngle > 15.0f) {
@@ -101,7 +101,7 @@ void Camera::step(float dT) {
       vertAngle += dT / 100.0f;
    }
 
-   printf("Vert Angle: %f\n", vertAngle);
+   //printf("Vert Angle: %f\n", vertAngle);
 
    if (glm::length(position - lookAt) > 25.0f) {
       target += getCamForwardVec() * (dT / 100.0f) * 5.0f;
@@ -131,7 +131,7 @@ void Camera::step(float dT) {
    //printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
 
    position = newPos;
-   rotateCamera(angle);
+   //rotateCamera(angle);
 
    turningLeft = false;
    turningRight = false;
