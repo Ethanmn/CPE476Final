@@ -12,20 +12,21 @@ enum class GBufferType {
 
 struct DeferredFrameBuffer {
    DeferredFrameBuffer(unsigned int width, unsigned int height, 
-         TextureSlot texture_slot, FBOType fbo_type);
+         TextureSlot texture_slot);
 
-   GLuint initialize(unsigned int width, unsigned int height, FBOType fbo_type);
-   void bind();
-   int texture_slot() const { return texture_.texture_slot(); }
-   Texture texture() const { return texture_; }
+   void Initialize(unsigned int width, unsigned int height);
+   void Bind();
+   void SetBufferToRead(GBufferType buffType);
+   //int texture_slot() const { return texture_.texture_slot(); }
+   //Texture texture() const { return texture_; }
 
   private:
    GLuint fbo_id_;
    GLuint g_buff_textures[4];
    GLuint g_buff_depth_texture;
 
-   Texture position_texture_;
-   Texture normal_texture_;
+   //Texture position_texture_;
+   //Texture normal_texture_;
 };
 
 #endif // DEFERRED_FRAME_BUFFER_H_
