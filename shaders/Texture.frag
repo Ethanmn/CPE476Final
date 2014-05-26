@@ -32,7 +32,7 @@ void main() {
    vec3 color;
    vec3 Refl, ReflDir;
    vec3 Specular, Diffuse, Ambient, halfAngle;
-   float dotNLDir, dotVRDir, average, blinnValue, shine = 30.0;
+   float lightningAmount, dotNLDir, dotVRDir, average, blinnValue, shine = 30.0;
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
    vec3 directionalColor = vec3(0.8 * uSunIntensity);
    float applyShadow = 1.0;
@@ -94,9 +94,11 @@ void main() {
    }
 
    if(uLightning != 0) {
-      average = 1.2 * (color.r + color.g + color.b) / 3.0;
-      average = 0.85;
-      gl_FragColor = vec4(average, average, average, 1.0);
+      if(uSunIntensity > 0.5)
+         lightningAmount = 2.0;
+      else
+         lightningAmount = 4.0;
+      gl_FragColor = vec4(gl_FragColor.rgb * lightningAmount, 1.0);
    }
 
 }
