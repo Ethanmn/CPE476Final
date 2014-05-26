@@ -48,12 +48,12 @@ void setupSunShader(Shader& shader, const UniformLocationMap& locations,
 
 void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture) {
    shader.sendUniform(Uniform::HAS_TEXTURE, locations, 1);
-   shader.sendUniform(Uniform::TEXTURE, locations, texture.textureID());
+   shader.sendUniform(Uniform::TEXTURE, locations, texture.texture_slot());
    texture.enable();
 }
 
 void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const Texture& height_map) {
-   shader.sendUniform(Uniform::HEIGHT_MAP, locations, height_map.textureID());
+   shader.sendUniform(Uniform::HEIGHT_MAP, locations, height_map.texture_slot());
    shader.sendUniform(Uniform::HAS_HEIGHT_MAP, locations, 1);
    height_map.enable();
 }

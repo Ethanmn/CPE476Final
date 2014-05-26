@@ -29,9 +29,9 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
    draw_template_({
          ShaderType::TEXTURE,
          mesh,
-         Texture(texture_path(Textures::DEER)),
+         Texture(texture_path(Textures::DEER), DIFFUSE_TEXTURE),
          boost::none,
-         EffectSet({EffectType::CASTS_SHADOW})}),
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})}),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 1),

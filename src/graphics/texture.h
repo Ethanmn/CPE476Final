@@ -15,38 +15,33 @@ enum class Textures {
    SKYBOX
 };
 
-inline std::string texture_path(Textures texture) {
-   switch (texture) {
-      case Textures::WATER:
-         return "../textures/water.bmp";
-      case Textures::GRASS:
-         return "../textures/grass.bmp";
-      case Textures::DEER:
-         return "../textures/deer1.bmp";
-      case Textures::BUTTERFLY:
-         return "../textures/butterfly.bmp";
-      case Textures::HEIGHT_MAP:
-         return "../textures/height_map.bmp";
-      case Textures::MOON_STONE:
-         return "../textures/stone_moon.bmp";
-      case Textures::SUN_STONE:
-         return "../textures/stone_sun.bmp";
-      case Textures::SKYBOX:
-         return "../textures/skybox.bmp";
+std::string texture_path(Textures texture);
 
-   }
-}
+// Not enum class because we are using the values.
+// Enum class's are "not" int's (even though they are) and need to be cast to
+// ints.
+// Enums are ints unless assigned other number values,
+// and can be used interchangeably with ints. Also you don't scope in enums.
+// e.g.
+//
+// enum class: TextureSlot::HEIGHT_MAP_TEXTURE
+// enum:       HEIGHT_MAP_TEXTURE
+enum TextureSlot {
+   DIFFUSE_TEXTURE,
+   HEIGHT_MAP_TEXTURE,
+   SHADOW_MAP_TEXTURE,
+   REFLECTION_TEXTURE,
+};
 
 struct Texture {
-   Texture(const std::string& path);
-   Texture(GLTextureID texture_id);
+   Texture(const std::string& path, TextureSlot slot);
+   Texture(GLTextureID texture_id, TextureSlot slot);
    void enable() const;
-   void disable() const;
-   GLTextureID textureID() const;
+   int texture_slot() const { return texture_slot_; }
 
   private:
    GLTextureID texture_id;
-   GLTextureID texture_slot;
+   int texture_slot_;
 };
 
 

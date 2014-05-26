@@ -15,8 +15,8 @@ const std::vector<unsigned short> ground_indices{
 };
 
 GroundPlane::GroundPlane(const Mesh& mesh) :
-   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::GRASS)), 
-         Texture(texture_path(Textures::HEIGHT_MAP)), EffectSet({EffectType::CASTS_SHADOW})}),
+   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::GRASS), DIFFUSE_TEXTURE), 
+         Texture(texture_path(Textures::HEIGHT_MAP), HEIGHT_MAP_TEXTURE), EffectSet({EffectType::CASTS_SHADOW})}),
    // TODO(chebert): Loaded it twice because textures confuse me.
    height_map_image_(texture_path(Textures::HEIGHT_MAP)) {
 

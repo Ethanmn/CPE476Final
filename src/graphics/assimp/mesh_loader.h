@@ -3,12 +3,9 @@
 
 #include <assimp/anim.h>
 
-#include <boost/serialization/strong_typedef.hpp>
 #include <map>
 #include <string>
 #include <vector>
-
-#include <glm/gtc/quaternion.hpp>
 
 #include "graphics/assimp/bone.h"
 #include "graphics/animation.h"
