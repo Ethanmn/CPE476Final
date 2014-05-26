@@ -43,8 +43,6 @@ void main() {
       shadowMapTexColor = texture2D(uShadowMapTexture,
                           vec2(vShadow.x, vShadow.y));
       if(vShadow.x > 1.0 || vShadow.y > 1.0 || vShadow.x < 0.0 || vShadow.y < 0.0) {
-         /*gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);*/
-         /*return;*/
          shadowMapTexColor.z = 1.0;
       }
 
