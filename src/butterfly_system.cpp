@@ -9,7 +9,7 @@
 
 ButterflySystem::ButterflySystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) :
             draw_template_({ShaderType::TEXTURE, mesh, 
-                  Texture(texture_path(TextureType::BUTTERFLY3), DIFFUSE_TEXTURE), boost::none,
+                  Texture(TextureType::BUTTERFLY3, DIFFUSE_TEXTURE), boost::none,
                   EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION}) }),
             origin_(origin),
             scale_(0.3f),

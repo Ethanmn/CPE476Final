@@ -1,6 +1,8 @@
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
+
 #include <iostream>
+#include <boost/variant.hpp>
 #include <string>
 #include "gl_adapters/gl_types.h"
 
@@ -37,13 +39,15 @@ enum TextureSlot {
 };
 
 struct Texture {
-   Texture(const std::string& path, TextureSlot slot);
+   static GLTextureID load(const std::string& path);
+
+   Texture(TextureType texture_type, TextureSlot slot);
    Texture(GLTextureID texture_id, TextureSlot slot);
    void enable() const;
    int texture_slot() const { return texture_slot_; }
 
   private:
-   GLTextureID texture_id;
+   boost::variant<GLTextureID, TextureType> texture_;
    int texture_slot_;
 };
 
