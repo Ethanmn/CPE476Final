@@ -20,27 +20,27 @@ std::string texture_path(TextureType texture) {
       case TextureType::GRASS:
          return "../textures/grass.bmp";
       case TextureType::DEER:
-         return "../textures/originalTextureFiles/deer.bmp";
+         return "../textures/deer.bmp";
       case TextureType::DAISY:
-         return "../textures/originalTextureFiles/daisy.tga";
+         return "../textures/daisy.tga";
       case TextureType::ROSE:
-         return "../textures/originalTextureFiles/rose.tga";
+         return "../textures/rose.tga";
       case TextureType::BUTTERFLY_RED:
-         return "../textures/originalTextureFiles/butterfly_red.bmp";
+         return "../textures/butterfly_red.bmp";
       case TextureType::BUTTERFLY_PINK:
-         return "../textures/originalTextureFiles/butterfly_pink.bmp";
+         return "../textures/butterfly_pink.bmp";
       case TextureType::BUTTERFLY_BLUE:
-         return "../textures/originalTextureFiles/butterfly_blue.bmp";
+         return "../textures/butterfly_blue.bmp";
       case TextureType::HEIGHT_MAP:
          return "../textures/height_map.bmp";
       case TextureType::MOON_STONE:
-         return "../textures/originalTextureFiles/stone_moon.bmp";
+         return "../textures/stone_moon.bmp";
       case TextureType::SUN_STONE:
-         return "../textures/originalTextureFiles/stone_sun.bmp";
+         return "../textures/stone_sun.bmp";
       case TextureType::TREE:
          return "../textures/tree2.tga";
       case TextureType::RAIN:
-         return "../textures/originalTextureFiles/rain.bmp";
+         return "../textures/rain.bmp";
 
       case TextureType::LAST_TEXTURE_TYPE:
          return "";
