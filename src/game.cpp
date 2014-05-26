@@ -1,6 +1,5 @@
 #include "game.h"
 #include "graphics/mesh.h"
-#include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <graphics/material.h>
 #include <iostream>
@@ -10,10 +9,9 @@
 #include "AirCam.h"
 
 namespace {
-   DeerCam deerCam;
-   AirCam airCam;
    bool showTreeShadows = false;
    bool draw_collision_box = false;
+   bool switchBlinnPhongShading = false;
    bool debug = false;
 
    int lighting = 0;
@@ -36,17 +34,35 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::TREE))),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH))),
-   flowerGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::FLOWER))),
+
+   /* temporary solution to two flower meshes and textures */
+   daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::DAISY)), TextureType::DAISY),
+   roseGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::ROSE)), TextureType::ROSE),
+
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
-   butterfly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), glm::vec3(0.0f), 10),
+
+   /* temporary solution to three butterfly textures */
+   butterfly_system_red_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_RED,
+            glm::vec3(0.0f), 10),
+   butterfly_system_pink_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_PINK,
+            glm::vec3(40.0f, 0.f, 50.0f), 10),
+   butterfly_system_blue_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
+            glm::vec3(-60.0f, 0.f, -70.0f), 10),
+
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
+   deerCam(Camera(glm::vec3(30.0f, 50.0f, 30.0f), glm::vec3(0.0f))),
+   airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
+   curCam(&deerCam),
    airMode(false),
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND)))
@@ -69,12 +85,14 @@ Game::Game() :
    glLineWidth(1.0);
 
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
-   deerCam.initialize(deer_.getPosition());
-   airCam.initialize(deer_.getPosition());
+
+   deerCam.setLookAt(deer_.getPosition());
+   airCam.setLookAt(deer_.getPosition());
 
    treeGen.generate();
    bushGen.generate(ground_);
-   flowerGen.generate();
+   daisyGen.generate(ground_);
+   roseGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
@@ -84,7 +102,10 @@ Game::Game() :
    for (auto& bush : bushGen.getBushes()) {
       objects.push_back(&bush);
    }
-   for (auto& flower : flowerGen.getFlowers()) {
+   for (auto& flower : daisyGen.getFlowers()) {
+      objects.push_back(&flower);
+   }
+   for (auto& flower : roseGen.getFlowers()) {
       objects.push_back(&flower);
    }
 
@@ -99,17 +120,13 @@ void Game::step(units::MS dt) {
    canary2_bird_sound_.step(dt, sound_engine_);
    woodpecker_bird_sound_.step(dt, sound_engine_);
    bool deerBlocked = false;
-   
-
-   if (airMode) {
-      curCam = &airCam;
-   }
-   else {
-      curCam = &deerCam;
-   }
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
-   butterfly_system_.step(dt);
+
+   butterfly_system_red_.step(dt);
+   butterfly_system_pink_.step(dt);
+   butterfly_system_blue_.step(dt);
+
    rain_system_.step(dt);
 
    if(numLightning) {
@@ -125,8 +142,10 @@ void Game::step(units::MS dt) {
             countLightning = -7.5;
       }
    }
-   else
+   else {
       lighting = 0;
+      raining = 0;
+   }
 
    if (deer_.isMoving()) {
       BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt, *curCam);
@@ -141,8 +160,8 @@ void Game::step(units::MS dt) {
       deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
 
       //printf("Next deer rect at (%f, %f) with dim (%f, %f)\n", center.x, center.y, nextDeerRect.getDimensions().x, nextDeerRect.getDimensions().y);
-      deerCam.move(deer_.getPosition());
-      airCam.move(deer_.getPosition());
+      deerCam.setLookAt(deer_.getPosition());
+      //airCam.setLookAt(deer_.getPosition());
    }
 
    if (deerBlocked) {
@@ -164,6 +183,8 @@ void Game::step(units::MS dt) {
    }
 
    day_cycle_.autoAdjustTime(dt);
+   deerCam.step(dt);
+   //airCam.step(dt);
 }
 
 void Game::draw() {
@@ -176,7 +197,7 @@ void Game::draw() {
                  0.6274509 * sunIntensity,
                  sunIntensity, 1.0f);
 
-   glm::mat4 viewMatrix = deerCam.getViewMatrix();
+   glm::mat4 viewMatrix = curCam->getViewMatrix();
    std::vector<Drawable> drawables;
    std::vector<CulledDrawable> culledDrawables;
    Drawable br_drawable;
@@ -200,16 +221,24 @@ void Game::draw() {
    for (auto& tree : treeGen.getTrees()) {
       br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
    }
-  
-   drawables.push_back(flowerGen.drawable());
-   for (auto& flower : flowerGen.getFlowers()) {
+
+   drawables.push_back(daisyGen.drawable());
+   for (auto& flower : daisyGen.getFlowers()) {
+      br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
+   }
+
+   drawables.push_back(roseGen.drawable());
+   for (auto& flower : roseGen.getFlowers()) {
       br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
    }
    
    if(raining)
       drawables.push_back(rain_system_.drawable());
    
-   drawables.push_back(butterfly_system_.drawable());
+   drawables.push_back(butterfly_system_red_.drawable());
+   drawables.push_back(butterfly_system_pink_.drawable());
+   drawables.push_back(butterfly_system_blue_.drawable());
+
    
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
@@ -226,9 +255,9 @@ void Game::draw() {
                                                                  glm::translate(glm::mat4(1.0), glm::vec3(100.0f, 0.0f, 0.0f)),
                                                                  glm::translate(glm::mat4(1.0), glm::vec3(23.0f, 0.0f, 0.0f)),
                                                                  glm::translate(glm::mat4(1.0), glm::vec3(8.0f, 0.0f, 0.0f))})}));
-   viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
-   deerPos = deer_.getPosition();
 */
+   viewMatrix = curCam->getViewMatrix();
+   deerPos = deer_.getPosition();
 
 // View Frustum Culling
    FrustumG viewFrust;
@@ -238,7 +267,7 @@ void Game::draw() {
    // Use camera values to construch planes
    viewFrust.setCamDef(curCam->getPosition(),
                        curCam->getLookAt(),
-                       curCam->up);
+                       glm::vec3(0, 1, 0));
 
    for (auto& drawable : drawables) {
       glm::vec3 min, max, mid;
@@ -267,7 +296,8 @@ void Game::draw() {
    }
    std::cout << "culledObjects: " << culledObject << std::endl;
 
-   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
+         deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {
@@ -301,8 +331,10 @@ void Game::mainLoop() {
             const auto key_backward = SDL_SCANCODE_S;
             if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
                deer_.walkForward();
+               deerCam.moveFoward();
             } else if (!input.isKeyHeld(key_forward) && input.isKeyHeld(key_backward)) {
                deer_.walkBackward();
+               deerCam.moveBack();
             } else {
                deer_.stopWalking();
             }
@@ -312,10 +344,12 @@ void Game::mainLoop() {
             const auto key_right = SDL_SCANCODE_D;
             if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
                deer_.strafeLeft();
-               deerCam.rotatePositionWithDrag(-20, 0, kScreenWidth, kScreenHeight);
+               deerCam.turnLeft();
+               //deerCam.rotatePositionWithDrag(-20, 0, kScreenWidth, kScreenHeight);
             } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
                deer_.strafeRight();
-               deerCam.rotatePositionWithDrag(20, 0, kScreenWidth, kScreenHeight);
+               deerCam.turnRight();
+               //deerCam.rotatePositionWithDrag(20, 0, kScreenWidth, kScreenHeight);
             } else {
                deer_.stopStrafing();
             }
@@ -354,8 +388,10 @@ void Game::mainLoop() {
          { // Lightning
             const auto key_lightning = SDL_SCANCODE_L;
             if (input.wasKeyPressed(key_lightning)) {
+               raining = 1;
                lighting = 1;
                numLightning = 3;
+               sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
             }
          }
          { // Rain
@@ -368,6 +404,18 @@ void Game::mainLoop() {
             const auto key_air_mode = SDL_SCANCODE_V;
             if (input.wasKeyPressed(key_air_mode)) {
                airMode = !airMode;
+               if (airMode) {
+                  curCam = &airCam;
+               }
+               else {
+                  curCam = &deerCam;
+               }
+            }
+         }
+         { //Change shading models
+            const auto key_blinn = SDL_SCANCODE_B;
+            if (input.wasKeyPressed(key_blinn)) {
+               switchBlinnPhongShading = !switchBlinnPhongShading;   
             }
          }
          { //handle quit

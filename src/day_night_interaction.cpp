@@ -1,7 +1,6 @@
 #include "day_night_interaction.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
-#include "graphics/shader_setup.h"
 #include "graphics/material.h"
 
 Drawable DayNightInteraction::drawableSun() const {

@@ -15,11 +15,11 @@ struct Shader;
 struct SoundEngine;
 
 struct Flower : GameObject {
-   Flower(const glm::vec3& position, float scale) :
-      position_(position), 
+   Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale) :
+      position_(position.x, ground.heightAt(position) - mesh.min.y, position.z), 
       scale_(scale),
-      rotate_(0.0f),
-      bounding_rectangle_(BoundingRectangle(glm::vec2(position.x, position.z), glm::vec2(2.0f, 2.0f), 0.0f)) 
+      rotate_(rand() % 360),
+      bounding_rectangle_(BoundingRectangle(glm::vec2(position.x, position.z), glm::vec2(2.0f, 2.0f), 90.0f)) 
    {}
 
    void eatFlower(SoundEngine& sound_engine);

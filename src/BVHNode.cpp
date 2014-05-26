@@ -1,5 +1,5 @@
 /* 
-   BVHNode.h (Binary Spatial Partitioning Node)
+   BVHNode.h (Bounding Volume Hierarchy Node)
    Katie Keim
    Deer - CPE 476
 */
@@ -24,11 +24,11 @@ BoundingRectangle BVHNode::getRect() {
 }
 
 bool BVHNode::hasLeftNode() {
-   return leftIndex >= 0;//leftNode != NULL;
+   return leftIndex >= 0;
 }
 
 bool BVHNode::hasRightNode() {
-   return rightIndex >= 0;//rightNode != NULL;
+   return rightIndex >= 0;
 }
 
 void BVHNode::printNode() {

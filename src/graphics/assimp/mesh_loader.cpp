@@ -58,13 +58,15 @@ std::string mesh_path(MeshType mesh) {
       case MeshType::TIME_STONE:
          return kMeshPath + "time_stone.dae";
       case MeshType::TREE:
-         return kMeshPath + "tree2.3ds";
+         return kMeshPath + "tree1.3ds";
       case MeshType::BUSH:
          return kMeshPath + "tree.3ds";
-      case MeshType::FLOWER:
-         return kMeshPath + "deer_butt.dae";
+      case MeshType::DAISY:
+         return kMeshPath + "flower1.dae";
+      case MeshType::ROSE:
+         return kMeshPath + "flower2.dae";
       case MeshType::RAIN:
-         return kMeshPath + "box.dae";
+         return kMeshPath + "rain.dae";
       case MeshType::BUTTERFLY:
          return kMeshPath + "butterfly.dae";
    }
@@ -156,6 +158,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    }
 
    // Get the bones/skinning.
+   ret.bone_weights_array.resize(mesh.mNumVertices);
    if (mesh.mNumBones > 0) {
       // Get the animations from the scene, but only if we have bones.
       std::map<std::string, aiNodeAnim*> channel_map;
@@ -168,7 +171,6 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          }
       }
 
-      ret.bone_weights_array.resize(mesh.mNumVertices);
       std::vector<AssimpBone> assimp_bones;
       for (size_t i = 0; i < mesh.mNumBones; ++i) {
          auto& bone = mesh.mBones[i];

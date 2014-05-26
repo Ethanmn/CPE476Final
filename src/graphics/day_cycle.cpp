@@ -32,8 +32,10 @@ void DayCycle::adjustToTime(float newTime) {
 }
 
 void DayCycle::dayToNight() {
-   switchingTime = true;
-   switchToNight = false;
+   if(timeOfDay > 0.6 && timeOfDay < 0.4) {
+      switchingTime = true;
+      switchToNight = false;
+   }
 }
 
 void DayCycle::nightToDay() {

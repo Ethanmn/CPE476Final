@@ -43,6 +43,7 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::HEIGHT_MAP,
    Uniform::HAS_HEIGHT_MAP,
    
+   Uniform::USE_BLINN_PHONG,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
    
@@ -71,13 +72,6 @@ const std::vector<Uniform> kWaterUniforms{
    Uniform::SCREEN_HEIGHT,
 };
 
-const std::vector<Attribute> kSkyboxAttrs{
-};
-const std::vector<Uniform> kSkyboxUniforms{
-   Uniform::MODEL_VIEW,
-   Uniform::PROJECTION
-};
-
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
@@ -90,9 +84,6 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::WATER,
             Shader("Water", kWaterAttrs, kWaterUniforms)));
-   //shaders_.insert(std::make_pair(
-            //ShaderType::SKYBOX,
-            //Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
