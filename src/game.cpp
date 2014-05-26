@@ -37,6 +37,8 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::BUSH))),
    flowerGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::FLOWER))),
+   songStoneGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::TIME_STONE))),
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
@@ -74,6 +76,7 @@ Game::Game() :
    treeGen.generate();
    bushGen.generate(ground_);
    flowerGen.generate(ground_);
+   songStoneGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
@@ -85,6 +88,9 @@ Game::Game() :
    }
    for (auto& flower : flowerGen.getFlowers()) {
       objects.push_back(&flower);
+   }
+   for (auto& songStone : songStoneGen.getSongStones()) {
+      objects.push_back(&songStone);
    }
 
    //Pre-processing BVH Tree
@@ -189,10 +195,10 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableMoon());
    br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
    
-   drawables.push_back(bushGen.drawable());
-   for (auto& bush : bushGen.getBushes()) {
-      br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
-   }
+   //drawables.push_back(bushGen.drawable());
+   //for (auto& bush : bushGen.getBushes()) {
+      //br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
+   //}
   
    drawables.push_back(treeGen.drawable());
    for (auto& tree : treeGen.getTrees()) {
@@ -203,7 +209,12 @@ void Game::draw() {
    for (auto& flower : flowerGen.getFlowers()) {
       br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
    }
-   
+  
+   drawables.push_back(songStoneGen.drawable());
+   for (auto& songStone : songStoneGen.getSongStones()) {
+      br_drawable.model_transforms.push_back(songStone.getBoundingRectangle().model_matrix());
+   }
+
    if(raining)
       drawables.push_back(rain_system_.drawable());
    
@@ -324,7 +335,9 @@ void Game::mainLoop() {
          { //Change shading models
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
-               switchBlinnPhongShading = !switchBlinnPhongShading;   
+               switchBlinnPhongShading = !switchBlinnPhongShading; 
+               glm::vec3 deerPos = deer_.getPosition();
+               printf("Deer Position %f %f %f\n", deerPos.x, deerPos.y, deerPos.z);
             }
          }
          { //handle quit

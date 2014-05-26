@@ -12,6 +12,7 @@
 #include "TreeGenerator.h"
 #include "BushGenerator.h"
 #include "FlowerGenerator.h"
+#include "SongStoneGenerator.h"
 #include "BVHTree.h"
 #include "graphics/gl_adapters/frame_buffer_object.h"
 #include "sound_engine.h"
@@ -40,6 +41,7 @@ struct Game {
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
    FlowerGenerator flowerGen;
+   SongStoneGenerator songStoneGen;
 
    SoundEngine sound_engine_;
    BirdSound cardinal_bird_sound_, canary_bird_sound_, canary2_bird_sound_, woodpecker_bird_sound_;
