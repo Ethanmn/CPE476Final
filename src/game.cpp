@@ -1,13 +1,17 @@
 #include "game.h"
 #include "graphics/mesh.h"
-#include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <graphics/material.h>
 #include <iostream>
 
+#include "graphics/texture.h"
+#include "DeerCam.h"
+#include "AirCam.h"
+
 namespace {
    bool showTreeShadows = false;
    bool draw_collision_box = false;
+   bool switchBlinnPhongShading = false;
    bool debug = false;
 
    int lighting = 0;
@@ -40,12 +44,12 @@ Game::Game() :
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
-   objTree(),
    deerCam(Camera(glm::vec3(0.0f, 8.0f, 8.0f), glm::vec3(0.0f))),
    airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
    curCam(&deerCam),
    airMode(false),
-   shadow_map_fbo_(kScreenWidth, kScreenHeight)
+   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
+   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND)))
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
@@ -71,7 +75,7 @@ Game::Game() :
 
    treeGen.generate();
    bushGen.generate(ground_);
-   flowerGen.generate();
+   flowerGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
@@ -202,13 +206,15 @@ void Game::draw() {
    drawables.push_back(butterfly_system_.drawable());
    
    drawables.push_back(ground_.drawable());
+   drawables.push_back(water_.drawable());
    if (draw_collision_box)
       drawables.push_back(br_drawable);
 
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
-   draw_shader_.Draw(shadow_map_fbo_, drawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), drawables, viewMatrix, switchBlinnPhongShading, 
+         deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {
@@ -301,6 +307,7 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_lightning)) {
                lighting = 1;
                numLightning = 3;
+               sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
             }
          }
          { // Rain
@@ -319,6 +326,12 @@ void Game::mainLoop() {
                else {
                   curCam = &deerCam;
                }
+            }
+         }
+         { //Change shading models
+            const auto key_blinn = SDL_SCANCODE_B;
+            if (input.wasKeyPressed(key_blinn)) {
+               switchBlinnPhongShading = !switchBlinnPhongShading;   
             }
          }
          { //handle quit

@@ -1,51 +1,63 @@
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
+
 #include <iostream>
+#include <boost/variant.hpp>
 #include <string>
 #include "gl_adapters/gl_types.h"
 
-enum class Textures {
+enum class TextureType {
    WATER,
    GRASS,
    DEER,
-   BUTTERFLY,
+   BUTTERFLY1,
+   BUTTERFLY2,
+   BUTTERFLY3,
    HEIGHT_MAP,
    MOON_STONE,
    SUN_STONE,
-   SKYBOX
+   TREE,
+
+   LAST_TEXTURE_TYPE,
 };
 
-inline std::string texture_path(Textures texture) {
-   switch (texture) {
-      case Textures::WATER:
-         return "../textures/water.bmp";
-      case Textures::GRASS:
-         return "../textures/grass.bmp";
-      case Textures::DEER:
-         return "../textures/deer1.bmp";
-      case Textures::BUTTERFLY:
-         return "../textures/butterfly.bmp";
-      case Textures::HEIGHT_MAP:
-         return "../textures/height_map.bmp";
-      case Textures::MOON_STONE:
-         return "../textures/stone_moon.bmp";
-      case Textures::SUN_STONE:
-         return "../textures/stone_sun.bmp";
-      case Textures::SKYBOX:
-         return "../textures/skybox.bmp";
+std::string texture_path(TextureType texture);
 
-   }
-}
+// Not enum class because we are using the values.
+// Enum class's are "not" int's (even though they are) and need to be cast to
+// ints.
+// Enums are ints unless assigned other number values,
+// and can be used interchangeably with ints. Also you don't scope in enums.
+// e.g.
+//
+// enum class: TextureSlot::HEIGHT_MAP_TEXTURE
+// enum:       HEIGHT_MAP_TEXTURE
+enum TextureSlot {
+   DIFFUSE_TEXTURE,
+   HEIGHT_MAP_TEXTURE,
+   SHADOW_MAP_TEXTURE,
+   REFLECTION_TEXTURE,
+};
+
+struct TextureCache {
+   TextureCache();
+   GLTextureID getTexture(TextureType texture_type) const;
+
+  private:
+   GLTextureID load(const std::string& path) const;
+
+   std::map<TextureType, GLTextureID> textures_;
+};
 
 struct Texture {
-   Texture(const std::string& path);
-   void enable() const;
-   void disable() const;
-   GLTextureID textureID() const;
+   Texture(TextureType texture_type, TextureSlot slot);
+   Texture(GLTextureID texture_id, TextureSlot slot);
+   void enable(const TextureCache& texture_cache) const;
+   int texture_slot() const { return texture_slot_; }
 
-   private:
-      GLTextureID texture_id;
-
+  private:
+   boost::variant<GLTextureID, TextureType> texture_;
+   int texture_slot_;
 };
 
 

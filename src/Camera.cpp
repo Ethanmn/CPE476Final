@@ -158,14 +158,14 @@ void Camera::step(float dT) {
       angle += 90.0f * dT;
    }
 
-   if (glm::length(position - lookAt) > 12.0f) {
-      target += getCamForwardVec() * (dT / 100.0f);// * 5.0f;
+   if (glm::length(position - lookAt) > 20.0f) {
+      target += getCamForwardVec() * (dT / 100.0f) * 5.0f;
    }
 
    //printf("Length: %f\n", glm::length(position - lookAt)); 
 
    if (movingBack) {
-      target -=  getCamForwardVec() * (dT / 100.0f);// * 5.0f;
+      target -=  getCamForwardVec() * (dT / 100.0f) * 5.0f;
    }
 
    displacement = newPos - target;

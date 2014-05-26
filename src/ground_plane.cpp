@@ -2,7 +2,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
-#include "graphics/shader_setup.h"
 #include "graphics/texture.h"
 
 const int GroundPlane::GROUND_SCALE = 500;
@@ -15,10 +14,10 @@ const std::vector<unsigned short> ground_indices{
 };
 
 GroundPlane::GroundPlane(const Mesh& mesh) :
-   draw_template_({ShaderType::TEXTURE, mesh, Texture(texture_path(Textures::GRASS)), 
-         Texture(texture_path(Textures::HEIGHT_MAP)), false}),
+   draw_template_({ShaderType::TEXTURE, mesh, Texture(TextureType::GRASS, DIFFUSE_TEXTURE), 
+         Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE), EffectSet({EffectType::CASTS_SHADOW})}),
    // TODO(chebert): Loaded it twice because textures confuse me.
-   height_map_image_(texture_path(Textures::HEIGHT_MAP)) {
+   height_map_image_(texture_path(TextureType::HEIGHT_MAP)) {
 
       const glm::mat4 scale(glm::scale(glm::mat4(1.0), glm::vec3(PLANE_SIZE, 1, PLANE_SIZE)));
       //COLUMN MAJOR
