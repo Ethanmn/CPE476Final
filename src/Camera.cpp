@@ -10,10 +10,6 @@ const float PI = 3.14159265359;
 const int MAX_ROTATE_VERT_UP =  80;
 const int MAX_ROTATE_VERT_DOWN =  10;
 const int PI_IN_DEGREES = 180;
-const float ROTATION_SENSITIVITY = 1; //Smaller number -> less sensitive
-
-const float TURN_SPEED = 4.0f;
-const float FRICTION = 2.0f;
 
 Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    position(pos),
@@ -21,69 +17,26 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    up(glm::vec3(0, 1, 0)),
    target(pos),
    direction(0.0f, 0.0f, 0.0f),
-   phi(PI / 4),
-   theta(-PI / 2),
-   dTheta(0.0f),
-   dPhi(0.0f),
-   springStrength(0.3),
+   springStrength(0.1),
    dampConst(0.00065),
-   angle (0.0f),
+   angle(0.0f),
+   vertAngle(asin(position.y / glm::length(look - pos)) * PI_IN_DEGREES / PI),
    movingFoward(false),
    movingBack(false),
    turningLeft(false),
    turningRight(false)
 {
-   //updatePosition(glm::length(position - lookAt));
+   //printf("Pos Y: %f\nVert Angle: %f\n", position.y, vertAngle);
 }
 
 /* 'Jumps' the camera to the specified position. */
 void Camera::setPosition(const glm::vec3& endPosition) {
    position = endPosition;
-   updateLookAt();
 }
 
 /* Changes the point the camera is looking at. */
 void Camera::setLookAt(const glm::vec3& lookAtPoint) {
    lookAt = lookAtPoint;
-}
-
-/* Moves the camera one step toward the specified position at the given speed. */
-void Camera::moveCameraToPoint(const glm::vec3& endPosition, float speed, units::MS timeDif) {
-   position += (endPosition - position) / glm::length(endPosition - position) * speed * (float)timeDif;
-   updateLookAt();
-}
-
-/* Moves the camera one step in the given direction at the given speed. */
-void Camera::moveCameraInDirection(const glm::vec3& direction, float speed, units::MS timeDif) {
-   position += direction / glm::length(direction) * speed * (float)timeDif;
-   updateLookAt();
-}
-
-/*
-   Rotates the camera based on a mouse drag, changing the camera's lookAt point.
-   Parameters should be the starting mouse point,
-   the ending mouse point, the width of the window,
-   and the height of the window.
-*/
-void Camera::rotateLookAtWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
-   changeRotationAngles(endPoint.x - startPoint.x, endPoint.y - startPoint.y, width, height);
-   updateLookAt();
-}
-
-/*
-   Rotates the camera around the current lookAt point, changing the camera's position.
-   Parameters should be the starting mouse point,
-   the ending mouse point, tthe width of the window,
-   and the height of the window.
-*/
-void Camera::rotatePositionWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height) {
-   changeRotationAngles(endPoint.x - startPoint.x, endPoint.y - startPoint.y, width, height);
-   updatePosition(glm::length(position - lookAt));
-}
-
-void Camera::rotatePositionWithDrag(float diffX, float diffY, int width, int height) {
-   changeRotationAngles(diffX, diffY, width, height);
-   updatePosition(glm::length(position - lookAt));
 }
 
 /* Retrieves the current position of the camera. */
@@ -110,21 +63,6 @@ glm::vec3 Camera::getCamLeftVec() const {
 /* Retrieves the view matrix (glm::mat4) for shaders. */
 glm::mat4 Camera::getViewMatrix() const {
    return glm::lookAt(position, lookAt, up);
-}
-
-/* A private function to update our lookAt point. */
-void Camera::updateLookAt() {
-   lookAt = glm::vec3(cos(phi) * cos(theta) + position.x, sin(phi), cos(phi) * cos(PI / 2 - theta) + position.z);
-}
-
-/* A private function to update the position based on the current rotation angle and lookAt point. */
-void Camera::updatePosition(float radius) {
-   position = glm::vec3(radius * cos(phi) * cos(theta) + lookAt.x, radius * sin(phi), radius * cos(phi) * cos(PI / 2 - theta) + lookAt.z);
-}
-
-/* A private function called to change the current rotation angles */
-void Camera::changeRotationAngles(float diffX, float diffY, int width, int height) {
-
 }
 
 void Camera::turnLeft() {
@@ -158,13 +96,20 @@ void Camera::step(float dT) {
       angle += 90.0f * dT;
    }
 
-   if (glm::length(position - lookAt) > 20.0f) {
+   if (vertAngle > 15.0f) {
+      vertAngle -= dT / 100.0f;
+   }
+   else if (vertAngle < 5.0f) {
+      vertAngle += dT / 100.0f;
+   }
+
+   if (glm::length(position - lookAt) > 25.0f) {
       target += getCamForwardVec() * (dT / 100.0f) * 5.0f;
    }
 
    //printf("Length: %f\n", glm::length(position - lookAt)); 
 
-   if (movingBack) {
+   if (glm::length(position - lookAt) < 15.0f) {
       target -=  getCamForwardVec() * (dT / 100.0f) * 5.0f;
    }
 
@@ -176,6 +121,7 @@ void Camera::step(float dT) {
       scalar = (1.0f / dispLength) * springMag * dT / 100.0f;
       displacement *= scalar;
       newPos.x -= displacement.x;
+      newPos.y -= displacement.y;
       newPos.z -= displacement.z;
    }
 
@@ -189,11 +135,13 @@ void Camera::step(float dT) {
    movingFoward = false;
    movingBack = false;
 
+   //printf("Pos Y: %f\nVert Angle: %f\n", position.y, vertAngle);
+
    //printCamera();
 }
 
 void Camera::rotateCamera(float angle) {
-   position = glm::vec3(cos(0.0f) * cos(angle) + position.x, position.y, cos(0.0f) * cos(PI / 2 - angle) + position.z);
+   position = glm::vec3(cos(vertAngle) * cos(angle) + position.x, sin(vertAngle) + position.y, cos(vertAngle) * cos(PI / 2 - angle) + position.z);
 }
 
 void Camera::printCamera() {

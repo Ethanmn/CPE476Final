@@ -44,7 +44,7 @@ Game::Game() :
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
-   deerCam(Camera(glm::vec3(0.0f, 8.0f, 8.0f), glm::vec3(0.0f))),
+   deerCam(Camera(glm::vec3(30.0f, 30.0f, 30.0f), glm::vec3(0.0f))),
    airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
    curCam(&deerCam),
    airMode(false),
