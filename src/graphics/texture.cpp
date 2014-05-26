@@ -38,7 +38,7 @@ std::string texture_path(TextureType texture) {
       case TextureType::SUN_STONE:
          return "../textures/stone_sun.bmp";
       case TextureType::TREE:
-         return "../textures/tree2.tga";
+         return "../textures/tree1.tga";
       case TextureType::RAIN:
          return "../textures/rain.bmp";
 
