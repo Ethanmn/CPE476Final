@@ -31,6 +31,9 @@ varying float vUnderWater;
 float calculateShadowAmount();
 vec3 calculateDiffuse(vec3 lightInt, vec3 lightDir);
 vec3 calculateSpecular(vec3 lightInt, vec3 lightDir);
+void CheckIfUnderWater(float ShadowAmount);
+void CheckIfLightning();
+
 
 
 void main() {
@@ -46,25 +49,13 @@ void main() {
    Specular = calculateSpecular(directionalColor, vLightAndDirectional.xyz);
 
    color =  Diffuse + Specular + Ambient;
-
    gl_FragColor = vec4(ShadowAmount * color.rgb, 1.0);
 
-   if(vUnderWater > 0.0) {
-      gl_FragColor = vec4(0.0, 
-                     uSunIntensity * 0.6 * gl_FragColor.y + ShadowAmount * 0.2, 
-                     uSunIntensity * 0.6 * gl_FragColor.z + ShadowAmount * 0.4, 
-                     1.0);
-   }
-
-   if(uLightning != 0) {
-      if(uSunIntensity > 0.5)
-         LightningAmount = 2.0;
-      else
-         LightningAmount = 4.0;
-      gl_FragColor = vec4(gl_FragColor.rgb * LightningAmount, 1.0);
-   }
-
+   CheckIfUnderWater(ShadowAmount);
+   CheckIfLightning();
 }
+
+
 
 float calculateShadowAmount() {
    float bias = 0.005;
@@ -108,4 +99,24 @@ vec3 calculateSpecular(vec3 lightInt, vec3 lightDir) {
    }
 
    return vec3(vec4(Specular, 1.0) * uViewMatrix);
+}
+
+void CheckIfUnderWater(float ShadowAmount) {
+   if(vUnderWater > 0.0) {
+      gl_FragColor = vec4(0.0, 
+                     uSunIntensity * 0.6 * gl_FragColor.y + ShadowAmount * 0.2, 
+                     uSunIntensity * 0.6 * gl_FragColor.z + ShadowAmount * 0.4, 
+                     1.0);
+   }
+}
+
+void CheckIfLightning() {
+   float LightningAmount;
+   if(uLightning != 0) {
+      if(uSunIntensity > 0.5)
+         LightningAmount = 2.0;
+      else
+         LightningAmount = 4.0;
+      gl_FragColor = vec4(gl_FragColor.rgb * LightningAmount, 1.0);
+   }
 }
