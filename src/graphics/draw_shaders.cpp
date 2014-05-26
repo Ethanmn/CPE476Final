@@ -1,7 +1,6 @@
 #include "draw_shaders.h"
 #include "shaders.h"
 #include "uniforms.h"
-#include "shader_setup.h"
 #include <iostream>
 
 using namespace std;
@@ -167,11 +166,9 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
                   drawables.push_back(newDrawable);
                }
                std::cout << "culled: " << culledObjects << " non-culled: " << nonCulledObjects << std::endl;
-               setupTexture(shader, shadow_map_fbo_, viewMatrix, deerPos, sunDir, sunIntensity, lightning);
+               setupTexture(shader, shadow_map_fbo_, viewMatrix, useBlinnPhong, deerPos, sunDir, sunIntensity, lightning);
                drawTextureShader(shader, drawables, viewMatrix);
             }
-            setupTexture(shader, shadow_map_fbo_, viewMatrix, useBlinnPhong, deerPos, sunDir, sunIntensity, lightning);
-            drawTextureShader(shader, drawables, viewMatrix);
             break;
          case ShaderType::WATER:
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
@@ -182,7 +179,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
                Drawable newDrawable;
                newDrawable.draw_template = drawable.draw_template;
                if (drawable.draw_template.shader_type == ShaderType::WATER) {
-                  setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
+                  setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
                   drawModelTransforms(shader, newDrawable, viewMatrix);
                }
             }
