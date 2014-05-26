@@ -37,6 +37,7 @@ enum TextureSlot {
    HEIGHT_MAP_TEXTURE,
    SHADOW_MAP_TEXTURE,
    REFLECTION_TEXTURE,
+   DEFERRED_TEXTURE
 };
 
 struct TextureCache {
