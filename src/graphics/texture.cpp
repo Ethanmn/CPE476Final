@@ -13,29 +13,29 @@ struct Image {
    char *data;
 };
 
-std::string texture_path(Textures texture) {
+std::string texture_path(TextureType texture) {
    switch (texture) {
-      case Textures::WATER:
+      case TextureType::WATER:
          return "../textures/water.bmp";
-      case Textures::GRASS:
+      case TextureType::GRASS:
          return "../textures/grass.bmp";
-      case Textures::DEER:
+      case TextureType::DEER:
          return "../textures/deer1.bmp";
-      case Textures::BUTTERFLY1:
+      case TextureType::BUTTERFLY1:
          return "../textures/butterfly1.bmp";
-      case Textures::BUTTERFLY2:
+      case TextureType::BUTTERFLY2:
          return "../textures/butterfly2.bmp";
-      case Textures::BUTTERFLY3:
+      case TextureType::BUTTERFLY3:
          return "../textures/butterfly3.bmp";
-      case Textures::HEIGHT_MAP:
+      case TextureType::HEIGHT_MAP:
          return "../textures/height_map.bmp";
-      case Textures::MOON_STONE:
+      case TextureType::MOON_STONE:
          return "../textures/stone_moon.bmp";
-      case Textures::SUN_STONE:
+      case TextureType::SUN_STONE:
          return "../textures/stone_sun.bmp";
-      case Textures::SKYBOX:
+      case TextureType::SKYBOX:
          return "../textures/skybox.bmp";
-      case Textures::TREE:
+      case TextureType::TREE:
          return "../textures/tree.bmp";
 
    }

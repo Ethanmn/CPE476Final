@@ -4,7 +4,7 @@
 #include <string>
 #include "gl_adapters/gl_types.h"
 
-enum class Textures {
+enum class TextureType {
    WATER,
    GRASS,
    DEER,
@@ -18,7 +18,7 @@ enum class Textures {
    SKYBOX
 };
 
-std::string texture_path(Textures texture);
+std::string texture_path(TextureType texture);
 
 // Not enum class because we are using the values.
 // Enum class's are "not" int's (even though they are) and need to be cast to
