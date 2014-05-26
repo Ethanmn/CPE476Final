@@ -17,6 +17,7 @@ enum class TextureType {
    MOON_STONE,
    SUN_STONE,
    TREE,
+   RAIN,
 
    LAST_TEXTURE_TYPE,
 };
