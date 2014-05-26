@@ -15,7 +15,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    up(glm::vec3(0.0f, 1.0f, 0.0f)),
    target(pos),
    direction(0.0f, 0.0f, 0.0f),
-   springStrength(0.2f),
+   springStrength(0.128f),
    dampConst(0.00065f),
    angle(PI),
    vertAngle(asin(position.y / glm::length(look - pos)) * PI_IN_DEGREES / PI),
