@@ -15,7 +15,8 @@ DayCycle::DayCycle() :
    sunDir(glm::vec3(0.0, 1.0, 0.2)),
    sunIntensity(1.0),
    switchingTime(false),
-   timeOfDay(0.5)
+   timeOfDay(0.5),
+   stoppedCycle(1)
 {}
 
 glm::vec3 DayCycle::getSunDir() {
@@ -31,14 +32,20 @@ void DayCycle::adjustToTime(float newTime) {
    adjustSun();
 }
 
-void DayCycle::dayToNight() {
-   switchingTime = true;
-   switchToNight = false;
+void DayCycle::nightToDay() {
+   if(stoppedCycle == -1) {
+      switchingTime = true;
+      switchToNight = false;
+      stoppedCycle = 0;
+   }
 }
 
-void DayCycle::nightToDay() {
-   switchingTime = true;
-   switchToNight = true;
+void DayCycle::dayToNight() {
+   if(stoppedCycle == 1) {
+      switchingTime = true;
+      switchToNight = true;
+      stoppedCycle = 0;
+   }
 }
 
 
@@ -69,10 +76,14 @@ void DayCycle::adjustSun() {
 
    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   if(switchingTime && switchToNight && timeOfDay <= 0.1)
+   if(switchingTime && switchToNight && timeOfDay <= 0.1) {
+      stoppedCycle = -1;
       switchingTime = false;
-   else if(switchingTime && !switchToNight && timeOfDay >= 0.35 && timeOfDay <= 0.65)
+   }
+   else if(switchingTime && !switchToNight && timeOfDay >= 0.45 && timeOfDay <= 0.55) {
+      stoppedCycle = 1;
       switchingTime = false; 
+   }
  
    if(switchingTime) {
       if(tempTimeOfDay > 1.0)

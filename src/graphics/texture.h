@@ -7,12 +7,13 @@
 #include "gl_adapters/gl_types.h"
 
 enum class TextureType {
-   WATER,
    GRASS,
    DEER,
-   BUTTERFLY1,
-   BUTTERFLY2,
-   BUTTERFLY3,
+   DAISY,
+   ROSE,
+   BUTTERFLY_RED,
+   BUTTERFLY_PINK,
+   BUTTERFLY_BLUE,
    HEIGHT_MAP,
    MOON_STONE,
    SUN_STONE,

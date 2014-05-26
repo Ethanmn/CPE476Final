@@ -33,14 +33,29 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::TREE))),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH))),
-   flowerGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::FLOWER))),
+
+   /* temporary solution to two flower meshes and textures */
+   daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::DAISY)), TextureType::DAISY),
+   roseGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::ROSE)), TextureType::ROSE),
+
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
-   butterfly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), glm::vec3(0.0f), 10),
+
+   /* temporary solution to three butterfly textures */
+   butterfly_system_red_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_RED,
+            glm::vec3(0.0f), 10),
+   butterfly_system_pink_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_PINK,
+            glm::vec3(40.0f, 0.f, 50.0f), 10),
+   butterfly_system_blue_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
+            glm::vec3(-60.0f, 0.f, -70.0f), 10),
+
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
@@ -75,7 +90,8 @@ Game::Game() :
 
    treeGen.generate();
    bushGen.generate(ground_);
-   flowerGen.generate(ground_);
+   daisyGen.generate(ground_);
+   roseGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
@@ -85,7 +101,10 @@ Game::Game() :
    for (auto& bush : bushGen.getBushes()) {
       objects.push_back(&bush);
    }
-   for (auto& flower : flowerGen.getFlowers()) {
+   for (auto& flower : daisyGen.getFlowers()) {
+      objects.push_back(&flower);
+   }
+   for (auto& flower : roseGen.getFlowers()) {
       objects.push_back(&flower);
    }
 
@@ -102,7 +121,11 @@ void Game::step(units::MS dt) {
    bool deerBlocked = false;
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
-   butterfly_system_.step(dt);
+
+   butterfly_system_red_.step(dt);
+   butterfly_system_pink_.step(dt);
+   butterfly_system_blue_.step(dt);
+
    rain_system_.step(dt);
 
    if(numLightning) {
@@ -118,8 +141,10 @@ void Game::step(units::MS dt) {
             countLightning = -7.5;
       }
    }
-   else
+   else {
       lighting = 0;
+      raining = 0;
+   }
 
    if (deer_.isMoving()) {
       BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt, *curCam);
@@ -194,16 +219,24 @@ void Game::draw() {
    for (auto& tree : treeGen.getTrees()) {
       br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
    }
-  
-   drawables.push_back(flowerGen.drawable());
-   for (auto& flower : flowerGen.getFlowers()) {
+
+   drawables.push_back(daisyGen.drawable());
+   for (auto& flower : daisyGen.getFlowers()) {
+      br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
+   }
+
+   drawables.push_back(roseGen.drawable());
+   for (auto& flower : roseGen.getFlowers()) {
       br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
    }
    
    if(raining)
       drawables.push_back(rain_system_.drawable());
    
-   drawables.push_back(butterfly_system_.drawable());
+   drawables.push_back(butterfly_system_red_.drawable());
+   drawables.push_back(butterfly_system_pink_.drawable());
+   drawables.push_back(butterfly_system_blue_.drawable());
+
    
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
@@ -305,6 +338,7 @@ void Game::mainLoop() {
          { // Lightning
             const auto key_lightning = SDL_SCANCODE_L;
             if (input.wasKeyPressed(key_lightning)) {
+               raining = 1;
                lighting = 1;
                numLightning = 3;
                sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
