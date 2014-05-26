@@ -103,6 +103,8 @@ void Camera::step(float dT) {
       vertAngle += dT / 100.0f;
    }
 
+   printf("Vert Angle: %f\n", vertAngle);
+
    if (glm::length(position - lookAt) > 25.0f) {
       target += getCamForwardVec() * (dT / 100.0f) * 5.0f;
    }
@@ -125,6 +127,9 @@ void Camera::step(float dT) {
       newPos.z -= displacement.z;
    }
 
+   printf("Displacement: (%f, %f, %f)\n", displacement.x, displacement.y, displacement.z);
+   printf("Cam Forward Vec: (%f, %f, %f)\n", getCamForwardVec().x, getCamForwardVec().y, getCamForwardVec().z);
+
    //printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
 
    position = newPos;
@@ -136,7 +141,7 @@ void Camera::step(float dT) {
    movingBack = false;
 
    if (position.y < 1.0f) {
-      position.y = 0.0f;
+      position.y = 1.0f;
    }
 
    //printf("Pos Y: %f\nVert Angle: %f\n", position.y, vertAngle);
@@ -145,7 +150,7 @@ void Camera::step(float dT) {
 }
 
 void Camera::rotateCamera(float angle) {
-   position = glm::vec3(cos(vertAngle) * cos(angle) + position.x, sin(vertAngle) + position.y, cos(vertAngle) * cos(PI / 2 - angle) + position.z);
+   position = glm::vec3(cos(angle) + position.x, sin(vertAngle) + position.y, cos(PI / 2 - angle) + position.z);
 }
 
 void Camera::printCamera() {
