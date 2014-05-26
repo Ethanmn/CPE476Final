@@ -32,31 +32,23 @@ void FrustumG::setCamDef(const glm::vec3 &p, const glm::vec3 &l, const glm::vec3
 	X = glm::normalize(u * Z);
 
 	// the real "up" vector is the cross product of Z and X
-	Y = Z * X;
+	Y = glm::cross(Z, X);
 
 	// compute the centers of the near and far planes
 	nc = p - Z * nearD;
 	fc = p - Z * farD;
 
 	// compute the 4 corners of the frustum on the near plane
-	ntl = fc + Y * fh - X * fw;
-	ntr = fc + Y * fh + X * fw;
-	nbl = fc - Y * fh - X * fw;
-	nbr = fc - Y * fh + X * fw;
-	// ntl = nc + Y * nh - X * nw;
-	// ntr = nc + Y * nh + X * nw;
-	// nbl = nc - Y * nh - X * nw;
-	// nbr = nc - Y * nh + X * nw;
+	ntl = nc + Y * nh - X * nw;
+	ntr = nc + Y * nh + X * nw;
+	nbl = nc - Y * nh - X * nw;
+	nbr = nc - Y * nh + X * nw;
 
 	// compute the 4 corners of the frustum on the far plane
-	ftl = nc + Y * nh - X * nw;
-	ftr = nc + Y * nh + X * nw;
-	fbl = nc - Y * nh - X * nw;
-	fbr = nc - Y * nh + X * nw;
-	// ftl = fc + Y * fh - X * fw;
-	// ftr = fc + Y * fh + X * fw;
-	// fbl = fc - Y * fh - X * fw;
-	// fbr = fc - Y * fh + X * fw;
+	ftl = (fc + Y * fh - X * fw);
+	ftr = (fc + Y * fh + X * fw);
+	fbl = (fc - Y * fh - X * fw);
+	fbr = (fc - Y * fh + X * fw);
 
 	// compute the six planes
 	// the function set3Points assumes that the points
@@ -87,7 +79,7 @@ int FrustumG::sphereInFrustum(glm::vec3 &p, float radius) {
 
 	for (int i = 0; i < 6; i++) {
 		distance = pl[i].distance(p);
-		if (distance < (-radius - 15))
+		if (distance < (-radius))
 			return OUTSIDE;
 		else if (distance < radius)
 			result = INTERSECT;

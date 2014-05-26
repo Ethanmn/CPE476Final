@@ -245,17 +245,6 @@ void Game::draw() {
    if (draw_collision_box)
       drawables.push_back(br_drawable);
 
-/*
-   drawables.push_back(Drawable({DrawTemplate({ShaderType::TEXTURE, 
-                          Mesh::fromAssimpMesh(attribute_location_map_,
-                             mesh_loader_.loadMesh(MeshType::DEER)),
-                          boost::none,
-                           boost::none,
-                          EffectSet()}), std::vector<glm::mat4>({glm::mat4(),
-                                                                 glm::translate(glm::mat4(1.0), glm::vec3(100.0f, 0.0f, 0.0f)),
-                                                                 glm::translate(glm::mat4(1.0), glm::vec3(23.0f, 0.0f, 0.0f)),
-                                                                 glm::translate(glm::mat4(1.0), glm::vec3(8.0f, 0.0f, 0.0f))})}));
-*/
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
@@ -280,7 +269,6 @@ void Game::draw() {
          min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
          max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
          mid = (min + max) / 2.0f;
-         //std::cout << "in sphere: " << max.x << std::endl;
          if (!viewFrust.sphereInFrustum(mid, glm::length(max - mid))) {
             culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
             culledObject++;
@@ -294,7 +282,6 @@ void Game::draw() {
       culledDrawable.draw_template = drawable.draw_template;
       culledDrawables.push_back(culledDrawable);
    }
-   std::cout << "culledObjects: " << culledObject << std::endl;
 
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
