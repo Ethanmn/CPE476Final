@@ -1,6 +1,7 @@
 #include "SongStoneGenerator.h"
 
-const glm::vec3 CenterOfCircle = glm::vec3(-115.0f, 0.0f, -70.0f);
+//const glm::vec3 CenterOfCircle = glm::vec3(-115.0f, 0.0f, -70.0f);
+const glm::vec3 CenterOfCircle = glm::vec3(0.0f, 0.0f, 0.0f);
 const float CIRCLE_RADIUS = 20.0f;
 const int NUM_STONES = 5;
 const float PI = 3.1415926;

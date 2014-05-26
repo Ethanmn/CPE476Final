@@ -6,7 +6,7 @@
 
 void SongStone::playSongStone(SoundEngine& sound_engine) {
    sound_engine.playSoundEffect(
-         SoundEngine::SoundEffect::WOODPECKER0,
+         SoundEngine::SoundEffect::RUSTLE,
          false,
          position_);
 }
