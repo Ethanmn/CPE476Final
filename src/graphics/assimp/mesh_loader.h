@@ -18,7 +18,8 @@ enum class MeshType {
    TIME_STONE,
    TREE,
    BUSH,
-   FLOWER,
+   DAISY,
+   ROSE,
    RAIN,
    BUTTERFLY
 };
