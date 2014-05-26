@@ -56,6 +56,10 @@ struct Game {
    glm::vec2 mousePos;
    BVHTree objTree;
 
+   Camera deerCam;
+   Camera airCam;
+   Camera *curCam;
+
    bool airMode;
    ShadowMapFBO shadow_map_fbo_;
 

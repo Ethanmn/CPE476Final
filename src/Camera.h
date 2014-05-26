@@ -7,9 +7,11 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp> 
+
 #include "units.h"
+#include "globals.h"
 
 struct Camera {
    Camera(glm::vec3 position = glm::vec3(0, 0, 0), glm::vec3 lookAt = glm::vec3(0, 0, 1));
@@ -27,6 +29,12 @@ struct Camera {
    void rotatePositionWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height);
    void rotatePositionWithDrag(float diffX, float diffY, int width, int height);
 
+   void turnLeft();
+   void turnRight();
+   void moveFoward();
+   void moveBack();
+   void step(float dT);
+
    protected:
       void updatePosition(float radius);
    
@@ -34,11 +42,29 @@ struct Camera {
       glm::vec3 position;
       glm::vec3 lookAt;
       glm::vec3 up;
+
+      glm::vec3 target;
+      glm::vec3 direction;
+
       float phi;
       float theta;
 
+      float dTheta;
+      float dPhi;
+
+      float springStrength;
+      float dampConst;
+      float angle;
+
+      bool movingFoward;
+      bool movingBack;
+      bool turningLeft;
+      bool turningRight;
+
       void updateLookAt();
       void changeRotationAngles(float diffX, float diffY, int width, int height);
+      void printCamera();
+      void rotateCamera(float angle);
 };
 
 #endif // CAMERA_H_

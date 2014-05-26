@@ -1,5 +1,5 @@
 /* 
-   BVHTree.h (Binary Spatial Partitioning Tree)
+   BVHTree.h (Bounding Volume Hierarchy Tree)
    Katie Keim
    Deer - CPE 476
 */

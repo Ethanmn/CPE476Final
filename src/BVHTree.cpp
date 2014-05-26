@@ -1,5 +1,5 @@
 /* 
-   BVHTree.cpp (Binary Spatial Partitioning Tree)
+   BVHTree.cpp (Bounding Volume Hierarchy Tree)
    Katie Keim
    Deer - CPE 476
 */
@@ -23,18 +23,20 @@ void BVHTree::calculateTree(std::vector<GameObject*> objects) {
    int closestIndex;
 
    int numNodes = 0;
-
    int numLoops = 0;
 
+   //Create a node for every object (bottom of tree).
    for (int index = 0; index < (int)(objects.size()); index++) {
       allNodes.push_back(BVHNode((objects.at(index))->getBoundingRectangle(), objects.at(index), numNodes++));
       //printf("Obj center: (%f, %f)\n", objects.at(index)->getBoundingRectangle().getCenter().x, objects.at(index)->getBoundingRectangle().getCenter().y); 
    }
 
+   //Push all the new nodes onto the queue.
    for (int index = 0; index < (int)(allNodes.size()); index++) {
       nodeQ.push_back(&(allNodes.at(index)));
    }
 
+   //Loop through all nodes, combining those that are closest, until only 1 is left.
    while (nodeQ.size() > 1) {
       numLoops++;
       curNode = nodeQ.at(0);
@@ -46,6 +48,7 @@ void BVHTree::calculateTree(std::vector<GameObject*> objects) {
       closestLength = glm::length(curCenter - closestCenter);
       closestIndex = 0;
 
+      //Find the closest node.
       for (int index = 1; index < (int)(nodeQ.size()); index++) {
          otherCenter = nodeQ.at(index)->getRect().getCenter();
          
@@ -62,9 +65,11 @@ void BVHTree::calculateTree(std::vector<GameObject*> objects) {
       BoundingRectangle closestRect = otherNode->getRect();
       otherCenter = closestRect.getCenter();
 
+      //Take the found node out of the queue.
       nodeQ.erase(nodeQ.begin() + closestIndex);
+      
+      //Combine the two nodes.
       glm::vec2 newCenter = glm::vec2((curCenter.x + closestCenter.x) / 2.0f, (curCenter.y + closestCenter.y) / 2.0f);
-
       float newDimX = std::abs(curCenter.x - otherCenter.x) + curRect.getDimensions().x / 2.0f + closestRect.getDimensions().x / 2.0f;
       float newDimY = std::abs(curCenter.y - otherCenter.y) + curRect.getDimensions().y / 2.0f + closestRect.getDimensions().y / 2.0f;
 
@@ -74,16 +79,19 @@ void BVHTree::calculateTree(std::vector<GameObject*> objects) {
       int curIndex = curNode->num;
       int otherIndex = otherNode->num;
 
+      //Set the left and right nodes of this new combined node.
       allNodes.push_back(BVHNode(BoundingRectangle(newCenter, glm::vec2(newDimX, newDimY), 0), NULL, numNodes++));
       allNodes.at(allNodes.size() - 1).setLeftIndex(curIndex);
       allNodes.at(allNodes.size() - 1).setRightIndex(otherIndex);
 
+      //Push the new combined node back onto the queue.
       nodeQ.push_back(&(allNodes.at(allNodes.size() - 1)));
 
       //printf("Cur node: %d\n", curNode); curNode->printNode();
       //printf("Other node: %d\n", otherNode); otherNode->printNode();
    }
 
+   //One node should be left. This is the head.
    if (nodeQ.size() > 0) {
       head = nodeQ.at(0);
       //head->printNode();

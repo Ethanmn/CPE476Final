@@ -12,12 +12,28 @@ const int MAX_ROTATE_VERT_DOWN =  10;
 const int PI_IN_DEGREES = 180;
 const float ROTATION_SENSITIVITY = 1; //Smaller number -> less sensitive
 
-Camera::Camera(glm::vec3 pos, glm::vec3 look) {
-   position = pos;
-   lookAt = look;
-   up = glm::vec3(0, 1, 0);
-   phi = PI / 4;
-   theta = -PI / 2;
+const float TURN_SPEED = 4.0f;
+const float FRICTION = 2.0f;
+
+Camera::Camera(glm::vec3 pos, glm::vec3 look) :
+   position(pos),
+   lookAt(look),
+   up(glm::vec3(0, 1, 0)),
+   target(pos),
+   direction(0.0f, 0.0f, 0.0f),
+   phi(PI / 4),
+   theta(-PI / 2),
+   dTheta(0.0f),
+   dPhi(0.0f),
+   springStrength(0.3),
+   dampConst(0.00065),
+   angle (0.0f),
+   movingFoward(false),
+   movingBack(false),
+   turningLeft(false),
+   turningRight(false)
+{
+   //updatePosition(glm::length(position - lookAt));
 }
 
 /* 'Jumps' the camera to the specified position. */
@@ -108,13 +124,78 @@ void Camera::updatePosition(float radius) {
 
 /* A private function called to change the current rotation angles */
 void Camera::changeRotationAngles(float diffX, float diffY, int width, int height) {
-   theta += (diffX * PI / (float)width) * ROTATION_SENSITIVITY;
-   phi += (diffY * PI / (float)height) * ROTATION_SENSITIVITY;
 
-   if (phi > MAX_ROTATE_VERT_UP * PI / PI_IN_DEGREES) {
-     phi = MAX_ROTATE_VERT_UP * PI / PI_IN_DEGREES;
+}
+
+void Camera::turnLeft() {
+   turningLeft = true;
+}
+
+void Camera::turnRight() {
+   turningRight = true;
+}
+
+void Camera::moveFoward() {
+   movingFoward = true;
+}
+
+void Camera::moveBack() {
+   movingBack = true;
+}
+
+void Camera::step(float dT) {
+   glm::vec3 newPos = position;
+   glm::vec3 displacement;
+   float dispLength = 0.0f;
+   float springMag = 0.0f;
+   float scalar = 0.0f;
+
+   if (turningLeft) {
+      angle -= 90.0f * dT;
    }
-   else if (phi < -MAX_ROTATE_VERT_DOWN * PI / PI_IN_DEGREES) {
-      phi = -MAX_ROTATE_VERT_DOWN * PI / PI_IN_DEGREES;
+   
+   if (turningRight) {
+      angle += 90.0f * dT;
    }
+
+   if (glm::length(position - lookAt) > 12.0f) {
+      target += getCamForwardVec() * (dT / 100.0f);// * 5.0f;
+   }
+
+   //printf("Length: %f\n", glm::length(position - lookAt)); 
+
+   if (movingBack) {
+      target -=  getCamForwardVec() * (dT / 100.0f);// * 5.0f;
+   }
+
+   displacement = newPos - target;
+   dispLength = glm::length(displacement);
+
+   if (dispLength >= 0.001) {
+       springMag = springStrength * dispLength + dampConst * (1/dispLength);
+      scalar = (1.0f / dispLength) * springMag * dT / 100.0f;
+      displacement *= scalar;
+      newPos.x -= displacement.x;
+      newPos.z -= displacement.z;
+   }
+
+   //printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
+
+   position = newPos;
+   rotateCamera(angle);
+
+   turningLeft = false;
+   turningRight = false;
+   movingFoward = false;
+   movingBack = false;
+
+   //printCamera();
+}
+
+void Camera::rotateCamera(float angle) {
+   position = glm::vec3(cos(0.0f) * cos(angle) + position.x, position.y, cos(0.0f) * cos(PI / 2 - angle) + position.z);
+}
+
+void Camera::printCamera() {
+   printf("Position: (%f, %f, %f)\nDirection: (%f, %f, %f)\nAngle: %f\n", position.x, position.y, position.z, direction.x, direction.y, direction.z, angle);
 }
