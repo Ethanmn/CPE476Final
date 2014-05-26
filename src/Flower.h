@@ -18,7 +18,7 @@ struct Flower : GameObject {
    Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale) :
       position_(position.x, ground.heightAt(position) - mesh.min.y, position.z), 
       scale_(scale),
-      rotate_(90.0f),
+      rotate_(rand() % 360),
       bounding_rectangle_(BoundingRectangle(glm::vec2(position.x, position.z), glm::vec2(2.0f, 2.0f), 90.0f)) 
    {}
 

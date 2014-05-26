@@ -50,6 +50,10 @@ struct Game {
 
    BVHTree objTree;
 
+   Camera deerCam;
+   Camera airCam;
+   Camera *curCam;
+
    bool airMode;
    FrameBufferObject shadow_map_fbo_;
    Water water_;
