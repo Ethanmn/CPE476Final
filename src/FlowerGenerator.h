@@ -13,9 +13,9 @@
 #include "graphics/draw_template.h"
 
 struct FlowerGenerator {
-   FlowerGenerator(const Mesh& mesh);
+   FlowerGenerator(const Mesh& mesh, TextureType texture_type);
 
-   void generate();
+   void generate(const GroundPlane& ground);
    std::vector<Flower>& getFlowers();
 
    DrawTemplate draw_template() const { return draw_template_; }

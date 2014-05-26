@@ -29,6 +29,7 @@ enum class Uniform {
    HAS_TEXTURE,
    SCREEN_WIDTH,
    SCREEN_HEIGHT,
+   USE_BLINN_PHONG,
    LAST_UNIFORM,
 };
 
@@ -82,6 +83,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uScreenWidth";
       case Uniform::SCREEN_HEIGHT:
          return "uScreenHeight";
+      case Uniform::USE_BLINN_PHONG:
+         return "uUseBlinnPhong";
       case Uniform::LAST_UNIFORM:
          throw "Unknown uniform type, shouldn't even compile";
    }
