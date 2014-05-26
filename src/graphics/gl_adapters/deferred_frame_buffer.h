@@ -5,9 +5,8 @@
 
 enum class GBufferType {
    G_BUFF_POS,
-   G_BUFF_DIFF,
+   G_BUFF_DIFFUSE,
    G_BUFF_NORM,
-   G_BUFF_TEX,
 }; 
 
 struct DeferredFrameBuffer {
@@ -22,7 +21,7 @@ struct DeferredFrameBuffer {
 
   private:
    GLuint fbo_id_;
-   GLuint g_buff_textures[4];
+   GLuint g_buff_textures[3];
    GLuint g_buff_depth_texture;
 
    //Texture position_texture_;
