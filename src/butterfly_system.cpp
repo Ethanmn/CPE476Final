@@ -1,6 +1,5 @@
 #include "particle.h"
 #include "butterfly_system.h"
-#include "graphics/shader_setup.h"
 #include <stdlib.h>
 
 #define MAX 0.005f
@@ -10,7 +9,8 @@
 
 ButterflySystem::ButterflySystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) :
             draw_template_({ShaderType::TEXTURE, mesh, 
-                  Texture(texture_path(Textures::BUTTERFLY)), boost::none, EffectSet({EffectType::CASTS_SHADOW}) }),
+                  Texture(TextureType::BUTTERFLY3, DIFFUSE_TEXTURE), boost::none,
+                  EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION}) }),
             origin_(origin),
             scale_(0.3f),
             velocity_(glm::vec3(0.001f, 0.0f, 0.0f)),

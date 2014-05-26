@@ -103,6 +103,11 @@ SoundEngine::SoundEngine() {
             should_preload);
    sound_effect_sources_[SoundEffect::WOODPECKER0]->setDefaultVolume(0.2f);
 
+   sound_effect_sources_[SoundEffect::THUNDER_STRIKE] =
+      engine_->addSoundSourceFromFile(
+            "../sounds/thunder_strike.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
    sound_effect_sources_[SoundEffect::EAT_FLOWER] =
    engine_->addSoundSourceFromFile(
             "../sounds/eating.ogg",

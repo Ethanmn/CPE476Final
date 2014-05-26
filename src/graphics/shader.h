@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -48,14 +49,16 @@ struct Shader {
 
    template <typename T>
    void sendUniform(const Uniform& uniform, const UniformLocationMap& uniforms, const T& data) {
-      if (uniforms.count(uniform) == 0) {
-         std::cerr << std::endl << "Could not find " << uniform_name(uniform);
-         std::cerr << " in program " << program_name_ << std::endl;
-         std::cerr << "Make sure it is in the program's list of uniforms in ";
-         std::cerr << "Shaders.cpp" << std::endl << std::endl;
+      if (!uniforms.count(uniform)) {
+         noUniformError(uniform);
          return;
       }
-      gl_shader_.sendUniform(uniforms.at(uniform), data);
+      try {
+         gl_shader_.sendUniform(uniforms.at(uniform), data);
+      } catch (std::exception&) {
+         noUniformError(uniform);
+         return;
+      }
    }
 
   private:
@@ -63,9 +66,21 @@ struct Shader {
    void bindAndEnableAttributes(const std::vector<ArrayBufferObject>& array_buffer_objects);
    void disableAttributes(const std::vector<ArrayBufferObject>& array_buffer_objects);
 
+   void noUniformError(const Uniform& uniform) const {
+      if (uniform_errors_.count(uniform))
+         return;
+      uniform_errors_.insert(uniform);
+      std::cerr << std::endl << "Could not find " << uniform_name(uniform);
+      std::cerr << " in program " << program_name_ << std::endl;
+      std::cerr << "Make sure it is in the program's list of uniforms in ";
+      std::cerr << "Shaders.cpp" << std::endl << std::endl;
+      return;
+   }
+
    GLShader gl_shader_;
    std::map<Attribute, GLAttributeLocation> attribute_locations_;
    std::map<Uniform, GLUniformLocation> uniform_locations_;
+   mutable std::set<Uniform> uniform_errors_;
    const std::string program_name_;
 };
 

@@ -5,7 +5,7 @@
 */
 #include "BushGenerator.h"
 
-const int BUSH_DENSITY = 6; //Larger value means LESS bushes
+const int BUSH_INVERSE_DENSITY = 10; //Larger value means LESS bushes
 
 const int BUSH_SIZE = 10;
 
@@ -17,7 +17,8 @@ const int BUSH_RUSTLE_MIN = 150;
 const int BUSH_RUSTLE_MAX = 450;
 
 BushGenerator::BushGenerator(const Mesh& mesh) : 
-   draw_template_({ShaderType::TEXTURE, mesh, boost::none, boost::none, EffectSet({EffectType::CASTS_SHADOW}) }) 
+   draw_template_({ShaderType::TEXTURE, mesh, Texture(TextureType::TREE, DIFFUSE_TEXTURE), boost::none,
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION}) }) 
 {
    draw_template_.mesh.material = Material(glm::vec3(0.45, 0.24, 0.15));
 }
@@ -29,7 +30,7 @@ void BushGenerator::generate(const GroundPlane& ground) {
 
    for (int row = 0; row < size; row++) {
       for (int col = 0; col < size; col++) {
-         if (rand() % BUSH_DENSITY == 0) {
+         if (rand() % BUSH_INVERSE_DENSITY == 0) {
             float scale = (rand() % (int)(BUSH_SCALE_MAX - BUSH_SCALE_MIN) + BUSH_SCALE_MIN)  / 100.0f;
             glm::vec3 pos = glm::vec3(row * BUSH_SIZE - groundSize,  0, col * BUSH_SIZE - groundSize);
             bushes.push_back(Bush(draw_template_.mesh, 

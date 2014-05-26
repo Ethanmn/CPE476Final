@@ -1,5 +1,5 @@
 /* 
-   BVHNode.h (Binary Spatial Partitioning Node)
+   BVHNode.h (Bounding Volume Hierarchy Node)
    Katie Keim
    Deer - CPE 476
 */

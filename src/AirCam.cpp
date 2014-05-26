@@ -15,12 +15,12 @@ AirCam::AirCam(float lookHeight) {
 void AirCam::initialize(glm::vec3 deerPos) {
    lookAtHeight = deerPos.y;
    setLookAt(deerPos);
-   updatePosition(DIST_FROM_DEER);
+   //updatePosition(DIST_FROM_DEER);
 }
 
 void AirCam::move(glm::vec3 deerPos) {
    setLookAt(glm::vec3(deerPos.x, lookAtHeight, deerPos.z));
-   updatePosition(DIST_FROM_DEER);
+   //updatePosition(DIST_FROM_DEER);
 }
 
 void AirCam::setLookAtHeight(float height) {

@@ -15,7 +15,6 @@
 #include "graphics/mesh.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
-#include "graphics/shader_setup.h"
 
 
 struct Tree : public GameObject {

@@ -6,10 +6,7 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
-#include <set>
-#include <memory>
 
-#include "ai_utils.h"
 #include "globals.h"
 
 namespace {
@@ -53,8 +50,6 @@ namespace {
 const std::string kMeshPath("../models/");
 
 std::string mesh_path(MeshType mesh) {
-   if (kDebugUseDeerModels)
-      return kMeshPath + "deer_walk.dae";
    switch (mesh) {
       case MeshType::GROUND:
          return kMeshPath + "ground_plane.obj";
@@ -63,11 +58,11 @@ std::string mesh_path(MeshType mesh) {
       case MeshType::TIME_STONE:
          return kMeshPath + "time_stone.dae";
       case MeshType::TREE:
-         return kMeshPath + "tree2.3ds";
+         return kMeshPath + "tree1.3ds";
       case MeshType::BUSH:
          return kMeshPath + "tree.3ds";
       case MeshType::FLOWER:
-         return kMeshPath + "deer_butt.dae";
+         return kMeshPath + "flower1.dae";
       case MeshType::RAIN:
          return kMeshPath + "box.dae";
       case MeshType::BUTTERFLY:
@@ -161,6 +156,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    }
 
    // Get the bones/skinning.
+   ret.bone_weights_array.resize(mesh.mNumVertices);
    if (mesh.mNumBones > 0) {
       // Get the animations from the scene, but only if we have bones.
       std::map<std::string, aiNodeAnim*> channel_map;
@@ -173,7 +169,6 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          }
       }
 
-      ret.bone_weights_array.resize(mesh.mNumVertices);
       std::vector<AssimpBone> assimp_bones;
       for (size_t i = 0; i < mesh.mNumBones; ++i) {
          auto& bone = mesh.mBones[i];

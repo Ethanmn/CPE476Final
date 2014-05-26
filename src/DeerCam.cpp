@@ -15,12 +15,12 @@ DeerCam::DeerCam(float lookHeight) {
 void DeerCam::initialize(glm::vec3 deerPos) {
    lookAtHeight = deerPos.y + 4;
    setLookAt(deerPos);
-   updatePosition(DIST_FROM_DEER);
+   //updatePosition(DIST_FROM_DEER);
 }
 
 void DeerCam::move(glm::vec3 deerPos) {
    setLookAt(glm::vec3(deerPos.x, lookAtHeight, deerPos.z));
-   updatePosition(DIST_FROM_DEER);
+   //updatePosition(DIST_FROM_DEER);
 }
 
 void DeerCam::setLookAtHeight(float height) {

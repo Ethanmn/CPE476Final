@@ -27,6 +27,7 @@ struct SoundEngine {
       WOODPECKER2,
       WOODPECKER3,
 
+      THUNDER_STRIKE,
       EAT_FLOWER,
    };
    SoundEngine();
