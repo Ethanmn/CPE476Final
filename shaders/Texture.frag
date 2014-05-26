@@ -55,8 +55,6 @@ void main() {
    CheckIfLightning();
 }
 
-
-
 float calculateShadowAmount() {
    float bias = 0.005;
    vec3 directionalColor = vec3(0.8 * uSunIntensity);
@@ -79,7 +77,7 @@ float calculateShadowAmount() {
 
 vec3 calculateDiffuse(vec3 lightInt, vec3 lightDir) {
    vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1);
-   if (Diffuse.a == 0.0) {
+   if (Diffuse.a < 0.3) {
       discard;
    }
 
