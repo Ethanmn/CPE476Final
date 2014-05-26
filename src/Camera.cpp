@@ -101,7 +101,7 @@ void Camera::step(float dT) {
       vertAngle += dT / 100.0f;
    }
 
-   printf("Vert Angle: %f\n", vertAngle);
+   //printf("Vert Angle: %f\n", vertAngle);
 
    if (glm::length(position - lookAt) > 25.0f) {
       target += getCamForwardVec() * (dT / 100.0f) * 5.0f;
