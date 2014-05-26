@@ -15,7 +15,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    up(glm::vec3(0.0f, 1.0f, 0.0f)),
    target(pos),
    direction(0.0f, 0.0f, 0.0f),
-   springStrength(0.3f),
+   springStrength(0.2f),
    dampConst(0.00065f),
    angle(PI),
    vertAngle(asin(position.y / glm::length(look - pos)) * PI_IN_DEGREES / PI),
@@ -121,7 +121,9 @@ void Camera::step(float dT) {
       scalar = (1.0f / dispLength) * springMag;
       displacement *= scalar;
       newPos.x -= displacement.x;
-      newPos.y -= displacement.y;
+      if (newPos.y > 15.0f) {
+         newPos.y -= displacement.y;
+      }
       newPos.z -= displacement.z;
    }
 
@@ -140,8 +142,8 @@ void Camera::step(float dT) {
 
    //position.y += 10.0f;
 
-   if (position.y < 15.0f) {
-      position.y = 15.0f;
+   if (position.y < 1.0f) {
+      position.y = 1.0f;
    }
 
    //printf("Pos Y: %f\nVert Angle: %f\n", position.y, vertAngle);
