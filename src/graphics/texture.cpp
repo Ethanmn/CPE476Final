@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string>
 
+#include <Magick++.h>
+
 using namespace std;
 
 GLTextureID load(const std::string& path);
@@ -36,7 +38,7 @@ std::string texture_path(TextureType texture) {
       case TextureType::SUN_STONE:
          return "../textures/stone_sun.bmp";
       case TextureType::TREE:
-         return "../textures/tree.bmp";
+         return "../textures/originalTextureFiles/tree1.bmp";
       case TextureType::RAIN:
          return "../textures/rain.bmp";
 
@@ -141,6 +143,8 @@ int imageLoad(const std::string& path, Image &image) {
    return 1;
 }
 
+
+
 TextureCache::TextureCache() {
    for (size_t i = 0; i < static_cast<size_t>(TextureType::LAST_TEXTURE_TYPE); ++i) {
       const auto texture_type = static_cast<TextureType>(i);
@@ -153,24 +157,25 @@ GLTextureID TextureCache::getTexture(TextureType texture_type) const {
 }
 
 GLTextureID TextureCache::load(const std::string& path) const {
-   Image image;
-   cout << "Loading Image: " << path << endl;
-   if (!imageLoad(path, image)) {
-      exit(1);
+   Magick::Image* image = nullptr;
+   Magick::Blob blob;
+   try {
+      image = new Magick::Image(path.c_str());
+      image->flip();
+      image->write(&blob, "RGBA");
    }
-
-   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+   catch (Magick::Error& Error) {
+      std::cout << "Error loading texture '" << path << "': " << Error.what() << std::endl;
+      exit(EXIT_FAILURE);
+   }
    GLuint texture_id;
    glGenTextures(1, &texture_id);
    glBindTexture(GL_TEXTURE_2D, texture_id);
-   glTexImage2D(GL_TEXTURE_2D, 0, 3, image.sizeX, image.sizeY, 0,
-         GL_RGB, GL_UNSIGNED_BYTE, image.data);
-   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   free(image.data);
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->columns(), image->rows(), 0,
+         GL_RGBA, GL_UNSIGNED_BYTE, blob.data());
+   glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+   glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+   free(image);
    return static_cast<GLTextureID>(texture_id);
 }
 

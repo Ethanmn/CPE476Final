@@ -42,7 +42,7 @@ void main() {
    vec3 directionalColor = vec3(0.8 * uSunIntensity);
    float ShadowAmount, LightningAmount;
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0)); 
-       
+
    ShadowAmount = calculateShadowAmount();
    Ambient = uSunIntensity < 0.2 ? vec3(0.15, 0.15, 0.15) : vec3(0.1, 0.1, 0.1);
    Diffuse = calculateDiffuse(directionalColor, vLightAndDirectional.xyz);
@@ -78,9 +78,13 @@ float calculateShadowAmount() {
 }
 
 vec3 calculateDiffuse(vec3 lightInt, vec3 lightDir) {
-   vec3 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord).xyz : uMat.diffuse;
+   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1);
+   if (Diffuse.a == 0.0) {
+      discard;
+   }
+
    float dotNLDir = dot(normalize(vNormal), lightDir);   
-   return lightInt * Diffuse * dotNLDir;
+   return lightInt * Diffuse.rgb * dotNLDir;
 }
 
 vec3 calculateSpecular(vec3 lightInt, vec3 lightDir) {
