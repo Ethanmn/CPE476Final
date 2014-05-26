@@ -39,22 +39,25 @@ enum TextureSlot {
    REFLECTION_TEXTURE,
 };
 
-struct Texture {
-   static void loadAllTextures();
-   static GLTextureID load(const std::string& path);
+struct TextureCache {
+   TextureCache();
+   GLTextureID getTexture(TextureType texture_type) const;
 
+  private:
+   GLTextureID load(const std::string& path) const;
+
+   std::map<TextureType, GLTextureID> textures_;
+};
+
+struct Texture {
    Texture(TextureType texture_type, TextureSlot slot);
    Texture(GLTextureID texture_id, TextureSlot slot);
-   void enable() const;
+   void enable(const TextureCache& texture_cache) const;
    int texture_slot() const { return texture_slot_; }
 
   private:
-
-   GLTextureID getTexture(TextureType texture_type) const;
-
-   GLTextureID texture_id_;
+   boost::variant<GLTextureID, TextureType> texture_id_;
    int texture_slot_;
-   static std::map<TextureType, GLTextureID> textures_;
 };
 
 

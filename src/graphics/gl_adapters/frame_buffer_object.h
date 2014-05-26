@@ -14,7 +14,6 @@ struct FrameBufferObject {
 
    GLuint initialize(unsigned int width, unsigned int height, FBOType fbo_type);
    void bind();
-   void BindForReading();
    int texture_slot() const { return texture_.texture_slot(); }
    Texture texture() const { return texture_; }
 

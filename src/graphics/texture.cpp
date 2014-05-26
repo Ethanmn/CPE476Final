@@ -137,42 +137,18 @@ int imageLoad(const std::string& path, Image &image) {
    return 1;
 }
 
-//static
-std::map<TextureType, GLTextureID> Texture::textures_;
-
-//static
-void Texture::loadAllTextures() {
+TextureCache::TextureCache() {
    for (size_t i = 0; i < static_cast<size_t>(TextureType::LAST_TEXTURE_TYPE); ++i) {
       const auto texture_type = static_cast<TextureType>(i);
-      textures_[texture_type] = Texture::load(texture_path(texture_type));
+      textures_[texture_type] = load(texture_path(texture_type));
    }
 }
 
-Texture::Texture(TextureType texture_type, TextureSlot slot) :
-   texture_id_(getTexture(texture_type)),
-   texture_slot_(slot)
-{
-}
-
-Texture::Texture(GLTextureID texture_id, TextureSlot texture_slot) :
-   texture_id_(texture_id),
-   texture_slot_(texture_slot)
-{
-}
-
-void Texture::enable() const {
-   glActiveTexture(GL_TEXTURE0 + texture_slot_);
-   glBindTexture(GL_TEXTURE_2D, texture_id_);
-}
-
-GLTextureID Texture::getTexture(TextureType texture_type) const {
-   if (textures_.count(texture_type) == 0) {
-      loadAllTextures();
-   }
+GLTextureID TextureCache::getTexture(TextureType texture_type) const {
    return textures_.at(texture_type);
 }
 
-GLTextureID Texture::load(const std::string& path) {
+GLTextureID TextureCache::load(const std::string& path) const {
    Image image;
    cout << "Loading Image: " << path << endl;
    if (!imageLoad(path, image)) {
@@ -192,4 +168,25 @@ GLTextureID Texture::load(const std::string& path) {
    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    free(image.data);
    return static_cast<GLTextureID>(texture_id);
+}
+
+Texture::Texture(TextureType texture_type, TextureSlot slot) :
+   texture_id_(texture_type),
+   texture_slot_(slot)
+{
+}
+
+Texture::Texture(GLTextureID texture_id, TextureSlot texture_slot) :
+   texture_id_(texture_id),
+   texture_slot_(texture_slot)
+{
+}
+
+void Texture::enable(const TextureCache& texture_cache) const {
+   glActiveTexture(GL_TEXTURE0 + texture_slot_);
+   if (texture_id_.type() == typeid(GLTextureID)) {
+      glBindTexture(GL_TEXTURE_2D, boost::get<GLTextureID>(texture_id_));
+   } else {
+      glBindTexture(GL_TEXTURE_2D, texture_cache.getTexture(boost::get<TextureType>(texture_id_)));
+   }
 }
