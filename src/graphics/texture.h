@@ -17,7 +17,8 @@ enum class TextureType {
    MOON_STONE,
    SUN_STONE,
    TREE,
-   SKYBOX
+
+   LAST_TEXTURE_TYPE,
 };
 
 std::string texture_path(TextureType texture);
@@ -39,6 +40,7 @@ enum TextureSlot {
 };
 
 struct Texture {
+   static void loadAllTextures();
    static GLTextureID load(const std::string& path);
 
    Texture(TextureType texture_type, TextureSlot slot);
@@ -47,8 +49,12 @@ struct Texture {
    int texture_slot() const { return texture_slot_; }
 
   private:
-   boost::variant<GLTextureID, TextureType> texture_;
+
+   GLTextureID getTexture(TextureType texture_type) const;
+
+   GLTextureID texture_id_;
    int texture_slot_;
+   static std::map<TextureType, GLTextureID> textures_;
 };
 
 

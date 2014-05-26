@@ -33,10 +33,11 @@ std::string texture_path(TextureType texture) {
          return "../textures/stone_moon.bmp";
       case TextureType::SUN_STONE:
          return "../textures/stone_sun.bmp";
-      case TextureType::SKYBOX:
-         return "../textures/skybox.bmp";
       case TextureType::TREE:
          return "../textures/tree.bmp";
+
+      case TextureType::LAST_TEXTURE_TYPE:
+         return "";
 
    }
 }
@@ -136,21 +137,39 @@ int imageLoad(const std::string& path, Image &image) {
    return 1;
 }
 
+//static
+std::map<TextureType, GLTextureID> Texture::textures_;
+
+//static
+void Texture::loadAllTextures() {
+   for (size_t i = 0; i < static_cast<size_t>(TextureType::LAST_TEXTURE_TYPE); ++i) {
+      const auto texture_type = static_cast<TextureType>(i);
+      textures_[texture_type] = Texture::load(texture_path(texture_type));
+   }
+}
+
 Texture::Texture(TextureType texture_type, TextureSlot slot) :
-   texture_(Texture::load(texture_path(texture_type))),
+   texture_id_(getTexture(texture_type)),
    texture_slot_(slot)
 {
 }
 
 Texture::Texture(GLTextureID texture_id, TextureSlot texture_slot) :
-   texture_(texture_id),
+   texture_id_(texture_id),
    texture_slot_(texture_slot)
 {
 }
 
 void Texture::enable() const {
    glActiveTexture(GL_TEXTURE0 + texture_slot_);
-   glBindTexture(GL_TEXTURE_2D, boost::get<GLTextureID>(texture_));
+   glBindTexture(GL_TEXTURE_2D, texture_id_);
+}
+
+GLTextureID Texture::getTexture(TextureType texture_type) const {
+   if (textures_.count(texture_type) == 0) {
+      loadAllTextures();
+   }
+   return textures_.at(texture_type);
 }
 
 GLTextureID Texture::load(const std::string& path) {
