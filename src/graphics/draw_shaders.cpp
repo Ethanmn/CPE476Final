@@ -66,13 +66,14 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             setupReflectionShader(shader, viewMatrix, sunDir, sunIntensity, lightning);
             {
-               std::vector<CulledDrawable> reflected;
+               std::vector<Drawable> reflected;
                const auto scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
                for (auto& drawable : culledDrawables) {
+                  Drawable newDrawable;
                   if (drawable.draw_template.effects.count(EffectType::CASTS_REFLECTION)) {
-                     reflected.push_back(drawable);
+                     reflected.push_back(newDrawable);
                      for (auto& mt : reflected.back().model_transforms) {
-                        mt.model = scale * mt.model;
+                        mt = scale * mt;
                      }
                   }
                }
@@ -82,21 +83,22 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             break;
          case ShaderType::TEXTURE:
             {
-               std::vector<CulledDrawable> drawables;
+               std::vector<Drawable> drawables;
                int culledObjects = 0;
                int nonCulledObjects = 0;
 
                for (auto& drawable : culledDrawables) {
-                  CulledDrawable culledDrawable;
+                  Drawable newDrawable;
+                  newDrawable.draw_template = drawable.draw_template;
                   for (auto& modelTransforms : drawable.model_transforms) {
                      if (!modelTransforms.cullFlag.count(CullType::VIEW_CULLING)) {
-                        culledDrawable.model_transforms.push_back(modelTransforms);
+                        newDrawable.model_transforms.push_back(modelTransforms.model);
                         nonCulledObjects++;
                      }
                      else
                         culledObjects++;
                   }
-                  drawables.push_back(culledDrawable);
+                  drawables.push_back(newDrawable);
                }
                std::cout << "culled: " << culledObjects << " non-culled: " << nonCulledObjects << std::endl;
                setupTexture(shader, shadow_map_fbo_, viewMatrix, deerPos, sunDir, sunIntensity, lightning);
@@ -109,9 +111,11 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
             for (auto& drawable : culledDrawables) {
+               Drawable newDrawable;
+               newDrawable.draw_template = drawable.draw_template;
                if (drawable.draw_template.shader_type == ShaderType::WATER) {
                   setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
-                  drawModelTransforms(shader, drawable, viewMatrix);
+                  drawModelTransforms(shader, newDrawable, viewMatrix);
                }
             }
             break;
@@ -121,14 +125,14 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
    }
 }
 
-void DrawShader::drawModelTransforms(Shader& shader, const CulledDrawable& drawable, const glm::mat4& view) {
+void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view) {
    for(const auto& mt : drawable.model_transforms) {
-      setupModelView(shader, uniforms, mt.model, view, true);
+      setupModelView(shader, uniforms, mt, view, true);
       shader.drawMesh(drawable.draw_template.mesh);
    }
 }
 
-void DrawShader::drawTextureShader(Shader& shader, std::vector<CulledDrawable> drawables, glm::mat4 viewMatrix) {
+void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix) {
    for (auto& drawable : drawables) {
       if (drawable.draw_template.shader_type == ShaderType::TEXTURE) {
          { // Per-Drawable Texture Shader Setup
