@@ -39,16 +39,24 @@ void FrustumG::setCamDef(const glm::vec3 &p, const glm::vec3 &l, const glm::vec3
 	fc = p - Z * farD;
 
 	// compute the 4 corners of the frustum on the near plane
-	ntl = nc + Y * nh - X * nw;
-	ntr = nc + Y * nh + X * nw;
-	nbl = nc - Y * nh - X * nw;
-	nbr = nc - Y * nh + X * nw;
+	ntl = fc + Y * fh - X * fw;
+	ntr = fc + Y * fh + X * fw;
+	nbl = fc - Y * fh - X * fw;
+	nbr = fc - Y * fh + X * fw;
+	// ntl = nc + Y * nh - X * nw;
+	// ntr = nc + Y * nh + X * nw;
+	// nbl = nc - Y * nh - X * nw;
+	// nbr = nc - Y * nh + X * nw;
 
 	// compute the 4 corners of the frustum on the far plane
-	ftl = fc + Y * fh - X * fw;
-	ftr = fc + Y * fh + X * fw;
-	fbl = fc - Y * fh - X * fw;
-	fbr = fc - Y * fh + X * fw;
+	ftl = nc + Y * nh - X * nw;
+	ftr = nc + Y * nh + X * nw;
+	fbl = nc - Y * nh - X * nw;
+	fbr = nc - Y * nh + X * nw;
+	// ftl = fc + Y * fh - X * fw;
+	// ftr = fc + Y * fh + X * fw;
+	// fbl = fc - Y * fh - X * fw;
+	// fbr = fc - Y * fh + X * fw;
 
 	// compute the six planes
 	// the function set3Points assumes that the points
