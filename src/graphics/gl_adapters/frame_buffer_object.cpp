@@ -62,7 +62,3 @@ FrameBufferObject::FrameBufferObject(unsigned int width, unsigned int height, Te
 void FrameBufferObject::bind() {
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_id_);
 }
-
-void FrameBufferObject::BindForReading() {
-   texture_.enable();
-}

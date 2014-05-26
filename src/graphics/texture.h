@@ -1,10 +1,12 @@
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
+
 #include <iostream>
+#include <boost/variant.hpp>
 #include <string>
 #include "gl_adapters/gl_types.h"
 
-enum class Textures {
+enum class TextureType {
    WATER,
    GRASS,
    DEER,
@@ -15,10 +17,11 @@ enum class Textures {
    MOON_STONE,
    SUN_STONE,
    TREE,
-   SKYBOX
+
+   LAST_TEXTURE_TYPE,
 };
 
-std::string texture_path(Textures texture);
+std::string texture_path(TextureType texture);
 
 // Not enum class because we are using the values.
 // Enum class's are "not" int's (even though they are) and need to be cast to
@@ -36,14 +39,24 @@ enum TextureSlot {
    REFLECTION_TEXTURE,
 };
 
+struct TextureCache {
+   TextureCache();
+   GLTextureID getTexture(TextureType texture_type) const;
+
+  private:
+   GLTextureID load(const std::string& path) const;
+
+   std::map<TextureType, GLTextureID> textures_;
+};
+
 struct Texture {
-   Texture(const std::string& path, TextureSlot slot);
+   Texture(TextureType texture_type, TextureSlot slot);
    Texture(GLTextureID texture_id, TextureSlot slot);
-   void enable() const;
+   void enable(const TextureCache& texture_cache) const;
    int texture_slot() const { return texture_slot_; }
 
   private:
-   GLTextureID texture_id;
+   boost::variant<GLTextureID, TextureType> texture_;
    int texture_slot_;
 };
 

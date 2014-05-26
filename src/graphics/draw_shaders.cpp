@@ -30,16 +30,16 @@ namespace {
       shader.sendUniform(Uniform::SUN_DIR, locations, sunDir);
    }
 
-   void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture) {
+   void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture, const TextureCache& texture_cache) {
       shader.sendUniform(Uniform::HAS_TEXTURE, locations, 1);
       shader.sendUniform(Uniform::TEXTURE, locations, texture.texture_slot());
-      texture.enable();
+      texture.enable(texture_cache);
    }
 
-   void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const Texture& height_map) {
+   void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const Texture& height_map, const TextureCache& texture_cache) {
       shader.sendUniform(Uniform::HEIGHT_MAP, locations, height_map.texture_slot());
       shader.sendUniform(Uniform::HAS_HEIGHT_MAP, locations, 1);
-      height_map.enable();
+      height_map.enable(texture_cache);
    }
 
    void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
@@ -121,7 +121,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
 
             if(!debug) {
                glBindFramebuffer(GL_FRAMEBUFFER, 0);
-               shadow_map_fbo_.BindForReading();
+               shadow_map_fbo_.texture().enable(texture_cache_);
             }
             break;
          case ShaderType::REFLECTION:
@@ -155,7 +155,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
             for (auto& drawable : drawables) {
                if (drawable.draw_template.shader_type == ShaderType::WATER) {
-                  setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
+                  setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
                   drawModelTransforms(shader, drawable, viewMatrix);
                }
             }
@@ -176,7 +176,7 @@ void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawabl
       if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
          { // Per-Drawable Texture Shader Setup
             if (drawable.draw_template.height_map) 
-               setupHeightMap(shader, uniforms, *drawable.draw_template.height_map);
+               setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
             else
                shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
 
@@ -191,7 +191,7 @@ void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawabl
             }
 
             if(drawable.draw_template.texture)
-               setupTextureShader(shader, uniforms, *drawable.draw_template.texture);
+               setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
             else {
                shader.sendUniform(Uniform::HAS_TEXTURE, uniforms, 0);
                shader.sendUniform(Uniform::TEXTURE, uniforms, 0);

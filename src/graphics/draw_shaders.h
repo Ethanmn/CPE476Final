@@ -30,6 +30,7 @@ struct DrawShader {
    Shaders shaders;
    UniformLocationMap uniforms;
    const glm::mat4 projectionMatrix;
+   TextureCache texture_cache_;
 };
 
 

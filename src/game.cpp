@@ -318,6 +318,7 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_lightning)) {
                lighting = 1;
                numLightning = 3;
+               sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
             }
          }
          { // Rain
