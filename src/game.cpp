@@ -21,6 +21,7 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
+   Camera *curCam;
 }
 
 Game::Game() :
@@ -98,7 +99,7 @@ void Game::step(units::MS dt) {
    canary2_bird_sound_.step(dt, sound_engine_);
    woodpecker_bird_sound_.step(dt, sound_engine_);
    bool deerBlocked = false;
-   Camera *curCam;
+   
 
    if (airMode) {
       curCam = &airCam;
@@ -177,6 +178,7 @@ void Game::draw() {
 
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
+   std::vector<CulledDrawable> culledDrawables;
    Drawable br_drawable;
    br_drawable.draw_template = BoundingRectangle::draw_template();
  
@@ -217,7 +219,46 @@ void Game::draw() {
    viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
    deerPos = deer_.getPosition();
 
-   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), drawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
+   // Iterate through drawables
+   //create spheres
+   //test if in VF
+
+   FrustumG viewFrust;
+   int culledObject = 0;
+
+   viewFrust.setCamInternals(10.0, 1.0, 1.0, 5.0);
+   viewFrust.setCamDef(curCam->getPosition(),
+                       curCam->getLookAt(),
+                       curCam->up);
+
+   for (auto& drawable : drawables) {
+      glm::vec3 min, max, med;
+
+      CulledDrawable culledDrawable;
+      CulledTransform culledTransform;
+      for (auto& transform : drawable.model_transforms) {
+         min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 0));
+         max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 0));
+         med = glm::vec3((min.x + max.x) / 2,
+                         (min.y + max.y) / 2,
+                         (min.z + max.z) / 2);
+         culledTransform.model = transform;
+         std::cout << "in sphere: " << viewFrust.sphereInFrustum(med, dist(max, med)) << std::endl;
+         if (!viewFrust.sphereInFrustum(med, dist(max, med))) {
+            culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
+            culledObject++;
+         }
+         // Test for reflection
+         if (!viewFrust.sphereInFrustum(med, dist(max, med))) {
+            culledTransform.cullFlag.insert(CullType::REFLECT_CULLING);
+         }
+         culledDrawable.model_transforms.push_back(culledTransform);
+      }
+      culledDrawables.push_back(culledDrawable);
+   }
+   std::cout << "culledObjects: " << culledObject << std::endl;
+
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {

@@ -27,13 +27,16 @@ struct Camera {
    void rotatePositionWithDrag(const glm::vec2& startPoint, const glm::vec2& endPoint, int width, int height);
    void rotatePositionWithDrag(float diffX, float diffY, int width, int height);
 
+   public:
+      glm::vec3 position;
+      glm::vec3 lookAt;
+      glm::vec3 up;
+
    protected:
       void updatePosition(float radius);
    
    private:
-      glm::vec3 position;
-      glm::vec3 lookAt;
-      glm::vec3 up;
+
       float phi;
       float theta;
 

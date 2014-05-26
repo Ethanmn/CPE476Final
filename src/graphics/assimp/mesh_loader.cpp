@@ -50,8 +50,6 @@ namespace {
 const std::string kMeshPath("../models/");
 
 std::string mesh_path(MeshType mesh) {
-   if (kDebugUseDeerModels)
-      return kMeshPath + "deer_walk.dae";
    switch (mesh) {
       case MeshType::GROUND:
          return kMeshPath + "ground_plane.obj";
