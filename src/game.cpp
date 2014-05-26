@@ -141,8 +141,10 @@ void Game::step(units::MS dt) {
             countLightning = -7.5;
       }
    }
-   else
+   else {
       lighting = 0;
+      raining = 0;
+   }
 
    if (deer_.isMoving()) {
       BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt, *curCam);
@@ -336,6 +338,7 @@ void Game::mainLoop() {
          { // Lightning
             const auto key_lightning = SDL_SCANCODE_L;
             if (input.wasKeyPressed(key_lightning)) {
+               raining = 1;
                lighting = 1;
                numLightning = 3;
                sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
