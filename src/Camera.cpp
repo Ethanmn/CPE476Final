@@ -101,7 +101,7 @@ void Camera::step(float dT) {
       vertAngle += dT / 100.0f;
    }
 
-   //printf("Vert Angle: %f\n", vertAngle);
+   printf("Vert Angle: %f\n", vertAngle);
 
    if (glm::length(position - lookAt) > 25.0f) {
       target += getCamForwardVec() * (dT / 100.0f) * 5.0f;
@@ -148,7 +148,7 @@ void Camera::step(float dT) {
 }
 
 void Camera::rotateCamera(float angle) {
-   position = glm::vec3(cos(angle) + position.x, sin(vertAngle) + position.y, cos(PI / 2 - angle) + position.z);
+   position = glm::vec3(cos(vertAngle) * cos(angle) + position.x, sin(vertAngle) + position.y, cos(vertAngle) * cos(PI / 2 - angle) + position.z);
 }
 
 void Camera::printCamera() {
