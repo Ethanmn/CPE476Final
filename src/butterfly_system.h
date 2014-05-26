@@ -9,7 +9,7 @@
 #include "graphics/draw_template.h"
 
 struct ButterflySystem {
-   ButterflySystem(const Mesh& mesh, const glm::vec3& origin, int numParticles);
+   ButterflySystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles);
 
    void step(units::MS dt);
 

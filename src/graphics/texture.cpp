@@ -19,15 +19,15 @@ std::string texture_path(TextureType texture) {
          return "../textures/grass.bmp";
       case TextureType::DEER:
          return "../textures/deer1.bmp";
-      case TextureType::FLOWER1:
+      case TextureType::DAISY:
          return "../textures/flower1.bmp";
-      case TextureType::FLOWER2:
+      case TextureType::ROSE:
          return "../textures/flower2.bmp";
-      case TextureType::BUTTERFLY1:
+      case TextureType::BUTTERFLY_RED:
          return "../textures/butterfly1.bmp";
-      case TextureType::BUTTERFLY2:
+      case TextureType::BUTTERFLY_PINK:
          return "../textures/butterfly2.bmp";
-      case TextureType::BUTTERFLY3:
+      case TextureType::BUTTERFLY_BLUE:
          return "../textures/butterfly3.bmp";
       case TextureType::HEIGHT_MAP:
          return "../textures/height_map.bmp";

@@ -87,11 +87,11 @@ void Camera::step(float dT) {
    float scalar = 0.0f;
 
    if (turningLeft) {
-      angle -= 90.0f * dT / 100.0f;
+      angle -= PI / 2 * dT / 100.0f;
    }
    
    if (turningRight) {
-      angle += 90.0f * dT / 100.0f;
+      angle += PI / 2 * dT / 100.0f;
    }
 
    if (vertAngle > 15.0f) {
@@ -131,15 +131,17 @@ void Camera::step(float dT) {
    //printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
 
    position = newPos;
-   rotateCamera(angle);
+   //rotateCamera(angle);
 
    turningLeft = false;
    turningRight = false;
    movingFoward = false;
    movingBack = false;
 
-   if (position.y < 1.0f) {
-      position.y = 1.0f;
+   //position.y += 10.0f;
+
+   if (position.y < 15.0f) {
+      position.y = 15.0f;
    }
 
    //printf("Pos Y: %f\nVert Angle: %f\n", position.y, vertAngle);
