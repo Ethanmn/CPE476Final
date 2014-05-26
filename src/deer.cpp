@@ -5,7 +5,6 @@
 
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
-#include "graphics/shader_setup.h"
 #include "graphics/material.h"
 #include "sound_engine.h"
 #include "ground_plane.h"
@@ -26,8 +25,12 @@ const float kLeanFactor = 2.0f;
 const float kStepTime = 300;
 
 Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
-   mesh_(mesh),
-   texture_(texture_path(Textures::DEER)),
+   draw_template_({
+         ShaderType::TEXTURE,
+         mesh,
+         Texture(TextureType::DEER, DIFFUSE_TEXTURE),
+         boost::none,
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})}),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 1),
@@ -65,20 +68,11 @@ glm::mat4 Deer::calculateModel() const {
    return glm::mat4(translate * rotate * lean);
 }
 
-void Deer::draw(Shader& shader, const UniformLocationMap& uniform_locations,
-                const glm::mat4& viewMatrix) const {
-   const auto transform(calculateModel());
-   setupTextureShader(shader, uniform_locations, texture_);
-
-   setupModelView(shader, uniform_locations, transform, viewMatrix, true);
-   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 1);
-   shader.sendUniform(Uniform::BONES, uniform_locations,
-         mesh_.animation.calculateBoneTransformations(mesh_.bone_array));
-   shader.drawMesh(mesh_);
-
-   shader.sendUniform(Uniform::HAS_BONES, uniform_locations, 0);
-   texture_.disable();
-}
+Drawable Deer::drawable() const {
+   std::vector<glm::mat4> model_matrices;
+   model_matrices.push_back(calculateModel());
+   return Drawable({draw_template_, model_matrices});
+} 
 
 glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
    return position_ + velocity * static_cast<float>(dt);
@@ -158,7 +152,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
    if (!has_acceleration()) {
       desired_lean_ = 0.0f;
    } else {
-      mesh_.animation.step(dt);
+      draw_template_.mesh.animation.step(dt);
       { // Accelerate velocity, capping at kSpeed.
          const auto next_facing(predictFacing(velocity_));
          desired_lean_ = glm::orientedAngle(last_facing_, next_facing);
@@ -171,9 +165,9 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
    }
    if (is_jumping_) {
       const auto ground_height = ground_plane.heightAt(position_);
-      if (position_.y + mesh_.min.y < ground_height) {
+      if (position_.y + draw_template_.mesh.min.y < ground_height) {
          velocity_.y = 0.0f;
-         position_.y = ground_height - mesh_.min.y;
+         position_.y = ground_height - draw_template_.mesh.min.y;
          is_jumping_ = false;
          sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, false, position_);
       }
@@ -186,7 +180,7 @@ void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_pl
       }
    } else {
       step_timer_ = 0;
-      position_.y = ground_plane.heightAt(position_) - mesh_.min.y;
+      position_.y = ground_plane.heightAt(position_) - draw_template_.mesh.min.y;
    }
 
    if (!blocked) {
@@ -246,16 +240,6 @@ void Deer::block() {
    stopStrafing();
    velocity_ = glm::vec3(0, 0, 0);
    blocked = true;
-}
-
-void Deer::shadowDraw(Shader& shader, const UniformLocationMap& uniform_locations,
-      glm::vec3 sunDir, bool betterShadow) {
-   const auto model_matrix(calculateModel());
-   if(betterShadow)
-      setupBetterShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   else
-      setupShadowShader(shader, uniform_locations, sunDir, model_matrix);
-   shader.drawMesh(mesh_);
 }
 
 glm::vec3 Deer::getFacing() const {

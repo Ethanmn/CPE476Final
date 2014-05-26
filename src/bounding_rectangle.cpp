@@ -22,28 +22,32 @@ void BoundingRectangle::loadBoundingMesh(MeshLoader& mesh_loader, const Attribut
    bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh("../models/cube.obj"));
 }
 
-void BoundingRectangle::draw(const UniformLocationMap& locations, Shader& shader, 
-   float y, const glm::mat4& viewMatrix) const {
-   return;
-   if (bounding_mesh_) {
-      const glm::mat4 rotate(
-            glm::rotate(
-               glm::mat4(),
-               y_rotation_,
-               glm::vec3(0, 1, 0)));
-      glm::mat4 scale(
-            glm::scale(
-               glm::mat4(),
-               glm::vec3(dimensions_.x / 2.0f, 0.01f, dimensions_.y / 2.0f)));
-      glm::mat4 translate(
-            glm::translate(
-               glm::mat4(),
-               glm::vec3(center_.x, y, center_.y)));
+//static
+DrawTemplate BoundingRectangle::draw_template() {
+   return DrawTemplate({
+         ShaderType::TEXTURE,
+         *bounding_mesh_,
+         boost::none,
+         boost::none,
+         EffectSet()
+         });
+}
 
-      shader.sendUniform(Uniform::MODEL_VIEW, locations,
-                         viewMatrix * translate * rotate * scale);
-      shader.drawMesh(*bounding_mesh_);
-   }
+glm::mat4 BoundingRectangle::model_matrix() const {
+   const auto rotate(
+         glm::rotate(
+            glm::mat4(),
+            y_rotation_,
+            glm::vec3(0, 1, 0)));
+   const auto scale(
+         glm::scale(
+            glm::mat4(),
+            glm::vec3(dimensions_.x / 2.0f, 0.01f, dimensions_.y / 2.0f)));
+   const auto translate(
+         glm::translate(
+            glm::mat4(),
+            glm::vec3(center_.x, 5.0f, center_.y)));
+   return translate * rotate * scale;
 }
 
 bool BoundingRectangle::collidesWith(const BoundingRectangle& other) const {

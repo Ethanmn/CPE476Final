@@ -15,17 +15,20 @@
 #include <glm/gtc/matrix_transform.hpp> 
 #include "bounding_rectangle.h"
 #include "Bush.h"
+#include "graphics/draw_template.h"
 
 struct BushGenerator {
    BushGenerator(const Mesh& mesh);
 
    void generate(const GroundPlane& ground);
    std::vector<Bush>& getBushes();
-   void drawBushes(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix);
 
+   DrawTemplate draw_template() const { return draw_template_; }
+   Drawable drawable() const;
+   
    private:
       std::vector<Bush> bushes;
-      Mesh bushMesh1;
+      DrawTemplate draw_template_;
 };
 
 #endif //BUSH_GEN_H_

@@ -23,7 +23,7 @@ glm::vec3 DayCycle::getSunDir() {
 }
 
 float DayCycle::getSunIntensity() {
-   return sunIntensity;
+   return sunIntensity > 0.3 ? sunIntensity : 0.3;
 }
 
 void DayCycle::adjustToTime(float newTime) {

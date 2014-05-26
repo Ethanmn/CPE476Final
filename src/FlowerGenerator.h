@@ -1,10 +1,5 @@
-/* 
-   TreeGenerator.h
-   Katie Keim
-   Deer - CPE 476
-*/
-#ifndef TREE_GEN_H_
-#define TREE_GEN_H_
+#ifndef FLOWER_GENERATOR_H_
+#define FLOWER_GENERATOR_H_
 
 #include "ground_plane.h"
 #include <cstdlib>
@@ -14,21 +9,22 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
 #include "bounding_rectangle.h"
-#include "Tree.h"
+#include "Flower.h"
 #include "graphics/draw_template.h"
 
-struct TreeGenerator {
-   TreeGenerator(const Mesh& mesh);
+struct FlowerGenerator {
+   FlowerGenerator(const Mesh& mesh);
 
-   void generate();
-   std::vector<Tree>& getTrees();
+   void generate(const GroundPlane& ground);
+   std::vector<Flower>& getFlowers();
+
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
-   void includeInShadows(bool value); 
-
+   
    private:
-      std::vector<Tree> trees;
+      std::vector<Flower> flowers;
       DrawTemplate draw_template_;
 };
 
-#endif //TREE_GEN_H_
+
+#endif

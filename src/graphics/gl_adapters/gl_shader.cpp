@@ -8,6 +8,8 @@
 
 #include "graphics/gl_adapters/array_buffer_object.h"
 
+const bool kShouldUseBones = true;
+
 namespace {
    void uniformMatrix4fv(GLint location, const GLfloat *value) {
       glUniformMatrix4fv(location, 1, GL_FALSE, value);
@@ -31,11 +33,28 @@ namespace {
    }
 
    GLuint compileShaderFromSource(GLenum shader_type, const std::string& path) {
+      std::string defines;
+      static int max_vertex_image_units = -1;
+      if (max_vertex_image_units == -1) {
+         glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &max_vertex_image_units);
+         std::clog << "Max Vertex Texture Image Units: " << max_vertex_image_units << std::endl;
+      }
+      if (max_vertex_image_units) {
+         defines += "#define USE_HEIGHT_MAP\n";
+      } else {
+         std::clog << "ignoring heightmap" << std::endl;
+      }
+      if (kShouldUseBones) {
+         defines += "#define USE_BONES\n";
+      } else {
+         std::clog << "ignoring bones" << std::endl;
+      }
+
       std::string version_prefix;
 #ifndef __APPLE__
       version_prefix = "#version 120\n";
 #endif
-      std::string file_source(version_prefix + read_file(path));
+      std::string file_source(version_prefix + defines + read_file(path));
 
       GLuint shader = glCreateShader(shader_type);
       const char *source = file_source.c_str();

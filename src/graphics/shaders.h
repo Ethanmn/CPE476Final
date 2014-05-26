@@ -12,11 +12,11 @@
 
 enum class ShaderType { 
    /* Ordering is important, shadow must be first */
-//   SHADOW_TEX,
    SHADOW,
-   SUN,
+   /* Reflection generates a texture, so must be before TEXTURE */
+   REFLECTION,
    TEXTURE,
-   WIREFRAME
+   WATER,
 };
 
 struct Shaders {

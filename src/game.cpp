@@ -1,48 +1,61 @@
 #include "game.h"
 #include "graphics/mesh.h"
-#include "graphics/shader_setup.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <graphics/material.h>
 #include <iostream>
+
+#include "graphics/texture.h"
+#include "DeerCam.h"
+#include "AirCam.h"
 
 namespace {
    DeerCam deerCam;
    AirCam airCam;
    bool showTreeShadows = false;
+   bool draw_collision_box = false;
+   bool switchBlinnPhongShading = false;
    bool debug = false;
-   bool betterShadows = false;
 
    int lighting = 0;
+   int raining = 0;
+
    float countLightning = 0.0;
    int numLightning = 0;
 }
 
 Game::Game() :
-   attribute_location_map_(shaders_.getAttributeLocationMap()),
-   uniform_location_map_(shaders_.getUniformLocationMap()),
+   attribute_location_map_({draw_shader_.getShaders().getAttributeLocationMap()}),
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/ground_plane.obj"))),
+            mesh_loader_.loadMesh(MeshType::GROUND))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/deer_walk.dae")), glm::vec3(0.0f)),
-   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_, 
-                     mesh_loader_.loadMesh("../models/time_stone.dae")), ground_),
+            mesh_loader_.loadMesh(MeshType::DEER)), glm::vec3(0.0f)),
+   day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh("../models/tree2.3ds"))),
-   bushGen(Mesh::fromAssimpMesh(
-            attribute_location_map_,
-            mesh_loader_.loadMesh("../models/tree.3ds"))),
+            mesh_loader_.loadMesh(MeshType::TREE))),
+   bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUSH))),
+   flowerGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::FLOWER))),
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
-   butterfly_system_(glm::vec3(0.0f), 10, attribute_location_map_, mesh_loader_),
-   rain_system_(glm::vec3(0.0f, 100.0f, 0.0f), 2000, attribute_location_map_, mesh_loader_),
-   objTree(),
-   airMode(false)
+   butterfly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), glm::vec3(0.0f), 10),
+   rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::RAIN)),
+            glm::vec3(0.0f, 100.0f, 0.0f), 2000),
+   airMode(false),
+   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
+   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND)))
 {
+
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-   glClearColor (1.0, 1.0, 1.0, 1.0f);
+   glClearColor (0.05098, 
+                 0.6274509,
+                 1.0,  1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -60,6 +73,7 @@ Game::Game() :
 
    treeGen.generate();
    bushGen.generate(ground_);
+   flowerGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
@@ -68,6 +82,9 @@ Game::Game() :
    }
    for (auto& bush : bushGen.getBushes()) {
       objects.push_back(&bush);
+   }
+   for (auto& flower : flowerGen.getFlowers()) {
+      objects.push_back(&flower);
    }
 
    //Pre-processing BVH Tree
@@ -138,10 +155,10 @@ void Game::step(units::MS dt) {
       bush.step(dt);
    }
 
-   if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_start())) {
+   if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       day_cycle_.dayToNight();
    }
-   else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_stop())) {
+   else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
       day_cycle_.nightToDay();
    }
 
@@ -149,87 +166,59 @@ void Game::step(units::MS dt) {
 }
 
 void Game::draw() {
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
    float sunIntensity = day_cycle_.getSunIntensity();
-   if (sunIntensity < 0.3)
-      sunIntensity = 0.3;
    glm::vec3 sunDir = day_cycle_.getSunDir();
+   glm::vec3 deerPos;
+
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glClearColor (0.05098 * sunIntensity,
+                 0.6274509 * sunIntensity,
+                 sunIntensity, 1.0f);
+
    glm::mat4 viewMatrix = deerCam.getViewMatrix();
-
-   if (airMode) {
-      viewMatrix = airCam.getViewMatrix();
+   std::vector<Drawable> drawables;
+   Drawable br_drawable;
+   br_drawable.draw_template = BoundingRectangle::draw_template();
+ 
+   drawables.push_back(deer_.drawable());
+   br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
+  
+   drawables.push_back(day_night_boxes_.drawableSun());
+   br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
+  
+   drawables.push_back(day_night_boxes_.drawableMoon());
+   br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
+   
+   drawables.push_back(bushGen.drawable());
+   for (auto& bush : bushGen.getBushes()) {
+      br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
    }
-   else {
-      viewMatrix = deerCam.getViewMatrix();
+  
+   drawables.push_back(treeGen.drawable());
+   for (auto& tree : treeGen.getTrees()) {
+      br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
    }
-
-   for (auto& shaderPair: shaders_.getMap()) {
-      Shader& shader = shaderPair.second;
-      shader.use();
-
-      setupProjection(shader, uniform_location_map_);
-
-      if(shaderPair.first == ShaderType::SHADOW) {
-         if(!debug) {
-            shadow_map_fbo_.BindForWriting();
-            glClear(GL_DEPTH_BUFFER_BIT);
-         }
-
-         deer_.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
-         day_night_boxes_.shadowDrawRed(shader, uniform_location_map_, sunDir, betterShadows);
-         day_night_boxes_.shadowDrawGreen(shader, uniform_location_map_, sunDir, betterShadows);
-
-
-         if(showTreeShadows)
-            treeGen.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
-         for (auto& bush : bushGen.getBushes()) {
-            bush.shadowDraw(shader, uniform_location_map_, sunDir, betterShadows);
-         }
-
-         if(!debug) {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            shadow_map_fbo_.BindForReading();
-            glClearColor (0.05098 * sunIntensity,
-                       0.6274509 * sunIntensity,
-                       sunIntensity, 1.0f);
-         }
-      }
-      else if(!debug && shaderPair.first == ShaderType::TEXTURE) {
-         shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniform_location_map_,
-            shadow_map_fbo_.texture_id());
-         if(betterShadows)
-            sendBetterShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
-         else
-            sendShadowInverseProjectionView(shader, uniform_location_map_, sunDir);
-
-         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
-
-         setupView(shader, uniform_location_map_, viewMatrix);
-         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-
-         ground_.draw(shader, uniform_location_map_, viewMatrix);
-         deer_.draw(shader, uniform_location_map_, viewMatrix);
-
-         day_night_boxes_.drawStop(shader, uniform_location_map_, viewMatrix);
-         day_night_boxes_.drawStart(shader, uniform_location_map_, viewMatrix);
-
-         butterfly_system_.draw(shader, uniform_location_map_, viewMatrix);
-      }
-      else if(!debug && shaderPair.first == ShaderType::SUN) {
-         setupView(shader, uniform_location_map_, viewMatrix);
-         setupSunShader(shader, uniform_location_map_, sunIntensity, sunDir);
-
-         rain_system_.draw(shader, uniform_location_map_, viewMatrix);
-
-         shader.sendUniform(Uniform::LIGHTNING, uniform_location_map_, lighting);
-         treeGen.drawTrees(shader, uniform_location_map_, viewMatrix);
-         bushGen.drawBushes(shader, uniform_location_map_, viewMatrix);
-      }
-
-      // If pixel is under ground draw as blue (water)?
+  
+   drawables.push_back(flowerGen.drawable());
+   for (auto& flower : flowerGen.getFlowers()) {
+      br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
    }
+   
+   if(raining)
+      drawables.push_back(rain_system_.drawable());
+   
+   drawables.push_back(butterfly_system_.drawable());
+   
+   drawables.push_back(ground_.drawable());
+   drawables.push_back(water_.drawable());
+   if (draw_collision_box)
+      drawables.push_back(br_drawable);
+
+   viewMatrix = airMode ? airCam.getViewMatrix() : deerCam.getViewMatrix();
+   deerPos = deer_.getPosition();
+
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), drawables, viewMatrix, switchBlinnPhongShading, 
+         deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {
@@ -238,11 +227,6 @@ void Game::mainLoop() {
    bool running = true;
    SDL_Event event;
    units::MS previous_time = SDL_GetTicks();
-
-  if(!debug && !shadow_map_fbo_.setup(kScreenWidth, kScreenHeight)) {
-      printf("FAILURE\n");
-      return;
-   }
 
    while (running) {
       {  // Collect input
@@ -297,45 +281,51 @@ void Game::mainLoop() {
             const auto key_tree = SDL_SCANCODE_T;
             if (input.wasKeyPressed(key_tree)) {
                showTreeShadows = !showTreeShadows;
+               treeGen.includeInShadows(showTreeShadows); 
             }
          }
          { //handle debug for Katelyn
             const auto key_quit = SDL_SCANCODE_1;
             if (input.wasKeyPressed(key_quit)) {
                debug = !debug;
-               glClearColor (1.0, 1.0, 1.0, 1.0f);
             }
          }
-         { //handle debug for Katelyn
-            const auto key_quit = SDL_SCANCODE_2;
-            if (input.wasKeyPressed(key_quit)) {
-               betterShadows = !betterShadows;
-            }
-         }
-         { //handle debug for Katelyn
-            const auto key_quit = SDL_SCANCODE_3;
-            if (input.wasKeyPressed(key_quit)) {
+         {
+            const auto key_toNight = SDL_SCANCODE_3;
+            if (input.wasKeyPressed(key_toNight)) {
                day_cycle_.dayToNight();
             }
          }
-         { //handle debug for Katelyn
-            const auto key_quit = SDL_SCANCODE_4;
-            if (input.wasKeyPressed(key_quit)) {
+         {
+            const auto key_toDay = SDL_SCANCODE_4;
+            if (input.wasKeyPressed(key_toDay)) {
                day_cycle_.nightToDay();
             }
          }
-         { //handle quit
-            const auto key_quit = SDL_SCANCODE_L;
-            if (input.wasKeyPressed(key_quit)) {
+         { // Lightning
+            const auto key_lightning = SDL_SCANCODE_L;
+            if (input.wasKeyPressed(key_lightning)) {
                lighting = 1;
                numLightning = 3;
                sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+            }
+         }
+         { // Rain
+            const auto key_rain = SDL_SCANCODE_R;
+            if (input.wasKeyPressed(key_rain)) {
+               raining = !raining;
             }
          }
          { //handle toggle between cameras
             const auto key_air_mode = SDL_SCANCODE_V;
             if (input.wasKeyPressed(key_air_mode)) {
                airMode = !airMode;
+            }
+         }
+         { //Change shading models
+            const auto key_blinn = SDL_SCANCODE_B;
+            if (input.wasKeyPressed(key_blinn)) {
+               switchBlinnPhongShading = !switchBlinnPhongShading;   
             }
          }
          { //handle quit

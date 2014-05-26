@@ -17,6 +17,5 @@ struct GameObject {
 
    virtual void performObjectHit(SoundEngine& sound_engine) = 0;
 
-   virtual void draw(Shader& shader, const UniformLocationMap& uniform_location_map, const glm::mat4& view_matrix) const = 0; 
 };
 #endif //GAME_OBJECT_H_

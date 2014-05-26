@@ -6,10 +6,8 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
-#include <set>
-#include <memory>
 
-#include "ai_utils.h"
+#include "globals.h"
 
 namespace {
    aiNode* findAiNodeForBone(aiBone* bone, aiNode* root) {
@@ -49,6 +47,33 @@ namespace {
    }
 }
 
+const std::string kMeshPath("../models/");
+
+std::string mesh_path(MeshType mesh) {
+   switch (mesh) {
+      case MeshType::GROUND:
+         return kMeshPath + "ground_plane.obj";
+      case MeshType::DEER:
+         return kMeshPath + "deer_walk.dae";
+      case MeshType::TIME_STONE:
+         return kMeshPath + "time_stone.dae";
+      case MeshType::TREE:
+         return kMeshPath + "tree1.3ds";
+      case MeshType::BUSH:
+         return kMeshPath + "tree.3ds";
+      case MeshType::FLOWER:
+         return kMeshPath + "flower1.dae";
+      case MeshType::RAIN:
+         return kMeshPath + "box.dae";
+      case MeshType::BUTTERFLY:
+         return kMeshPath + "butterfly.dae";
+   }
+}
+
+AssimpMesh MeshLoader::loadMesh(MeshType mesh) {
+   return loadMesh(mesh_path(mesh));
+}
+
 AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    if (meshes_.count(path) != 0) {
       return meshes_[path];
@@ -76,15 +101,23 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          (float*)(mesh.mVertices),
          (float*)(mesh.mVertices) + mesh.mNumVertices * kNumAxes);
 
-   ret.uv_array = mesh.HasTextureCoords(0) ?
-      std::vector<float>(
-            (float*)(mesh.mTextureCoords[0]),
-            (float*)(mesh.mTextureCoords[0]) + mesh.mNumVertices * kNumAxes)
-      : std::vector<float>();
+   if (mesh.HasTextureCoords(0)) {
+      ret.uv_array = std::vector<float>(
+               (float*)(mesh.mTextureCoords[0]),
+               (float*)(mesh.mTextureCoords[0]) + mesh.mNumVertices * kNumAxes);
+   } else {
+      std::clog << "No texture coordinates found for mesh: " << path << std::endl;
+   }
 
-   ret.normal_array = std::vector<float>(
-         (float*)(mesh.mNormals),
-         (float*)(mesh.mNormals) + mesh.mNumVertices * kNumAxes);
+
+   if (mesh.HasNormals()) {
+      ret.normal_array =
+         std::vector<float>(
+            (float*)(mesh.mNormals),
+            (float*)(mesh.mNormals) + mesh.mNumVertices * kNumAxes);
+   } else {
+      std::clog << "No normals found for mesh: " << path << std::endl;
+   }
 
    const auto& material = *scene->mMaterials[mesh.mMaterialIndex];
    {  // ambient
@@ -123,6 +156,7 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    }
 
    // Get the bones/skinning.
+   ret.bone_weights_array.resize(mesh.mNumVertices);
    if (mesh.mNumBones > 0) {
       // Get the animations from the scene, but only if we have bones.
       std::map<std::string, aiNodeAnim*> channel_map;
@@ -135,7 +169,6 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
          }
       }
 
-      ret.bone_weights_array.resize(mesh.mNumVertices);
       std::vector<AssimpBone> assimp_bones;
       for (size_t i = 0; i < mesh.mNumBones; ++i) {
          auto& bone = mesh.mBones[i];
