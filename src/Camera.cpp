@@ -7,8 +7,6 @@
 #include <iostream>
 
 const float PI = 3.14159265359;
-const int MAX_ROTATE_VERT_UP =  80;
-const int MAX_ROTATE_VERT_DOWN =  10;
 const int PI_IN_DEGREES = 180;
 
 Camera::Camera(glm::vec3 pos, glm::vec3 look) :
@@ -103,7 +101,7 @@ void Camera::step(float dT) {
       vertAngle += dT / 100.0f;
    }
 
-   printf("Vert Angle: %f\n", vertAngle);
+   //printf("Vert Angle: %f\n", vertAngle);
 
    if (glm::length(position - lookAt) > 25.0f) {
       target += getCamForwardVec() * (dT / 100.0f) * 5.0f;
@@ -127,8 +125,8 @@ void Camera::step(float dT) {
       newPos.z -= displacement.z;
    }
 
-   printf("Displacement: (%f, %f, %f)\n", displacement.x, displacement.y, displacement.z);
-   printf("Cam Forward Vec: (%f, %f, %f)\n", getCamForwardVec().x, getCamForwardVec().y, getCamForwardVec().z);
+   //printf("Displacement: (%f, %f, %f)\n", displacement.x, displacement.y, displacement.z);
+   //printf("Cam Forward Vec: (%f, %f, %f)\n", getCamForwardVec().x, getCamForwardVec().y, getCamForwardVec().z);
 
    //printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
 
