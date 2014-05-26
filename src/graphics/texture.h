@@ -56,7 +56,7 @@ struct Texture {
    int texture_slot() const { return texture_slot_; }
 
   private:
-   boost::variant<GLTextureID, TextureType> texture_id_;
+   boost::variant<GLTextureID, TextureType> texture_;
    int texture_slot_;
 };
 

@@ -171,22 +171,22 @@ GLTextureID TextureCache::load(const std::string& path) const {
 }
 
 Texture::Texture(TextureType texture_type, TextureSlot slot) :
-   texture_id_(texture_type),
+   texture_(texture_type),
    texture_slot_(slot)
 {
 }
 
 Texture::Texture(GLTextureID texture_id, TextureSlot texture_slot) :
-   texture_id_(texture_id),
+   texture_(texture_id),
    texture_slot_(texture_slot)
 {
 }
 
 void Texture::enable(const TextureCache& texture_cache) const {
    glActiveTexture(GL_TEXTURE0 + texture_slot_);
-   if (texture_id_.type() == typeid(GLTextureID)) {
-      glBindTexture(GL_TEXTURE_2D, boost::get<GLTextureID>(texture_id_));
+   if (texture_.type() == typeid(GLTextureID)) {
+      glBindTexture(GL_TEXTURE_2D, boost::get<GLTextureID>(texture_));
    } else {
-      glBindTexture(GL_TEXTURE_2D, texture_cache.getTexture(boost::get<TextureType>(texture_id_)));
+      glBindTexture(GL_TEXTURE_2D, texture_cache.getTexture(boost::get<TextureType>(texture_)));
    }
 }
