@@ -10,8 +10,7 @@ enum class GBufferType {
 }; 
 
 struct DeferredFrameBuffer {
-   DeferredFrameBuffer(unsigned int width, unsigned int height, 
-         TextureSlot texture_slot);
+   DeferredFrameBuffer(unsigned int width, unsigned int height); 
 
    void Initialize(unsigned int width, unsigned int height);
    void Bind();

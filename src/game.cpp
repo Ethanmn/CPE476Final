@@ -82,12 +82,12 @@ Game::Game() :
 
    std::vector<GameObject*> objects;
 
-   //for (auto& tree : treeGen.getTrees()) {
-      //objects.push_back(&tree);
-   //}
-   //for (auto& bush : bushGen.getBushes()) {
-      //objects.push_back(&bush);
-   //}
+   for (auto& tree : treeGen.getTrees()) {
+      objects.push_back(&tree);
+   }
+   for (auto& bush : bushGen.getBushes()) {
+      objects.push_back(&bush);
+   }
    for (auto& flower : flowerGen.getFlowers()) {
       objects.push_back(&flower);
    }
@@ -191,15 +191,15 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableMoon());
    br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
    
-   //drawables.push_back(bushGen.drawable());
-   //for (auto& bush : bushGen.getBushes()) {
-      //br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
-   //}
+   drawables.push_back(bushGen.drawable());
+   for (auto& bush : bushGen.getBushes()) {
+      br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
+   }
   
-   //drawables.push_back(treeGen.drawable());
-   //for (auto& tree : treeGen.getTrees()) {
-      //br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
-   //}
+   drawables.push_back(treeGen.drawable());
+   for (auto& tree : treeGen.getTrees()) {
+      br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
+   }
   
    drawables.push_back(flowerGen.drawable());
    for (auto& flower : flowerGen.getFlowers()) {

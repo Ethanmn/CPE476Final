@@ -7,8 +7,7 @@
 void GenDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
 void GenDepthDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
 
-DeferredFrameBuffer::DeferredFrameBuffer(unsigned int width, unsigned int height, 
-      TextureSlot texture_slot) 
+DeferredFrameBuffer::DeferredFrameBuffer(unsigned int width, unsigned int height) 
 {
    Initialize(width, height);
 }
