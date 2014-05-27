@@ -2,13 +2,22 @@
 
 #include "sound_engine.h"
 
+namespace {
+std::vector<SongStone> create_path() {
+   std::vector<SongStone> stones;
+   stones.push_back(
+         SongStone(glm::vec2(-15, -15)));
+   stones.push_back(
+         SongStone(glm::vec2(-30, -30)));
+   stones.push_back(
+         SongStone(glm::vec2(-45, -45)));
+   return stones;
+}
+}
+
 SongPath::SongPath(SoundEngine& sound_engine, const Mesh& mesh) :
    current_stone_(0),
-   song_stones_({
-         SongStone(glm::vec2(-15, -15)),
-         SongStone(glm::vec2(-30, -30)),
-         SongStone(glm::vec2(-45, -45)),
-         }),
+   song_stones_(create_path()),
    sound_engine_(sound_engine),
    mesh_(mesh) {}
 

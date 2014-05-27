@@ -13,17 +13,17 @@ struct SongPath {
    void step(units::MS dt, const BoundingRectangle& deer_rect);
    std::vector<BoundingRectangle> bounding_rectangles() const {
       std::vector<BoundingRectangle> brs;
-      for (auto& s : song_stones_) {
-         brs.push_back(s.bounding_rectangle());
-      }
+      brs.push_back(song_stones_[current_stone_].bounding_rectangle());
+      if (current_stone_ + 1 < song_stones_.size())
+         brs.push_back(song_stones_[current_stone_ + 1].bounding_rectangle());
       return brs;
    }
 
    Drawable drawable() const {
       std::vector<glm::mat4> models;
-      for (const auto& stone : song_stones_) {
-         models.push_back(stone.model());
-      }
+      models.push_back(song_stones_[current_stone_].model());
+      if (current_stone_ + 1 < song_stones_.size())
+         models.push_back(song_stones_[current_stone_ + 1].model());
       return Drawable({
             DrawTemplate({
                ShaderType::TEXTURE,
