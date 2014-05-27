@@ -30,6 +30,13 @@ void SongPath::set_song(irrklang::ISound* song) {
    song_ = song;
 }
 
+void SongPath::reset() {
+   for (auto& s : song_stones_) {
+      s.reset();
+   }
+   current_stone_ = 0;
+}
+
 void SongPath::step(units::MS dt, const BoundingRectangle& deer_rect) {
    if (!song_stones_[current_stone_].expired() &&
        song_stones_[current_stone_].bounding_rectangle().collidesWith(deer_rect)) {

@@ -9,6 +9,7 @@ struct SongStone {
    SongStone(const glm::vec2& position);
 
    void step(units::MS dt);
+   void reset() { life_time_ = 0; }
    bool expired() const;
    glm::mat4 model() const;
    BoundingRectangle bounding_rectangle() const {

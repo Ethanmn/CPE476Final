@@ -40,6 +40,8 @@ struct SongPath {
             });
    }
 
+   void reset();
+
   private:
    size_t current_stone_;
 

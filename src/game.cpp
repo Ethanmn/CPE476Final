@@ -216,12 +216,14 @@ void Game::step(units::MS dt) {
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       if (day_cycle_.isDaytime()) {
          song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::STORM_SONG));
+         song_path_.reset();
       }
       day_cycle_.dayToNight();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
       if (!day_cycle_.isDaytime()) {
          song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG));
+         song_path_.reset();
       }
       day_cycle_.nightToDay();
    }
