@@ -7,6 +7,7 @@
 namespace irrklang {
    class ISoundEngine;
    class ISoundSource;
+   class ISound;
 }
 
 struct SoundEngine {
@@ -36,9 +37,13 @@ struct SoundEngine {
    void playSoundEffect(SoundEffect sound, bool should_loop, const glm::vec3& source_position);
    void playRandomWalkSound();
 
+   void playMusic();
+   void pauseMusic();
+
   private:
    irrklang::ISoundEngine* engine_;
    std::map<SoundEffect, irrklang::ISoundSource*> sound_effect_sources_;
+   irrklang::ISound* music_;
 };
 
 #endif // SOUND_ENGINE_H_
