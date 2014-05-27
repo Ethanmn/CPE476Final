@@ -5,12 +5,11 @@
 namespace {
 std::vector<SongStone> create_path() {
    std::vector<SongStone> stones;
-   stones.push_back(
-         SongStone(glm::vec2(-15, -15)));
-   stones.push_back(
-         SongStone(glm::vec2(-30, -30)));
-   stones.push_back(
-         SongStone(glm::vec2(-45, -45)));
+   float radius = 200.0f;
+   for (float t = 0; t < 360.0f; t += 0.08f) {
+      stones.push_back(
+            SongStone(glm::vec2(glm::cos(t) * radius, glm::sin(t) * radius)));
+   }
    return stones;
 }
 }
@@ -19,7 +18,10 @@ SongPath::SongPath(SoundEngine& sound_engine, const Mesh& mesh) :
    current_stone_(0),
    song_stones_(create_path()),
    sound_engine_(sound_engine),
-   mesh_(mesh) {}
+   mesh_(mesh)
+{
+   mesh_.material.diffuse = glm::vec3(1, 0, 0);
+}
 
 void SongPath::step(units::MS dt, const BoundingRectangle& deer_rect) {
    if (!song_stones_[current_stone_].expired() &&
