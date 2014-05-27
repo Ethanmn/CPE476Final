@@ -24,13 +24,16 @@ const float kLeanFactor = 2.0f;
 
 const float kStepTime = 300;
 
-Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
+Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position) :
    draw_template_({
          ShaderType::TEXTURE,
-         mesh,
+         walk_mesh,
          Texture(TextureType::DEER, DIFFUSE_TEXTURE),
          boost::none,
          EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})}),
+   eating_(false),
+   walk_mesh_(walk_mesh),
+   eat_mesh_(eat_mesh),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 1),
@@ -111,6 +114,8 @@ glm::vec3 Deer::acceleration(const Camera& camera) const {
 }
 
 glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) const {
+   if (eating_) {
+   }
    glm::vec3 velocity(velocity_);
    if (!has_acceleration()) {
       glm::vec2 xz_velocity(xz(velocity));
@@ -137,6 +142,11 @@ glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) con
    return velocity;
 }
 
+void Deer::eat() {
+   eating_ = true;
+   draw_template_.mesh = eat_mesh_;
+}
+
 glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
    if (has_acceleration()) {
       return glm::normalize(glm::vec2(
@@ -149,10 +159,22 @@ glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
 void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
    velocity_ = predictVelocity(dt, acceleration(camera));
+   if (eating_) {
+      draw_template_.mesh.animation.step(dt);
+      if (draw_template_.mesh.animation.is_finished()) {
+         eating_ = false;
+         draw_template_.mesh = walk_mesh_;
+      }
+      return;
+   }
+
    if (!has_acceleration()) {
       desired_lean_ = 0.0f;
    } else {
       draw_template_.mesh.animation.step(dt);
+      if (draw_template_.mesh.animation.is_finished()) {
+         draw_template_.mesh.animation.reset();
+      }
       { // Accelerate velocity, capping at kSpeed.
          const auto next_facing(predictFacing(velocity_));
          desired_lean_ = glm::orientedAngle(last_facing_, next_facing);
