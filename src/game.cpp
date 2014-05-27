@@ -67,6 +67,10 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::LIGHTNING)), 
             glm::vec3(52.0f, 10.0f, 50.0f), 0.5),
 
+   skybox(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::SKYBOX))),
+ 
+
    deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
    airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
    curCam(&deerCam),
@@ -316,6 +320,15 @@ void Game::draw() {
    }
 
    //Skybox
+   Drawable skyDrawable = skybox.drawableDay();
+   CulledDrawable skyCulledDraw;
+   for (auto& transform : skyDrawable.model_transforms) {
+       CulledTransform skyTransform;
+       skyTransform.model = transform;
+       skyCulledDraw.model_transforms.push_back(skyTransform);
+   }
+   skyCulledDraw.draw_template = skyDrawable.draw_template;
+   culledDrawables.push_back(skyCulledDraw);
 
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);

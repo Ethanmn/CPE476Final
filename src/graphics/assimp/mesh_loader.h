@@ -24,7 +24,8 @@ enum class MeshType {
    EATEN_ROSE,
    RAIN,
    LIGHTNING,
-   BUTTERFLY
+   BUTTERFLY,
+   SKYBOX
 };
 
 std::string mesh_path(MeshType mesh);
