@@ -9,6 +9,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
+#include <vector>
 #include "ground_plane.h"
 #include "graphics/draw_template.h"
 #include "graphics/texture.h"
@@ -18,8 +19,8 @@ struct Skybox {
    Skybox(Mesh mesh);
 
    glm::mat4 calculateModel() const;
-   Drawable drawableDay() const;
-   Drawable drawableNight() const;
+   std::vector<Drawable> drawables(bool isDay) const;
+   Drawable drawable(bool isDay) const;
 
    private:
       DrawTemplate draw_template_day;

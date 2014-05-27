@@ -96,3 +96,7 @@ void DayCycle::adjustSun() {
       sunIntensity = tempTimeOfDay;
    }
 }
+
+bool DayCycle::isDay() {
+   return timeOfDay >= 0.35 && timeOfDay <= 0.65;
+}
