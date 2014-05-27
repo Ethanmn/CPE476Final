@@ -11,7 +11,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    lookAt(look),
    up(glm::vec3(0.0f, 1.0f, 0.0f)),
    target(pos),
-   springStrength(0.05f),
+   springStrength(0.5f),
    dampConst(0.065f)
 {}
 
@@ -22,7 +22,7 @@ void Camera::setPosition(const glm::vec3& endPosition) {
 
 /* Changes the point the camera is looking at. */
 void Camera::setLookAt(const glm::vec3& lookAtPoint) {
-   lookAt = lookAtPoint;
+   lookAt = glm::vec3(lookAtPoint.x, lookAtPoint.y + 4.0f, lookAtPoint.z);
 }
 
 /* Retrieves the current position of the camera. */
@@ -59,15 +59,16 @@ void Camera::step(float dT) {
    float scalar = 0.0f;
 
    glm::vec3 camForward = getCamForwardVec();
-   if (glm::length(position - lookAt) > 30.0f) {
-      target += camForward * (dT / 100.0f) * 10.0f;
+   if (glm::length(position - lookAt) > 25.0f) {
+      target += camForward * (dT / 100.0f) * 5.0f;
    }
 
-   if (glm::length(position - lookAt) < 10.0f) {
-      target -=  camForward * (dT / 100.0f) * 10.0f;
+   if (glm::length(position - lookAt) < 15.0f) {
+      target -=  camForward * (dT / 100.0f) * 5.0f;
    }
 
    displacement = newPos - target;
+
    dispLength = glm::length(displacement);
 
    if (dispLength >= 0.001) {
@@ -79,18 +80,11 @@ void Camera::step(float dT) {
       newPos.z -= displacement.z;
    }
 
-   //printf("Displacement: (%f, %f, %f)\n", displacement.x, displacement.y, displacement.z);
-   //printf("Cam Forward Vec: (%f, %f, %f)\n", getCamForwardVec().x, getCamForwardVec().y, getCamForwardVec().z);
-
-   //printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
-
-   //printf("LookAt: (%f, %f, %f)\n", lookAt.x, lookAt.y, lookAt.z);
-
    position = newPos;
 
    if (position.y < 1.0f) {
       position.y = 1.0f;
    }
 
-   position.y += 15.0f;
+   position.y += 10.0f;
 }

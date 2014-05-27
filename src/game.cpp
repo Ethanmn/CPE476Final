@@ -57,7 +57,7 @@ Game::Game() :
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
-   deerCam(Camera(glm::vec3(0.0f, 200.0f, 300.0f), glm::vec3(0.0f))),
+   deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
    airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
    curCam(&deerCam),
    airMode(false),
@@ -157,8 +157,6 @@ void Game::step(units::MS dt) {
       deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
 
       //printf("Next deer rect at (%f, %f) with dim (%f, %f)\n", center.x, center.y, nextDeerRect.getDimensions().x, nextDeerRect.getDimensions().y);
-      deerCam.setLookAt(deer_.getPosition());
-      //airCam.setLookAt(deer_.getPosition());
    }
 
    if (deerBlocked) {
@@ -180,6 +178,10 @@ void Game::step(units::MS dt) {
    }
 
    day_cycle_.autoAdjustTime(dt);
+
+   deerCam.setLookAt(deer_.getPosition());
+   airCam.setLookAt(deer_.getPosition());
+
    deerCam.step(dt);
    //airCam.step(dt);
 }
