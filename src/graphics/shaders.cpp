@@ -79,14 +79,14 @@ Shaders::Shaders() {
             //ShaderType::TEXTURE,
             //Shader("Texture", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(
+            ShaderType::DEFERRED,
+            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
+   shaders_.insert(std::make_pair(
             ShaderType::REFLECTION,
             Shader("Deferred", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::WATER,
             Shader("Water", kWaterAttrs, kWaterUniforms)));
-   shaders_.insert(std::make_pair(
-            ShaderType::DEFERRED,
-            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
