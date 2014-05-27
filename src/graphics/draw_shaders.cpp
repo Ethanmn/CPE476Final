@@ -144,6 +144,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
+         case ShaderType::DEFERRED:
          case ShaderType::TEXTURE:
             setupTexture(shader, shadow_map_fbo_, viewMatrix, useBlinnPhong, deerPos, sunDir, sunIntensity, lightning);
             drawTextureShader(shader, drawables, viewMatrix);
@@ -173,7 +174,8 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
 
 void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix) {
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE ||
+          drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
          { // Per-Drawable Texture Shader Setup
             if (drawable.draw_template.height_map) 
                setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);

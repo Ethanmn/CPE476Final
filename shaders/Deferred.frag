@@ -22,6 +22,7 @@ uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uLightning;
 
+varying vec4 vPosition;
 varying vec2 vTexCoord;
 varying vec4 vViewer;
 varying vec3 vNormal;
@@ -53,6 +54,11 @@ void main() {
 
    CheckIfUnderWater(ShadowAmount);
    CheckIfLightning();
+
+   gl_FragColor = vPosition;
+   gl_FragColor = vec4(ShadowAmount * Diffuse.xyz, 1.0);
+   /*gl_FragColor = vec4(vNormal, 1.0);*/
+    
 }
 
 
@@ -78,9 +84,13 @@ float calculateShadowAmount() {
 }
 
 vec3 calculateDiffuse(vec3 lightInt, vec3 lightDir) {
-   vec3 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord).xyz : uMat.diffuse;
+   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1);
+   if (Diffuse.a < 0.3) {
+      discard;
+   }
+
    float dotNLDir = dot(normalize(vNormal), lightDir);   
-   return lightInt * Diffuse * dotNLDir;
+   return lightInt * Diffuse.rgb * dotNLDir;
 }
 
 vec3 calculateSpecular(vec3 lightInt, vec3 lightDir) {

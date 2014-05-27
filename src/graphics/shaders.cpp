@@ -72,30 +72,21 @@ const std::vector<Uniform> kWaterUniforms{
    Uniform::SCREEN_HEIGHT,
 };
 
-const std::vector<Attribute> kDeferredAttrs{
-   Attribute::VERTEX,
-   Attribute::NORMAL
-};
-const std::vector<Uniform> kDeferredUniforms{
-   Uniform::MODEL_VIEW,
-   Uniform::PROJECTION,
-};
-
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   shaders_.insert(std::make_pair(
-            ShaderType::TEXTURE,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   //shaders_.insert(std::make_pair(
+            //ShaderType::TEXTURE,
+            //Shader("Texture", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::REFLECTION,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::WATER,
             Shader("Water", kWaterAttrs, kWaterUniforms)));
-   //shaders_.insert(std::make_pair(
-            //ShaderType::DEFERRED,
-            //Shader("Water", kDeferredAttrs, kDeferredUniforms)));
+   shaders_.insert(std::make_pair(
+            ShaderType::DEFERRED,
+            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

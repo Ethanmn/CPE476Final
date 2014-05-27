@@ -255,6 +255,11 @@ void Game::draw() {
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
+   for(auto& drawable : drawables) {
+      if(drawable.draw_template.shader_type == ShaderType::TEXTURE)
+         drawable.draw_template.shader_type = ShaderType::DEFERRED;
+   }
+
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), drawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
 }
