@@ -5,8 +5,6 @@
 #include <iostream>
 
 #include "graphics/texture.h"
-#include "DeerCam.h"
-#include "AirCam.h"
 
 namespace {
    bool showTreeShadows = false;
@@ -281,10 +279,8 @@ void Game::mainLoop() {
             const auto key_backward = SDL_SCANCODE_S;
             if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
                deer_.walkForward();
-               deerCam.moveFoward();
             } else if (!input.isKeyHeld(key_forward) && input.isKeyHeld(key_backward)) {
                deer_.walkBackward();
-               deerCam.moveBack();
             } else {
                deer_.stopWalking();
             }
@@ -294,12 +290,8 @@ void Game::mainLoop() {
             const auto key_right = SDL_SCANCODE_D;
             if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
                deer_.strafeLeft();
-               deerCam.turnLeft();
-               //deerCam.rotatePositionWithDrag(-20, 0, kScreenWidth, kScreenHeight);
             } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
                deer_.strafeRight();
-               deerCam.turnRight();
-               //deerCam.rotatePositionWithDrag(20, 0, kScreenWidth, kScreenHeight);
             } else {
                deer_.stopStrafing();
             }
@@ -355,7 +347,7 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_air_mode)) {
                airMode = !airMode;
                if (airMode) {
-                  curCam = &airCam;
+                  //curCam = &airCam;
                }
                else {
                   curCam = &deerCam;
