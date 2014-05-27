@@ -32,7 +32,7 @@ void FrustumG::setCamDef(const glm::vec3 &p, const glm::vec3 &l, const glm::vec3
 	X = glm::normalize(u * Z);
 
 	// the real "up" vector is the cross product of Z and X
-	Y = glm::cross(Z, X);
+	Y = glm::normalize(glm::cross(Z, X));
 
 	// compute the centers of the near and far planes
 	nc = p - Z * nearD;
@@ -79,7 +79,7 @@ int FrustumG::sphereInFrustum(glm::vec3 &p, float radius) {
 
 	for (int i = 0; i < 6; i++) {
 		distance = pl[i].distance(p);
-		if (distance < (-radius))
+		if (distance < (-radius) - 15)
 			return OUTSIDE;
 		else if (distance < radius)
 			result = INTERSECT;

@@ -7,7 +7,7 @@ using namespace std;
 namespace {
    bool debug = false;
    const float kOrthoProjAmount = 70.0f;
-   const glm::mat4 projection_matrix = glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f);
+   const glm::mat4 projection_matrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
    const glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0,
          0.0, 0.5, 0.0, 0.0,
          0.0, 0.0, 0.5, 0.0,
