@@ -76,7 +76,7 @@ std::string mesh_path(MeshType mesh) {
       case MeshType::BUTTERFLY:
          return kMeshPath + "butterfly.dae";
       case MeshType::SKYBOX:
-         return kMeshPath + "box.dae";
+         return kMeshPath + "ground_plane.obj";
    }
 }
 

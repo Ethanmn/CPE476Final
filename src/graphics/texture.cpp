@@ -44,9 +44,9 @@ std::string texture_path(TextureType texture) {
       case TextureType::LIGHTNING:
          return "../textures/storm.tga";
       case TextureType::SKYBOX_DAY:
-         return "../textures/stone_sun.bmp";
+         return "../textures/sky_day.tga";
       case TextureType::SKYBOX_NIGHT:
-         return "../textures/stone_moon.bmp";
+         return "../textures/sky_night.tga";
       case TextureType::LAST_TEXTURE_TYPE:
          return "";
 

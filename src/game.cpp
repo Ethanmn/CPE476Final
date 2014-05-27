@@ -322,15 +322,18 @@ void Game::draw() {
    }
 
    //Skybox
-   Drawable skyDrawable = skybox.drawableDay();
-   CulledDrawable skyCulledDraw;
-   for (auto& transform : skyDrawable.model_transforms) {
-       CulledTransform skyTransform;
-       skyTransform.model = transform;
-       skyCulledDraw.model_transforms.push_back(skyTransform);
+   std::vector<Drawable> skyDrawables = skybox.drawables(true);
+
+   for (auto& skyDrawable : skyDrawables) {
+      CulledDrawable skyCulledDraw;
+      for (auto& transform : skyDrawable.model_transforms) {
+          CulledTransform skyTransform;
+          skyTransform.model = transform;
+          skyCulledDraw.model_transforms.push_back(skyTransform);
+      }
+      skyCulledDraw.draw_template = skyDrawable.draw_template;
+      culledDrawables.push_back(skyCulledDraw);
    }
-   skyCulledDraw.draw_template = skyDrawable.draw_template;
-   culledDrawables.push_back(skyCulledDraw);
 
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
