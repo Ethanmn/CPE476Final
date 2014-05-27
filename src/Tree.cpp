@@ -8,8 +8,8 @@
 const int TREE_SCALE = 3;
 
 const int BOUNDING_SIZE = 4;
-const float BOUNDING_ERR_X = 7.26;
-const float BOUNDING_ERR_Z = -1.75;
+const float BOUNDING_ERR_X = -0.5;
+const float BOUNDING_ERR_Z = -3;
 
 Tree::Tree(glm::vec3 position) :
    bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
