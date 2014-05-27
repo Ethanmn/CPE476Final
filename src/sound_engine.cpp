@@ -161,6 +161,6 @@ inline std::string songPath(SoundEngine::Song song) {
 
 irrklang::ISound* SoundEngine::loadSong(Song song) {
    auto* sound = engine_->play2D(songPath(song).c_str(), false, true, true);
-   sound->setVolume(2.2f);
+   sound->setVolume(1.5f);
    return sound;
 }
