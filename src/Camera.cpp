@@ -6,26 +6,14 @@
 #include "Camera.h"
 #include <iostream>
 
-const float PI = 3.14159265359;
-const int PI_IN_DEGREES = 180;
-
 Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    position(pos),
    lookAt(look),
    up(glm::vec3(0.0f, 1.0f, 0.0f)),
    target(pos),
-   direction(0.0f, 0.0f, 0.0f),
-   springStrength(0.128f),
-   dampConst(0.00065f),
-   angle(PI),
-   vertAngle(asin(position.y / glm::length(look - pos)) * PI_IN_DEGREES / PI),
-   movingFoward(false),
-   movingBack(false),
-   turningLeft(false),
-   turningRight(false)
-{
-   //printf("Pos Y: %f\nVert Angle: %f\n", position.y, vertAngle);
-}
+   springStrength(0.5f),
+   dampConst(0.065f)
+{}
 
 /* 'Jumps' the camera to the specified position. */
 void Camera::setPosition(const glm::vec3& endPosition) {
@@ -34,7 +22,7 @@ void Camera::setPosition(const glm::vec3& endPosition) {
 
 /* Changes the point the camera is looking at. */
 void Camera::setLookAt(const glm::vec3& lookAtPoint) {
-   lookAt = lookAtPoint;
+   lookAt = glm::vec3(lookAtPoint.x, lookAtPoint.y + 4.0f, lookAtPoint.z);
 }
 
 /* Retrieves the current position of the camera. */
@@ -63,22 +51,6 @@ glm::mat4 Camera::getViewMatrix() const {
    return glm::lookAt(position, lookAt, up);
 }
 
-void Camera::turnLeft() {
-   turningLeft = true;
-}
-
-void Camera::turnRight() {
-   turningRight = true;
-}
-
-void Camera::moveFoward() {
-   movingFoward = true;
-}
-
-void Camera::moveBack() {
-   movingBack = true;
-}
-
 void Camera::step(float dT) {
    glm::vec3 newPos = position;
    glm::vec3 displacement;
@@ -86,34 +58,17 @@ void Camera::step(float dT) {
    float springMag = 0.0f;
    float scalar = 0.0f;
 
-   if (turningLeft) {
-      angle -= PI / 2 * dT / 100.0f;
-   }
-   
-   if (turningRight) {
-      angle += PI / 2 * dT / 100.0f;
+   glm::vec3 camForward = getCamForwardVec();
+   if (glm::length(position - lookAt) > 30.0f) {
+      target += camForward * (dT / 100.0f) * 7.5f;
    }
 
-   if (vertAngle > 15.0f) {
-      vertAngle -= dT / 100.0f;
-   }
-   else if (vertAngle < 5.0f) {
-      vertAngle += dT / 100.0f;
-   }
-
-   //printf("Vert Angle: %f\n", vertAngle);
-
-   if (glm::length(position - lookAt) > 25.0f) {
-      target += getCamForwardVec() * (dT / 100.0f) * 5.0f;
-   }
-
-   //printf("Length: %f\n", glm::length(position - lookAt)); 
-
-   if (glm::length(position - lookAt) < 15.0f) {
-      target -=  getCamForwardVec() * (dT / 100.0f) * 5.0f;
+   if (glm::length(position - lookAt) < 10.0f) {
+      target -=  camForward * (dT / 100.0f) * 7.5f;
    }
 
    displacement = newPos - target;
+
    dispLength = glm::length(displacement);
 
    if (dispLength >= 0.001) {
@@ -121,40 +76,15 @@ void Camera::step(float dT) {
       scalar = (1.0f / dispLength) * springMag;
       displacement *= scalar;
       newPos.x -= displacement.x;
-      if (newPos.y > 15.0f) {
-         newPos.y -= displacement.y;
-      }
+      newPos.y -= displacement.y;
       newPos.z -= displacement.z;
    }
 
-   //printf("Displacement: (%f, %f, %f)\n", displacement.x, displacement.y, displacement.z);
-   //printf("Cam Forward Vec: (%f, %f, %f)\n", getCamForwardVec().x, getCamForwardVec().y, getCamForwardVec().z);
-
-   //printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
-
    position = newPos;
-   //rotateCamera(angle);
-
-   turningLeft = false;
-   turningRight = false;
-   movingFoward = false;
-   movingBack = false;
-
-   //position.y += 10.0f;
 
    if (position.y < 1.0f) {
       position.y = 1.0f;
    }
 
-   //printf("Pos Y: %f\nVert Angle: %f\n", position.y, vertAngle);
-
-   //printCamera();
-}
-
-void Camera::rotateCamera(float angle) {
-   position = glm::vec3(cos(vertAngle) * cos(angle) + position.x, sin(vertAngle) + position.y, cos(vertAngle) * cos(PI / 2 - angle) + position.z);
-}
-
-void Camera::printCamera() {
-   printf("Position: (%f, %f, %f)\nDirection: (%f, %f, %f)\nAngle: %f\n", position.x, position.y, position.z, direction.x, direction.y, direction.z, angle);
+   position.y += 10.0f;
 }

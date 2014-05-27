@@ -24,10 +24,6 @@ struct Camera {
    glm::vec3 getCamLeftVec() const;
    glm::mat4 getViewMatrix() const;
 
-   void turnLeft();
-   void turnRight();
-   void moveFoward();
-   void moveBack();
    void step(float dT);
    
    private:
@@ -36,20 +32,9 @@ struct Camera {
       glm::vec3 up;
 
       glm::vec3 target;
-      glm::vec3 direction;
 
       float springStrength;
       float dampConst;
-      float angle;
-      float vertAngle;
-
-      bool movingFoward;
-      bool movingBack;
-      bool turningLeft;
-      bool turningRight;
-
-      void printCamera();
-      void rotateCamera(float angle);
 };
 
 #endif // CAMERA_H_
