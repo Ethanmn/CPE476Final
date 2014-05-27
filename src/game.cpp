@@ -17,6 +17,7 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
+   Camera *curCam;
 }
 
 Game::Game() :
@@ -196,6 +197,7 @@ void Game::draw() {
 
    glm::mat4 viewMatrix = curCam->getViewMatrix();
    std::vector<Drawable> drawables;
+   std::vector<CulledDrawable> culledDrawables;
    Drawable br_drawable;
    br_drawable.draw_template = BoundingRectangle::draw_template();
  
@@ -244,7 +246,42 @@ void Game::draw() {
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
-   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), drawables, viewMatrix, switchBlinnPhongShading, 
+// View Frustum Culling
+   FrustumG viewFrust;
+   int culledObject = 0;
+   // Set up values used to construct planes
+   viewFrust.setCamInternals(kFieldOfView, kAspectRatio, kNear, kFar);
+   // Use camera values to construch planes
+   viewFrust.setCamDef(curCam->getPosition(),
+                       curCam->getLookAt(),
+                       glm::vec3(0, 1, 0));
+
+   for (auto& drawable : drawables) {
+      glm::vec3 min, max, mid;
+
+      CulledDrawable culledDrawable;
+      for (auto& transform : drawable.model_transforms) {
+         CulledTransform culledTransform;
+         culledTransform.model = transform;
+
+         min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
+         max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
+         mid = (min + max) / 2.0f;
+         if (!viewFrust.sphereInFrustum(mid, glm::length(max - mid))) {
+            culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
+            culledObject++;
+         }
+         // Test for reflection
+         // if (!viewFrust.sphereInFrustum(mid, dist(max, mid))) {
+         //    culledTransform.cullFlag.insert(CullType::REFLECT_CULLING);
+         // }
+         culledDrawable.model_transforms.push_back(culledTransform);
+      }
+      culledDrawable.draw_template = drawable.draw_template;
+      culledDrawables.push_back(culledDrawable);
+   }
+
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
 }
 
