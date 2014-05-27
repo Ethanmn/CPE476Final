@@ -173,7 +173,7 @@ void Game::step(units::MS dt) {
       deer_.step(dt, *curCam, ground_, sound_engine_);
    }
 
-   song_path_.step(deer_.bounding_rectangle());
+   song_path_.step(dt, deer_.bounding_rectangle());
 
    for (auto& bush : bushGen.getBushes()) {
       bush.step(dt);
