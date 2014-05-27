@@ -117,11 +117,11 @@ void Camera::step(float dT) {
    }
 
    //printf("Displacement: (%f, %f, %f)\n", displacement.x, displacement.y, displacement.z);
-   printf("Cam Forward Vec: (%f, %f, %f)\n", getCamForwardVec().x, getCamForwardVec().y, getCamForwardVec().z);
+   //printf("Cam Forward Vec: (%f, %f, %f)\n", getCamForwardVec().x, getCamForwardVec().y, getCamForwardVec().z);
 
-   printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
+   //printf("Position: (%f, %f, %f)\nTarget: (%f, %f, %f)\nDisplacement: (%f, %f, %f)\nDisplacement Length: %f\nSpring Magnitude: %f\nScalar: %f\n", position.x, position.y, position.z, target.x, target.y, target.z, displacement.x, displacement.y, displacement.z, dispLength, springMag, scalar);
 
-   printf("LookAt: (%f, %f, %f)\n", lookAt.x, lookAt.y, lookAt.z);
+   //printf("LookAt: (%f, %f, %f)\n", lookAt.x, lookAt.y, lookAt.z);
 
    position = newPos;
    //rotateCamera(angle);
