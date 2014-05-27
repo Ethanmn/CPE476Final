@@ -17,7 +17,10 @@ enum class ShaderType {
    REFLECTION,
    TEXTURE,
    WATER,
-   DEFERRED
+   DEFERRED_POSITION,
+   DEFERRED_DIFFUSE,
+   DEFERRED_NORMAL,
+   FINAL_LIGHT_PASS
 };
 
 struct Shaders {

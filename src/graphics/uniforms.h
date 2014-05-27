@@ -14,8 +14,6 @@ enum class Uniform {
    HAS_HEIGHT_MAP,
    HEIGHT_MAP,
    COLOR,
-   SUN_DIR,
-   SUN_INTENSITY,
    M_AMB,
    M_DIF,
    M_SPEC,
@@ -33,6 +31,14 @@ enum class Uniform {
    IS_GOD_RAY,
    GOD_RAY_POSITION,
    GOD_RAY_RADIUS,
+   OUTPUT_SHADER_TYPE,
+
+   SUN_DIR,
+   SUN_INTENSITY,
+   FINAL_PASS_POSITION_TEXTURE,
+   FINAL_PASS_DIFFUSE_TEXTURE,
+   FINAL_PASS_NORMAL_TEXTURE,
+
    LAST_UNIFORM,
 };
 
@@ -94,6 +100,16 @@ inline std::string uniform_name(Uniform uniform) {
          return "uGodRayPosition";
       case Uniform::GOD_RAY_RADIUS:
          return "uGodRayRadius";
+      case Uniform::OUTPUT_SHADER_TYPE:
+         return "uOutputShaderType";
+
+      case Uniform::FINAL_PASS_POSITION_TEXTURE:
+         return "uPositionTexture";
+      case Uniform::FINAL_PASS_DIFFUSE_TEXTURE:
+         return "uDiffuseTexture";
+      case Uniform::FINAL_PASS_NORMAL_TEXTURE:
+         return "uNormalTexture";
+
       case Uniform::LAST_UNIFORM:
          throw "Unknown uniform type, shouldn't even compile";
    }

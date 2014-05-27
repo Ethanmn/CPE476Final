@@ -289,10 +289,10 @@ void Game::draw() {
    if (draw_collision_box)
       drawables.push_back(br_drawable);
 
-   god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
-   god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
-   drawables.push_back(god_rays_.drawable());
-   br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
+   //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
+   //god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
+   //drawables.push_back(god_rays_.drawable());
+   //br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
 
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
@@ -336,10 +336,6 @@ void Game::draw() {
 
    //Skybox
    
-   //for(auto& drawable : drawables) {
-      //if(drawable.draw_template.shader_type == ShaderType::TEXTURE)
-         //drawable.draw_template.shader_type = ShaderType::DEFERRED;
-   //}
 
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);

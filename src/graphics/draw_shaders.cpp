@@ -98,18 +98,21 @@ void DrawShader::setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
    setupSunShader(shader, uniforms, sunIntensity, sunDir); 
 }
 
-void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject reflection_fbo,
-      vector<CulledDrawable> culledDrawables, glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
-      glm::vec3 sunDir, float sunIntensity, int lightning) {
+void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, 
+                      FrameBufferObject reflection_fbo,
+                      FrameBufferObject g_buff_diffuse_fbo,
+                      FrameBufferObject g_buff_position_fbo,
+                      FrameBufferObject g_buff_normal_fbo,
+                      vector<CulledDrawable> culledDrawables,
+                      glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
+                      glm::vec3 sunDir, float sunIntensity, int lightning) {
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
       shader.use();
       switch (shader_pair.first) {
          case ShaderType::SHADOW:
-            if(!debug) {
-               shadow_map_fbo_.bind();
-               glClear(GL_DEPTH_BUFFER_BIT);
-            }
+            shadow_map_fbo_.bind();
+            glClear(GL_DEPTH_BUFFER_BIT);
 
             for (auto& drawable : culledDrawables) {
                if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
@@ -119,12 +122,11 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
                   }
                }
             }
-
-            if(!debug) {
-               glBindFramebuffer(GL_FRAMEBUFFER, 0);
-               shadow_map_fbo_.texture().enable(texture_cache_);
-            }
+            
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            shadow_map_fbo_.texture().enable(texture_cache_);
             break;
+
          case ShaderType::REFLECTION:
             reflection_fbo.bind();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -146,9 +148,21 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
-         case ShaderType::DEFERRED:
+         case ShaderType::DEFERRED_POSITION:
+            g_buff_position_fbo.bind();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+         case ShaderType::DEFERRED_DIFFUSE:
+            g_buff_diffuse_fbo.bind();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+         case ShaderType::DEFERRED_NORMAL:
+            g_buff_normal_fbo.bind();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
          case ShaderType::TEXTURE:
             {
+               sendOutputShaderType(shader_pair.first, shader);
                std::vector<Drawable> drawables;
                int culledObjects = 0;
                int nonCulledObjects = 0;
@@ -182,6 +196,17 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
                }
             }
             break;
+         case ShaderType::FINAL_LIGHT_PASS:
+            setupSunShader(shader, uniforms, sunIntensity, sunDir);
+            shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, 
+                  locations, TextureSlot::DIFFUSE_TEXTURE);
+
+            shader.sendUniform(Uniform::FINAL_PASS_POSITION_TEXTURE, 
+                  locations, TextureSlot::DEFERRED_POS_TEXTURE;
+            shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE 
+               locations, TextureSlot::DEFERRED_NORM_TEXTURE;
+
+            break;
       }
    }
 }
@@ -193,11 +218,33 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
    }
 }
 
+void DrawShader::sendOutputShaderType(ShaderType shaderT, Shader& shader) {
+   if (shaderT == ShaderType::TEXTURE) {
+      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 0);
+      //printf("0\n");
+   }
+   else if (shaderT == ShaderType::DEFERRED_POSITION) {
+      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 1);
+      //printf("1\n");
+   }
+   else if (shaderT == ShaderType::DEFERRED_DIFFUSE) {
+      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 2);
+      //printf("2\n");
+   }
+   else if (shaderT == ShaderType::DEFERRED_NORMAL) {
+      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 3);
+      //printf("3\n");
+   }
+   else
+      assert(false);
+}
+
 void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix) {
    for (auto& drawable : drawables) {
       if (drawable.draw_template.shader_type == ShaderType::TEXTURE ||
-          drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
+          drawable.draw_template.shader_type == ShaderType::DEFERRED_NORMAL) { 
          { // Per-Drawable Texture Shader Setup
+
             if (drawable.draw_template.height_map) 
                setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
             else
@@ -213,8 +260,6 @@ void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawabl
                shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
             }
 
-            shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, drawable.draw_template.is_god_ray ? 1 : 0);
-
             if(drawable.draw_template.texture)
                setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
             else {
@@ -224,7 +269,6 @@ void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawabl
 
             drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
          }
-
          drawModelTransforms(shader, drawable, viewMatrix);
       }
    }

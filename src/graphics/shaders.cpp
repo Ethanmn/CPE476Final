@@ -22,6 +22,8 @@ const std::vector<Attribute> kTextureAttrs{
    Attribute::BONE_WEIGHT4,
 };
 const std::vector<Uniform> kTextureUniforms{
+   Uniform::OUTPUT_SHADER_TYPE,
+
    Uniform::MODEL_VIEW,
    Uniform::MODEL,
    Uniform::VIEW,
@@ -46,8 +48,6 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::USE_BLINN_PHONG,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
-
-   Uniform::IS_GOD_RAY,
    
    Uniform::BONES,
    Uniform::HAS_BONES,
@@ -77,21 +77,44 @@ const std::vector<Uniform> kWaterUniforms{
    Uniform::SCREEN_HEIGHT,
 };
 
+const std::vector<Attribute> kFinalAttrs{
+   Attribute::VERTEX
+};
+const std::vector<Uniform> kFinalUniforms{
+   Uniform::MODEL_VIEW,
+   Uniform::PROJECTION,
+   Uniform::SUN_DIR,
+   Uniform::SUN_INTENSITY,
+   Uniform::FINAL_PASS_POSITION_TEXTURE,
+   Uniform::FINAL_PASS_DIFFUSE_TEXTURE,
+   Uniform::FINAL_PASS_NORMAL_TEXTURE,
+};
+
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   shaders_.insert(std::make_pair(
-            ShaderType::TEXTURE,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
    //shaders_.insert(std::make_pair(
-            //ShaderType::DEFERRED,
-            //Shader("Deferred", kTextureAttrs, kTextureUniforms)));
+            //ShaderType::TEXTURE,
+            //Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   shaders_.insert(std::make_pair(
+            ShaderType::DEFERRED_POSITION,
+            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
+   shaders_.insert(std::make_pair(
+            ShaderType::DEFERRED_DIFFUSE,
+            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
+   shaders_.insert(std::make_pair(
+            ShaderType::DEFERRED_NORMAL,
+            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::REFLECTION,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::WATER,
             Shader("Water", kWaterAttrs, kWaterUniforms)));
+
+   shaders_.insert(std::make_pair(
+            ShaderType::FINAL_LIGHT_PASS,
+            Shader("Final", kFinalAttrs, kFinalUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

@@ -1,3 +1,5 @@
+uniform int uOutputShaderType;
+
 uniform sampler2D uShadowMapTexture;
 uniform int uHasShadows;
 uniform mat4 uShadowMap;
@@ -22,10 +24,6 @@ uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uLightning;
 
-uniform int uIsGodRay;
-/*uniform vec2 uGodRayPostion;*/
-/*uniform float uGodRayRadius;*/
-
 varying vec2 vTexCoord;
 varying vec4 vViewer;
 varying vec3 vNormal;
@@ -41,10 +39,6 @@ void CheckIfLightning();
 
 
 void main() {
-   if(uIsGodRay != 0) {
-      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-   }
-
    vec3 color;
    vec3 Specular, Diffuse, Ambient;
    vec3 directionalColor = vec3(0.8 * uSunIntensity);

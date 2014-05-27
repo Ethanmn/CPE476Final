@@ -5,6 +5,7 @@
 #include "graphics/texture.h"
 
 enum class FBOType {
+   G_BUFFER,
    DEPTH,
    COLOR_WITH_DEPTH,
 };

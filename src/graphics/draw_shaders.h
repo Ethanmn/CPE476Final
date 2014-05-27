@@ -13,9 +13,16 @@ struct DrawShader {
    DrawShader() : uniforms(shaders.getUniformLocationMap()), 
       projectionMatrix(glm::perspective(80.0f, kScreenWidthf / kScreenHeightf, 0.1f, 500.f)) {}
 
-   void Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject reflection_fbo,
-         std::vector<CulledDrawable> culledDrawables, glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
-         glm::vec3 sunDir, float sunIntensity, int lightning);
+   void Draw(FrameBufferObject shadow_map_fbo_, 
+                      FrameBufferObject reflection_fbo,
+                      FrameBufferObject g_buff_diffuse_fbo,
+                      FrameBufferObject g_buff_position_fbo,
+                      FrameBufferObject g_buff_normal_fbo,
+                      vector<CulledDrawable> culledDrawables,
+                      glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
+                      glm::vec3 sunDir, float sunIntensity, int lightning);
+   
+   
    void SunInformation(glm::vec3 direction, float intensity);
    Shaders getShaders() const { return shaders; }
 
@@ -23,6 +30,7 @@ struct DrawShader {
    void setupTexture(Shader& shader, FrameBufferObject shadow_map_fbo_, glm::mat4 viewMatrix, 
          int useBlinnPhong, glm::vec3 deerPos, glm::vec3 sunDir, float sunIntensity, int lightning);
    void drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix);
+   void sendOutputShaderType(ShaderType shaderT, Shader& shader);
 
    void setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
       glm::vec3 sunDir, float sunIntensity, int lightning);
