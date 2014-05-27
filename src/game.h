@@ -12,7 +12,6 @@
 #include "TreeGenerator.h"
 #include "BushGenerator.h"
 #include "FlowerGenerator.h"
-#include "SongStoneGenerator.h"
 #include "lightning_interaction.h"
 #include "BVHTree.h"
 #include "graphics/gl_adapters/frame_buffer_object.h"
@@ -22,6 +21,7 @@
 #include "butterfly_system.h"
 #include "rain_system.h"
 #include "water.h"
+#include "song_path.h"
 #include "culled_drawable.h"
 #include "frustumG.h"
 #include "dist.h"
@@ -44,7 +44,6 @@ struct Game {
 
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
-   SongStoneGenerator songStoneGen;
 
    /*temporary solution for two textures*/
    FlowerGenerator daisyGen;
@@ -70,6 +69,7 @@ struct Game {
    bool airMode;
    FrameBufferObject shadow_map_fbo_;
    Water water_;
+   SongPath song_path_;
 
    void step(units::MS dt);
    void draw();

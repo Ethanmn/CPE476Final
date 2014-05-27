@@ -7,6 +7,7 @@ const float kRollOff = 5.0f; // 1.0 corresponds to real world. 10.0 is the max
 
 SoundEngine::SoundEngine() {
    engine_ = irrklang::createIrrKlangDevice();
+   music_ = engine_->play2D("../music/rhapsody_in_blue-Gershwin.ogg", false, true, true);
    if (!engine_) {
       std::cerr << "Could not load irrklang engine" << std::endl;
    }
@@ -141,4 +142,12 @@ void SoundEngine::playRandomWalkSound() {
    const auto val = rand() % 3;
    const auto walk = static_cast<SoundEffect>(val + static_cast<int>(SoundEffect::GRASS_WALK0));
    engine_->play2D(sound_effect_sources_[walk], false);
+}
+
+void SoundEngine::playMusic() {
+   music_->setIsPaused(false);
+}
+
+void SoundEngine::pauseMusic() {
+   music_->setIsPaused(true);
 }

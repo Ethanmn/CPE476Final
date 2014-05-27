@@ -75,9 +75,9 @@ const std::vector<Uniform> kWaterUniforms{
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   //shaders_.insert(std::make_pair(
-            //ShaderType::TEXTURE,
-            //Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   shaders_.insert(std::make_pair(
+            ShaderType::TEXTURE,
+            Shader("Texture", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::DEFERRED,
             Shader("Deferred", kTextureAttrs, kTextureUniforms)));

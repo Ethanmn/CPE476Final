@@ -8,7 +8,7 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = false;
+   bool draw_collision_box = true;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool debug = false;
@@ -18,7 +18,6 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
-   Camera *curCam;
 }
 
 Game::Game() :
@@ -33,8 +32,6 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::TREE))),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH))),
-   songStoneGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::TIME_STONE))),
 
    /* temporary solution to two flower meshes and textures */
    daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -54,13 +51,13 @@ Game::Game() :
    /* temporary solution to three butterfly textures */
    butterfly_system_red_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_RED,
-            glm::vec3(0.0f), 10),
+         glm::vec3(0.0f), 10),
    butterfly_system_pink_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_PINK,
-            glm::vec3(40.0f, 0.f, 50.0f), 10),
+         glm::vec3(40.0f, 0.f, 50.0f), 10),
    butterfly_system_blue_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
-            glm::vec3(-60.0f, 0.f, -70.0f), 10),
+         glm::vec3(-60.0f, 0.f, -70.0f), 10),
 
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
@@ -75,14 +72,17 @@ Game::Game() :
    curCam(&deerCam),
    airMode(false),
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
-   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND)))
+   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
+   song_path_(sound_engine_,
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::TIME_STONE)))
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (0.05098, 
-                 0.6274509,
-                 1.0,  1.0f);
+         0.6274509,
+         1.0,  1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -101,7 +101,6 @@ Game::Game() :
 
    treeGen.generate();
    bushGen.generate(ground_);
-   songStoneGen.generate(ground_);
    daisyGen.generate(ground_);
    roseGen.generate(ground_);
 
@@ -118,9 +117,6 @@ Game::Game() :
    }
    for (auto& flower : roseGen.getFlowers()) {
       objects.push_back(&flower);
-   }
-   for (auto& songStone : songStoneGen.getSongStones()) {
-      objects.push_back(&songStone);
    }
 
    
@@ -184,6 +180,8 @@ void Game::step(units::MS dt) {
       deer_.step(dt, *curCam, ground_, sound_engine_);
    }
 
+   song_path_.step(dt, deer_.bounding_rectangle());
+
    for (auto& bush : bushGen.getBushes()) {
       bush.step(dt);
    }
@@ -199,10 +197,12 @@ void Game::step(units::MS dt) {
    eatFlower = false;
 
    if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
-      raining = 1;
-      lighting = 1;
-      numLightning = 3;
-      sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+      if (numLightning == 0) {
+         raining = 1;
+         lighting = 1;
+         numLightning = 3;
+         sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+      }
    }   
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
@@ -227,15 +227,15 @@ void Game::draw() {
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glClearColor (0.05098 * sunIntensity,
-                 0.6274509 * sunIntensity,
-                 sunIntensity, 1.0f);
+         0.6274509 * sunIntensity,
+         sunIntensity, 1.0f);
 
    glm::mat4 viewMatrix = curCam->getViewMatrix();
    std::vector<Drawable> drawables;
    std::vector<CulledDrawable> culledDrawables;
    Drawable br_drawable;
    br_drawable.draw_template = BoundingRectangle::draw_template();
- 
+
    drawables.push_back(deer_.drawable());
    br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
 
@@ -244,15 +244,15 @@ void Game::draw() {
   
    drawables.push_back(day_night_boxes_.drawableSun());
    br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
-  
+
    drawables.push_back(day_night_boxes_.drawableMoon());
    br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
-   
+
    drawables.push_back(bushGen.drawable());
    for (auto& bush : bushGen.getBushes()) {
       br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
    }
-  
+
    drawables.push_back(treeGen.drawable());
    for (auto& tree : treeGen.getTrees()) {
       br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
@@ -271,19 +271,15 @@ void Game::draw() {
    }
    drawables.push_back(roseGen.drawableEaten());
   
-   drawables.push_back(songStoneGen.drawable());
-   for (auto& songStone : songStoneGen.getSongStones()) {
-      br_drawable.model_transforms.push_back(songStone.getBoundingRectangle().model_matrix());
-   }
 
    if(raining)
       drawables.push_back(rain_system_.drawable());
-   
+
    drawables.push_back(butterfly_system_red_.drawable());
    drawables.push_back(butterfly_system_pink_.drawable());
    drawables.push_back(butterfly_system_blue_.drawable());
 
-   
+
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
    if (draw_collision_box)
@@ -292,10 +288,7 @@ void Game::draw() {
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
-   for(auto& drawable : drawables) {
-      if(drawable.draw_template.shader_type == ShaderType::TEXTURE)
-         drawable.draw_template.shader_type = ShaderType::DEFERRED;
-   }
+
 
 // View Frustum Culling
    FrustumG viewFrust;
@@ -333,6 +326,11 @@ void Game::draw() {
    }
 
    //Skybox
+   
+   //for(auto& drawable : drawables) {
+      //if(drawable.draw_template.shader_type == ShaderType::TEXTURE)
+         //drawable.draw_template.shader_type = ShaderType::DEFERRED;
+   //}
 
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
