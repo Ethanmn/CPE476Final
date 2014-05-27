@@ -187,6 +187,10 @@ void Game::step(units::MS dt) {
       bush.step(dt);
    }
 
+   for (auto& tree : treeGen.getTrees()) {
+      tree.step(dt);
+   }
+
    for(auto& flower : daisyGen.getFlowers()) {
       if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
          flower.eat(sound_engine_);

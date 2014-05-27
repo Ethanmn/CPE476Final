@@ -29,6 +29,7 @@ struct SoundEngine {
 
       THUNDER_STRIKE,
       EAT_FLOWER,
+      TREE_HIT
    };
    SoundEngine();
 
