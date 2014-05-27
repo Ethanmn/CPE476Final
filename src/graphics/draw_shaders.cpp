@@ -160,12 +160,9 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
                         newDrawable.model_transforms.push_back(modelTransforms.model);
                         nonCulledObjects++;
                      }
-                     else
-                        culledObjects++;
                   }
                   drawables.push_back(newDrawable);
                }
-               std::cout << "culled: " << culledObjects << " non-culled: " << nonCulledObjects << std::endl;
                setupTexture(shader, shadow_map_fbo_, viewMatrix, useBlinnPhong, deerPos, sunDir, sunIntensity, lightning);
                drawTextureShader(shader, drawables, viewMatrix);
             }
