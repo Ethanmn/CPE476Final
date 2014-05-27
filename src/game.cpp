@@ -18,7 +18,6 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
-   Camera *curCam;
 }
 
 Game::Game() :
