@@ -29,7 +29,7 @@ void FrustumG::setCamDef(const glm::vec3 &p, const glm::vec3 &l, const glm::vec3
 	Z = glm::normalize(p - l);
 
 	// X axis of camera with given "up" vector and Z axis
-	X = glm::normalize(u * Z);
+	X = glm::normalize(glm::cross(u, Z));
 
 	// the real "up" vector is the cross product of Z and X
 	Y = glm::normalize(glm::cross(Z, X));
@@ -45,10 +45,10 @@ void FrustumG::setCamDef(const glm::vec3 &p, const glm::vec3 &l, const glm::vec3
 	nbr = nc - Y * nh + X * nw;
 
 	// compute the 4 corners of the frustum on the far plane
-	ftl = (fc + Y * fh - X * fw);
-	ftr = (fc + Y * fh + X * fw);
-	fbl = (fc - Y * fh - X * fw);
-	fbr = (fc - Y * fh + X * fw);
+	ftl = fc + Y * fh - X * fw;
+	ftr = fc + Y * fh + X * fw;
+	fbl = fc - Y * fh - X * fw;
+	fbr = fc - Y * fh + X * fw;
 
 	// compute the six planes
 	// the function set3Points assumes that the points
@@ -62,7 +62,6 @@ void FrustumG::setCamDef(const glm::vec3 &p, const glm::vec3 &l, const glm::vec3
 }
 
 int FrustumG::pointInFrustum(glm::vec3 &p) {
-
 	int result = INSIDE;
 
 	for (int i = 0; i < 6; i++) {
@@ -73,13 +72,12 @@ int FrustumG::pointInFrustum(glm::vec3 &p) {
 }
 
 int FrustumG::sphereInFrustum(glm::vec3 &p, float radius) {
-
 	float distance;
 	int result = INSIDE;
 
 	for (int i = 0; i < 6; i++) {
 		distance = pl[i].distance(p);
-		if (distance < (-radius) - 15)
+		if (distance < (-radius))
 			return OUTSIDE;
 		else if (distance < radius)
 			result = INTERSECT;
