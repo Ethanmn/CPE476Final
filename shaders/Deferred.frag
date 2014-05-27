@@ -55,8 +55,8 @@ void main() {
    CheckIfUnderWater(ShadowAmount);
    CheckIfLightning();
 
-   gl_FragColor = vPosition;
-   gl_FragColor = vec4(ShadowAmount * Diffuse.xyz, 1.0);
+   /*gl_FragColor = vPosition;*/
+   /*gl_FragColor = vec4(ShadowAmount * Diffuse.xyz, 1.0);*/
    /*gl_FragColor = vec4(vNormal, 1.0);*/
     
 }
