@@ -1,12 +1,13 @@
 #include "draw_shaders.h"
 #include "shaders.h"
 #include "uniforms.h"
+#include <iostream>
 
 using namespace std;
 namespace {
    bool debug = false;
    const float kOrthoProjAmount = 70.0f;
-   const glm::mat4 projection_matrix = glm::perspective(80.0f, 640.0f/480.0f, 0.1f, 500.f);
+   const glm::mat4 projection_matrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
    const glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0,
          0.0, 0.5, 0.0, 0.0,
          0.0, 0.0, 0.5, 0.0,
@@ -98,7 +99,7 @@ void DrawShader::setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
 }
 
 void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject reflection_fbo,
-      vector<Drawable> drawables, glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
+      vector<CulledDrawable> culledDrawables, glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
       glm::vec3 sunDir, float sunIntensity, int lightning) {
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
@@ -110,10 +111,10 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
                glClear(GL_DEPTH_BUFFER_BIT);
             }
 
-            for (auto& drawable : drawables) {
+            for (auto& drawable : culledDrawables) {
                if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                   for(auto& mt : drawable.model_transforms) {
-                     setupShadowShader(shader, uniforms, sunDir, deerPos, mt);
+                     setupShadowShader(shader, uniforms, sunDir, deerPos, mt.model);
                      shader.drawMesh(drawable.draw_template.mesh);
                   }
                }
@@ -132,9 +133,10 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             {
                std::vector<Drawable> reflected;
                const auto scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
-               for (auto& drawable : drawables) {
+               for (auto& drawable : culledDrawables) {
+                  Drawable newDrawable;
                   if (drawable.draw_template.effects.count(EffectType::CASTS_REFLECTION)) {
-                     reflected.push_back(drawable);
+                     reflected.push_back(newDrawable);
                      for (auto& mt : reflected.back().model_transforms) {
                         mt = scale * mt;
                      }
@@ -145,18 +147,37 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
          case ShaderType::TEXTURE:
-            setupTexture(shader, shadow_map_fbo_, viewMatrix, useBlinnPhong, deerPos, sunDir, sunIntensity, lightning);
-            drawTextureShader(shader, drawables, viewMatrix);
+            {
+               std::vector<Drawable> drawables;
+               int culledObjects = 0;
+               int nonCulledObjects = 0;
+
+               for (auto& drawable : culledDrawables) {
+                  Drawable newDrawable;
+                  newDrawable.draw_template = drawable.draw_template;
+                  for (auto& modelTransforms : drawable.model_transforms) {
+                     if (!modelTransforms.cullFlag.count(CullType::VIEW_CULLING)) {
+                        newDrawable.model_transforms.push_back(modelTransforms.model);
+                        nonCulledObjects++;
+                     }
+                  }
+                  drawables.push_back(newDrawable);
+               }
+               setupTexture(shader, shadow_map_fbo_, viewMatrix, useBlinnPhong, deerPos, sunDir, sunIntensity, lightning);
+               drawTextureShader(shader, drawables, viewMatrix);
+            }
             break;
          case ShaderType::WATER:
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
             shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
             shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
-            for (auto& drawable : drawables) {
+            for (auto& drawable : culledDrawables) {
+               Drawable newDrawable;
+               newDrawable.draw_template = drawable.draw_template;
                if (drawable.draw_template.shader_type == ShaderType::WATER) {
                   setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
-                  drawModelTransforms(shader, drawable, viewMatrix);
+                  drawModelTransforms(shader, newDrawable, viewMatrix);
                }
             }
             break;
