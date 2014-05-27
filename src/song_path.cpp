@@ -16,7 +16,7 @@ std::vector<SongStone> create_path() {
 }
 }
 
-SongPath::SongPath(irrklang::ISound& song, const Mesh& mesh) :
+SongPath::SongPath(irrklang::ISound* song, const Mesh& mesh) :
    current_stone_(0),
    song_stones_(create_path()),
    song_(song),
@@ -25,17 +25,22 @@ SongPath::SongPath(irrklang::ISound& song, const Mesh& mesh) :
    mesh_.material.diffuse = glm::vec3(1, 0, 0);
 }
 
+void SongPath::set_song(irrklang::ISound* song) {
+   song_->stop();
+   song_ = song;
+}
+
 void SongPath::step(units::MS dt, const BoundingRectangle& deer_rect) {
    if (!song_stones_[current_stone_].expired() &&
        song_stones_[current_stone_].bounding_rectangle().collidesWith(deer_rect)) {
       song_stones_[current_stone_].step(dt);
-      song_.setIsPaused(false);
+      song_->setIsPaused(false);
    } else if (current_stone_ + 1 < song_stones_.size() &&
               !song_stones_[current_stone_ + 1].expired() &&
               song_stones_[current_stone_ + 1].bounding_rectangle().collidesWith(deer_rect)) {
       song_stones_[++current_stone_].step(dt);
-      song_.setIsPaused(false);
+      song_->setIsPaused(false);
    } else {
-      song_.setIsPaused(true);
+      song_->setIsPaused(true);
    }
 }

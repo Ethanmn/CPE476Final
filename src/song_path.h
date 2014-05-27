@@ -10,7 +10,9 @@ struct ISound;
 }
 
 struct SongPath {
-   SongPath(irrklang::ISound& song, const Mesh& mesh);
+   SongPath(irrklang::ISound* song, const Mesh& mesh);
+
+   void set_song(irrklang::ISound* song);
 
    void step(units::MS dt, const BoundingRectangle& deer_rect);
    std::vector<BoundingRectangle> bounding_rectangles() const {
@@ -42,7 +44,7 @@ struct SongPath {
    size_t current_stone_;
 
    std::vector<SongStone> song_stones_;
-   irrklang::ISound& song_;
+   irrklang::ISound* song_;
    Mesh mesh_;
 };
 
