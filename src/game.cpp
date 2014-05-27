@@ -191,10 +191,12 @@ void Game::step(units::MS dt) {
    eatFlower = false;
 
    if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
-      raining = 1;
-      lighting = 1;
-      numLightning = 3;
-      sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+      if (numLightning == 0) {
+         raining = 1;
+         lighting = 1;
+         numLightning = 3;
+         sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+      }
    }   
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
