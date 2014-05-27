@@ -38,6 +38,12 @@ void SongPath::reset() {
 }
 
 void SongPath::step(units::MS dt, const BoundingRectangle& deer_rect) {
+   if (!song_->getIsPaused()) {
+      mesh_.animation.step(dt);
+      if (mesh_.animation.is_finished()) {
+         mesh_.animation.reset();
+      }
+   }
    if (!song_stones_[current_stone_].expired() &&
        song_stones_[current_stone_].bounding_rectangle().collidesWith(deer_rect)) {
       song_stones_[current_stone_].step(dt);
