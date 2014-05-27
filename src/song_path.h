@@ -5,10 +5,12 @@
 
 #include "song_stone.h"
 
-struct SoundEngine;
+namespace irrklang {
+struct ISound;
+}
 
 struct SongPath {
-   SongPath(SoundEngine& sound_engine, const Mesh& mesh);
+   SongPath(irrklang::ISound& song, const Mesh& mesh);
 
    void step(units::MS dt, const BoundingRectangle& deer_rect);
    std::vector<BoundingRectangle> bounding_rectangles() const {
@@ -40,7 +42,7 @@ struct SongPath {
    size_t current_stone_;
 
    std::vector<SongStone> song_stones_;
-   SoundEngine& sound_engine_;
+   irrklang::ISound& song_;
    Mesh mesh_;
 };
 

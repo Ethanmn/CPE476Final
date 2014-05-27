@@ -73,7 +73,7 @@ Game::Game() :
    airMode(false),
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
-   song_path_(sound_engine_,
+   song_path_(*sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)))
 {
@@ -202,7 +202,7 @@ void Game::step(units::MS dt) {
          numLightning = 3;
          sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
       }
-   }   
+   }
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       day_cycle_.dayToNight();
