@@ -10,6 +10,7 @@ struct DayCycle {
    float getSunIntensity();
    void adjustToTime(float newTime);
    void autoAdjustTime(units::MS dt);
+   bool isDaytime();
    void nightToDay();
    void dayToNight();
    void on();
