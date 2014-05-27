@@ -40,12 +40,20 @@ struct Game {
 
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
-   FlowerGenerator flowerGen;
    SongStoneGenerator songStoneGen;
+
+   /*temporary solution for two textures*/
+   FlowerGenerator daisyGen;
+   FlowerGenerator roseGen;
 
    SoundEngine sound_engine_;
    BirdSound cardinal_bird_sound_, canary_bird_sound_, canary2_bird_sound_, woodpecker_bird_sound_;
-   ButterflySystem butterfly_system_;
+
+   /*temporary solution for three textures*/
+   ButterflySystem butterfly_system_red_;
+   ButterflySystem butterfly_system_pink_;
+   ButterflySystem butterfly_system_blue_;
+   
    RainSystem rain_system_;
 
    BVHTree objTree;

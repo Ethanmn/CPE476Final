@@ -19,10 +19,9 @@ struct DayCycle {
    glm::vec3 sunDir;
    float sunIntensity;
    bool switchingTime;
-   bool switchToNight; 
-   /* true will be from mid-day to night, false from night to mid-day */
-
+   bool switchToNight;
    float timeOfDay;
+   int stoppedCycle; /* -1 for night, 0 for switching, 1 for day */ 
    
 };
 
