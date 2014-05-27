@@ -42,9 +42,6 @@ struct SoundEngine {
    void playSoundEffect(SoundEffect sound, bool should_loop, const glm::vec3& source_position);
    void playRandomWalkSound();
 
-   void playMusic();
-   void pauseMusic();
-
    irrklang::ISound* loadSong(Song song);
 
   private:

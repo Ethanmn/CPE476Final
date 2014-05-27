@@ -143,14 +143,6 @@ void SoundEngine::playRandomWalkSound() {
    engine_->play2D(sound_effect_sources_[walk], false);
 }
 
-void SoundEngine::playMusic() {
-   //music_->setIsPaused(false);
-}
-
-void SoundEngine::pauseMusic() {
-   //music_->setIsPaused(true);
-}
-
 inline std::string songPath(SoundEngine::Song song) {
    switch (song) {
       case SoundEngine::Song::DAY_SONG:
@@ -163,5 +155,7 @@ inline std::string songPath(SoundEngine::Song song) {
 }
 
 irrklang::ISound* SoundEngine::loadSong(Song song) {
-   return engine_->play2D(songPath(song).c_str(), false, true, true);
+   auto* sound = engine_->play2D(songPath(song).c_str(), false, true, true);
+   sound->setVolume(2.2f);
+   return sound;
 }

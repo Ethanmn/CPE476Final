@@ -125,10 +125,12 @@ Game::Game() :
 }
 
 void Game::step(units::MS dt) {
-   cardinal_bird_sound_.step(dt, sound_engine_);
-   canary_bird_sound_.step(dt, sound_engine_);
-   canary2_bird_sound_.step(dt, sound_engine_);
-   woodpecker_bird_sound_.step(dt, sound_engine_);
+   if (day_cycle_.isDaytime()) {
+      cardinal_bird_sound_.step(dt, sound_engine_);
+      canary_bird_sound_.step(dt, sound_engine_);
+      canary2_bird_sound_.step(dt, sound_engine_);
+      woodpecker_bird_sound_.step(dt, sound_engine_);
+   }
    bool deerBlocked = false;
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
@@ -206,7 +208,7 @@ void Game::step(units::MS dt) {
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       if (day_cycle_.isDaytime()) {
-         song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::NIGHT_SONG));
+         song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::STORM_SONG));
       }
       day_cycle_.dayToNight();
    }
