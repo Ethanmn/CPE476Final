@@ -62,6 +62,11 @@ Game::Game() :
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
+
+   lightning_trigger_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::LIGHTNING)), 
+            glm::vec3(52.0f, 10.0f, 50.0f), 0.5),
+
    deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
    airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
    curCam(&deerCam),
@@ -110,7 +115,7 @@ Game::Game() :
    for (auto& flower : roseGen.getFlowers()) {
       objects.push_back(&flower);
    }
-
+   
    //Pre-processing BVH Tree
    objTree.calculateTree(objects);
    //objTree.printTree();
@@ -185,13 +190,19 @@ void Game::step(units::MS dt) {
    }
    eatFlower = false;
 
+   if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
+      raining = 1;
+      lighting = 1;
+      numLightning = 3;
+      sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+   }   
+
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       day_cycle_.dayToNight();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
       day_cycle_.nightToDay();
    }
-
    day_cycle_.autoAdjustTime(dt);
 
    deerCam.setLookAt(deer_.getPosition());
@@ -218,6 +229,9 @@ void Game::draw() {
  
    drawables.push_back(deer_.drawable());
    br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
+
+   drawables.push_back(lightning_trigger_.drawable());
+   br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
   
    drawables.push_back(day_night_boxes_.drawableSun());
    br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());

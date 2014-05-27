@@ -11,15 +11,17 @@
 struct Shader;
 struct Shaders;
 
-struct LightningInteraction {
-   LightningInteraction(const Mesh& mesh, const GroundPlane& ground) :
+struct Lightning {
+   Lightning(const Mesh& mesh, const glm::vec3& position, float scale) :
+      position_(position.x, position.y, position.z), 
+      scale_(scale),
+      rotate_(0),
       draw_template_({ShaderType::TEXTURE, mesh,
-            Texture(TextureType::SUN_STONE, DIFFUSE_TEXTURE),
+            Texture(TextureType::LIGHTNING, DIFFUSE_TEXTURE),
             boost::none,
             EffectSet({EffectType::CASTS_SHADOW}) }),
-      bounding_rectangle_(glm::vec2(-30.0f, -30.0f), glm::vec2(8.0f, 8.0f),
-            0.0f)
-   { }
+      bounding_rectangle_(glm::vec2(position_.x, position_.z), glm::vec2(5.0f, 5.0f), 0.0f)
+      { }
 
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
@@ -28,6 +30,9 @@ struct LightningInteraction {
 
 
    private:
+   glm::vec3 position_;
+   float scale_;
+   float rotate_;
    DrawTemplate draw_template_;
    BoundingRectangle bounding_rectangle_;
 };

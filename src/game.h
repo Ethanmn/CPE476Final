@@ -12,6 +12,7 @@
 #include "TreeGenerator.h"
 #include "BushGenerator.h"
 #include "FlowerGenerator.h"
+#include "lightning_interaction.h"
 #include "BVHTree.h"
 #include "graphics/gl_adapters/frame_buffer_object.h"
 #include "sound_engine.h"
@@ -53,6 +54,7 @@ struct Game {
    ButterflySystem butterfly_system_blue_;
    
    RainSystem rain_system_;
+   Lightning lightning_trigger_; 
 
    BVHTree objTree;
 
