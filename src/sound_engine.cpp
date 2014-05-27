@@ -113,6 +113,11 @@ SoundEngine::SoundEngine() {
             "../sounds/eating.ogg",
             irrklang::ESM_NO_STREAMING,
             should_preload);
+   sound_effect_sources_[SoundEffect::TREE_HIT] =
+   engine_->addSoundSourceFromFile(
+            "../sounds/tree_hit.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
    sound_effect_sources_[SoundEffect::EAT_FLOWER]->setDefaultVolume(0.5f);
 }
 

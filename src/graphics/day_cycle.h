@@ -23,7 +23,7 @@ struct DayCycle {
    bool switchToNight;
    float timeOfDay;
    int stoppedCycle; /* -1 for night, 0 for switching, 1 for day */ 
-   
+   bool isDay();
 };
 
 #endif

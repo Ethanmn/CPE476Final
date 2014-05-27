@@ -25,6 +25,7 @@
 #include "culled_drawable.h"
 #include "frustumG.h"
 #include "dist.h"
+#include "Skybox.h"
 
 struct Game {
    Game();
@@ -61,6 +62,8 @@ struct Game {
    Lightning lightning_trigger_; 
 
    BVHTree objTree;
+
+   Skybox skybox;
 
    Camera deerCam;
    Camera airCam;
