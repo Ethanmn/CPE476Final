@@ -16,7 +16,7 @@ struct SDLEngine {
       SDL_Init(SDL_INIT_VIDEO);
       //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
       //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-      window_ = SDL_CreateWindow("Deer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, kScreenWidth, kScreenHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED);
+      window_ = SDL_CreateWindow("Deer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, kScreenWidth, kScreenHeight, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED);
       context_ = SDL_GL_CreateContext(window_);
       SDL_GL_MakeCurrent(window_, context_);
       if (GLEW_OK != glewInit()) {
