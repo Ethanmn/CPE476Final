@@ -21,6 +21,9 @@
 #include "butterfly_system.h"
 #include "rain_system.h"
 #include "water.h"
+#include "culled_drawable.h"
+#include "frustumG.h"
+#include "dist.h"
 
 struct Game {
    Game();

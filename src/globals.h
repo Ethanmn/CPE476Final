@@ -8,4 +8,9 @@ extern const float kScreenHeightf;
 
 extern const bool kDebugUseDeerModels;
 
+extern const float kFieldOfView;
+extern const float kAspectRatio;
+extern const float kNear;
+extern const float kFar;
+
 #endif // GLOBALS_H_

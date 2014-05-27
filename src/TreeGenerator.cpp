@@ -24,7 +24,13 @@ void TreeGenerator::generate() {
    for (int row = 0; row < size; row++) {
       for (int col = 0; col < size; col++) {
          if (rand() % TREE_DENSITY == 0) {
-            trees.push_back(Tree(glm::vec3(row * TREE_SIZE - groundSize, TREE_SCALE * TREE_SIZE / 2, col * TREE_SIZE - groundSize)));
+            float x = row * TREE_SIZE - groundSize;
+            float y = TREE_SCALE * TREE_SIZE / 2;
+            float z = col * TREE_SIZE - groundSize;
+
+            if (! (x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
+               trees.push_back(Tree(glm::vec3(x, y, z)));
+            }
          }
       }
    }
