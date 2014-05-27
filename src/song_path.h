@@ -31,6 +31,7 @@ struct SongPath {
                Texture(TextureType::DEER, DIFFUSE_TEXTURE),
                boost::none,
                EffectSet(),
+               false
             }),
             models
             });

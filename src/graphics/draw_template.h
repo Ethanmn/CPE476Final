@@ -25,6 +25,7 @@ struct DrawTemplate {
    boost::optional<Texture> height_map;
    bool has_bones() const { return !mesh.bone_array.empty(); }
    EffectSet effects;
+   bool is_god_ray;
 };
 
 struct Drawable {

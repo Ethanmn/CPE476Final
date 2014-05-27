@@ -19,7 +19,8 @@ struct Lightning {
       draw_template_({ShaderType::TEXTURE, mesh,
             Texture(TextureType::LIGHTNING, DIFFUSE_TEXTURE),
             boost::none,
-            EffectSet({EffectType::CASTS_SHADOW}) }),
+            EffectSet({EffectType::CASTS_SHADOW}),
+            false}),
       bounding_rectangle_(glm::vec2(position_.x, position_.z), glm::vec2(5.0f, 5.0f), 0.0f)
       { }
 

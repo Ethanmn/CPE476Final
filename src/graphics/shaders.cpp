@@ -46,6 +46,8 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::USE_BLINN_PHONG,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
+
+   Uniform::IS_GOD_RAY,
    
    Uniform::BONES,
    Uniform::HAS_BONES,

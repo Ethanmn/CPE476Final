@@ -29,7 +29,8 @@ DrawTemplate BoundingRectangle::draw_template() {
          *bounding_mesh_,
          boost::none,
          boost::none,
-         EffectSet()
+         EffectSet(),
+         false
          });
 }
 

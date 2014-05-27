@@ -30,6 +30,7 @@ enum class Uniform {
    SCREEN_WIDTH,
    SCREEN_HEIGHT,
    USE_BLINN_PHONG,
+   IS_GOD_RAY,
    GOD_RAY_POSITION,
    GOD_RAY_RADIUS,
    LAST_UNIFORM,
@@ -87,6 +88,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uScreenHeight";
       case Uniform::USE_BLINN_PHONG:
          return "uUseBlinnPhong";
+      case Uniform::IS_GOD_RAY:
+         return "uIsGodRay";
       case Uniform::GOD_RAY_POSITION:
          return "uGodRayPosition";
       case Uniform::GOD_RAY_RADIUS:

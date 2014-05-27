@@ -22,6 +22,7 @@ uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uLightning;
 
+uniform int uIsGodRay;
 /*uniform vec2 uGodRayPostion;*/
 /*uniform float uGodRayRadius;*/
 
@@ -40,6 +41,11 @@ void CheckIfLightning();
 
 
 void main() {
+   if(uIsGodRay != 0) {
+      gl_FragColor = vec4(1.5, 1.5, 1.5, 1.0) * gl_FragColor;
+      return;
+   }
+
    vec3 color;
    vec3 Specular, Diffuse, Ambient;
    vec3 directionalColor = vec3(0.8 * uSunIntensity);

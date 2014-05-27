@@ -7,7 +7,7 @@ using namespace std;
 namespace {
    bool debug = false;
    const float kOrthoProjAmount = 70.0f;
-   const glm::mat4 projection_matrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
+   const glm::mat4 projectionMatrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
    const glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0,
          0.0, 0.5, 0.0, 0.0,
          0.0, 0.0, 0.5, 0.0,
@@ -212,6 +212,8 @@ void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawabl
             else {
                shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
             }
+
+            shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, drawable.draw_template.is_god_ray ? 1 : 0);
 
             if(drawable.draw_template.texture)
                setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);

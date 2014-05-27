@@ -11,10 +11,10 @@ FlowerGenerator::FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten,
       TextureType texture_type) : 
    draw_template_({ShaderType::TEXTURE, mesh, 
          Texture(texture_type, DIFFUSE_TEXTURE), 
-         boost::none, EffectSet({EffectType::CASTS_SHADOW}) }),
+         boost::none, EffectSet({EffectType::CASTS_SHADOW}), false }),
    draw_template_eaten_({ShaderType::TEXTURE, mesh_eaten, 
          Texture(texture_type, DIFFUSE_TEXTURE), 
-         boost::none, EffectSet({EffectType::CASTS_SHADOW}) })    
+         boost::none, EffectSet({EffectType::CASTS_SHADOW}), false })    
 {
    draw_template_.mesh.material = Material(glm::vec3(0.45, 0.0, 0.45));
 }
