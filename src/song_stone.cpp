@@ -20,6 +20,14 @@ bool SongStone::expired() const {
    return life_time_ >= kExpirationTime;
 }
 
+glm::vec2 SongStone::getPosition() const {
+   return position_;
+}
+
 glm::mat4 SongStone::model() const {
    return glm::translate(glm::mat4(), glm::vec3(position_.x, 5, position_.y));
+}
+
+float SongStone::lifeRemainingRatio() {
+   return (kExpirationTime - life_time_) / kExpirationTime;
 }

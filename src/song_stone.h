@@ -10,10 +10,12 @@ struct SongStone {
 
    void step(units::MS dt);
    bool expired() const;
+   glm::vec2 getPosition() const;
    glm::mat4 model() const;
    BoundingRectangle bounding_rectangle() const {
       return bounding_rectangle_;
    }
+   float lifeRemainingRatio();
 
   private:
    units::MS life_time_;

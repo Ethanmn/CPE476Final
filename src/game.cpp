@@ -67,6 +67,10 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::LIGHTNING)), 
             glm::vec3(52.0f, 10.0f, 50.0f), 0.5),
 
+   god_rays_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::GOD_RAYS)), 
+            glm::vec3(0.0f, 10.0f, 0.0f), 2.0),
+
    deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
    airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
    curCam(&deerCam),
@@ -284,6 +288,11 @@ void Game::draw() {
    drawables.push_back(water_.drawable());
    if (draw_collision_box)
       drawables.push_back(br_drawable);
+
+   god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
+   god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
+   drawables.push_back(god_rays_.drawable());
+   br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
 
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();

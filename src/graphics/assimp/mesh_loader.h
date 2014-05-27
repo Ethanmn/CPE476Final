@@ -24,6 +24,7 @@ enum class MeshType {
    EATEN_ROSE,
    RAIN,
    LIGHTNING,
+   GOD_RAYS,
    BUTTERFLY
 };
 

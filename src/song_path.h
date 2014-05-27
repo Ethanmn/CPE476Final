@@ -36,6 +36,10 @@ struct SongPath {
             });
    }
 
+   glm::vec2 CurrentStonePosition();
+   float CurrentStoneRemainingRatio();
+   glm::vec2 NextStonePosition();
+
   private:
    size_t current_stone_;
 

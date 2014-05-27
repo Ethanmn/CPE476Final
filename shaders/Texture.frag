@@ -22,6 +22,9 @@ uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uLightning;
 
+/*uniform vec2 uGodRayPostion;*/
+/*uniform float uGodRayRadius;*/
+
 varying vec2 vTexCoord;
 varying vec4 vViewer;
 varying vec3 vNormal;

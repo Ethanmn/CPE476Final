@@ -25,6 +25,18 @@ SongPath::SongPath(SoundEngine& sound_engine, const Mesh& mesh) :
    mesh_.material.diffuse = glm::vec3(1, 0, 0);
 }
 
+glm::vec2 SongPath::CurrentStonePosition() {
+   return song_stones_[current_stone_].getPosition();
+}
+
+float SongPath::CurrentStoneRemainingRatio() {
+   return song_stones_[current_stone_].lifeRemainingRatio();
+}
+
+glm::vec2 SongPath::NextStonePosition() {
+   return song_stones_[current_stone_ + 1].getPosition();
+}
+
 void SongPath::step(units::MS dt, const BoundingRectangle& deer_rect) {
    if (!song_stones_[current_stone_].expired() &&
        song_stones_[current_stone_].bounding_rectangle().collidesWith(deer_rect)) {

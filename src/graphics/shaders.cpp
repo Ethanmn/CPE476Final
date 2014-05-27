@@ -50,7 +50,10 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::BONES,
    Uniform::HAS_BONES,
   
-   Uniform::LIGHTNING
+   Uniform::LIGHTNING,
+
+   //Uniform::GOD_RAY_POSITION,
+   //Uniform::GOD_RAY_RADIUS
 };
 
 const std::vector<Attribute> kShadowAttrs{

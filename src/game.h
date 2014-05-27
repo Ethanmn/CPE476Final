@@ -25,6 +25,7 @@
 #include "culled_drawable.h"
 #include "frustumG.h"
 #include "dist.h"
+#include "god_rays.h"
 
 struct Game {
    Game();
@@ -58,7 +59,8 @@ struct Game {
    ButterflySystem butterfly_system_blue_;
    
    RainSystem rain_system_;
-   Lightning lightning_trigger_; 
+   Lightning lightning_trigger_;
+   GodRays god_rays_; 
 
    BVHTree objTree;
 
