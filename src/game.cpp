@@ -283,6 +283,8 @@ void Game::draw() {
       culledDrawables.push_back(culledDrawable);
    }
 
+   //Skybox
+
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
 }
