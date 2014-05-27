@@ -4,15 +4,15 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 
-void Flower::eatFlower(SoundEngine& sound_engine) {
+void Flower::eat(SoundEngine& sound_engine) {
    sound_engine.playSoundEffect(
          SoundEngine::SoundEffect::EAT_FLOWER,
          false,
          position_);
+   eaten = true;
 }
 
 void Flower::performObjectHit(SoundEngine& sound_engine) {
-   eatFlower(sound_engine);
 }
 
 glm::mat4 Flower::calculateModel() const {

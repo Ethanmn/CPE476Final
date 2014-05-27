@@ -65,6 +65,10 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "flower1.dae";
       case MeshType::ROSE:
          return kMeshPath + "flower2.dae";
+      case MeshType::EATEN_DAISY:
+         return kMeshPath + "flower1_eat.dae";
+      case MeshType::EATEN_ROSE:
+         return kMeshPath + "flower2_eat.dae";
       case MeshType::RAIN:
          return kMeshPath + "rain.dae";
       case MeshType::BUTTERFLY:

@@ -20,6 +20,8 @@ enum class MeshType {
    BUSH,
    DAISY,
    ROSE,
+   EATEN_DAISY,
+   EATEN_ROSE,
    RAIN,
    BUTTERFLY
 };

@@ -1,16 +1,15 @@
-#include "day_night_interaction.h"
+#include "lightning_interaction.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
 #include "graphics/material.h"
 
-Drawable DayNightInteraction::drawableSun() const {
+glm::mat4 LightningInteraction::calculateModel() const {
+   return glm::mat4(1.0);
+}
+Drawable LightningInteraction::drawable() const {
    std::vector<glm::mat4> model_matrices;
-   model_matrices.push_back(sun_transform_);
-   return Drawable({draw_template_sun_, model_matrices});
+   model_matrices.push_back(calculateModel());
+   return Drawable({draw_template_, model_matrices}); 
 }
 
-Drawable DayNightInteraction::drawableMoon() const {
-   std::vector<glm::mat4> model_matrices;
-   model_matrices.push_back(moon_transform_);
-   return Drawable({draw_template_moon_, model_matrices});
-} 
+

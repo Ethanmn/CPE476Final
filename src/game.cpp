@@ -10,6 +10,7 @@ namespace {
    bool showTreeShadows = false;
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
+   bool eatFlower = false;
    bool debug = false;
 
    int lighting = 0;
@@ -34,9 +35,13 @@ Game::Game() :
 
    /* temporary solution to two flower meshes and textures */
    daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::DAISY)), TextureType::DAISY),
+            mesh_loader_.loadMesh(MeshType::DAISY)), 
+            Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::EATEN_DAISY)), TextureType::DAISY),
    roseGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::ROSE)), TextureType::ROSE),
+            mesh_loader_.loadMesh(MeshType::ROSE)), 
+            Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::EATEN_ROSE)), TextureType::ROSE),
 
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
@@ -170,6 +175,16 @@ void Game::step(units::MS dt) {
       bush.step(dt);
    }
 
+   for(auto& flower : daisyGen.getFlowers()) {
+      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle()))
+         flower.eat(sound_engine_);
+   }
+   for(auto& flower : roseGen.getFlowers()) {
+      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle()))
+         flower.eat(sound_engine_);
+   }
+   eatFlower = false;
+
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       day_cycle_.dayToNight();
    }
@@ -225,10 +240,14 @@ void Game::draw() {
       br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
    }
 
+   drawables.push_back(daisyGen.drawableEaten());
+   
    drawables.push_back(roseGen.drawable());
    for (auto& flower : roseGen.getFlowers()) {
       br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
    }
+
+   drawables.push_back(roseGen.drawableEaten());
    
    if(raining)
       drawables.push_back(rain_system_.drawable());
@@ -302,6 +321,12 @@ void Game::mainLoop() {
             const auto key_jump = SDL_SCANCODE_J;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
+            }
+         }
+         { // handle jumping
+            const auto key_eat = SDL_SCANCODE_E;
+            if (input.wasKeyPressed(key_eat)) {
+               eatFlower = true;
             }
          }
          { // show or hide tree shadows -- Katelyn

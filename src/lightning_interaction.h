@@ -1,5 +1,5 @@
-#ifndef DAY_NIGHT_INTERACTION_H_
-#define DAY_NIGHT_INTERACTION_H_
+#ifndef LIGHTNING_INTERACTION_H_
+#define LIGHTNING_INTERACTION_H_
 
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/mesh.h"
@@ -11,42 +11,25 @@
 struct Shader;
 struct Shaders;
 
-struct DayNightInteraction {
-   DayNightInteraction(const Mesh& mesh, const GroundPlane& ground) :
-      draw_template_moon_({ShaderType::TEXTURE,
-            mesh,
-            Texture(TextureType::MOON_STONE, DIFFUSE_TEXTURE),
-            boost::none,
-            EffectSet({EffectType::CASTS_SHADOW})
-            }),
-      draw_template_sun_({ShaderType::TEXTURE, mesh,
+struct LightningInteraction {
+   LightningInteraction(const Mesh& mesh, const GroundPlane& ground) :
+      draw_template_({ShaderType::TEXTURE, mesh,
             Texture(TextureType::SUN_STONE, DIFFUSE_TEXTURE),
             boost::none,
             EffectSet({EffectType::CASTS_SHADOW}) }),
-      bounding_rectangle_sun_(glm::vec2(-30.0f, -30.0f), glm::vec2(8.0f, 8.0f),
-            0.0f),
-      bounding_rectangle_moon_(glm::vec2(20.0f, 20.0f), glm::vec2(8.0f, 8.0f),
-            0.0f),
-      moon_transform_(glm::translate(glm::mat4(),
-               glm::vec3(-30.0f, ground.heightAt(glm::vec3(-30, 0, -30)) + 3, -30.0f))),
-      sun_transform_(glm::translate(glm::mat4(),
-               glm::vec3(20.0f, ground.heightAt(glm::vec3(20, 0, 20)) + 3, 20.0f)))
+      bounding_rectangle_(glm::vec2(-30.0f, -30.0f), glm::vec2(8.0f, 8.0f),
+            0.0f)
    { }
 
-   BoundingRectangle bounding_rectangle_sun() const { return bounding_rectangle_sun_; }
-   BoundingRectangle bounding_rectangle_moon() const { return bounding_rectangle_moon_; }
+   BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
    glm::mat4 calculateModel() const;
-   Drawable drawableSun() const;
-   Drawable drawableMoon() const;
+   Drawable drawable() const;
 
 
    private:
-   DrawTemplate draw_template_moon_;
-   DrawTemplate draw_template_sun_;
-   BoundingRectangle bounding_rectangle_sun_;
-   BoundingRectangle bounding_rectangle_moon_;
-   glm::mat4 moon_transform_, sun_transform_;
+   DrawTemplate draw_template_;
+   BoundingRectangle bounding_rectangle_;
 };
 
 #endif // DAY_NIGHT_INTERACTION_H_

@@ -7,9 +7,14 @@ const int FLOWER_SIZE = 10;
 const float FLOWER_SCALE_MIN = 0.8 * 100;
 const float FLOWER_SCALE_MAX = 1.3 * 100;
 
-FlowerGenerator::FlowerGenerator(const Mesh& mesh, TextureType texture_type) : 
+FlowerGenerator::FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten, 
+      TextureType texture_type) : 
    draw_template_({ShaderType::TEXTURE, mesh, 
-         Texture(texture_type, DIFFUSE_TEXTURE), boost::none, EffectSet({EffectType::CASTS_SHADOW}) }) 
+         Texture(texture_type, DIFFUSE_TEXTURE), 
+         boost::none, EffectSet({EffectType::CASTS_SHADOW}) }),
+   draw_template_eaten_({ShaderType::TEXTURE, mesh_eaten, 
+         Texture(texture_type, DIFFUSE_TEXTURE), 
+         boost::none, EffectSet({EffectType::CASTS_SHADOW}) })    
 {
    draw_template_.mesh.material = Material(glm::vec3(0.45, 0.0, 0.45));
 }
@@ -36,9 +41,18 @@ std::vector<Flower>& FlowerGenerator::getFlowers() {
 
 Drawable FlowerGenerator::drawable() const {
    std::vector<glm::mat4> model_matrices;
-   for(auto& flower : flowers)
-      model_matrices.push_back(flower.calculateModel());
+   for(auto& flower : flowers) {
+      if(!flower.isEaten())
+         model_matrices.push_back(flower.calculateModel());
+   }
    return Drawable({draw_template_, model_matrices});
 } 
 
-
+Drawable FlowerGenerator::drawableEaten() const {
+   std::vector<glm::mat4> model_matrices;
+   for(auto& flower : flowers) {
+      if(flower.isEaten())
+         model_matrices.push_back(flower.calculateModel());
+   }
+   return Drawable({draw_template_eaten_, model_matrices});
+} 
