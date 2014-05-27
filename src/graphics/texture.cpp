@@ -41,6 +41,8 @@ std::string texture_path(TextureType texture) {
          return "../textures/tree1.tga";
       case TextureType::RAIN:
          return "../textures/rain.bmp";
+      case TextureType::LIGHTNING:
+         return "../textures/storm.tga";
 
       case TextureType::LAST_TEXTURE_TYPE:
          return "";
