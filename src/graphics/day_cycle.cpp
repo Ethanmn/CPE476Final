@@ -32,6 +32,10 @@ void DayCycle::adjustToTime(float newTime) {
    adjustSun();
 }
 
+bool DayCycle::isDaytime() {
+   return timeOfDay > 0.35 && timeOfDay < 0.65;
+}   
+
 void DayCycle::dayToNight() {
    if(stoppedCycle == -1) {
       switchingTime = true;
