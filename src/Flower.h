@@ -19,10 +19,11 @@ struct Flower : GameObject {
       position_(position.x, ground.heightAt(position) - mesh.min.y, position.z), 
       scale_(scale),
       rotate_(rand() % 360),
-      bounding_rectangle_(BoundingRectangle(glm::vec2(position.x, position.z), glm::vec2(2.0f, 2.0f), 90.0f)) 
+      bounding_rectangle_(BoundingRectangle(glm::vec2(position.x, position.z), glm::vec2(2.0f, 2.0f), 90.0f)),
+      eaten(false) 
    {}
 
-   void eatFlower(SoundEngine& sound_engine);
+   void eat(SoundEngine& sound_engine);
 
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
    BoundingRectangle getBoundingRectangle() {
@@ -30,7 +31,7 @@ struct Flower : GameObject {
    }
 
    glm::mat4 calculateModel() const;
-   
+   bool isEaten() const { return eaten; }  
    bool isBlocker() { return false; }
    void performObjectHit(SoundEngine& sound_engine); 
 
@@ -39,6 +40,7 @@ struct Flower : GameObject {
       float scale_;
       float rotate_;
       BoundingRectangle bounding_rectangle_;
+      bool eaten;
 
 };
 

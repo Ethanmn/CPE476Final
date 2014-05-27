@@ -5,13 +5,12 @@
 #include <iostream>
 
 #include "graphics/texture.h"
-#include "DeerCam.h"
-#include "AirCam.h"
 
 namespace {
    bool showTreeShadows = false;
    bool draw_collision_box = true;
    bool switchBlinnPhongShading = false;
+   bool eatFlower = false;
    bool debug = false;
 
    int lighting = 0;
@@ -36,9 +35,13 @@ Game::Game() :
 
    /* temporary solution to two flower meshes and textures */
    daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::DAISY)), TextureType::DAISY),
+            mesh_loader_.loadMesh(MeshType::DAISY)), 
+            Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::EATEN_DAISY)), TextureType::DAISY),
    roseGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::ROSE)), TextureType::ROSE),
+            mesh_loader_.loadMesh(MeshType::ROSE)), 
+            Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::EATEN_ROSE)), TextureType::ROSE),
 
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
@@ -58,8 +61,13 @@ Game::Game() :
 
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
-         glm::vec3(0.0f, 100.0f, 0.0f), 2000),
-   deerCam(Camera(glm::vec3(30.0f, 50.0f, 30.0f), glm::vec3(0.0f))),
+            glm::vec3(0.0f, 100.0f, 0.0f), 2000),
+
+   lightning_trigger_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::LIGHTNING)), 
+            glm::vec3(52.0f, 10.0f, 50.0f), 0.5),
+
+   deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
    airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
    curCam(&deerCam),
    airMode(false),
@@ -110,7 +118,7 @@ Game::Game() :
    for (auto& flower : roseGen.getFlowers()) {
       objects.push_back(&flower);
    }
-
+   
    //Pre-processing BVH Tree
    objTree.calculateTree(objects);
    //objTree.printTree();
@@ -162,8 +170,6 @@ void Game::step(units::MS dt) {
       deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
 
       //printf("Next deer rect at (%f, %f) with dim (%f, %f)\n", center.x, center.y, nextDeerRect.getDimensions().x, nextDeerRect.getDimensions().y);
-      deerCam.setLookAt(deer_.getPosition());
-      //airCam.setLookAt(deer_.getPosition());
    }
 
    if (deerBlocked) {
@@ -179,14 +185,36 @@ void Game::step(units::MS dt) {
       bush.step(dt);
    }
 
+   for(auto& flower : daisyGen.getFlowers()) {
+      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle()))
+         flower.eat(sound_engine_);
+   }
+   for(auto& flower : roseGen.getFlowers()) {
+      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle()))
+         flower.eat(sound_engine_);
+   }
+   eatFlower = false;
+
+   if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
+      if (numLightning == 0) {
+         raining = 1;
+         lighting = 1;
+         numLightning = 3;
+         sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+      }
+   }   
+
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       day_cycle_.dayToNight();
    }
    else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
       day_cycle_.nightToDay();
    }
-
    day_cycle_.autoAdjustTime(dt);
+
+   deerCam.setLookAt(deer_.getPosition());
+   airCam.setLookAt(deer_.getPosition());
+
    deerCam.step(dt);
    //airCam.step(dt);
 }
@@ -203,12 +231,16 @@ void Game::draw() {
 
    glm::mat4 viewMatrix = curCam->getViewMatrix();
    std::vector<Drawable> drawables;
+   std::vector<CulledDrawable> culledDrawables;
    Drawable br_drawable;
    br_drawable.draw_template = BoundingRectangle::draw_template();
 
    drawables.push_back(deer_.drawable());
    br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
 
+   drawables.push_back(lightning_trigger_.drawable());
+   br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
+  
    drawables.push_back(day_night_boxes_.drawableSun());
    br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
 
@@ -230,6 +262,8 @@ void Game::draw() {
       br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
    }
 
+   drawables.push_back(daisyGen.drawableEaten());
+   
    drawables.push_back(roseGen.drawable());
    for (auto& flower : roseGen.getFlowers()) {
       br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
@@ -240,6 +274,7 @@ void Game::draw() {
       br_drawable.model_transforms.push_back(br.model_matrix());
    }
 
+   drawables.push_back(roseGen.drawableEaten());
    if(raining)
       drawables.push_back(rain_system_.drawable());
 
@@ -256,7 +291,44 @@ void Game::draw() {
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
-   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), drawables, viewMatrix, switchBlinnPhongShading, 
+// View Frustum Culling
+   FrustumG viewFrust;
+   int culledObject = 0;
+   // Set up values used to construct planes
+   viewFrust.setCamInternals(kFieldOfView, kAspectRatio, kNear, kFar);
+   // Use camera values to construch planes
+   viewFrust.setCamDef(curCam->getPosition(),
+                       curCam->getLookAt(),
+                       glm::vec3(0, 1, 0));
+
+   for (auto& drawable : drawables) {
+      glm::vec3 min, max, mid;
+
+      CulledDrawable culledDrawable;
+      for (auto& transform : drawable.model_transforms) {
+         CulledTransform culledTransform;
+         culledTransform.model = transform;
+
+         min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
+         max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
+         mid = (min + max) / 2.0f;
+         if (!viewFrust.sphereInFrustum(mid, glm::length(max - mid))) {
+            culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
+            culledObject++;
+         }
+         // Test for reflection
+         // if (!viewFrust.sphereInFrustum(mid, dist(max, mid))) {
+         //    culledTransform.cullFlag.insert(CullType::REFLECT_CULLING);
+         // }
+         culledDrawable.model_transforms.push_back(culledTransform);
+      }
+      culledDrawable.draw_template = drawable.draw_template;
+      culledDrawables.push_back(culledDrawable);
+   }
+
+   //Skybox
+
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
 }
 
@@ -291,10 +363,8 @@ void Game::mainLoop() {
             const auto key_backward = SDL_SCANCODE_S;
             if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
                deer_.walkForward();
-               deerCam.moveFoward();
             } else if (!input.isKeyHeld(key_forward) && input.isKeyHeld(key_backward)) {
                deer_.walkBackward();
-               deerCam.moveBack();
             } else {
                deer_.stopWalking();
             }
@@ -304,12 +374,8 @@ void Game::mainLoop() {
             const auto key_right = SDL_SCANCODE_D;
             if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
                deer_.strafeLeft();
-               deerCam.turnLeft();
-               //deerCam.rotatePositionWithDrag(-20, 0, kScreenWidth, kScreenHeight);
             } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
                deer_.strafeRight();
-               deerCam.turnRight();
-               //deerCam.rotatePositionWithDrag(20, 0, kScreenWidth, kScreenHeight);
             } else {
                deer_.stopStrafing();
             }
@@ -318,6 +384,12 @@ void Game::mainLoop() {
             const auto key_jump = SDL_SCANCODE_J;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
+            }
+         }
+         { // handle jumping
+            const auto key_eat = SDL_SCANCODE_E;
+            if (input.wasKeyPressed(key_eat)) {
+               eatFlower = true;
             }
          }
          { // show or hide tree shadows -- Katelyn
@@ -365,7 +437,7 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_air_mode)) {
                airMode = !airMode;
                if (airMode) {
-                  curCam = &airCam;
+                  //curCam = &airCam;
                }
                else {
                   curCam = &deerCam;

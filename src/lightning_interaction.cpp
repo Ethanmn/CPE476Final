@@ -1,21 +1,9 @@
-#include "Flower.h"
-#include <glm/gtc/matrix_transform.hpp>
+#include "lightning_interaction.h"
 #include "graphics/shader.h"
+#include "graphics/shaders.h"
 #include "graphics/material.h"
-#include "sound_engine.h"
 
-void Flower::eat(SoundEngine& sound_engine) {
-   sound_engine.playSoundEffect(
-         SoundEngine::SoundEffect::EAT_FLOWER,
-         false,
-         position_);
-   eaten = true;
-}
-
-void Flower::performObjectHit(SoundEngine& sound_engine) {
-}
-
-glm::mat4 Flower::calculateModel() const {
+glm::mat4 Lightning::calculateModel() const {
    const glm::mat4 translate(glm::translate(
             glm::mat4(),
             position_));
@@ -27,6 +15,12 @@ glm::mat4 Flower::calculateModel() const {
             rotate_,
             glm::vec3(0, 1, 0)));
    return glm::mat4(translate * scale * rotate);
-} 
+}
+
+Drawable Lightning::drawable() const {
+   std::vector<glm::mat4> model_matrices;
+   model_matrices.push_back(calculateModel());
+   return Drawable({draw_template_, model_matrices}); 
+}
 
 
