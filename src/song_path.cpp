@@ -6,9 +6,11 @@ namespace {
 std::vector<SongStone> create_path() {
    std::vector<SongStone> stones;
    float radius = 200.0f;
+   for (float t = 0; t < radius; t += 15.f) {
+      stones.push_back(SongStone(glm::vec2(t, 0)));
+   }
    for (float t = 0; t < 360.0f; t += 0.08f) {
-      stones.push_back(
-            SongStone(glm::vec2(glm::cos(t) * radius, glm::sin(t) * radius)));
+      stones.push_back(SongStone(glm::vec2(glm::cos(t) * radius, glm::sin(t) * radius)));
    }
    return stones;
 }
