@@ -32,7 +32,7 @@ void DayCycle::adjustToTime(float newTime) {
    adjustSun();
 }
 
-void DayCycle::nightToDay() {
+void DayCycle::dayToNight() {
    if(stoppedCycle == -1) {
       switchingTime = true;
       switchToNight = false;
@@ -40,7 +40,7 @@ void DayCycle::nightToDay() {
    }
 }
 
-void DayCycle::dayToNight() {
+void DayCycle::nightToDay() {
    if(stoppedCycle == 1) {
       switchingTime = true;
       switchToNight = true;
