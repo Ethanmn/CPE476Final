@@ -4,7 +4,7 @@
 #include "graphics/shaders.h"
 #include "graphics/texture.h"
 
-const int GroundPlane::GROUND_SCALE = 500;
+const int GroundPlane::GROUND_SCALE = 1000;
 const int PLANE_SIZE = 50;
 
 const float HEIGHT_MAP_SCALE = 3.0f;
