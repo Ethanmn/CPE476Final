@@ -10,7 +10,7 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = false;
+   bool draw_collision_box = true;
    bool switchBlinnPhongShading = false;
    bool debug = false;
 
@@ -48,30 +48,33 @@ Game::Game() :
    /* temporary solution to three butterfly textures */
    butterfly_system_red_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_RED,
-            glm::vec3(0.0f), 10),
+         glm::vec3(0.0f), 10),
    butterfly_system_pink_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_PINK,
-            glm::vec3(40.0f, 0.f, 50.0f), 10),
+         glm::vec3(40.0f, 0.f, 50.0f), 10),
    butterfly_system_blue_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
-            glm::vec3(-60.0f, 0.f, -70.0f), 10),
+         glm::vec3(-60.0f, 0.f, -70.0f), 10),
 
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
-            glm::vec3(0.0f, 100.0f, 0.0f), 2000),
+         glm::vec3(0.0f, 100.0f, 0.0f), 2000),
    deerCam(Camera(glm::vec3(30.0f, 50.0f, 30.0f), glm::vec3(0.0f))),
    airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
    curCam(&deerCam),
    airMode(false),
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
-   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND)))
+   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
+   song_path_(sound_engine_,
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::TIME_STONE)))
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
    std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
    glClearColor (0.05098, 
-                 0.6274509,
-                 1.0,  1.0f);
+         0.6274509,
+         1.0,  1.0f);
    glClearDepth(1.0f);
    glDepthFunc(GL_LESS);
    glEnable(GL_DEPTH_TEST);// Enable Depth Testing
@@ -170,6 +173,8 @@ void Game::step(units::MS dt) {
       deer_.step(dt, *curCam, ground_, sound_engine_);
    }
 
+   song_path_.step(deer_.bounding_rectangle());
+
    for (auto& bush : bushGen.getBushes()) {
       bush.step(dt);
    }
@@ -193,28 +198,28 @@ void Game::draw() {
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glClearColor (0.05098 * sunIntensity,
-                 0.6274509 * sunIntensity,
-                 sunIntensity, 1.0f);
+         0.6274509 * sunIntensity,
+         sunIntensity, 1.0f);
 
    glm::mat4 viewMatrix = curCam->getViewMatrix();
    std::vector<Drawable> drawables;
    Drawable br_drawable;
    br_drawable.draw_template = BoundingRectangle::draw_template();
- 
+
    drawables.push_back(deer_.drawable());
    br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
-  
+
    drawables.push_back(day_night_boxes_.drawableSun());
    br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
-  
+
    drawables.push_back(day_night_boxes_.drawableMoon());
    br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
-   
+
    drawables.push_back(bushGen.drawable());
    for (auto& bush : bushGen.getBushes()) {
       br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
    }
-  
+
    drawables.push_back(treeGen.drawable());
    for (auto& tree : treeGen.getTrees()) {
       br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
@@ -229,15 +234,20 @@ void Game::draw() {
    for (auto& flower : roseGen.getFlowers()) {
       br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
    }
-   
+
+   drawables.push_back(song_path_.drawable());
+   for (auto& br : song_path_.bounding_rectangles()) {
+      br_drawable.model_transforms.push_back(br.model_matrix());
+   }
+
    if(raining)
       drawables.push_back(rain_system_.drawable());
-   
+
    drawables.push_back(butterfly_system_red_.drawable());
    drawables.push_back(butterfly_system_pink_.drawable());
    drawables.push_back(butterfly_system_blue_.drawable());
 
-   
+
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
    if (draw_collision_box)

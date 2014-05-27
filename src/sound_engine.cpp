@@ -146,7 +146,7 @@ void SoundEngine::playRandomWalkSound() {
 
 void SoundEngine::playMusic() {
    if (!music_) {
-      music_ = engine_->play2D("../music/rhapsody_in_blue-Gershwin.ogg");
+      music_ = engine_->play2D("../music/rhapsody_in_blue-Gershwin.ogg", false, false, true);
    } else {
       music_->setIsPaused(false);
    }
