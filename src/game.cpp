@@ -156,10 +156,8 @@ void Game::step(units::MS dt) {
          if(numLightning == 1)
             countLightning = -7.5;
       }
-   }
-   else {
+   } else {
       lighting = 0;
-      raining = 0;
    }
 
    if (deer_.isMoving()) {
@@ -206,6 +204,10 @@ void Game::step(units::MS dt) {
 
    if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
       if (numLightning == 0) {
+         if (!raining) {
+            song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::STORM_SONG));
+            song_path_.reset();
+         }
          raining = 1;
          lighting = 1;
          numLightning = 3;
@@ -215,7 +217,7 @@ void Game::step(units::MS dt) {
 
    if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
       if (day_cycle_.isDaytime()) {
-         song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::STORM_SONG));
+         song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::NIGHT_SONG));
          song_path_.reset();
       }
       day_cycle_.dayToNight();
@@ -292,7 +294,7 @@ void Game::draw() {
    }
 
    drawables.push_back(roseGen.drawableEaten());
-   if(raining)
+   if (raining)
       drawables.push_back(rain_system_.drawable());
 
    drawables.push_back(butterfly_system_red_.drawable());
