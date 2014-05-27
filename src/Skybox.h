@@ -20,6 +20,7 @@ struct Skybox {
 
    glm::mat4 calculateModel() const;
    std::vector<Drawable> drawables(bool isDay) const;
+   Drawable drawable(bool isDay) const;
 
    private:
       DrawTemplate draw_template_day;

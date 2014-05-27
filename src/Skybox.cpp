@@ -9,23 +9,35 @@ Skybox::Skybox(Mesh mesh) :
    draw_template_night({
       ShaderType::SKYBOX,
       mesh,
-      Texture(TextureType::SKYBOX_DAY, DIFFUSE_TEXTURE),
+      Texture(TextureType::SKYBOX_NIGHT, DIFFUSE_TEXTURE),
       boost::none,
       EffectSet({})}),
    draw_template_day({
       ShaderType::SKYBOX,
       mesh,
-      Texture(TextureType::SKYBOX_NIGHT, DIFFUSE_TEXTURE),
+      Texture(TextureType::SKYBOX_DAY, DIFFUSE_TEXTURE),
       boost::none,
       EffectSet({})})
 {}
 
 glm::mat4 Skybox::calculateModel() const {
-   glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(GroundPlane::GROUND_SCALE + 2.0f, 2.0f, GroundPlane::GROUND_SCALE + 2.0f));
-
+   glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(GroundPlane::GROUND_SCALE, GroundPlane::GROUND_SCALE / 2, GroundPlane::GROUND_SCALE));
+   //glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(20.0f, 20.0f, 20.0f));
    //glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f));
 
    return scale;// * translate;
+}
+
+Drawable Skybox::drawable(bool isDay) const {
+   std::vector<glm::mat4> model_matrices;
+   model_matrices.push_back(calculateModel());
+  
+   if (isDay) {
+      return Drawable({draw_template_day, model_matrices});
+   }
+   else {
+      return Drawable({draw_template_night, model_matrices});
+   }
 }
 
 std::vector<Drawable> Skybox::drawables(bool isDay) const {

@@ -322,7 +322,10 @@ void Game::draw() {
    }
 
    //Skybox
-   std::vector<Drawable> skyDrawables = skybox.drawables(true);
+   std::vector<Drawable> skyDrawables;
+   //skyDrawables = skybox.drawables(true);
+   skyDrawables.push_back(skybox.drawable(day_cycle_.isDay()));
+   
 
    for (auto& skyDrawable : skyDrawables) {
       CulledDrawable skyCulledDraw;

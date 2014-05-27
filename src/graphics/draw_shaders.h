@@ -11,7 +11,7 @@
 
 struct DrawShader {
    DrawShader() : uniforms(shaders.getUniformLocationMap()), 
-      projectionMatrix(glm::perspective(80.0f, kScreenWidthf / kScreenHeightf, 0.1f, 500.f)) {}
+      projectionMatrix(glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar)) {}
 
    void Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject reflection_fbo,
          std::vector<CulledDrawable> culledDrawables, glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
