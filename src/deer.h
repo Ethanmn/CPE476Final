@@ -15,7 +15,7 @@ struct SoundEngine;
 
 
 struct Deer {
-   Deer(const Mesh& mesh, const glm::vec3& position);
+   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position);
 
    BoundingRectangle getNextBoundingBox(units::MS dt, const Camera& camera);
 
@@ -29,6 +29,7 @@ struct Deer {
    void stopStrafing();
 
    void jump();
+   void eat();
 
    glm::vec3 getPosition() const;
    glm::vec3 getFacing() const;
@@ -64,6 +65,9 @@ struct Deer {
    glm::vec3 predictPosition(units::MS dt, const glm::vec3& velocity) const;
 
    DrawTemplate draw_template_;
+   bool eating_;
+   Mesh walk_mesh_;
+   Mesh eat_mesh_;
 
    glm::vec3 position_;
    glm::vec3 velocity_;

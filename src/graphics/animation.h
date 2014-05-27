@@ -15,14 +15,15 @@ struct Animation {
 
    void step(units::MS dt) {
       current_time_ += dt * ticks_per_ms_;
-      if (current_time_ > duration_)
-         current_time_ = 0.0;
    }
 
    std::vector<glm::mat4> calculateBoneTransformations(
          const std::vector<Bone>& bones) const {
       return Bone::calculateBoneTransformations(bones, current_time_);
    }
+
+   bool is_finished() const { return current_time_ >= duration_; }
+   void reset() { current_time_ = 0; }
 
   private:
    double current_time_;
