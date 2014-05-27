@@ -6,7 +6,7 @@
 #include "bounding_rectangle.h"
 
 struct SongStone {
-   SongStone();
+   SongStone(const glm::vec2& position);
 
    glm::mat4 model() const;
    BoundingRectangle bounding_rectangle() const {

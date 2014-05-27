@@ -8,14 +8,7 @@
 struct SoundEngine;
 
 struct SongPath {
-   SongPath(SoundEngine& sound_engine, const Mesh& mesh) :
-      current_stone_(0),
-      song_stones_({
-            SongStone()
-            }),
-      sound_engine_(sound_engine),
-      mesh_(mesh)
-   {}
+   SongPath(SoundEngine& sound_engine, const Mesh& mesh);
 
    void step(const BoundingRectangle& deer_rect);
    std::vector<BoundingRectangle> bounding_rectangles() const {
