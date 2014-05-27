@@ -61,6 +61,16 @@ const std::vector<Uniform> kShadowUniforms{
    Uniform::PROJECTION,
 };
 
+const std::vector<Attribute> kSkyboxAttrs{
+   Attribute::VERTEX,
+   Attribute::TEX_COORD
+};
+const std::vector<Uniform> kSkyboxUniforms{
+   Uniform::MODEL_VIEW,
+   Uniform::PROJECTION,
+   Uniform::TEXTURE
+};
+
 const std::vector<Attribute> kWaterAttrs{
    Attribute::VERTEX,
 };
@@ -84,6 +94,9 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::WATER,
             Shader("Water", kWaterAttrs, kWaterUniforms)));
+   shaders_.insert(std::make_pair(
+            ShaderType::SKYBOX,
+            Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

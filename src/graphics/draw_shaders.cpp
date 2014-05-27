@@ -146,6 +146,23 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
+
+         case ShaderType::SKYBOX:
+            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix); 
+
+            for (auto& drawable : culledDrawables) {
+               if (drawable.draw_template.shader_type == ShaderType::SKYBOX) { 
+               /* doesn't use drawModelTransforms because no normals */
+               for(const auto& mt : drawable.model_transforms) {
+                  shader.sendUniform(Uniform::TEXTURE, uniforms, (*drawable.draw_template.texture).texture_slot());
+                   (*drawable.draw_template.texture).enable(texture_cache_);
+                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model);
+                  shader.drawMesh(drawable.draw_template.mesh);
+               }
+               }
+            }
+            break;
+
          case ShaderType::TEXTURE:
             {
                std::vector<Drawable> drawables;

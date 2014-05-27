@@ -7,13 +7,13 @@
 
 Skybox::Skybox(Mesh mesh) :
    draw_template_night({
-      ShaderType::TEXTURE,
+      ShaderType::SKYBOX,
       mesh,
       Texture(TextureType::SKYBOX_DAY, DIFFUSE_TEXTURE),
       boost::none,
       EffectSet({})}),
    draw_template_day({
-      ShaderType::TEXTURE,
+      ShaderType::SKYBOX,
       mesh,
       Texture(TextureType::SKYBOX_NIGHT, DIFFUSE_TEXTURE),
       boost::none,
@@ -40,7 +40,7 @@ std::vector<Drawable> Skybox::drawables(bool isDay) const {
 
       if (side % 2) {
          int multiply = side <= 1 ? -1 : 1;
-         translate = glm::translate(glm::mat4(1.0f), glm::vec3(multiply * 20.0f, 0.0f, 0.0f));
+         translate = glm::translate(glm::mat4(1.0f), glm::vec3(multiply * 20.0f, -1.0f, 0.0f));
       }
       else {
          int multiply = side <= 1 ? -1 : 1;
