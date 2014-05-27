@@ -77,6 +77,8 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "storm.dae";
       case MeshType::BUTTERFLY:
          return kMeshPath + "butterfly.dae";
+      case MeshType::GEM:
+         return kMeshPath + "gem.dae";
    }
 }
 

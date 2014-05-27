@@ -78,7 +78,7 @@ Game::Game() :
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::TIME_STONE)))
+            mesh_loader_.loadMesh(MeshType::GEM)))
 {
 
    std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;

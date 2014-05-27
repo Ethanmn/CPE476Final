@@ -32,7 +32,7 @@ struct SongPath {
             DrawTemplate({
                ShaderType::TEXTURE,
                mesh_,
-               boost::none,
+               Texture(TextureType::GEM, DIFFUSE_TEXTURE),
                boost::none,
                EffectSet(),
             }),
