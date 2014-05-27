@@ -25,7 +25,10 @@ Game::Game() :
    ground_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GROUND))),
    deer_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::DEER)), glm::vec3(0.0f)),
+            mesh_loader_.loadMesh(MeshType::DEER_WALK)),
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::DEER_EAT)),
+         glm::vec3(0.0f)),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -185,12 +188,16 @@ void Game::step(units::MS dt) {
    }
 
    for(auto& flower : daisyGen.getFlowers()) {
-      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle()))
+      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
          flower.eat(sound_engine_);
+         deer_.eat();
+      }
    }
    for(auto& flower : roseGen.getFlowers()) {
-      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle()))
+      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
          flower.eat(sound_engine_);
+         deer_.eat();
+      }
    }
    eatFlower = false;
 

@@ -14,7 +14,8 @@
 // List of the available meshes.
 enum class MeshType {
    GROUND,
-   DEER,
+   DEER_WALK,
+   DEER_EAT,
    TIME_STONE,
    TREE,
    BUSH,
