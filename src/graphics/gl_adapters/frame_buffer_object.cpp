@@ -51,6 +51,7 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height, FB
    }
 
    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+   glBindFramebuffer(GL_FRAMEBUFFER, 0); // rebind the screen.
    return texture_id;
 }
 

@@ -83,17 +83,17 @@ const std::vector<Uniform> kWaterUniforms{
 };
 
 Shaders::Shaders() {
-   shaders_.insert(std::make_pair(ShaderType::SHADOW, 
-            Shader("Shadow", kShadowAttrs, kShadowUniforms)));
+   //shaders_.insert(std::make_pair(ShaderType::SHADOW, 
+            //Shader("Shadow", kShadowAttrs, kShadowUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
-   shaders_.insert(std::make_pair(
-            ShaderType::REFLECTION,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
-   shaders_.insert(std::make_pair(
-            ShaderType::WATER,
-            Shader("Water", kWaterAttrs, kWaterUniforms)));
+   //shaders_.insert(std::make_pair(
+            //ShaderType::REFLECTION,
+            //Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   //shaders_.insert(std::make_pair(
+            //ShaderType::WATER,
+            //Shader("Water", kWaterAttrs, kWaterUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
