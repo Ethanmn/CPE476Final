@@ -11,7 +11,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    lookAt(look),
    up(glm::vec3(0.0f, 1.0f, 0.0f)),
    target(pos),
-   springStrength(0.075f),
+   springStrength(0.128f),
    dampConst(0.0065f)
 {}
 

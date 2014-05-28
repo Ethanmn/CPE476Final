@@ -98,8 +98,8 @@ glm::vec3 Deer::acceleration() const {
       const glm::vec2 forward(last_facing_ / glm::length(last_facing_));
       if (walk_direction_ == WalkDirection::FORWARD) {
          acceleration = glm::vec3(forward.x, 0.0f, forward.y);
-      } else if (walk_direction_ == WalkDirection::BACKWARD) {
-         acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
+      //} else if (walk_direction_ == WalkDirection::BACKWARD) {
+      //   acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
       }
    }
 
