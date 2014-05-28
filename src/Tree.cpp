@@ -24,10 +24,23 @@ Tree::Tree(glm::vec3 position) :
             glm::vec3(position.x, position.y - 10.0f, position.z)) *
          glm::scale(
             glm::mat4(),
-            glm::vec3(TREE_SCALE)))
+            glm::vec3(TREE_SCALE))),
+   default_model_(
+         translate_scale_ *
+         glm::rotate(
+            glm::rotate(
+               glm::mat4(),
+               rotate_,
+               glm::vec3(0, 1.0f, 0)
+               ),
+            -90.0f,
+            glm::vec3(1, 0, 0)))
+
 {}
 
 glm::mat4 Tree::calculateModel() const {
+   if (rustle_time_ >= kMaxRustleTime)
+      return default_model_;
    const glm::mat4 rotate(glm::rotate(
             glm::rotate(
                glm::mat4(),
@@ -49,7 +62,7 @@ void Tree::performObjectHit(SoundEngine& sound_engine) {
          SoundEngine::SoundEffect::TREE_HIT,
          false,
          glm::vec3());
-   rustle_time_ = 0;  
+   rustle_time_ = 0;
 }
 
 void Tree::step(units::MS dt) {

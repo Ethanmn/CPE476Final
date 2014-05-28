@@ -38,6 +38,7 @@ struct Tree : public GameObject {
       units::MS elapsed_time_, rustle_time_;
       const units::MS kMaxRustleTime;
       glm::mat4 translate_scale_;
+      glm::mat4 default_model_;
 };
 
 #endif //TREE_H_

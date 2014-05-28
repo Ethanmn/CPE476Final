@@ -15,13 +15,7 @@ struct Shader;
 struct SoundEngine;
 
 struct Flower : GameObject {
-   Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale) :
-      position_(position.x, ground.heightAt(position) - mesh.min.y, position.z), 
-      scale_(scale),
-      rotate_(rand() % 360),
-      bounding_rectangle_(BoundingRectangle(glm::vec2(position.x, position.z), glm::vec2(2.0f, 2.0f), 90.0f)),
-      eaten(false) 
-   {}
+   Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale);
 
    void eat(SoundEngine& sound_engine);
 
@@ -35,13 +29,13 @@ struct Flower : GameObject {
    bool isBlocker() { return false; }
    void performObjectHit(SoundEngine& sound_engine); 
 
-   private:
-      glm::vec3 position_;
-      float scale_;
-      float rotate_;
-      BoundingRectangle bounding_rectangle_;
-      bool eaten;
-
+  private:
+   glm::vec3 position_;
+   float scale_;
+   float rotate_;
+   BoundingRectangle bounding_rectangle_;
+   bool eaten;
+   glm::mat4 model_;
 };
 
 #endif

@@ -285,32 +285,26 @@ void Game::draw() {
    }
 
    drawables.push_back(deer_.drawable());
+
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
-   auto t = SDL_GetTicks();
-   drawables.push_back(bushGen.drawable());
-   std::clog << "bushGen drawable setup lasts " << SDL_GetTicks() - t << " ms" << std::endl;
-   drawables.push_back(treeGen.drawable());
-   t = SDL_GetTicks();
-   drawables.push_back(daisyGen.drawable());
-   std::clog << "daisyGen drawable setup lasts " << SDL_GetTicks() - t << " ms" << std::endl;
-   t = SDL_GetTicks();
-   drawables.push_back(daisyGen.drawableEaten());
-   std::clog << "daisyGen::Eaten drawable setup lasts " << SDL_GetTicks() - t << " ms" << std::endl;
-   t = SDL_GetTicks();
-   drawables.push_back(roseGen.drawable());
-   std::clog << "roseGen drawable setup lasts " << SDL_GetTicks() - t << " ms" << std::endl;
-   drawables.push_back(song_path_.drawable());
 
+   drawables.push_back(bushGen.drawable());
+   drawables.push_back(treeGen.drawable());
+
+   drawables.push_back(daisyGen.drawable());
+   drawables.push_back(daisyGen.drawableEaten());
+   drawables.push_back(roseGen.drawable());
    drawables.push_back(roseGen.drawableEaten());
+
+   drawables.push_back(song_path_.drawable());
    if (raining)
       drawables.push_back(rain_system_.drawable());
 
    drawables.push_back(butterfly_system_red_.drawable());
    drawables.push_back(butterfly_system_pink_.drawable());
    drawables.push_back(butterfly_system_blue_.drawable());
-
 
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
