@@ -1,5 +1,9 @@
-#ifndef CULLING_H_
-#define CULLING_H_
+#ifndef CULLED_DRAWABLE_H_
+#define CULLED_DRAWABLE_H_
+
+#include "graphics/draw_template.h"
+
+#include <glm/glm.hpp>
 
 enum class CullType {
    REFLECT_CULLING,
@@ -9,8 +13,8 @@ enum class CullType {
 typedef std::set<CullType> CullSet;
 
 struct CulledTransform {
-	glm::mat4 model;
-	CullSet cullFlag;
+   glm::mat4 model;
+   CullSet cullFlag;
 };
 
 struct CulledDrawable {

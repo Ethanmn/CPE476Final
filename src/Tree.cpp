@@ -24,11 +24,6 @@ Tree::Tree(glm::vec3 position) :
 glm::mat4 Tree::calculateModel() const {
    const auto scale = glm::scale(glm::mat4(1.0f), glm::vec3(TREE_SCALE));
 
-   const auto rotateTreeUp = glm::rotate(
-         glm::mat4(1.0f),
-         -90.0f,
-         glm::vec3(1.0f, 0, 0));
-
    const auto translate = glm::translate(
          glm::mat4(1.0f),
          glm::vec3(position.x, position.y, position.z));

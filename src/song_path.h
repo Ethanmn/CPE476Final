@@ -6,7 +6,7 @@
 #include "song_stone.h"
 
 namespace irrklang {
-struct ISound;
+class ISound;
 }
 
 struct SongPath {

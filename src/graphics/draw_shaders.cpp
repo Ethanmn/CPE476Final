@@ -166,7 +166,6 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject refle
          case ShaderType::TEXTURE:
             {
                std::vector<Drawable> drawables;
-               int culledObjects = 0;
                int nonCulledObjects = 0;
 
                for (auto& drawable : culledDrawables) {

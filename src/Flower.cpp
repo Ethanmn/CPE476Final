@@ -12,7 +12,7 @@ void Flower::eat(SoundEngine& sound_engine) {
    eaten = true;
 }
 
-void Flower::performObjectHit(SoundEngine& sound_engine) {
+void Flower::performObjectHit(SoundEngine&) {
 }
 
 glm::mat4 Flower::calculateModel() const {
@@ -27,6 +27,4 @@ glm::mat4 Flower::calculateModel() const {
             rotate_,
             glm::vec3(0, 1, 0)));
    return glm::mat4(translate * scale * rotate);
-} 
-
-
+}
