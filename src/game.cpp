@@ -288,11 +288,19 @@ void Game::draw() {
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
+   auto t = SDL_GetTicks();
    drawables.push_back(bushGen.drawable());
+   std::clog << "bushGen drawable setup lasts " << SDL_GetTicks() - t << " ms" << std::endl;
    drawables.push_back(treeGen.drawable());
+   t = SDL_GetTicks();
    drawables.push_back(daisyGen.drawable());
+   std::clog << "daisyGen drawable setup lasts " << SDL_GetTicks() - t << " ms" << std::endl;
+   t = SDL_GetTicks();
    drawables.push_back(daisyGen.drawableEaten());
+   std::clog << "daisyGen::Eaten drawable setup lasts " << SDL_GetTicks() - t << " ms" << std::endl;
+   t = SDL_GetTicks();
    drawables.push_back(roseGen.drawable());
+   std::clog << "roseGen drawable setup lasts " << SDL_GetTicks() - t << " ms" << std::endl;
    drawables.push_back(song_path_.drawable());
 
    drawables.push_back(roseGen.drawableEaten());

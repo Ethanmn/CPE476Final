@@ -35,6 +35,7 @@ struct Bush : public GameObject {
    const units::MS kMaxRustleTime;
    BoundingRectangle bounding_rectangle_;
    glm::mat4 translate_scale_;
+   glm::mat4 default_model_;
 };
 
 #endif // BUSH_H_

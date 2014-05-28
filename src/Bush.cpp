@@ -16,7 +16,17 @@ Bush::Bush(const Mesh& mesh, const glm::vec3& position, const GroundPlane& groun
             0.0f)),
    translate_scale_(
          glm::translate(glm::mat4(), glm::vec3(position.x, ground.heightAt(position) - mesh.min.y, position.z)) *
-         glm::scale(glm::mat4(), glm::vec3(scale)))
+         glm::scale(glm::mat4(), glm::vec3(scale))),
+   default_model_(
+         translate_scale_ *
+         glm::rotate(
+            glm::rotate(
+               glm::mat4(),
+               rotate_,
+               glm::vec3(0, 1, 0)
+               ),
+            -90.0f,
+            glm::vec3(1, 0, 0)))
 {}
 
 void Bush::step(units::MS dt) {
@@ -28,6 +38,9 @@ void Bush::step(units::MS dt) {
 }
 
 glm::mat4 Bush::calculateModel() const {
+   if (rustle_time_ >= kMaxRustleTime) {
+      return default_model_;
+   }
    const glm::mat4 rotate(glm::rotate(
             glm::rotate(
                glm::mat4(),
