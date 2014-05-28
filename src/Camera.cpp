@@ -60,11 +60,11 @@ void Camera::step(float dT) {
 
    glm::vec3 camForward = getCamForwardVec();
    if (glm::length(position - lookAt) > 30.0f) {
-      target += camForward * (dT / 100.0f) * 10.0f;
+      target += camForward * (dT / 100.0f) * 7.5f;
    }
 
    if (glm::length(position - lookAt) < 10.0f) {
-      target -=  camForward * (dT / 100.0f) * 10.0f;
+      target -=  camForward * (dT / 100.0f) * 7.5f;
    }
 
    displacement = newPos - target;

@@ -406,7 +406,7 @@ void Game::mainLoop() {
             if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
                deer_.walkForward();
             } else if (!input.isKeyHeld(key_forward) && input.isKeyHeld(key_backward)) {
-               deer_.walkBackward();
+               //deer_.walkBackward();
             } else {
                deer_.stopWalking();
             }
