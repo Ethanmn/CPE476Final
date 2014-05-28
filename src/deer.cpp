@@ -72,9 +72,7 @@ glm::mat4 Deer::calculateModel() const {
 }
 
 Drawable Deer::drawable() const {
-   std::vector<glm::mat4> model_matrices;
-   model_matrices.push_back(calculateModel());
-   return Drawable({draw_template_, model_matrices});
+   return Drawable({draw_template_, std::vector<glm::mat4>({calculateModel()})});
 } 
 
 glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {

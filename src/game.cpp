@@ -257,49 +257,43 @@ void Game::draw() {
          sunIntensity, 1.0f);
 
    glm::mat4 viewMatrix = curCam->getViewMatrix();
+   auto start_time = SDL_GetTicks();
    std::vector<Drawable> drawables;
-   std::vector<CulledDrawable> culledDrawables;
-   Drawable br_drawable;
-   br_drawable.draw_template = BoundingRectangle::draw_template();
+   if (draw_collision_box) {
+      Drawable br_drawable;
+      br_drawable.draw_template = BoundingRectangle::draw_template();
+      br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
+      br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
+      br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
+      br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
+      for (auto& bush : bushGen.getBushes()) {
+         br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
+      }
+      for (auto& tree : treeGen.getTrees()) {
+         br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
+      }
+      for (auto& flower : daisyGen.getFlowers()) {
+         br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
+      }
+      for (auto& flower : roseGen.getFlowers()) {
+         br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
+      }
+      for (auto& br : song_path_.bounding_rectangles()) {
+         br_drawable.model_transforms.push_back(br.model_matrix());
+      }
+      drawables.push_back(br_drawable);
+   }
 
    drawables.push_back(deer_.drawable());
-   br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
-
    drawables.push_back(lightning_trigger_.drawable());
-   br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
-  
    drawables.push_back(day_night_boxes_.drawableSun());
-   br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
-
    drawables.push_back(day_night_boxes_.drawableMoon());
-   br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
-
    drawables.push_back(bushGen.drawable());
-   for (auto& bush : bushGen.getBushes()) {
-      br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
-   }
-
    drawables.push_back(treeGen.drawable());
-   for (auto& tree : treeGen.getTrees()) {
-      br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
-   }
-
    drawables.push_back(daisyGen.drawable());
-   for (auto& flower : daisyGen.getFlowers()) {
-      br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
-   }
-
    drawables.push_back(daisyGen.drawableEaten());
-   
    drawables.push_back(roseGen.drawable());
-   for (auto& flower : roseGen.getFlowers()) {
-      br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
-   }
-
    drawables.push_back(song_path_.drawable());
-   for (auto& br : song_path_.bounding_rectangles()) {
-      br_drawable.model_transforms.push_back(br.model_matrix());
-   }
 
    drawables.push_back(roseGen.drawableEaten());
    if (raining)
@@ -312,13 +306,13 @@ void Game::draw() {
 
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
-   if (draw_collision_box)
-      drawables.push_back(br_drawable);
+   std::clog << "drawable setup lasts " << SDL_GetTicks() - start_time << " ms" << std::endl;
 
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
 // View Frustum Culling
+   start_time = SDL_GetTicks();
    FrustumG viewFrust;
    int culledObject = 0;
    // Set up values used to construct planes
@@ -328,6 +322,7 @@ void Game::draw() {
                        curCam->getLookAt(),
                        glm::vec3(0, 1, 0));
 
+   std::vector<CulledDrawable> culledDrawables;
    for (auto& drawable : drawables) {
       glm::vec3 min, max, mid;
 
@@ -352,12 +347,13 @@ void Game::draw() {
       culledDrawable.draw_template = drawable.draw_template;
       culledDrawables.push_back(culledDrawable);
    }
+   std::clog << "culling lasts " << SDL_GetTicks() - start_time << " ms" << std::endl;
 
+   start_time = SDL_GetTicks();
    //Skybox
    std::vector<Drawable> skyDrawables;
    //skyDrawables = skybox.drawables(true);
    skyDrawables.push_back(skybox.drawable(day_cycle_.isDay()));
-   
 
    for (auto& skyDrawable : skyDrawables) {
       CulledDrawable skyCulledDraw;
@@ -369,6 +365,7 @@ void Game::draw() {
       skyCulledDraw.draw_template = skyDrawable.draw_template;
       culledDrawables.push_back(skyCulledDraw);
    }
+   std::clog << "culling lasts " << SDL_GetTicks() - start_time << " ms" << std::endl;
 
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);

@@ -25,7 +25,7 @@ struct BushGenerator {
 
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
-   
+
    private:
       std::vector<Bush> bushes;
       DrawTemplate draw_template_;

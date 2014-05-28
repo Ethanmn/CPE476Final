@@ -13,18 +13,7 @@ struct SoundEngine;
 
 struct Bush : public GameObject {
    Bush(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, 
-        float scale, units::MS rustle_time) :
-      position_(position.x, ground.heightAt(position) - mesh.min.y, position.z),
-      scale_(scale),
-      rotate_(0.0f),
-      elapsed_time_(0),
-      rustle_time_(rustle_time),
-      kMaxRustleTime(rustle_time),
-      bounding_rectangle_(BoundingRectangle(
-               glm::vec2(position.x, position.z),
-               glm::vec2(8.0f, 8.0f),
-               0.0f)) {}
-
+        float scale, units::MS rustle_time);
 
    void step(units::MS dt);
    void rustle(SoundEngine& sound_engine);
@@ -41,12 +30,11 @@ struct Bush : public GameObject {
 
 
   private: 
-   glm::vec3 position_;
-   float scale_;
    float rotate_;
    units::MS elapsed_time_, rustle_time_;
    const units::MS kMaxRustleTime;
    BoundingRectangle bounding_rectangle_;
+   glm::mat4 translate_scale_;
 };
 
 #endif // BUSH_H_

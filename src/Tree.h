@@ -34,10 +34,10 @@ struct Tree : public GameObject {
 
    private:
       BoundingRectangle bRect;
-      glm::vec3 position;
       float rotate_;
       units::MS elapsed_time_, rustle_time_;
       const units::MS kMaxRustleTime;
+      glm::mat4 translate_scale_;
 };
 
 #endif //TREE_H_
