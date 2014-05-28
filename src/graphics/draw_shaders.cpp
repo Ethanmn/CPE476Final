@@ -98,9 +98,10 @@ void DrawShader::setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
    setupSunShader(shader, uniforms, sunIntensity, sunDir); 
 }
 
-void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, FrameBufferObject reflection_fbo,
-      vector<CulledDrawable> culledDrawables, glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
-      glm::vec3 sunDir, float sunIntensity, int lightning) {
+void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBufferObject& reflection_fbo,
+      const vector<CulledDrawable>& culledDrawables, const glm::mat4& viewMatrix, 
+      int useBlinnPhong, const glm::vec3& deerPos,
+      const glm::vec3& sunDir, float sunIntensity, int lightning) {
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
       shader.use();

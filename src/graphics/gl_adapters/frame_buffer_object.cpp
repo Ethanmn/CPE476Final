@@ -59,6 +59,6 @@ FrameBufferObject::FrameBufferObject(unsigned int width, unsigned int height, Te
 {
 }
 
-void FrameBufferObject::bind() {
+void FrameBufferObject::bind() const {
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_id_);
 }
