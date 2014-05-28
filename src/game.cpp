@@ -18,6 +18,9 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
+
+   units::MS average_draw_time = 0;
+   size_t num_draws = 0;
 }
 
 Game::Game() :
@@ -257,7 +260,6 @@ void Game::draw() {
          sunIntensity, 1.0f);
 
    glm::mat4 viewMatrix = curCam->getViewMatrix();
-   auto start_time = SDL_GetTicks();
    std::vector<Drawable> drawables;
    if (draw_collision_box) {
       Drawable br_drawable;
@@ -308,13 +310,11 @@ void Game::draw() {
 
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
-   std::clog << "drawable setup lasts " << SDL_GetTicks() - start_time << " ms" << std::endl;
 
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
 // View Frustum Culling
-   start_time = SDL_GetTicks();
    FrustumG viewFrust;
    int culledObject = 0;
    // Set up values used to construct planes
@@ -349,9 +349,7 @@ void Game::draw() {
       culledDrawable.draw_template = drawable.draw_template;
       culledDrawables.push_back(culledDrawable);
    }
-   std::clog << "culling lasts " << SDL_GetTicks() - start_time << " ms" << std::endl;
 
-   start_time = SDL_GetTicks();
    //Skybox
    std::vector<Drawable> skyDrawables;
    //skyDrawables = skybox.drawables(true);
@@ -367,7 +365,6 @@ void Game::draw() {
       skyCulledDraw.draw_template = skyDrawable.draw_template;
       culledDrawables.push_back(skyCulledDraw);
    }
-   std::clog << "culling lasts " << SDL_GetTicks() - start_time << " ms" << std::endl;
 
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
@@ -507,7 +504,11 @@ void Game::mainLoop() {
       }
 
       {
+         auto start_time = SDL_GetTicks();
          draw();
+         average_draw_time = (average_draw_time * num_draws + SDL_GetTicks() - start_time) / (num_draws+1);
+         ++num_draws;
+         std::clog << "drawing takes " << average_draw_time << " ms" << std::endl;;
          engine_.swapWindow();
       }
 
