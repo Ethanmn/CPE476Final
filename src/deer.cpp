@@ -34,6 +34,7 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& positio
    eating_(false),
    walk_mesh_(walk_mesh),
    eat_mesh_(eat_mesh),
+   up_(glm::vec3(0.0f, 1.0f, 0.0f)),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 1),
@@ -81,8 +82,8 @@ glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
    return position_ + velocity * static_cast<float>(dt);
 }
 
-BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
-   auto velocity(predictVelocity(dt, acceleration(camera)));
+BoundingRectangle Deer::getNextBoundingBox(units::MS dt) {
+   auto velocity(predictVelocity(dt, acceleration()));
    auto facing(predictFacing(velocity));
    auto tempPosition(predictPosition(dt, velocity));
    auto tempBoundingBox(bounding_rectangle_);
@@ -91,10 +92,10 @@ BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
    return tempBoundingBox;
 }
 
-glm::vec3 Deer::acceleration(const Camera& camera) const {
+glm::vec3 Deer::acceleration() const {
    glm::vec3 acceleration(0.0f);
-   { // If walking add in walk based on camera's forward.
-      const glm::vec2 forward(xz(camera.getCamForwardVec()));
+   { // If walking add in walk based on deer's forward.
+      const glm::vec2 forward(last_facing_ / glm::length(last_facing_));
       if (walk_direction_ == WalkDirection::FORWARD) {
          acceleration = glm::vec3(forward.x, 0.0f, forward.y);
       } else if (walk_direction_ == WalkDirection::BACKWARD) {
@@ -102,8 +103,9 @@ glm::vec3 Deer::acceleration(const Camera& camera) const {
       }
    }
 
-   { // Add in strafe from camera, if strafing.
-      const glm::vec3 left(camera.getCamLeftVec());
+   { // Add in strafe from deer, if strafing.
+      glm::vec3 lastFacingWithY(last_facing_.x, 0.0f, last_facing_.y);
+      const glm::vec3 left(glm::cross(up_, lastFacingWithY) / glm::length(glm::cross(up_, lastFacingWithY)));
       if (strafe_direction_ == StrafeDirection::LEFT) {
          acceleration += glm::vec3(left.x, 0.0f, left.z);
       } else if (strafe_direction_ == StrafeDirection::RIGHT) {
@@ -156,9 +158,9 @@ glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
    return last_facing_;
 }
 
-void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
+void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
-   velocity_ = predictVelocity(dt, acceleration(camera));
+   velocity_ = predictVelocity(dt, acceleration());
    if (eating_) {
       draw_template_.mesh.animation.step(dt);
       if (draw_template_.mesh.animation.is_finished()) {
