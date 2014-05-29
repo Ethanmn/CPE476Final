@@ -52,10 +52,10 @@ namespace {
       height_map.enable(texture_cache);
    }
 
-   void setupShadowShader(Shader& shader, const UniformLocationMap& locations, const glm::mat4& shadow_view,
+   void setupShadowShader(Shader& shader, const UniformLocationMap& locations, const glm::mat4& view_projection,
          const glm::mat4& modelMatrix) {
-      glm::mat4 modelView = shadow_view * modelMatrix;
-      shader.sendUniform(Uniform::MODEL_VIEW, locations, modelView);
+      const glm::mat4 mvp = view_projection * modelMatrix;
+      shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, locations, mvp);
    }
 
    void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
@@ -107,18 +107,17 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
          case ShaderType::SHADOW:
             {
                const auto shadow_view = glm::lookAt(sunDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
+               const auto view_projection = kShadowProjection * shadow_view;
                if(!debug) {
                   shadow_map_fbo_.bind();
                   glClear(GL_DEPTH_BUFFER_BIT);
                }
-               shader.sendUniform(Uniform::PROJECTION, uniforms, kShadowProjection);
-
                {
                   const auto start_time = SDL_GetTicks();
                   for (auto& drawable : culledDrawables) {
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                         for(auto& mt : drawable.model_transforms) {
-                           setupShadowShader(shader, uniforms, shadow_view, mt.model);
+                           setupShadowShader(shader, uniforms, view_projection, mt.model);
                            shader.drawMesh(drawable.draw_template.mesh);
                         }
                      }
