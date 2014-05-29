@@ -165,7 +165,7 @@ void Game::step(units::MS dt) {
    }
 
    if (deer_.isMoving()) {
-      BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt, *curCam);
+      BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt);
       std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
       for (int index = 0; index < (int)(collObjs.size()); index++) {
          collObjs.at(index)->performObjectHit(sound_engine_);
@@ -183,7 +183,7 @@ void Game::step(units::MS dt) {
       deer_.block();
    }
    else {
-      deer_.step(dt, *curCam, ground_, sound_engine_);
+      deer_.step(dt, ground_, sound_engine_);
    }
 
    song_path_.step(dt, deer_.bounding_rectangle());
@@ -399,7 +399,7 @@ void Game::mainLoop() {
             if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
                deer_.walkForward();
             } else if (!input.isKeyHeld(key_forward) && input.isKeyHeld(key_backward)) {
-               deer_.walkBackward();
+               //deer_.walkBackward();
             } else {
                deer_.stopWalking();
             }

@@ -11,7 +11,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    lookAt(look),
    up(glm::vec3(0.0f, 1.0f, 0.0f)),
    target(pos),
-   springStrength(0.075f),
+   springStrength(0.128f),
    dampConst(0.0065f)
 {}
 
@@ -60,11 +60,11 @@ void Camera::step(float dT) {
 
    glm::vec3 camForward = getCamForwardVec();
    if (glm::length(position - lookAt) > 30.0f) {
-      target += camForward * (dT / 100.0f) * 10.0f;
+      target += camForward * (dT / 100.0f) * 7.5f;
    }
 
    if (glm::length(position - lookAt) < 10.0f) {
-      target -=  camForward * (dT / 100.0f) * 10.0f;
+      target -=  camForward * (dT / 100.0f) * 7.5f;
    }
 
    displacement = newPos - target;
