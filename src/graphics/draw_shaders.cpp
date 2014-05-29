@@ -52,14 +52,9 @@ namespace {
       height_map.enable(texture_cache);
    }
 
-   void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
-         glm::vec3 lightDir, glm::vec3 deerPos, glm::mat4 modelMatrix) {
-      glPolygonMode(GL_FRONT, GL_FILL);
-      glm::mat4 shadowView, modelView;
-
-      shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
-      modelView = shadowView * modelMatrix;
-
+   void setupShadowShader(Shader& shader, const UniformLocationMap& locations, const glm::mat4& shadow_view,
+         const glm::mat4& modelMatrix) {
+      glm::mat4 modelView = shadow_view * modelMatrix;
       shader.sendUniform(Uniform::MODEL_VIEW, locations, modelView);
    }
 
@@ -110,30 +105,33 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
       shader.use();
       switch (shader_pair.first) {
          case ShaderType::SHADOW:
-            if(!debug) {
-               shadow_map_fbo_.bind();
-               glClear(GL_DEPTH_BUFFER_BIT);
-            }
-            shader.sendUniform(Uniform::PROJECTION, uniforms, kShadowProjection);
-
             {
-               const auto start_time = SDL_GetTicks();
-               for (auto& drawable : culledDrawables) {
-                  if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
-                     for(auto& mt : drawable.model_transforms) {
-                        setupShadowShader(shader, uniforms, sunDir, deerPos, mt.model);
-                        shader.drawMesh(drawable.draw_template.mesh);
+               const auto shadow_view = glm::lookAt(sunDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
+               if(!debug) {
+                  shadow_map_fbo_.bind();
+                  glClear(GL_DEPTH_BUFFER_BIT);
+               }
+               shader.sendUniform(Uniform::PROJECTION, uniforms, kShadowProjection);
+
+               {
+                  const auto start_time = SDL_GetTicks();
+                  for (auto& drawable : culledDrawables) {
+                     if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
+                        for(auto& mt : drawable.model_transforms) {
+                           setupShadowShader(shader, uniforms, shadow_view, mt.model);
+                           shader.drawMesh(drawable.draw_template.mesh);
+                        }
                      }
                   }
+                  average_time = (average_time * num_times + SDL_GetTicks() - start_time) / (num_times + 1);
+                  ++num_times;
+                  std::clog << "setupShadowShader takes " << average_time << " ms" << std::endl;
                }
-               average_time = (average_time * num_times + SDL_GetTicks() - start_time) / (num_times + 1);
-               ++num_times;
-               std::clog << "setupShadowShader takes " << average_time << " ms" << std::endl;
-            }
 
-            if(!debug) {
-               glBindFramebuffer(GL_FRAMEBUFFER, 0);
-               shadow_map_fbo_.texture().enable(texture_cache_);
+               if(!debug) {
+                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                  shadow_map_fbo_.texture().enable(texture_cache_);
+               }
             }
             break;
          case ShaderType::REFLECTION:
