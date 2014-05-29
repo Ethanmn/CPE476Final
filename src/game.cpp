@@ -18,9 +18,6 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
-
-   units::MS average_draw_time = 0;
-   size_t num_draws = 0;
 }
 
 Game::Game() :
@@ -504,11 +501,7 @@ void Game::mainLoop() {
       }
 
       {
-         auto start_time = SDL_GetTicks();
          draw();
-         average_draw_time = (average_draw_time * num_draws + SDL_GetTicks() - start_time) / (num_draws+1);
-         ++num_draws;
-         std::clog << "drawing takes " << average_draw_time << " ms" << std::endl;;
          engine_.swapWindow();
       }
 

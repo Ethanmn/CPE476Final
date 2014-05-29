@@ -2,16 +2,25 @@
 #include "shaders.h"
 #include "uniforms.h"
 #include <iostream>
+#include <SDL.h>
 
 using namespace std;
 namespace {
    bool debug = false;
    const float kOrthoProjAmount = 70.0f;
    const glm::mat4 projectionMatrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
-   const glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0,
+   const glm::mat4 kShadowProjection = glm::ortho(
+         -kOrthoProjAmount, kOrthoProjAmount, 
+         -kOrthoProjAmount, kOrthoProjAmount,
+         -40.0f, 40.0f);
+   const glm::mat4 biasMatrix(
+         0.5, 0.0, 0.0, 0.0,
          0.0, 0.5, 0.0, 0.0,
          0.0, 0.0, 0.5, 0.0,
          0.5, 0.5, 0.5, 1.0);
+
+   units::MS average_time = 0;
+   size_t num_times = 0;
 
    void setupModelView(Shader& shader, const UniformLocationMap& locations,
          const glm::mat4& modelMatrix, const glm::mat4& viewMatrix, bool needsNormal) {
@@ -46,25 +55,19 @@ namespace {
    void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
          glm::vec3 lightDir, glm::vec3 deerPos, glm::mat4 modelMatrix) {
       glPolygonMode(GL_FRONT, GL_FILL);
-      glm::mat4 shadowProjection, shadowView, modelView;
+      glm::mat4 shadowView, modelView;
 
-      shadowProjection = glm::ortho(-kOrthoProjAmount, kOrthoProjAmount, 
-            -kOrthoProjAmount, kOrthoProjAmount,
-            -40.0f, 40.0f);
       shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
       modelView = shadowView * modelMatrix;
 
       shader.sendUniform(Uniform::MODEL_VIEW, locations, modelView);
-      shader.sendUniform(Uniform::PROJECTION, locations, shadowProjection);
    }
 
    void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
          glm::vec3 lightDir, glm::vec3 deerPos) {
       glm::mat4 lightMat, shadowProjection, shadowView;
 
-      shadowProjection = biasMatrix * glm::ortho(-kOrthoProjAmount, kOrthoProjAmount, 
-            -kOrthoProjAmount, kOrthoProjAmount,
-            -40.0f, 40.0f);
+      shadowProjection = biasMatrix * kShadowProjection;
       shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
       lightMat = shadowProjection * shadowView;
 
@@ -111,14 +114,21 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
                shadow_map_fbo_.bind();
                glClear(GL_DEPTH_BUFFER_BIT);
             }
+            shader.sendUniform(Uniform::PROJECTION, uniforms, kShadowProjection);
 
-            for (auto& drawable : culledDrawables) {
-               if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
-                  for(auto& mt : drawable.model_transforms) {
-                     setupShadowShader(shader, uniforms, sunDir, deerPos, mt.model);
-                     shader.drawMesh(drawable.draw_template.mesh);
+            {
+               const auto start_time = SDL_GetTicks();
+               for (auto& drawable : culledDrawables) {
+                  if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
+                     for(auto& mt : drawable.model_transforms) {
+                        setupShadowShader(shader, uniforms, sunDir, deerPos, mt.model);
+                        shader.drawMesh(drawable.draw_template.mesh);
+                     }
                   }
                }
+               average_time = (average_time * num_times + SDL_GetTicks() - start_time) / (num_times + 1);
+               ++num_times;
+               std::clog << "setupShadowShader takes " << average_time << " ms" << std::endl;
             }
 
             if(!debug) {
