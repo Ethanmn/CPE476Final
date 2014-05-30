@@ -1,12 +1,8 @@
 uniform mat4 uModelViewMatrix;
 uniform mat4 uModelMatrix;
-uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform mat4 uNormalMatrix;
-
 uniform int uHasTexture;
-
-uniform mat4 uShadowMap;
 
 #ifdef USE_BONES
 uniform int uHasBones;
@@ -36,11 +32,8 @@ attribute float aBoneWeight4;
 #endif
 
 varying vec4 vPosition;
-varying vec4 vViewer;
 varying vec3 vNormal;
 varying vec2 vTexCoord;
-varying vec4 vShadow;
-varying float vUnderWater;
 
 void main() {
    mat4 bone = mat4(1.0);
@@ -73,11 +66,8 @@ void main() {
 #endif
 
    vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
-   vViewer = vPosition;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
-   vShadow = uShadowMap * uModelMatrix * vec4(heightColor.xyz + aPosition, 1.0);
-   vUnderWater = heightColor.y < 0.0 ? 1.0 : 0.0;
    gl_Position = uProjectionMatrix * vPosition;
 
 }

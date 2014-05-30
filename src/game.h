@@ -70,6 +70,7 @@ struct Game {
    Camera *curCam;
 
    bool airMode;
+   DeferredFrameBuffer deferred_fbo_;
    FrameBufferObject shadow_map_fbo_;
    Water water_;
    SongPath song_path_;

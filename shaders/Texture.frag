@@ -1,5 +1,3 @@
-uniform int uOutputShaderType;
-
 uniform sampler2D uShadowMapTexture;
 uniform int uHasShadows;
 uniform mat4 uShadowMap;

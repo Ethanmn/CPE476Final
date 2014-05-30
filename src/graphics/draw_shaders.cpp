@@ -165,7 +165,6 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
 
          case ShaderType::TEXTURE:
             {
-               sendOutputShaderType(shader_pair.first, shader);
                std::vector<Drawable> drawables;
                int culledObjects = 0;
                int nonCulledObjects = 0;
@@ -223,31 +222,10 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
    }
 }
 
-void DrawShader::sendOutputShaderType(ShaderType shaderT, Shader& shader) {
-   if (shaderT == ShaderType::TEXTURE) {
-      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 0);
-      //printf("0\n");
-   }
-   else if (shaderT == ShaderType::DEFERRED_POSITION) {
-      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 1);
-      //printf("1\n");
-   }
-   else if (shaderT == ShaderType::DEFERRED_DIFFUSE) {
-      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 2);
-      //printf("2\n");
-   }
-   else if (shaderT == ShaderType::DEFERRED_NORMAL) {
-      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 3);
-      //printf("3\n");
-   }
-   else
-      assert(false);
-}
-
 void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix) {
    for (auto& drawable : drawables) {
       if (drawable.draw_template.shader_type == ShaderType::TEXTURE ||
-          drawable.draw_template.shader_type == ShaderType::DEFERRED_NORMAL) { 
+          drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
          { // Per-Drawable Texture Shader Setup
 
             if (drawable.draw_template.height_map) 
