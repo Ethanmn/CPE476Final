@@ -99,10 +99,10 @@ void DrawShader::setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
 }
 
 void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, 
-                      FrameBufferObject reflection_fbo,
+                      FrameBufferObject reflection_fbo, /*
                       FrameBufferObject g_buff_diffuse_fbo,
                       FrameBufferObject g_buff_position_fbo,
-                      FrameBufferObject g_buff_normal_fbo,
+                      FrameBufferObject g_buff_normal_fbo, */
                       vector<CulledDrawable> culledDrawables,
                       glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
                       glm::vec3 sunDir, float sunIntensity, int lightning) {
@@ -148,6 +148,8 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
+
+         /*
          case ShaderType::DEFERRED_POSITION:
             g_buff_position_fbo.bind();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -159,6 +161,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
          case ShaderType::DEFERRED_NORMAL:
             g_buff_normal_fbo.bind();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         */
 
          case ShaderType::TEXTURE:
             {
@@ -196,6 +199,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
                }
             }
             break;
+         /*
          case ShaderType::FINAL_LIGHT_PASS:
             setupSunShader(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, 
@@ -207,6 +211,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
                locations, TextureSlot::DEFERRED_NORM_TEXTURE;
 
             break;
+         */
       }
    }
 }
@@ -220,7 +225,7 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
 
 void DrawShader::sendOutputShaderType(ShaderType shaderT, Shader& shader) {
    if (shaderT == ShaderType::TEXTURE) {
-      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 0);
+      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 3);
       //printf("0\n");
    }
    else if (shaderT == ShaderType::DEFERRED_POSITION) {

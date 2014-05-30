@@ -14,11 +14,11 @@ struct DrawShader {
       projectionMatrix(glm::perspective(80.0f, kScreenWidthf / kScreenHeightf, 0.1f, 500.f)) {}
 
    void Draw(FrameBufferObject shadow_map_fbo_, 
-                      FrameBufferObject reflection_fbo,
+                      FrameBufferObject reflection_fbo, /*
                       FrameBufferObject g_buff_diffuse_fbo,
                       FrameBufferObject g_buff_position_fbo,
-                      FrameBufferObject g_buff_normal_fbo,
-                      vector<CulledDrawable> culledDrawables,
+                      FrameBufferObject g_buff_normal_fbo, */
+                      std::vector<CulledDrawable> culledDrawables,
                       glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
                       glm::vec3 sunDir, float sunIntensity, int lightning);
    

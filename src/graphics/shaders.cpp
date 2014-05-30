@@ -52,7 +52,7 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::BONES,
    Uniform::HAS_BONES,
   
-   Uniform::LIGHTNING,
+   //Uniform::LIGHTNING,
 
    //Uniform::GOD_RAY_POSITION,
    //Uniform::GOD_RAY_RADIUS
@@ -93,9 +93,10 @@ const std::vector<Uniform> kFinalUniforms{
 Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-   //shaders_.insert(std::make_pair(
-            //ShaderType::TEXTURE,
-            //Shader("Texture", kTextureAttrs, kTextureUniforms)));
+   shaders_.insert(std::make_pair(
+            ShaderType::TEXTURE,
+            Shader("Deferred", kTextureAttrs, kTextureUniforms)));
+   /*
    shaders_.insert(std::make_pair(
             ShaderType::DEFERRED_POSITION,
             Shader("Deferred", kTextureAttrs, kTextureUniforms)));
@@ -105,16 +106,19 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(
             ShaderType::DEFERRED_NORMAL,
             Shader("Deferred", kTextureAttrs, kTextureUniforms)));
+   */
+
    shaders_.insert(std::make_pair(
             ShaderType::REFLECTION,
             Shader("Deferred", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(
             ShaderType::WATER,
             Shader("Water", kWaterAttrs, kWaterUniforms)));
-
+/*
    shaders_.insert(std::make_pair(
             ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalAttrs, kFinalUniforms)));
+*/
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
