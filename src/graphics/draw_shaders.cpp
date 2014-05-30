@@ -19,9 +19,6 @@ namespace {
          0.0, 0.0, 0.5, 0.0,
          0.5, 0.5, 0.5, 1.0);
 
-   units::MS average_time = 0;
-   size_t num_times = 0;
-
    void setupModelView(Shader& shader, const UniformLocationMap& locations,
          const glm::mat4& modelMatrix, const glm::mat4& viewMatrix, bool needsNormal) {
       glPolygonMode(GL_FRONT, GL_FILL);
@@ -113,7 +110,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
                   glClear(GL_DEPTH_BUFFER_BIT);
                }
                {
-                  const auto start_time = SDL_GetTicks();
                   for (auto& drawable : culledDrawables) {
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                         for(auto& mt : drawable.model_transforms) {
@@ -122,9 +118,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
                         }
                      }
                   }
-                  average_time = (average_time * num_times + SDL_GetTicks() - start_time) / (num_times + 1);
-                  ++num_times;
-                  std::clog << "setupShadowShader takes " << average_time << " ms" << std::endl;
                }
 
                if(!debug) {
