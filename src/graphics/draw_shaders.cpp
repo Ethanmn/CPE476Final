@@ -225,7 +225,7 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
 
 void DrawShader::sendOutputShaderType(ShaderType shaderT, Shader& shader) {
    if (shaderT == ShaderType::TEXTURE) {
-      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 3);
+      shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, 0);
       //printf("0\n");
    }
    else if (shaderT == ShaderType::DEFERRED_POSITION) {

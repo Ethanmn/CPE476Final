@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-#define NUM_DEF_TEX 3
+#define NUM_DEF_TEX 2
 
 void GenDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
 void GenDepthDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
@@ -26,9 +26,9 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
    GenDepthDeferredTexture(&g_buff_depth_texture, width, height);
 
    GLenum draw_buffers[] = {  GL_COLOR_ATTACHMENT0, 
-                              GL_COLOR_ATTACHMENT1,
-                              GL_COLOR_ATTACHMENT2  };
-   glDrawBuffers(NUM_DEF_TEX, draw_buffers);
+                              GL_COLOR_ATTACHMENT1 /*,
+                              GL_COLOR_ATTACHMENT2 */  };
+   glDrawBuffers(NUM_DEF_TEX, (GLenum*) draw_buffers);
    
    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
@@ -53,10 +53,10 @@ void GenDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int hei
    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 
          0, GL_RGB, GL_FLOAT, NULL);
    
-   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+   //glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   //glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 void GenDepthDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height) {
@@ -66,10 +66,10 @@ void GenDepthDeferredTexture(GLuint *texture_id, unsigned int width, unsigned in
    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 
          0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
    
-   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+   //glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   //glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+   //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
    glFramebufferTexture2D (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 
          GL_TEXTURE_2D, *texture_id, 0);

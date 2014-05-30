@@ -58,7 +58,8 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height, FB
    return texture_id;
 }
 
-FrameBufferObject::FrameBufferObject(unsigned int width, unsigned int height, TextureSlot texture_slot, FBOType fbo_type) :
+FrameBufferObject::FrameBufferObject(unsigned int width, unsigned int height, 
+      TextureSlot texture_slot, FBOType fbo_type) :
    texture_(static_cast<GLTextureID>(initialize(width, height, fbo_type)), texture_slot)
 {
 }

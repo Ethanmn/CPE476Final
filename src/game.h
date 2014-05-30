@@ -15,6 +15,7 @@
 #include "lightning_interaction.h"
 #include "BVHTree.h"
 #include "graphics/gl_adapters/frame_buffer_object.h"
+#include "graphics/gl_adapters/deferred_frame_buffer.h"
 #include "sound_engine.h"
 #include "bird_sound.h"
 #include "day_night_interaction.h"
