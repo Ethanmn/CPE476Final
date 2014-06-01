@@ -3,24 +3,26 @@
 
 #include <boost/optional.hpp>
 #include <glm/glm.hpp>
-#include "plane.h"
 
 struct Frustum {
    enum class TestResult {OUTSIDE, INTERSECT, INSIDE};
-   TestResult testSphere(const glm::vec3 &p, float ratio);
+   TestResult testSphere(const glm::vec3 &center, float ratio);
    Frustum(const glm::mat4& view_projection);
 
-   void setCamInternals(float angle, float ratio, float nearD, float farD);
-   void setCamDef(const glm::vec3 &p, const glm::vec3 &l, const glm::vec3 &u);
-
   private:
+   struct Plane {
+      Plane(const glm::vec4& coefficients);
+      float distance(const glm::vec3& p);
+
+     private:
+      glm::vec3 normal_; // A, B, C
+      float D;
+   };
+
    enum {
       TOP = 0, BOTTOM, LEFT,
       RIGHT, NEARP, FARP
    };
    boost::optional<Plane> planes_[6];
-   glm::vec3 ntl,ntr,nbl,nbr,ftl,ftr,fbl,fbr;
-   float nearD, farD, ratio, angle,tang;
-   float nw,nh,fw,fh;
 };
 #endif //FRUSTUM_H_
