@@ -10,6 +10,32 @@ Frustum::Plane::Plane(const glm::vec4& coefficients) :
    D /= mag;
 }
 
+std::vector<CulledDrawable> Frustum::cullDrawables(const std::vector<Drawable>& drawables) {
+   int culledObject = 0;
+
+   std::vector<CulledDrawable> culledDrawables;
+   for (auto& drawable : drawables) {
+      CulledDrawable culledDrawable;
+      for (auto& transform : drawable.model_transforms) {
+         CulledTransform culledTransform;
+         culledTransform.model = transform;
+
+         const auto min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
+         const auto max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
+         const auto mid = (min + max) / 2.0f;
+
+         if (testSphere(mid, glm::length(max - mid)) == Frustum::TestResult::OUTSIDE) {
+            culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
+            culledObject++;
+         }
+         culledDrawable.model_transforms.push_back(culledTransform);
+      }
+      culledDrawable.draw_template = drawable.draw_template;
+      culledDrawables.push_back(culledDrawable);
+   }
+   return culledDrawables;
+}
+
 float Frustum::Plane::distance(const glm::vec3& p) {
    return glm::dot(normal_, p) + D;
 }

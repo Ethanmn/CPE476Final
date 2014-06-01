@@ -4,10 +4,14 @@
 #include <boost/optional.hpp>
 #include <glm/glm.hpp>
 
+#include "graphics/draw_template.h"
+
 struct Frustum {
    enum class TestResult {OUTSIDE, INTERSECT, INSIDE};
    TestResult testSphere(const glm::vec3 &center, float ratio);
    Frustum(const glm::mat4& view_projection);
+
+   std::vector<CulledDrawable> cullDrawables(const std::vector<Drawable>& drawables);
 
   private:
    struct Plane {
