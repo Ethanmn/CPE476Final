@@ -42,7 +42,7 @@ varying vec2 vTexCoord;
 varying vec4 vShadow;
 varying float vUnderWater;
 
-void main() {
+mat4 calculateBones() {
    mat4 bone = mat4(1.0);
 #ifdef USE_BONES
    if (uHasBones != 0) {
@@ -63,7 +63,10 @@ void main() {
       }
    }
 #endif
+   return bone;
+}
 
+void main() {
    vec4 heightColor = vec4(0.0);
 #ifdef USE_HEIGHT_MAP
    float HEIGHT_MAP_SCALE = 3.0;
