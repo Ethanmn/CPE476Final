@@ -313,27 +313,25 @@ void Game::draw() {
    deerPos = deer_.getPosition();
 
 // View Frustum Culling
-   Frustum frustum(kProjectionMatrix * viewMatrix);
+   const auto view_projection = kProjectionMatrix * viewMatrix;
+   Frustum frustum(view_projection);
    int culledObject = 0;
 
    std::vector<CulledDrawable> culledDrawables;
    for (auto& drawable : drawables) {
-      glm::vec3 min, max, mid;
-
       CulledDrawable culledDrawable;
       for (auto& transform : drawable.model_transforms) {
          CulledTransform culledTransform;
          culledTransform.model = transform;
 
-         min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
-         max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
-         mid = (min + max) / 2.0f;
+         const auto min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
+         const auto max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
+         const auto mid = (min + max) / 2.0f;
 
          if (frustum.testSphere(mid, glm::length(max - mid)) == Frustum::TestResult::OUTSIDE) {
             culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
             culledObject++;
          }
-
          culledDrawable.model_transforms.push_back(culledTransform);
       }
       culledDrawable.draw_template = drawable.draw_template;

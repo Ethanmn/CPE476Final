@@ -7,7 +7,7 @@
 
 struct Frustum {
    enum class TestResult {OUTSIDE, INTERSECT, INSIDE};
-   TestResult testSphere(glm::vec3 &p, float ratio);
+   TestResult testSphere(const glm::vec3 &p, float ratio);
    Frustum(const glm::mat4& view_projection);
 
    void setCamInternals(float angle, float ratio, float nearD, float farD);
