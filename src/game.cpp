@@ -19,6 +19,8 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
+
+   units::MS average_time = 0, num_times = 0;
 }
 
 Game::Game() :
@@ -458,7 +460,15 @@ void Game::mainLoop() {
       }
 
       {
+         const auto start_time = SDL_GetTicks();
          draw();
+         average_time = (average_time * num_times + SDL_GetTicks() - start_time) / (num_times + 1);
+         ++num_times;
+         if (num_times == 10) {
+            std::clog << average_time << std::endl;
+            average_time = num_times = 0;
+         }
+
          engine_.swapWindow();
       }
 

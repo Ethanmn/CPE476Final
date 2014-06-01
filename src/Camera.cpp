@@ -86,5 +86,5 @@ void Camera::step(float dT) {
       position.y = 1.0f;
    }
 
-   position.y += 15.0f;
+   position.y += 23.0f;
 }
