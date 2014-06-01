@@ -98,11 +98,37 @@ void DrawShader::setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
    setupSunShader(shader, uniforms, sunIntensity, sunDir); 
 }
 
+void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
+   if (drawable.draw_template.height_map) 
+      setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
+   else
+      shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
+}
+
+void DrawShader::SendBones(Shader& shader, const Drawable& drawable) {
+   if (drawable.draw_template.has_bones()) {
+      shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
+      shader.sendUniform(Uniform::BONES, uniforms,
+      drawable.draw_template.mesh.animation.calculateBoneTransformations(
+      drawable.draw_template.mesh.bone_array));
+   }
+   else {
+      shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+   }
+}
+
+void DrawShader::SendTexture(Shader& shader, const Drawable& drawable) {
+   if(drawable.draw_template.texture)
+      setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
+   else {
+      shader.sendUniform(Uniform::HAS_TEXTURE, uniforms, 0);
+      shader.sendUniform(Uniform::TEXTURE, uniforms, 0);
+   }
+}
+
 void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, 
-                      FrameBufferObject reflection_fbo, /*
-                      FrameBufferObject g_buff_diffuse_fbo,
-                      FrameBufferObject g_buff_position_fbo,
-                      FrameBufferObject g_buff_normal_fbo, */
+                      FrameBufferObject reflection_fbo, 
+                      DeferredFrameBuffer deferred_fbo_,
                       vector<CulledDrawable> culledDrawables,
                       glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
                       glm::vec3 sunDir, float sunIntensity, int lightning) {
@@ -127,6 +153,26 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
             shadow_map_fbo_.texture().enable(texture_cache_);
             break;
 
+         case ShaderType::DEFERRED:
+            //deferred_fbo_.bind();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            
+            for (auto& drawable : culledDrawables) {
+               Drawable newDrawable;
+               newDrawable.draw_template = drawable.draw_template;
+
+               shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+               newDrawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
+               SendHeightMap(shader, newDrawable);
+               SendBones(shader, newDrawable);
+               SendTexture(shader, newDrawable);
+               drawModelTransforms(shader, newDrawable, viewMatrix); 
+            }
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            break;
+
          case ShaderType::REFLECTION:
             reflection_fbo.bind();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -148,25 +194,10 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
-
-         /*
-         case ShaderType::DEFERRED_POSITION:
-            g_buff_position_fbo.bind();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-         case ShaderType::DEFERRED_DIFFUSE:
-            g_buff_diffuse_fbo.bind();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-         case ShaderType::DEFERRED_NORMAL:
-            g_buff_normal_fbo.bind();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-         */
-
+         
          case ShaderType::TEXTURE:
             {
                std::vector<Drawable> drawables;
-               int culledObjects = 0;
                int nonCulledObjects = 0;
 
                for (auto& drawable : culledDrawables) {
@@ -224,31 +255,12 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
 
 void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix) {
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE ||
-          drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
-         { // Per-Drawable Texture Shader Setup
-
-            if (drawable.draw_template.height_map) 
-               setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
-            else
-               shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
-
-            if (drawable.draw_template.has_bones()) {
-               shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
-               shader.sendUniform(Uniform::BONES, uniforms,
-                     drawable.draw_template.mesh.animation.calculateBoneTransformations(
-                        drawable.draw_template.mesh.bone_array));
-            }
-            else {
-               shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-            }
-
-            if(drawable.draw_template.texture)
-               setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
-            else {
-               shader.sendUniform(Uniform::HAS_TEXTURE, uniforms, 0);
-               shader.sendUniform(Uniform::TEXTURE, uniforms, 0);
-            }
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+         { 
+         // Per-Drawable Texture Shader Setup
+            SendHeightMap(shader, drawable);
+            SendBones(shader, drawable);
+            SendTexture(shader, drawable);
 
             drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
          }

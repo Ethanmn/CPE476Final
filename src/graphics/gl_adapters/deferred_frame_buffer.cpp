@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-#define NUM_DEF_TEX 2
+#define NUM_DEF_TEX 3
 
 void GenDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
 void GenDepthDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
@@ -26,8 +26,8 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
    GenDepthDeferredTexture(&g_buff_depth_texture, width, height);
 
    GLenum draw_buffers[] = {  GL_COLOR_ATTACHMENT0, 
-                              GL_COLOR_ATTACHMENT1 /*,
-                              GL_COLOR_ATTACHMENT2 */  };
+                              GL_COLOR_ATTACHMENT1,
+                              GL_COLOR_ATTACHMENT2   };
    glDrawBuffers(NUM_DEF_TEX, (GLenum*) draw_buffers);
    
    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
@@ -36,7 +36,7 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
 }
 
 
-void DeferredFrameBuffer::Bind() {
+void DeferredFrameBuffer::bind() {
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_id_);
 }
 

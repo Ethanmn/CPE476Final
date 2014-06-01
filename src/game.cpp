@@ -337,10 +337,14 @@ void Game::draw() {
       culledDrawables.push_back(culledDrawable);
    }
 
-   //Skybox
+   for(auto& drawable : culledDrawables) {
+      if(drawable.draw_template.shader_type == ShaderType::TEXTURE)
+         drawable.draw_template.shader_type = ShaderType::DEFERRED;
+   }
    
 
-   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
+   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), deferred_fbo_, 
+         culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
 }
 
