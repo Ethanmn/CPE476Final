@@ -4,6 +4,7 @@
 #include <graphics/material.h>
 #include <iostream>
 #include "frustum.h"
+#include "timer.h"
 
 #include "graphics/texture.h"
 
@@ -19,8 +20,7 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
-
-   units::MS average_time = 0, num_times = 0;
+   Timer timer;
 }
 
 Game::Game() :
@@ -460,15 +460,9 @@ void Game::mainLoop() {
       }
 
       {
-         const auto start_time = SDL_GetTicks();
+         //timer.start();
          draw();
-         average_time = (average_time * num_times + SDL_GetTicks() - start_time) / (num_times + 1);
-         ++num_times;
-         if (num_times == 10) {
-            std::clog << average_time << std::endl;
-            average_time = num_times = 0;
-         }
-
+         //timer.end();
          engine_.swapWindow();
       }
 

@@ -11,7 +11,7 @@ namespace {
    bool debug = false;
    const float kOrthoProjAmount = 70.0f;
    const glm::mat4 kShadowProjection = glm::ortho(
-         -kOrthoProjAmount, kOrthoProjAmount, 
+         -kOrthoProjAmount, kOrthoProjAmount,
          -kOrthoProjAmount, kOrthoProjAmount,
          -40.0f, 40.0f);
    const glm::mat4 biasMatrix(
@@ -69,7 +69,7 @@ namespace {
 }
 
 // Setup common to both Texture/Sun Shaders
-void DrawShader::setupTexture(Shader& shader, const FrameBufferObject& shadow_map_fbo_, const glm::mat4& viewMatrix, 
+void DrawShader::setupTexture(Shader& shader, const FrameBufferObject& shadow_map_fbo_, const glm::mat4& viewMatrix,
          int useBlinnPhong, const glm::vec3& deerPos, const glm::vec3& sunDir, float sunIntensity, int lightning) {
    shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
    shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
@@ -80,7 +80,7 @@ void DrawShader::setupTexture(Shader& shader, const FrameBufferObject& shadow_ma
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
 
    shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-   setupSunShader(shader, uniforms, sunIntensity, sunDir); 
+   setupSunShader(shader, uniforms, sunIntensity, sunDir);
 }
 
 void DrawShader::setupReflectionShader(Shader& shader, const glm::mat4& viewMatrix,
@@ -91,11 +91,11 @@ void DrawShader::setupReflectionShader(Shader& shader, const glm::mat4& viewMatr
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
 
    shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-   setupSunShader(shader, uniforms, sunIntensity, sunDir); 
+   setupSunShader(shader, uniforms, sunIntensity, sunDir);
 }
 
 void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBufferObject& reflection_fbo,
-      const vector<CulledDrawable>& culledDrawables, const glm::mat4& viewMatrix, 
+      const vector<CulledDrawable>& culledDrawables, const glm::mat4& viewMatrix,
       int useBlinnPhong, const glm::vec3& deerPos,
       const glm::vec3& sunDir, float sunIntensity, int lightning) {
    for(auto& shader_pair : shaders.getMap()) {
@@ -155,10 +155,10 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
             break;
 
          case ShaderType::SKYBOX:
-            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix); 
+            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
 
             for (auto& drawable : culledDrawables) {
-               if (drawable.draw_template.shader_type == ShaderType::SKYBOX) { 
+               if (drawable.draw_template.shader_type == ShaderType::SKYBOX) {
                /* doesn't use drawModelTransforms because no normals */
                for(const auto& mt : drawable.model_transforms) {
                   shader.sendUniform(Uniform::TEXTURE, uniforms, (*drawable.draw_template.texture).texture_slot());
@@ -217,9 +217,9 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
 
 void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, const glm::mat4& viewMatrix) {
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) {
          { // Per-Drawable Texture Shader Setup
-            if (drawable.draw_template.height_map) 
+            if (drawable.draw_template.height_map)
                setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
             else
                shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
