@@ -317,21 +317,8 @@ void Game::draw() {
    Frustum frustum(view_projection);
    auto culledDrawables = frustum.cullDrawables(drawables);
 
-   //Skybox
-   std::vector<Drawable> skyDrawables;
-   //skyDrawables = skybox.drawables(true);
-   skyDrawables.push_back(skybox.drawable(day_cycle_.isDay()));
-
-   for (auto& skyDrawable : skyDrawables) {
-      CulledDrawable skyCulledDraw;
-      for (auto& transform : skyDrawable.model_transforms) {
-          CulledTransform skyTransform;
-          skyTransform.model = transform;
-          skyCulledDraw.model_transforms.push_back(skyTransform);
-      }
-      skyCulledDraw.draw_template = skyDrawable.draw_template;
-      culledDrawables.push_back(skyCulledDraw);
-   }
+   // Skybox is never culled, so we add it after.
+   culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
 
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
