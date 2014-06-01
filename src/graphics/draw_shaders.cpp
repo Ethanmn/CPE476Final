@@ -8,7 +8,6 @@ using namespace std;
 namespace {
    bool debug = false;
    const float kOrthoProjAmount = 70.0f;
-   const glm::mat4 projectionMatrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
    const glm::mat4 kShadowProjection = glm::ortho(
          -kOrthoProjAmount, kOrthoProjAmount, 
          -kOrthoProjAmount, kOrthoProjAmount,

@@ -313,14 +313,8 @@ void Game::draw() {
    deerPos = deer_.getPosition();
 
 // View Frustum Culling
-   Frustum viewFrust;
+   Frustum frustum(kProjectionMatrix * viewMatrix);
    int culledObject = 0;
-   // Set up values used to construct planes
-   viewFrust.setCamInternals(kFieldOfView, kAspectRatio, kNear, kFar);
-   // Use camera values to construch planes
-   viewFrust.setCamDef(curCam->getPosition(),
-                       curCam->getLookAt(),
-                       glm::vec3(0, 1, 0));
 
    std::vector<CulledDrawable> culledDrawables;
    for (auto& drawable : drawables) {
@@ -334,14 +328,12 @@ void Game::draw() {
          min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
          max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
          mid = (min + max) / 2.0f;
-         if (!viewFrust.sphereInFrustum(mid, glm::length(max - mid))) {
+
+         if (frustum.testSphere(mid, glm::length(max - mid)) == Frustum::TestResult::OUTSIDE) {
             culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
             culledObject++;
          }
-         // Test for reflection
-         // if (!viewFrust.sphereInFrustum(mid, dist(max, mid))) {
-         //    culledTransform.cullFlag.insert(CullType::REFLECT_CULLING);
-         // }
+
          culledDrawable.model_transforms.push_back(culledTransform);
       }
       culledDrawable.draw_template = drawable.draw_template;

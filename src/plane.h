@@ -4,14 +4,15 @@
 #include <glm/glm.hpp>
 
 struct Plane {
+   Plane(const glm::vec3& normal, float D) :
+      normal_(normal),
+      D(D) {}
+   Plane(const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2);
+   float distance(glm::vec3 p);
 
 private:
-glm::vec3 p0, p1, p2, u, v, n;
-float A, B, C, D;
-
-public:
-	void set3Points(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2);
-	float distance(glm::vec3 p);
+   glm::vec3 normal_; // A, B, C
+   float D;
 };
 
 #endif //PLANE_H_

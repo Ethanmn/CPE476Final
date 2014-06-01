@@ -3,6 +3,62 @@
 
 #define ANG2RAD 3.14159265358979323846/180.0
 
+Frustum::Frustum(const glm::mat4& vp) {
+   planes_[LEFT] = Plane(
+         glm::vec3(
+            vp[3][0] + vp[0][0],
+            vp[3][1] + vp[0][1],
+            vp[3][2] + vp[0][2]
+            ),
+         vp[3][3] + vp[0][3]
+         );
+
+   planes_[RIGHT] = Plane(
+         glm::vec3(
+            vp[3][0] - vp[0][0],
+            vp[3][1] - vp[0][1],
+            vp[3][2] - vp[0][2]
+            ),
+         vp[3][3] - vp[0][3]
+         );
+
+   planes_[TOP] = Plane(
+         glm::vec3(
+            vp[3][0] - vp[1][0],
+            vp[3][1] - vp[1][1],
+            vp[3][2] - vp[1][2]
+            ),
+         vp[3][3] - vp[1][3]
+         );
+
+   planes_[BOTTOM] = Plane(
+         glm::vec3(
+            vp[3][0] + vp[1][0],
+            vp[3][1] + vp[1][1],
+            vp[3][2] + vp[1][2]
+            ),
+         vp[3][3] + vp[1][3]
+         );
+
+   planes_[NEARP] = Plane(
+         glm::vec3(
+            vp[3][0] + vp[2][0],
+            vp[3][1] + vp[2][1],
+            vp[3][2] + vp[2][2]
+            ),
+         vp[3][3] + vp[2][3]
+         );
+
+   planes_[FARP] = Plane(
+         glm::vec3(
+            vp[3][0] - vp[2][0],
+            vp[3][1] - vp[2][1],
+            vp[3][2] - vp[2][2]
+            ),
+         vp[3][3] - vp[2][3]
+         );
+}
+
 void Frustum::setCamInternals(float angle, float ratio, float nearD, float farD) {
    // store the information
    this->ratio = ratio;
@@ -50,26 +106,26 @@ void Frustum::setCamDef(const glm::vec3 &p, const glm::vec3 &l, const glm::vec3 
    fbr = fc - Y * fh + X * fw;
 
    // compute the six planes
-   // the function set3Points assumes that the points
+   // the function Plane assumes that the points
    // are given in counter clockwise order
-   pl[TOP].set3Points(ntr,ntl,ftl);
-   pl[BOTTOM].set3Points(nbl,nbr,fbr);
-   pl[LEFT].set3Points(ntl,nbl,fbl);
-   pl[RIGHT].set3Points(nbr,ntr,fbr);
-   pl[NEARP].set3Points(ntl,ntr,nbr);
-   pl[FARP].set3Points(ftr,ftl,fbl);
+   planes_[TOP] = Plane(ntr,ntl,ftl);
+   planes_[BOTTOM] = Plane(nbl,nbr,fbr);
+   planes_[LEFT] = Plane(ntl,nbl,fbl);
+   planes_[RIGHT] = Plane(nbr,ntr,fbr);
+   planes_[NEARP] = Plane(ntl,ntr,nbr);
+   planes_[FARP] = Plane(ftr,ftl,fbl);
 }
 
-int Frustum::sphereInFrustum(glm::vec3 &p, float radius) {
+Frustum::TestResult Frustum::testSphere(glm::vec3 &p, float radius) {
    float distance;
-   int result = INSIDE;
+   TestResult result = TestResult::INSIDE;
 
    for (int i = 0; i < 6; i++) {
-      distance = pl[i].distance(p);
+      distance = planes_[i]->distance(p);
       if (distance < -radius)
-         return OUTSIDE;
+         return TestResult::OUTSIDE;
       else if (distance < radius)
-         result = INTERSECT;
+         result = TestResult::INTERSECT;
    }
    return result;
 }
