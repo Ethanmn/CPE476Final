@@ -3,6 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <graphics/material.h>
 #include <iostream>
+#include "frustum.h"
 
 #include "graphics/texture.h"
 
@@ -312,7 +313,7 @@ void Game::draw() {
    deerPos = deer_.getPosition();
 
 // View Frustum Culling
-   FrustumG viewFrust;
+   Frustum viewFrust;
    int culledObject = 0;
    // Set up values used to construct planes
    viewFrust.setCamInternals(kFieldOfView, kAspectRatio, kNear, kFar);
