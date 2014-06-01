@@ -35,7 +35,8 @@ void switchTextureAndBlinn(Drawable *drawObj);
 
 enum class CullType {
    REFLECT_CULLING,
-   VIEW_CULLING
+   VIEW_CULLING,
+   SHADOW_CULLING,
 };
 
 typedef std::set<CullType> CullSet;

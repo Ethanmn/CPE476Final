@@ -10,6 +10,17 @@ Frustum::Plane::Plane(const glm::vec4& coefficients) :
    D /= mag;
 }
 
+std::vector<CulledDrawable> Frustum::cullShadowDrawables(std::vector<CulledDrawable> drawables) {
+   for (auto& drawable : drawables) {
+      for (auto& transform : drawable.model_transforms) {
+         if (testSphere(BoundingSphere(drawable.draw_template, transform.model)) == Frustum::TestResult::OUTSIDE) {
+            transform.cullFlag.insert(CullType::SHADOW_CULLING);
+         }
+      }
+   }
+   return drawables;
+}
+
 std::vector<CulledDrawable> Frustum::cullDrawables(const std::vector<Drawable>& drawables) {
    int culledObject = 0;
 
@@ -20,11 +31,7 @@ std::vector<CulledDrawable> Frustum::cullDrawables(const std::vector<Drawable>& 
          CulledTransform culledTransform;
          culledTransform.model = transform;
 
-         const auto min = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.min, 1));
-         const auto max = glm::vec3(transform * glm::vec4(drawable.draw_template.mesh.max, 1));
-         const auto mid = (min + max) / 2.0f;
-
-         if (testSphere(mid, glm::length(max - mid)) == Frustum::TestResult::OUTSIDE) {
+         if (testSphere(BoundingSphere(drawable.draw_template, transform)) == Frustum::TestResult::OUTSIDE) {
             culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
             culledObject++;
          }
@@ -52,14 +59,14 @@ Frustum::Frustum(const glm::mat4& view_projection) {
    planes_[FARP] = Plane(transpose[3] - transpose[2]);
 }
 
-Frustum::TestResult Frustum::testSphere(const glm::vec3 &center, float radius) {
+Frustum::TestResult Frustum::testSphere(const BoundingSphere& sphere) {
    TestResult result = TestResult::INSIDE;
    for (int i = 0; i < 6; i++) {
       if (!planes_[i]) continue;
-      const auto distance = planes_[i]->distance(center);
-      if (distance < -radius)
+      const auto distance = planes_[i]->distance(sphere.center);
+      if (distance < -sphere.radius)
          return TestResult::OUTSIDE;
-      else if (distance < radius)
+      else if (distance < sphere.radius)
          result = TestResult::INTERSECT;
    }
    return result;

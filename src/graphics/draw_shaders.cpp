@@ -4,6 +4,8 @@
 #include <iostream>
 #include <SDL.h>
 
+#include "frustum.h"
+
 using namespace std;
 namespace {
    bool debug = false;
@@ -104,16 +106,21 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
             {
                const auto shadow_view = glm::lookAt(sunDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
                const auto view_projection = kShadowProjection * shadow_view;
+               // Shadow Culling.
+               Frustum frustum(view_projection);
+               const auto shadow_drawables = frustum.cullShadowDrawables(culledDrawables);
                if(!debug) {
                   shadow_map_fbo_.bind();
                   glClear(GL_DEPTH_BUFFER_BIT);
                }
                {
-                  for (auto& drawable : culledDrawables) {
+                  for (auto& drawable : shadow_drawables) {
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                         for(auto& mt : drawable.model_transforms) {
-                           setupShadowShader(shader, uniforms, view_projection, mt.model);
-                           shader.drawMesh(drawable.draw_template.mesh);
+                           if (!mt.cullFlag.count(CullType::SHADOW_CULLING)) {
+                              setupShadowShader(shader, uniforms, view_projection, mt.model);
+                              shader.drawMesh(drawable.draw_template.mesh);
+                           }
                         }
                      }
                   }

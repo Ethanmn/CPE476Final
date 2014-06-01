@@ -312,7 +312,7 @@ void Game::draw() {
    viewMatrix = curCam->getViewMatrix();
    deerPos = deer_.getPosition();
 
-// View Frustum Culling
+   // View Frustum Culling
    const auto view_projection = kProjectionMatrix * viewMatrix;
    Frustum frustum(view_projection);
    auto culledDrawables = frustum.cullDrawables(drawables);
