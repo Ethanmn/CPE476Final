@@ -7,7 +7,6 @@
 #include <vector>
 #include "graphics/gl_adapters/frame_buffer_object.h"
 #include "globals.h"
-#include "culled_drawable.h"
 
 struct DrawShader {
    DrawShader() : uniforms(shaders.getUniformLocationMap()), 
