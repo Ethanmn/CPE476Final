@@ -35,7 +35,6 @@ attribute float aBoneID4;
 attribute float aBoneWeight4;
 #endif
 
-varying vec4 vPosition;
 varying vec4 vViewer;
 varying vec3 vNormal;
 varying vec2 vTexCoord;
@@ -75,12 +74,12 @@ void main() {
    }
 #endif
 
-   vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
-   vViewer = vPosition;
+   vec4 pos = uModelMatrix * calculateBones() * vec4(heightColor.xyz + aPosition, 1.0);
+   vViewer = uViewMatrix * pos;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
-   vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
-   vShadow = uShadowMap * uModelMatrix * vec4(heightColor.xyz + aPosition, 1.0);
+   vTexCoord = uHasTexture != 0 ? vec2(aTexCoord) : vec2(0.0, 0.0);
+   vShadow = uShadowMap * pos;
    vUnderWater = heightColor.y < 0.0 ? 1.0 : 0.0;
-   gl_Position = uProjectionMatrix * vPosition;
+   gl_Position = uProjectionMatrix * vViewer;
 
 }
