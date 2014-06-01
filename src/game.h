@@ -26,6 +26,7 @@
 #include "frustumG.h"
 #include "dist.h"
 #include "Skybox.h"
+#include "Camera.h"
 
 struct Game {
    Game();
