@@ -21,43 +21,48 @@ namespace {
          0.5, 0.5, 0.5, 1.0);
 
    void setupModelView(Shader& shader, const UniformLocationMap& locations,
-         const glm::mat4& modelMatrix, const glm::mat4& viewMatrix, bool needsNormal) {
+         const glm::mat4& modelMatrix, const glm::mat4& viewMatrix, bool needsNormal, bool needsModel) {
       glPolygonMode(GL_FRONT, GL_FILL);
       shader.sendUniform(Uniform::MODEL_VIEW, locations, viewMatrix * modelMatrix);
       if(needsNormal) {
          shader.sendUniform(Uniform::NORMAL, locations,
                glm::transpose(glm::inverse(viewMatrix * modelMatrix)));
       }
-      shader.sendUniform(Uniform::MODEL, locations, modelMatrix);
+      if(needsModel)
+         shader.sendUniform(Uniform::MODEL, locations, modelMatrix);
    }
 
    void setupSunShader(Shader& shader, const UniformLocationMap& locations,
-         float sunIntensity, glm::vec3 sunDir) {
+         float sunIntensity, const glm::vec3& sunDir) {
       glPolygonMode(GL_FRONT, GL_FILL);
       shader.sendUniform(Uniform::SUN_INTENSITY, locations, sunIntensity);
       shader.sendUniform(Uniform::SUN_DIR, locations, sunDir);
    }
 
-   void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture, const TextureCache& texture_cache) {
+   void setupTextureShader(Shader& shader, const UniformLocationMap& locations, 
+         const Texture& texture, const TextureCache& texture_cache) {
       shader.sendUniform(Uniform::HAS_TEXTURE, locations, 1);
       shader.sendUniform(Uniform::TEXTURE, locations, texture.texture_slot());
       texture.enable(texture_cache);
    }
 
-   void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const Texture& height_map, const TextureCache& texture_cache) {
+   void setupHeightMap(Shader& shader, const UniformLocationMap& locations,
+         const Texture& height_map, const TextureCache& texture_cache) {
       shader.sendUniform(Uniform::HEIGHT_MAP, locations, height_map.texture_slot());
       shader.sendUniform(Uniform::HAS_HEIGHT_MAP, locations, 1);
       height_map.enable(texture_cache);
    }
 
+
    void setupShadowShader(Shader& shader, const UniformLocationMap& locations, const glm::mat4& view_projection,
-         const glm::mat4& modelMatrix) {
-      const glm::mat4 mvp = view_projection * modelMatrix;
-      shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, locations, mvp);
-   }
+        const glm::mat4& modelMatrix) {
+     const glm::mat4 mvp = view_projection * modelMatrix;
+     shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, locations, mvp);
+  }
+
 
    void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
-         glm::vec3 lightDir, glm::vec3 deerPos) {
+         const glm::vec3& lightDir, const glm::vec3& deerPos) {
       glm::mat4 lightMat, shadowProjection, shadowView;
 
       shadowProjection = biasMatrix * kShadowProjection;
@@ -69,8 +74,9 @@ namespace {
 }
 
 // Setup common to both Texture/Sun Shaders
-void DrawShader::setupTexture(Shader& shader, const FrameBufferObject& shadow_map_fbo_, const glm::mat4& viewMatrix,
-         int useBlinnPhong, const glm::vec3& deerPos, const glm::vec3& sunDir, float sunIntensity, int lightning) {
+void DrawShader::setupTexture(Shader& shader, const FrameBufferObject& shadow_map_fbo_, 
+         const glm::mat4& viewMatrix, int useBlinnPhong, const glm::vec3& deerPos, const glm::vec3& sunDir, 
+         float sunIntensity, int lightning) {
    shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
    shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
    shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
@@ -94,10 +100,44 @@ void DrawShader::setupReflectionShader(Shader& shader, const glm::mat4& viewMatr
    setupSunShader(shader, uniforms, sunIntensity, sunDir);
 }
 
-void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBufferObject& reflection_fbo,
-      const vector<CulledDrawable>& culledDrawables, const glm::mat4& viewMatrix,
-      int useBlinnPhong, const glm::vec3& deerPos,
-      const glm::vec3& sunDir, float sunIntensity, int lightning) {
+void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
+   if (drawable.draw_template.height_map) 
+      setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
+   else
+      shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
+}
+
+void DrawShader::SendBones(Shader& shader, const Drawable& drawable) {
+   if (drawable.draw_template.has_bones()) {
+      shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
+      shader.sendUniform(Uniform::BONES, uniforms,
+      drawable.draw_template.mesh.animation.calculateBoneTransformations(
+      drawable.draw_template.mesh.bone_array));
+   }
+   else {
+      shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+   }
+}
+
+void DrawShader::SendTexture(Shader& shader, const Drawable& drawable) {
+   if(drawable.draw_template.texture)
+      setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
+   else {
+      shader.sendUniform(Uniform::HAS_TEXTURE, uniforms, 0);
+      shader.sendUniform(Uniform::TEXTURE, uniforms, 0);
+   }
+}
+
+void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, 
+                      const FrameBufferObject& reflection_fbo, 
+                      const vector<CulledDrawable>& culledDrawables,
+                      const glm::mat4& viewMatrix, 
+                      int useBlinnPhong, 
+                      const glm::vec3& deerPos,
+                      const glm::vec3& sunDir, 
+                      float sunIntensity, 
+                      int lightning) {
+
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
       shader.use();
@@ -132,6 +172,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
                }
             }
             break;
+
          case ShaderType::REFLECTION:
             reflection_fbo.bind();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -190,6 +231,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
                drawTextureShader(shader, drawables, viewMatrix);
             }
             break;
+
          case ShaderType::WATER:
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
             shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
@@ -200,7 +242,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
                newDrawable.draw_template = drawable.draw_template;
                if (drawable.draw_template.shader_type == ShaderType::WATER) {
                   setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
-                  drawModelTransforms(shader, newDrawable, viewMatrix);
+                  drawModelTransforms(shader, newDrawable, viewMatrix, true);
                }
             }
             break;
@@ -208,43 +250,27 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, const FrameBuffe
    }
 }
 
-void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view) {
+void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view,
+      bool needsModel) {
    for(const auto& mt : drawable.model_transforms) {
-      setupModelView(shader, uniforms, mt, view, true);
+      setupModelView(shader, uniforms, mt, view, true, needsModel);
       shader.drawMesh(drawable.draw_template.mesh);
    }
 }
 
-void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, const glm::mat4& viewMatrix) {
+void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
+      const glm::mat4& viewMatrix) {
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) {
-         { // Per-Drawable Texture Shader Setup
-            if (drawable.draw_template.height_map)
-               setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
-            else
-               shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
-
-            if (drawable.draw_template.has_bones()) {
-               shader.sendUniform(Uniform::HAS_BONES, uniforms, 1);
-               shader.sendUniform(Uniform::BONES, uniforms,
-                     drawable.draw_template.mesh.animation.calculateBoneTransformations(
-                        drawable.draw_template.mesh.bone_array));
-            }
-            else {
-               shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-            }
-
-            if(drawable.draw_template.texture)
-               setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
-            else {
-               shader.sendUniform(Uniform::HAS_TEXTURE, uniforms, 0);
-               shader.sendUniform(Uniform::TEXTURE, uniforms, 0);
-            }
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+         { 
+         // Per-Drawable Texture Shader Setup
+            SendHeightMap(shader, drawable);
+            SendBones(shader, drawable);
+            SendTexture(shader, drawable);
 
             drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
          }
-
-         drawModelTransforms(shader, drawable, viewMatrix);
+         drawModelTransforms(shader, drawable, viewMatrix, true);
       }
    }
 }
