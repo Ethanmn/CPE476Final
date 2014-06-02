@@ -179,29 +179,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
 
-          case ShaderType::DEFERRED:
-            if(printCurrentShaderName)
-               printf("Deferred\n");
-            //deferred_fbo_.bind();
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
-
-            for (auto& drawable : culledDrawables) {
-               Drawable newDrawable;
-               newDrawable.draw_template = drawable.draw_template;
-               
-               if(newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
-                  newDrawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
-                  SendHeightMap(shader, newDrawable);
-                  SendBones(shader, newDrawable);
-                  SendTexture(shader, newDrawable);
-                  drawModelTransforms(shader, newDrawable, viewMatrix, false);
-               } 
-            }
-            break;
-
          case ShaderType::REFLECTION:
             if(printCurrentShaderName)
                printf("Reflection\n");
@@ -241,6 +218,28 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   shader.drawMesh(drawable.draw_template.mesh);
                }
                }
+            }
+            break;
+
+         case ShaderType::DEFERRED:
+            if(printCurrentShaderName)
+               printf("Deferred\n");
+            //deferred_fbo_.bind();
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
+            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+
+            for (auto& drawable : culledDrawables) {
+               Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
+
+               if(newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
+                  newDrawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
+                  SendHeightMap(shader, newDrawable);
+                  SendBones(shader, newDrawable);
+                  SendTexture(shader, newDrawable);
+                  drawModelTransforms(shader, newDrawable, viewMatrix, false);
+               } 
             }
             break;
 
