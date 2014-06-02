@@ -9,6 +9,7 @@
 using namespace std;
 namespace {
    bool debug = false;
+   bool printCurrentShaderName = false;
    const float kOrthoProjAmount = 70.0f;
    const glm::mat4 kShadowProjection = glm::ortho(
          -kOrthoProjAmount, kOrthoProjAmount,
@@ -103,8 +104,10 @@ void DrawShader::setupReflectionShader(Shader& shader, const glm::mat4& viewMatr
 void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
    if (drawable.draw_template.height_map) 
       setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
-   else
+   else {
       shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
+      shader.sendUniform(Uniform::HEIGHT_MAP, uniforms, 0);
+   }
 }
 
 void DrawShader::SendBones(Shader& shader, const Drawable& drawable) {
@@ -116,6 +119,7 @@ void DrawShader::SendBones(Shader& shader, const Drawable& drawable) {
    }
    else {
       shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
+      shader.sendUniform(Uniform::BONES, uniforms, 0);
    }
 }
 
@@ -144,7 +148,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
       shader.use();
       switch (shader_pair.first) {
          case ShaderType::SHADOW:
-            printf("Shadow\n");
+            if(printCurrentShaderName)
+               printf("Shadow\n");
             {
                const auto shadow_view = glm::lookAt(sunDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
                const auto view_projection = kShadowProjection * shadow_view;
@@ -176,7 +181,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
           case ShaderType::DEFERRED:
-            printf("Deferred\n");
+            if(printCurrentShaderName)
+               printf("Deferred\n");
             //deferred_fbo_.bind();
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -198,7 +204,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::REFLECTION:
-            printf("Reflection\n");
+            if(printCurrentShaderName)
+               printf("Reflection\n");
             reflection_fbo.bind();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
@@ -221,7 +228,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::SKYBOX:
-            printf("Skybox\n");
+            if(printCurrentShaderName)
+               printf("Skybox\n");
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
 
             for (auto& drawable : culledDrawables) {
@@ -238,7 +246,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::TEXTURE:
-            printf("Texture\n");
+            if(printCurrentShaderName)
+               printf("Texture\n");
             {
                std::vector<Drawable> drawables;
                int nonCulledObjects = 0;
@@ -261,7 +270,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::WATER:
-            printf("Water\n");
+            if(printCurrentShaderName)
+               printf("Water\n");
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
             shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
             shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
@@ -276,7 +286,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
          case ShaderType::FINAL_LIGHT_PASS:
-            printf("Final Light Pass\n");
+            if(printCurrentShaderName)
+               printf("Final Light Pass\n");
             break;
          /*
             setupSunShader(shader, uniforms, sunIntensity, sunDir);

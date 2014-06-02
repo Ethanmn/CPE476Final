@@ -79,6 +79,10 @@ const std::vector<Uniform> kDeferredPassUniforms {
       
    Uniform::BONES,
    Uniform::HAS_BONES,
+
+   //Uniform::HAS_SHADOWS,
+   //Uniform::SHADOW_MAP,
+   //Uniform::SHADOW_MAP_TEXTURE,
 };
 
 const std::vector<Attribute> kShadowAttrs{

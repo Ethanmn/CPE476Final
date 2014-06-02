@@ -341,7 +341,7 @@ void Game::draw() {
       }
    }
 
-
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), deferred_fbo_, 
          culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
