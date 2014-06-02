@@ -16,7 +16,7 @@ varying vec3 vNormal;
 vec4 calculateDiffuse();
 
 void main() {
-   gl_FragColor = vec4(vNormal, 1.0);
+   gl_FragColor = calculateDiffuse();
    /*gl_FragData[0] = vPosition;*/
    /*gl_FragData[1] = calculateDiffuse();*/
    /*gl_FragData[2] = vec4(vNormal, 1.0);*/
