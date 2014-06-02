@@ -35,6 +35,7 @@ struct Camera {
 
       float springStrength;
       float dampConst;
+      float speed;
 };
 
 #endif // CAMERA_H_
