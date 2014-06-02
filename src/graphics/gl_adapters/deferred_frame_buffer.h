@@ -10,7 +10,7 @@ enum class GBufferType {
 }; 
 
 struct DeferredFrameBuffer {
-   DeferredFrameBuffer(unsigned int width, unsigned int height, bool debuggingDeferredFBO); 
+   DeferredFrameBuffer(unsigned int width, unsigned int height); 
 
    void Initialize(unsigned int width, unsigned int height);
    void bind();

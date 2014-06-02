@@ -124,8 +124,7 @@ const std::vector<Uniform> kFinalPassUniforms{
 };
 
 Shaders::Shaders() {
-   //runDeferred = true;
-   
+   runDeferred = true;
    if(runDeferred) {
       shaders_.insert(std::make_pair(ShaderType::DEFERRED,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));

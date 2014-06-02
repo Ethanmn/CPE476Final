@@ -4,12 +4,16 @@
 #include <assert.h>
 #define NUM_DEF_TEX 3
 
+namespace {
+   bool useFBO = false; /* debugging purposes */
+}
+
 void GenDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
 void GenDepthDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
 
-DeferredFrameBuffer::DeferredFrameBuffer(unsigned int width, unsigned int height, bool debuggingDeferredFBO) 
+DeferredFrameBuffer::DeferredFrameBuffer(unsigned int width, unsigned int height) 
 {
-   if(!debuggingDeferredFBO)
+   if(useFBO)
       Initialize(width, height);
 }
 

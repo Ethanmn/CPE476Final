@@ -13,7 +13,7 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool debuggingDeferredFBO = true;
+   bool useDeferredNotTexture = true;
 
    int lighting = 0;
    int raining = 0;
@@ -85,7 +85,7 @@ Game::Game() :
    curCam(&deerCam),
    airMode(false),
 
-   deferred_fbo_(kScreenWidth, kScreenHeight, debuggingDeferredFBO),
+   deferred_fbo_(kScreenWidth, kScreenHeight),
 
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
@@ -334,11 +334,10 @@ void Game::draw() {
    // Skybox is never culled, so we add it after.
    culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
 
-   if(!debuggingDeferredFBO) {
+   if(useDeferredNotTexture) {
       for(auto& drawable : culledDrawables) {
-         if(drawable.draw_template.shader_type == ShaderType::TEXTURE) {
+         if(drawable.draw_template.shader_type == ShaderType::TEXTURE) 
             drawable.draw_template.shader_type = ShaderType::DEFERRED;
-         }
       }
    }
 
