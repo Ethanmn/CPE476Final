@@ -55,10 +55,28 @@ const std::vector<Uniform> kTextureUniforms{
 
 const std::vector<Attribute> kShadowAttrs{
    Attribute::VERTEX,
+
+   Attribute::BONE_ID0,
+   Attribute::BONE_WEIGHT0,
+
+   Attribute::BONE_ID1,
+   Attribute::BONE_WEIGHT1,
+
+   Attribute::BONE_ID2,
+   Attribute::BONE_WEIGHT2,
+
+   Attribute::BONE_ID3,
+   Attribute::BONE_WEIGHT3,
+
+   Attribute::BONE_ID4,
+   Attribute::BONE_WEIGHT4,
 };
 const std::vector<Uniform> kShadowUniforms{
    Uniform::MODEL_VIEW_PROJECTION,
    Uniform::PROJECTION,
+   
+   Uniform::BONES,
+   Uniform::HAS_BONES,
 };
 
 const std::vector<Attribute> kSkyboxAttrs{
