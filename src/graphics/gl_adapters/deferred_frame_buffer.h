@@ -20,8 +20,8 @@ struct DeferredFrameBuffer {
 
   private:
    GLuint fbo_id_;
-   GLuint g_buff_textures[3];
-   GLuint g_buff_depth_texture;
+   GLuint g_buff_textures_[3];
+   GLuint g_buff_depth_texture_;
 
    //Texture position_texture_;
    //Texture normal_texture_;

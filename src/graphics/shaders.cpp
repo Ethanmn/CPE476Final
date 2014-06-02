@@ -1,6 +1,10 @@
 #include "graphics/shaders.h"
 #include <assert.h>
 
+namespace {
+   bool runDeferred = false;
+}
+
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
    Attribute::TEX_COORD,
@@ -120,26 +124,26 @@ const std::vector<Uniform> kFinalPassUniforms{
 };
 
 Shaders::Shaders() {
-   shaders_.insert(std::make_pair(ShaderType::SHADOW, 
-            Shader("Shadow", kShadowAttrs, kShadowUniforms)));
+   //runDeferred = true;
    
-   shaders_.insert(std::make_pair(ShaderType::TEXTURE,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
-   
-   //shaders_.insert(std::make_pair(ShaderType::DEFERRED,
-            //Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
-   
-   shaders_.insert(std::make_pair(ShaderType::REFLECTION,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
-
-   shaders_.insert(std::make_pair(ShaderType::WATER,
-            Shader("Water", kWaterAttrs, kWaterUniforms)));
-
-   //shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
+   if(runDeferred) {
+      shaders_.insert(std::make_pair(ShaderType::DEFERRED,
+            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+      //shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             //Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
-   
-   shaders_.insert(std::make_pair(ShaderType::SKYBOX,
+   }
+   else {
+      shaders_.insert(std::make_pair(ShaderType::SHADOW, 
+            Shader("Shadow", kShadowAttrs, kShadowUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::TEXTURE,
+            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::REFLECTION,
+            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::WATER,
+            Shader("Water", kWaterAttrs, kWaterUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
+   }  
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
