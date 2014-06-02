@@ -106,7 +106,6 @@ void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
       setupHeightMap(shader, uniforms, *drawable.draw_template.height_map, texture_cache_);
    else {
       shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 0);
-      shader.sendUniform(Uniform::HEIGHT_MAP, uniforms, 0);
    }
 }
 
@@ -119,7 +118,6 @@ void DrawShader::SendBones(Shader& shader, const Drawable& drawable) {
    }
    else {
       shader.sendUniform(Uniform::HAS_BONES, uniforms, 0);
-      shader.sendUniform(Uniform::BONES, uniforms, 0);
    }
 }
 
@@ -162,6 +160,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
                {
                   for (auto& drawable : shadow_drawables) {
+                     SendBones(shader, Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                         for(auto& mt : drawable.model_transforms) {
                            if (!mt.cullFlag.count(CullType::SHADOW_CULLING)) {
@@ -250,18 +249,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                printf("Texture\n");
             {
                std::vector<Drawable> drawables;
-               int nonCulledObjects = 0;
-
                for (auto& drawable : culledDrawables) {
-                  Drawable newDrawable;
-                  newDrawable.draw_template = drawable.draw_template;
-                  for (auto& modelTransforms : drawable.model_transforms) {
-                     if (!modelTransforms.cullFlag.count(CullType::VIEW_CULLING)) {
-                        newDrawable.model_transforms.push_back(modelTransforms.model);
-                        nonCulledObjects++;
-                     }
-                  }
-                  drawables.push_back(newDrawable);
+                  drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING));
                }
                setupTexture(shader, shadow_map_fbo_, viewMatrix, useBlinnPhong, 
                      deerPos, sunDir, sunIntensity, lightning);

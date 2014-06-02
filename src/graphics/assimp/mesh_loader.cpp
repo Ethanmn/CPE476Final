@@ -178,14 +178,19 @@ AssimpMesh MeshLoader::loadMesh(const std::string& path) {
    if (mesh.mNumBones > 0) {
       // Get the animations from the scene, but only if we have bones.
       std::map<std::string, aiNodeAnim*> channel_map;
+      float duration = 0.f, ticks_per_second = 0.f;
       for (size_t i = 0; i < scene->mNumAnimations; ++i) {
          auto& animation = *scene->mAnimations[i];
-         ret.animation = Animation(animation.mDuration, animation.mTicksPerSecond);
+         if (animation.mDuration > duration) {
+            duration = animation.mDuration;
+            ticks_per_second = animation.mTicksPerSecond;
+         }
          for (size_t i = 0; i < animation.mNumChannels; ++i) {
             auto& channel = animation.mChannels[i];
             channel_map[channel->mNodeName.C_Str()] = channel;
          }
       }
+      ret.animation = Animation(duration, ticks_per_second);
 
       std::vector<AssimpBone> assimp_bones;
       for (size_t i = 0; i < mesh.mNumBones; ++i) {

@@ -19,6 +19,14 @@ enum class EffectType {
 
 typedef std::set<EffectType> EffectSet;
 
+enum class CullType {
+   REFLECT_CULLING,
+   VIEW_CULLING,
+   SHADOW_CULLING,
+};
+
+typedef std::set<CullType> CullSet;
+
 struct DrawTemplate {
    ShaderType shader_type;
    Mesh mesh;
@@ -28,19 +36,13 @@ struct DrawTemplate {
    EffectSet effects;
 };
 
+struct CulledDrawable;
 struct Drawable {
+   static Drawable fromCulledDrawable(const CulledDrawable& d, CullType cull_type);
    DrawTemplate draw_template;
    std::vector<glm::mat4> model_transforms;
 };
 void switchTextureAndBlinn(Drawable *drawObj);
-
-enum class CullType {
-   REFLECT_CULLING,
-   VIEW_CULLING,
-   SHADOW_CULLING,
-};
-
-typedef std::set<CullType> CullSet;
 
 struct CulledTransform {
    glm::mat4 model;

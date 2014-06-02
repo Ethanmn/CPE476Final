@@ -28,6 +28,9 @@ struct SDLEngine {
       if (glewGetExtension("GL_EXT_framebuffer_object")) {
          std::cout << "framebuffer is available" << std::endl;
       }
+
+      //glEnable(GL_BLEND);
+      //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    }
 
    ~SDLEngine() {
