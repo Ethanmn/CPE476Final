@@ -18,6 +18,7 @@ enum class ShaderType {
    DEFERRED,
    TEXTURE,
    WATER,
+   SKYBOX,
    FINAL_LIGHT_PASS
 };
 

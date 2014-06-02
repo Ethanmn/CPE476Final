@@ -16,25 +16,30 @@ struct Lightning {
       position_(position.x, position.y, position.z), 
       scale_(scale),
       rotate_(0),
-      draw_template_({ShaderType::TEXTURE, mesh,
-            Texture(TextureType::LIGHTNING, DIFFUSE_TEXTURE),
-            boost::none,
-            EffectSet({EffectType::CASTS_SHADOW})
+      drawable_({
+            DrawTemplate({
+               ShaderType::TEXTURE,
+               mesh,
+               Texture(TextureType::LIGHTNING, DIFFUSE_TEXTURE),
+               boost::none,
+               EffectSet({EffectType::CASTS_SHADOW})
+               }),
+            std::vector<glm::mat4>({calculateModel()})
             }),
       bounding_rectangle_(glm::vec2(position_.x, position_.z), glm::vec2(5.0f, 5.0f), 0.0f)
       { }
 
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
+   Drawable drawable() const { return drawable_; }
+
+  private:
    glm::mat4 calculateModel() const;
-   Drawable drawable() const;
 
-
-   private:
    glm::vec3 position_;
    float scale_;
    float rotate_;
-   DrawTemplate draw_template_;
+   Drawable drawable_;
    BoundingRectangle bounding_rectangle_;
 };
 

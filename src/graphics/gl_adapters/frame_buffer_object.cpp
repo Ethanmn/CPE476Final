@@ -10,10 +10,6 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height, FB
    glGenTextures(1, &texture_id);
    glBindTexture(GL_TEXTURE_2D, texture_id);
    switch (fbo_type) {
-      case FBOType::G_BUFFER:
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 
-         0, GL_RGB, GL_FLOAT, NULL);
-         break;
       case FBOType::DEPTH:
          glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width,
                height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -55,6 +51,7 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height, FB
    }
 
    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+   glBindFramebuffer(GL_FRAMEBUFFER, 0); // rebind the screen.
    return texture_id;
 }
 

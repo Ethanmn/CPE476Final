@@ -4,6 +4,24 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 
+Flower::Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale) :
+   position_(position.x, ground.heightAt(position) - mesh.min.y, position.z), 
+   scale_(scale),
+   rotate_(rand() % 360),
+   bounding_rectangle_(BoundingRectangle(glm::vec2(position.x, position.z), glm::vec2(2.0f, 2.0f), 90.0f)),
+   eaten(false),
+   model_(
+         glm::translate(
+            glm::mat4(),
+            position_) *
+         glm::scale(
+            glm::mat4(),
+            glm::vec3(scale_)) *
+         glm::rotate(
+            glm::mat4(),
+            rotate_,
+            glm::vec3(0, 1, 0))) {}
+
 void Flower::eat(SoundEngine& sound_engine) {
    sound_engine.playSoundEffect(
          SoundEngine::SoundEffect::EAT_FLOWER,
@@ -12,21 +30,9 @@ void Flower::eat(SoundEngine& sound_engine) {
    eaten = true;
 }
 
-void Flower::performObjectHit(SoundEngine& sound_engine) {
+void Flower::performObjectHit(SoundEngine&) {
 }
 
 glm::mat4 Flower::calculateModel() const {
-   const glm::mat4 translate(glm::translate(
-            glm::mat4(),
-            position_));
-   const glm::mat4 scale(glm::scale(
-            glm::mat4(),
-            glm::vec3(scale_)));
-   const glm::mat4 rotate(glm::rotate(
-            glm::mat4(),
-            rotate_,
-            glm::vec3(0, 1, 0)));
-   return glm::mat4(translate * scale * rotate);
-} 
-
-
+   return model_;
+}

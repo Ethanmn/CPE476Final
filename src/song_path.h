@@ -5,10 +5,14 @@
 
 #include "song_stone.h"
 
-struct SoundEngine;
+namespace irrklang {
+class ISound;
+}
 
 struct SongPath {
-   SongPath(SoundEngine& sound_engine, const Mesh& mesh);
+   SongPath(irrklang::ISound* song, const Mesh& mesh);
+
+   void set_song(irrklang::ISound* song);
 
    void step(units::MS dt, const BoundingRectangle& deer_rect);
    std::vector<BoundingRectangle> bounding_rectangles() const {
@@ -28,9 +32,9 @@ struct SongPath {
             DrawTemplate({
                ShaderType::TEXTURE,
                mesh_,
-               Texture(TextureType::DEER, DIFFUSE_TEXTURE),
+               Texture(TextureType::GEM, DIFFUSE_TEXTURE),
                boost::none,
-               EffectSet()
+               EffectSet(),
             }),
             models
             });
@@ -39,12 +43,13 @@ struct SongPath {
    glm::vec2 CurrentStonePosition();
    float CurrentStoneRemainingRatio();
    glm::vec2 NextStonePosition();
+   void reset();
 
   private:
    size_t current_stone_;
 
    std::vector<SongStone> song_stones_;
-   SoundEngine& sound_engine_;
+   irrklang::ISound* song_;
    Mesh mesh_;
 };
 

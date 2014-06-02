@@ -15,6 +15,7 @@
 #include "graphics/mesh.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
+#include "sound_engine.h"
 
 
 struct Tree : public GameObject {
@@ -29,9 +30,15 @@ struct Tree : public GameObject {
 
    glm::mat4 calculateModel() const;
 
+   void step(units::MS dt);
+
    private:
       BoundingRectangle bRect;
-      glm::vec3 position;
+      float rotate_;
+      units::MS elapsed_time_, rustle_time_;
+      const units::MS kMaxRustleTime;
+      glm::mat4 translate_scale_;
+      glm::mat4 default_model_;
 };
 
 #endif //TREE_H_

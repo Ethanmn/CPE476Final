@@ -24,14 +24,18 @@ const float kLeanFactor = 2.0f;
 
 const float kStepTime = 300;
 
-Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
+Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position) :
    draw_template_({
          ShaderType::TEXTURE,
-         mesh,
+         walk_mesh,
          Texture(TextureType::DEER, DIFFUSE_TEXTURE),
          boost::none,
          EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
          }),
+   eating_(false),
+   walk_mesh_(walk_mesh),
+   eat_mesh_(eat_mesh),
+   up_(glm::vec3(0.0f, 1.0f, 0.0f)),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 1),
@@ -70,17 +74,15 @@ glm::mat4 Deer::calculateModel() const {
 }
 
 Drawable Deer::drawable() const {
-   std::vector<glm::mat4> model_matrices;
-   model_matrices.push_back(calculateModel());
-   return Drawable({draw_template_, model_matrices});
+   return Drawable({draw_template_, std::vector<glm::mat4>({calculateModel()})});
 } 
 
 glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
    return position_ + velocity * static_cast<float>(dt);
 }
 
-BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
-   auto velocity(predictVelocity(dt, acceleration(camera)));
+BoundingRectangle Deer::getNextBoundingBox(units::MS dt) {
+   auto velocity(predictVelocity(dt, acceleration()));
    auto facing(predictFacing(velocity));
    auto tempPosition(predictPosition(dt, velocity));
    auto tempBoundingBox(bounding_rectangle_);
@@ -89,19 +91,20 @@ BoundingRectangle Deer::getNextBoundingBox(units::MS dt, const Camera& camera) {
    return tempBoundingBox;
 }
 
-glm::vec3 Deer::acceleration(const Camera& camera) const {
+glm::vec3 Deer::acceleration() const {
    glm::vec3 acceleration(0.0f);
-   { // If walking add in walk based on camera's forward.
-      const glm::vec2 forward(xz(camera.getCamForwardVec()));
+   { // If walking add in walk based on deer's forward.
+      const glm::vec2 forward(last_facing_ / glm::length(last_facing_));
       if (walk_direction_ == WalkDirection::FORWARD) {
          acceleration = glm::vec3(forward.x, 0.0f, forward.y);
-      } else if (walk_direction_ == WalkDirection::BACKWARD) {
-         acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
+      //} else if (walk_direction_ == WalkDirection::BACKWARD) {
+      //   acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
       }
    }
 
-   { // Add in strafe from camera, if strafing.
-      const glm::vec3 left(camera.getCamLeftVec());
+   { // Add in strafe from deer, if strafing.
+      glm::vec3 lastFacingWithY(last_facing_.x, 0.0f, last_facing_.y);
+      const glm::vec3 left(glm::cross(up_, lastFacingWithY) / glm::length(glm::cross(up_, lastFacingWithY)));
       if (strafe_direction_ == StrafeDirection::LEFT) {
          acceleration += glm::vec3(left.x, 0.0f, left.z);
       } else if (strafe_direction_ == StrafeDirection::RIGHT) {
@@ -112,6 +115,8 @@ glm::vec3 Deer::acceleration(const Camera& camera) const {
 }
 
 glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) const {
+   if (eating_) {
+   }
    glm::vec3 velocity(velocity_);
    if (!has_acceleration()) {
       glm::vec2 xz_velocity(xz(velocity));
@@ -138,6 +143,11 @@ glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) con
    return velocity;
 }
 
+void Deer::eat() {
+   eating_ = true;
+   draw_template_.mesh = eat_mesh_;
+}
+
 glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
    if (has_acceleration()) {
       return glm::normalize(glm::vec2(
@@ -147,13 +157,25 @@ glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
    return last_facing_;
 }
 
-void Deer::step(units::MS dt, const Camera& camera, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
+void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
-   velocity_ = predictVelocity(dt, acceleration(camera));
+   velocity_ = predictVelocity(dt, acceleration());
+   if (eating_) {
+      draw_template_.mesh.animation.step(dt);
+      if (draw_template_.mesh.animation.is_finished()) {
+         eating_ = false;
+         draw_template_.mesh = walk_mesh_;
+      }
+      return;
+   }
+
    if (!has_acceleration()) {
       desired_lean_ = 0.0f;
    } else {
       draw_template_.mesh.animation.step(dt);
+      if (draw_template_.mesh.animation.is_finished()) {
+         draw_template_.mesh.animation.reset();
+      }
       { // Accelerate velocity, capping at kSpeed.
          const auto next_facing(predictFacing(velocity_));
          desired_lean_ = glm::orientedAngle(last_facing_, next_facing);

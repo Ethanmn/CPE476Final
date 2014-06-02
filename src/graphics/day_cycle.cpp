@@ -36,7 +36,7 @@ bool DayCycle::isDaytime() {
    return timeOfDay > 0.35 && timeOfDay < 0.65;
 }   
 
-void DayCycle::dayToNight() {
+void DayCycle::nightToDay() {
    if(stoppedCycle == -1) {
       switchingTime = true;
       switchToNight = false;
@@ -44,7 +44,7 @@ void DayCycle::dayToNight() {
    }
 }
 
-void DayCycle::nightToDay() {
+void DayCycle::dayToNight() {
    if(stoppedCycle == 1) {
       switchingTime = true;
       switchToNight = true;
@@ -99,4 +99,8 @@ void DayCycle::adjustSun() {
       tempTimeOfDay /= 0.5;
       sunIntensity = tempTimeOfDay;
    }
+}
+
+bool DayCycle::isDay() {
+   return timeOfDay >= 0.35 && timeOfDay <= 0.65;
 }

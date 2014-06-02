@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 
 #include "bounding_rectangle.h"
-#include "Camera.h"
 #include "graphics/draw_template.h"
 #include "graphics/location_maps.h"
 #include "units.h"
@@ -15,11 +14,11 @@ struct SoundEngine;
 
 
 struct Deer {
-   Deer(const Mesh& mesh, const glm::vec3& position);
+   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position);
 
-   BoundingRectangle getNextBoundingBox(units::MS dt, const Camera& camera);
+   BoundingRectangle getNextBoundingBox(units::MS dt);
 
-   void step(units::MS dt, const Camera& camera, const GroundPlane& ground, SoundEngine& sound_engine);
+   void step(units::MS dt, const GroundPlane& ground, SoundEngine& sound_engine);
    void walkForward();
    void walkBackward();
    void stopWalking();
@@ -29,6 +28,7 @@ struct Deer {
    void stopStrafing();
 
    void jump();
+   void eat();
 
    glm::vec3 getPosition() const;
    glm::vec3 getFacing() const;
@@ -58,12 +58,17 @@ struct Deer {
       return walk_direction_ != WalkDirection::NONE || strafe_direction_ != StrafeDirection::NONE;
    }
 
-   glm::vec3 acceleration(const Camera& camera) const;
+   glm::vec3 acceleration() const;
    glm::vec3 predictVelocity(units::MS dt, const glm::vec3& acceleration) const;
    glm::vec2 predictFacing(const glm::vec3& velocity) const;
    glm::vec3 predictPosition(units::MS dt, const glm::vec3& velocity) const;
 
    DrawTemplate draw_template_;
+   bool eating_;
+   Mesh walk_mesh_;
+   Mesh eat_mesh_;
+
+   glm::vec3 up_;
 
    glm::vec3 position_;
    glm::vec3 velocity_;

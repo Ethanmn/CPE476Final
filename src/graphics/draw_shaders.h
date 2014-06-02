@@ -8,11 +8,10 @@
 #include "graphics/gl_adapters/frame_buffer_object.h"
 #include "graphics/gl_adapters/deferred_frame_buffer.h"
 #include "globals.h"
-#include "culled_drawable.h"
 
 struct DrawShader {
    DrawShader() : uniforms(shaders.getUniformLocationMap()), 
-      projectionMatrix(glm::perspective(80.0f, kScreenWidthf / kScreenHeightf, 0.1f, 500.f)) {}
+      projectionMatrix(glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar)) {}
 
    void Draw(const FrameBufferObject& shadow_map_fbo_, 
             const FrameBufferObject& reflection_fbo, 

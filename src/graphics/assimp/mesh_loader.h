@@ -14,7 +14,8 @@
 // List of the available meshes.
 enum class MeshType {
    GROUND,
-   DEER,
+   DEER_WALK,
+   DEER_EAT,
    TIME_STONE,
    TREE,
    BUSH,
@@ -25,7 +26,10 @@ enum class MeshType {
    RAIN,
    LIGHTNING,
    GOD_RAYS,
-   BUTTERFLY
+   BUTTERFLY,
+   GEM,
+   SKYBOX,
+   SPHERE,
 };
 
 std::string mesh_path(MeshType mesh);

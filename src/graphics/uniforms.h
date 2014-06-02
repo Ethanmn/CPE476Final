@@ -6,6 +6,7 @@
 enum class Uniform {
    FIRST_UNIFORM,
    MODEL_VIEW = FIRST_UNIFORM,
+   MODEL_VIEW_PROJECTION,
    MODEL,
    VIEW,
    PROJECTION,
@@ -48,6 +49,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uViewMatrix";
       case Uniform::MODEL_VIEW:
          return "uModelViewMatrix";
+      case Uniform::MODEL_VIEW_PROJECTION:
+         return "uModelViewProjectionMatrix";
       case Uniform::MODEL:
          return "uModelMatrix";
       case Uniform::PROJECTION:

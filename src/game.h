@@ -23,10 +23,10 @@
 #include "rain_system.h"
 #include "water.h"
 #include "song_path.h"
-#include "culled_drawable.h"
-#include "frustumG.h"
 #include "dist.h"
 #include "god_rays.h"
+#include "Skybox.h"
+#include "Camera.h"
 
 struct Game {
    Game();
@@ -64,6 +64,8 @@ struct Game {
    GodRays god_rays_; 
 
    BVHTree objTree;
+
+   Skybox skybox;
 
    Camera deerCam;
    Camera airCam;

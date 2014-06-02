@@ -53,8 +53,10 @@ std::string mesh_path(MeshType mesh) {
    switch (mesh) {
       case MeshType::GROUND:
          return kMeshPath + "ground_plane.obj";
-      case MeshType::DEER:
+      case MeshType::DEER_WALK:
          return kMeshPath + "deer_walk.dae";
+      case MeshType::DEER_EAT:
+         return kMeshPath + "deer_eat.dae";
       case MeshType::TIME_STONE:
          return kMeshPath + "time_stone.dae";
       case MeshType::TREE:
@@ -77,6 +79,12 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "cone.dae";
       case MeshType::BUTTERFLY:
          return kMeshPath + "butterfly.dae";
+      case MeshType::GEM:
+         return kMeshPath + "gem.dae";
+      case MeshType::SKYBOX:
+         return kMeshPath + "skybox.dae";
+      case MeshType::SPHERE:
+         return kMeshPath + "sphere.obj";
    }
 }
 

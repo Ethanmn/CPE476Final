@@ -34,4 +34,30 @@ struct Drawable {
 };
 void switchTextureAndBlinn(Drawable *drawObj);
 
+enum class CullType {
+   REFLECT_CULLING,
+   VIEW_CULLING,
+   SHADOW_CULLING,
+};
+
+typedef std::set<CullType> CullSet;
+
+struct CulledTransform {
+   glm::mat4 model;
+   CullSet cullFlag;
+};
+
+struct CulledDrawable {
+   static CulledDrawable fromDrawable(const Drawable& d) {
+      CulledDrawable cd;
+      cd.draw_template = d.draw_template;
+      for (const auto& mt : d.model_transforms) {
+         cd.model_transforms.push_back(CulledTransform({mt, CullSet()}));
+      }
+      return cd;
+   }
+   DrawTemplate draw_template;
+   std::vector<CulledTransform> model_transforms;
+};
+
 #endif

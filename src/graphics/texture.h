@@ -20,6 +20,9 @@ enum class TextureType {
    TREE,
    RAIN,
    LIGHTNING,
+   GEM,
+   SKYBOX_DAY,
+   SKYBOX_NIGHT,
    LAST_TEXTURE_TYPE,
 };
 

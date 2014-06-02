@@ -13,41 +13,50 @@ struct Shaders;
 
 struct DayNightInteraction {
    DayNightInteraction(const Mesh& mesh, const GroundPlane& ground) :
-      draw_template_moon_({ShaderType::TEXTURE,
-            mesh,
-            Texture(TextureType::MOON_STONE, DIFFUSE_TEXTURE),
-            boost::none,
-            EffectSet({EffectType::CASTS_SHADOW})
+      moon_drawable_({
+            DrawTemplate({
+               ShaderType::TEXTURE,
+               mesh,
+               Texture(TextureType::MOON_STONE, DIFFUSE_TEXTURE),
+               boost::none,
+               EffectSet({EffectType::CASTS_SHADOW})
+               }),
+            std::vector<glm::mat4>({
+               glm::translate(
+                  glm::mat4(),
+                  glm::vec3(-30.0f, ground.heightAt(glm::vec3(-30, 0, -30)) + 3, -30.0f))
+               }),
             }),
-      draw_template_sun_({ShaderType::TEXTURE, mesh,
-            Texture(TextureType::SUN_STONE, DIFFUSE_TEXTURE),
-            boost::none,
-            EffectSet({EffectType::CASTS_SHADOW}) 
+      sun_drawable_({
+            DrawTemplate({
+               ShaderType::TEXTURE, mesh,
+               Texture(TextureType::SUN_STONE, DIFFUSE_TEXTURE),
+               boost::none,
+               EffectSet({EffectType::CASTS_SHADOW})
+               }),
+            std::vector<glm::mat4>({
+               glm::translate(
+                  glm::mat4(),
+                  glm::vec3(20.0f, ground.heightAt(glm::vec3(20, 0, 20)) + 3, 20.0f))
+               }),
             }),
-      bounding_rectangle_sun_(glm::vec2(-30.0f, -30.0f), glm::vec2(8.0f, 8.0f),
+      bounding_rectangle_sun_(glm::vec2(20.0f, 20.0f), glm::vec2(8.0f, 8.0f),
             0.0f),
-      bounding_rectangle_moon_(glm::vec2(20.0f, 20.0f), glm::vec2(8.0f, 8.0f),
-            0.0f),
-      moon_transform_(glm::translate(glm::mat4(),
-               glm::vec3(-30.0f, ground.heightAt(glm::vec3(-30, 0, -30)) + 3, -30.0f))),
-      sun_transform_(glm::translate(glm::mat4(),
-               glm::vec3(20.0f, ground.heightAt(glm::vec3(20, 0, 20)) + 3, 20.0f)))
+      bounding_rectangle_moon_(glm::vec2(-30.0f, -30.0f), glm::vec2(8.0f, 8.0f),
+            0.0f)
    { }
 
    BoundingRectangle bounding_rectangle_sun() const { return bounding_rectangle_sun_; }
    BoundingRectangle bounding_rectangle_moon() const { return bounding_rectangle_moon_; }
 
-   glm::mat4 calculateModel() const;
-   Drawable drawableSun() const;
-   Drawable drawableMoon() const;
+   Drawable drawableSun() const { return moon_drawable_; }
+   Drawable drawableMoon() const { return sun_drawable_; }
 
-
-   private:
-   DrawTemplate draw_template_moon_;
-   DrawTemplate draw_template_sun_;
+  private:
+   Drawable moon_drawable_;
+   Drawable sun_drawable_;
    BoundingRectangle bounding_rectangle_sun_;
    BoundingRectangle bounding_rectangle_moon_;
-   glm::mat4 moon_transform_, sun_transform_;
 };
 
 #endif // DAY_NIGHT_INTERACTION_H_

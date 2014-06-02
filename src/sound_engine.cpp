@@ -7,7 +7,6 @@ const float kRollOff = 5.0f; // 1.0 corresponds to real world. 10.0 is the max
 
 SoundEngine::SoundEngine() {
    engine_ = irrklang::createIrrKlangDevice();
-   music_ = engine_->play2D("../music/rhapsody_in_blue-Gershwin.ogg", false, true, true);
    if (!engine_) {
       std::cerr << "Could not load irrklang engine" << std::endl;
    }
@@ -114,6 +113,11 @@ SoundEngine::SoundEngine() {
             "../sounds/eating.ogg",
             irrklang::ESM_NO_STREAMING,
             should_preload);
+   sound_effect_sources_[SoundEffect::TREE_HIT] =
+   engine_->addSoundSourceFromFile(
+            "../sounds/tree_hit.ogg",
+            irrklang::ESM_NO_STREAMING,
+            should_preload);
    sound_effect_sources_[SoundEffect::EAT_FLOWER]->setDefaultVolume(0.5f);
 }
 
@@ -144,10 +148,19 @@ void SoundEngine::playRandomWalkSound() {
    engine_->play2D(sound_effect_sources_[walk], false);
 }
 
-void SoundEngine::playMusic() {
-   music_->setIsPaused(false);
+inline std::string songPath(SoundEngine::Song song) {
+   switch (song) {
+      case SoundEngine::Song::DAY_SONG:
+         return "../music/rhapsody_in_blue-Gershwin.ogg";
+      case SoundEngine::Song::NIGHT_SONG:
+         return "../music/moonlight_sonata_mvmt_1.ogg";
+      case SoundEngine::Song::STORM_SONG:
+         return "../music/moonlight_sonata_mvmt_3.ogg";
+   }
 }
 
-void SoundEngine::pauseMusic() {
-   music_->setIsPaused(true);
+irrklang::ISound* SoundEngine::loadSong(Song song) {
+   auto* sound = engine_->play2D(songPath(song).c_str(), false, true, true);
+   sound->setVolume(1.5f);
+   return sound;
 }

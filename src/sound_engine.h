@@ -30,6 +30,12 @@ struct SoundEngine {
 
       THUNDER_STRIKE,
       EAT_FLOWER,
+      TREE_HIT
+   };
+   enum class Song {
+      DAY_SONG,
+      NIGHT_SONG,
+      STORM_SONG,
    };
    SoundEngine();
 
@@ -37,13 +43,11 @@ struct SoundEngine {
    void playSoundEffect(SoundEffect sound, bool should_loop, const glm::vec3& source_position);
    void playRandomWalkSound();
 
-   void playMusic();
-   void pauseMusic();
+   irrklang::ISound* loadSong(Song song);
 
   private:
    irrklang::ISoundEngine* engine_;
    std::map<SoundEffect, irrklang::ISoundSource*> sound_effect_sources_;
-   irrklang::ISound* music_;
 };
 
 #endif // SOUND_ENGINE_H_

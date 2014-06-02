@@ -2,12 +2,20 @@
 #include "shaders.h"
 #include "uniforms.h"
 #include <iostream>
+#include <SDL.h>
+
+#include "frustum.h"
 
 using namespace std;
 namespace {
+   bool debug = false;
    const float kOrthoProjAmount = 70.0f;
-   const glm::mat4 projectionMatrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
-   const glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0,
+   const glm::mat4 kShadowProjection = glm::ortho(
+         -kOrthoProjAmount, kOrthoProjAmount,
+         -kOrthoProjAmount, kOrthoProjAmount,
+         -40.0f, 40.0f);
+   const glm::mat4 biasMatrix(
+         0.5, 0.0, 0.0, 0.0,
          0.0, 0.5, 0.0, 0.0,
          0.0, 0.0, 0.5, 0.0,
          0.5, 0.5, 0.5, 1.0);
@@ -45,28 +53,19 @@ namespace {
       height_map.enable(texture_cache);
    }
 
-   void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
-         const glm::vec3& lightDir, const glm::vec3& deerPos, const glm::mat4& modelMatrix) {
-      glPolygonMode(GL_FRONT, GL_FILL);
-      glm::mat4 shadowProjection, shadowView, modelView;
 
-      shadowProjection = glm::ortho(-kOrthoProjAmount, kOrthoProjAmount, 
-            -kOrthoProjAmount, kOrthoProjAmount,
-            -40.0f, 40.0f);
-      shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
-      modelView = shadowView * modelMatrix;
+   void setupShadowShader(Shader& shader, const UniformLocationMap& locations, const glm::mat4& view_projection,
+        const glm::mat4& modelMatrix) {
+     const glm::mat4 mvp = view_projection * modelMatrix;
+     shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, locations, mvp);
+  }
 
-      shader.sendUniform(Uniform::MODEL_VIEW, locations, modelView);
-      shader.sendUniform(Uniform::PROJECTION, locations, shadowProjection);
-   }
 
    void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
          const glm::vec3& lightDir, const glm::vec3& deerPos) {
       glm::mat4 lightMat, shadowProjection, shadowView;
 
-      shadowProjection = biasMatrix * glm::ortho(-kOrthoProjAmount, kOrthoProjAmount, 
-            -kOrthoProjAmount, kOrthoProjAmount,
-            -40.0f, 40.0f);
+      shadowProjection = biasMatrix * kShadowProjection;
       shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
       lightMat = shadowProjection * shadowView;
 
@@ -87,7 +86,7 @@ void DrawShader::setupTexture(Shader& shader, const FrameBufferObject& shadow_ma
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
 
    shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-   setupSunShader(shader, uniforms, sunIntensity, sunDir); 
+   setupSunShader(shader, uniforms, sunIntensity, sunDir);
 }
 
 void DrawShader::setupReflectionShader(Shader& shader, const glm::mat4& viewMatrix,
@@ -98,7 +97,7 @@ void DrawShader::setupReflectionShader(Shader& shader, const glm::mat4& viewMatr
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
 
    shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-   setupSunShader(shader, uniforms, sunIntensity, sunDir); 
+   setupSunShader(shader, uniforms, sunIntensity, sunDir);
 }
 
 void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
@@ -145,23 +144,37 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
       shader.use();
       switch (shader_pair.first) {
          case ShaderType::SHADOW:
-            shadow_map_fbo_.bind();
-            glClear(GL_DEPTH_BUFFER_BIT);
-
-            for (auto& drawable : culledDrawables) {
-               if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
-                  for(auto& mt : drawable.model_transforms) {
-                     setupShadowShader(shader, uniforms, sunDir, deerPos, mt.model);
-                     shader.drawMesh(drawable.draw_template.mesh);
+            {
+               const auto shadow_view = glm::lookAt(sunDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
+               const auto view_projection = kShadowProjection * shadow_view;
+               // Shadow Culling.
+               Frustum frustum(view_projection);
+               const auto shadow_drawables = frustum.cullShadowDrawables(culledDrawables);
+               if(!debug) {
+                  shadow_map_fbo_.bind();
+                  glClear(GL_DEPTH_BUFFER_BIT);
+               }
+               {
+                  for (auto& drawable : shadow_drawables) {
+                     if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
+                        for(auto& mt : drawable.model_transforms) {
+                           if (!mt.cullFlag.count(CullType::SHADOW_CULLING)) {
+                              setupShadowShader(shader, uniforms, view_projection, mt.model);
+                              shader.drawMesh(drawable.draw_template.mesh);
+                           }
+                        }
+                     }
                   }
                }
+
+               if(!debug) {
+                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                  shadow_map_fbo_.texture().enable(texture_cache_);
+               }
             }
-            
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            shadow_map_fbo_.texture().enable(texture_cache_);
             break;
 
-         case ShaderType::DEFERRED:
+          case ShaderType::DEFERRED:
             //deferred_fbo_.bind();
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -180,8 +193,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   drawModelTransforms(shader, newDrawable, viewMatrix, false);
                } 
             }
-
-            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
 
          case ShaderType::REFLECTION:
@@ -205,7 +216,23 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
-         
+
+         case ShaderType::SKYBOX:
+            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+
+            for (auto& drawable : culledDrawables) {
+               if (drawable.draw_template.shader_type == ShaderType::SKYBOX) {
+               /* doesn't use drawModelTransforms because no normals */
+               for(const auto& mt : drawable.model_transforms) {
+                  shader.sendUniform(Uniform::TEXTURE, uniforms, (*drawable.draw_template.texture).texture_slot());
+                   (*drawable.draw_template.texture).enable(texture_cache_);
+                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model);
+                  shader.drawMesh(drawable.draw_template.mesh);
+               }
+               }
+            }
+            break;
+
          case ShaderType::TEXTURE:
             {
                std::vector<Drawable> drawables;
@@ -226,6 +253,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                drawTextureShader(shader, drawables, viewMatrix);
             }
             break;
+
          case ShaderType::WATER:
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
             shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
@@ -240,8 +268,9 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
             }
             break;
-         /*
          case ShaderType::FINAL_LIGHT_PASS:
+            break;
+         /*
             setupSunShader(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, 
                   locations, TextureSlot::DIFFUSE_TEXTURE);
