@@ -25,7 +25,7 @@ namespace {
    }
 
    void setupSunShader(Shader& shader, const UniformLocationMap& locations,
-         float sunIntensity, glm::vec3 sunDir) {
+         float sunIntensity, const glm::vec3& sunDir) {
       glPolygonMode(GL_FRONT, GL_FILL);
       shader.sendUniform(Uniform::SUN_INTENSITY, locations, sunIntensity);
       shader.sendUniform(Uniform::SUN_DIR, locations, sunDir);
@@ -46,7 +46,7 @@ namespace {
    }
 
    void setupShadowShader(Shader& shader, const UniformLocationMap& locations,
-         glm::vec3 lightDir, glm::vec3 deerPos, glm::mat4 modelMatrix) {
+         const glm::vec3& lightDir, const glm::vec3& deerPos, const glm::mat4& modelMatrix) {
       glPolygonMode(GL_FRONT, GL_FILL);
       glm::mat4 shadowProjection, shadowView, modelView;
 
@@ -61,7 +61,7 @@ namespace {
    }
 
    void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& locations,
-         glm::vec3 lightDir, glm::vec3 deerPos) {
+         const glm::vec3& lightDir, const glm::vec3& deerPos) {
       glm::mat4 lightMat, shadowProjection, shadowView;
 
       shadowProjection = biasMatrix * glm::ortho(-kOrthoProjAmount, kOrthoProjAmount, 
@@ -75,8 +75,9 @@ namespace {
 }
 
 // Setup common to both Texture/Sun Shaders
-void DrawShader::setupTexture(Shader& shader, FrameBufferObject shadow_map_fbo_, glm::mat4 viewMatrix,
-      int useBlinnPhong, glm::vec3 deerPos, glm::vec3 sunDir, float sunIntensity, int lightning) {
+void DrawShader::setupTexture(Shader& shader, const FrameBufferObject& shadow_map_fbo_, 
+         const glm::mat4& viewMatrix, int useBlinnPhong, const glm::vec3& deerPos, const glm::vec3& sunDir, 
+         float sunIntensity, int lightning) {
    shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
    shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
    shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
@@ -89,8 +90,8 @@ void DrawShader::setupTexture(Shader& shader, FrameBufferObject shadow_map_fbo_,
    setupSunShader(shader, uniforms, sunIntensity, sunDir); 
 }
 
-void DrawShader::setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
-      glm::vec3 sunDir, float sunIntensity, int lightning) {
+void DrawShader::setupReflectionShader(Shader& shader, const glm::mat4& viewMatrix,
+      const glm::vec3& sunDir, float sunIntensity, int lightning) {
    shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
 
    shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
@@ -128,12 +129,17 @@ void DrawShader::SendTexture(Shader& shader, const Drawable& drawable) {
    }
 }
 
-void DrawShader::Draw(FrameBufferObject shadow_map_fbo_, 
-                      FrameBufferObject reflection_fbo, 
-                      DeferredFrameBuffer deferred_fbo_,
-                      vector<CulledDrawable> culledDrawables,
-                      glm::mat4 viewMatrix, int useBlinnPhong, glm::vec3 deerPos,
-                      glm::vec3 sunDir, float sunIntensity, int lightning) {
+void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, 
+                      const FrameBufferObject& reflection_fbo, 
+                      const DeferredFrameBuffer& deferred_fbo_,
+                      const vector<CulledDrawable>& culledDrawables,
+                      const glm::mat4& viewMatrix, 
+                      int useBlinnPhong, 
+                      const glm::vec3& deerPos,
+                      const glm::vec3& sunDir, 
+                      float sunIntensity, 
+                      int lightning) {
+
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
       shader.use();
@@ -259,7 +265,8 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, c
    }
 }
 
-void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawables, glm::mat4 viewMatrix) {
+void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
+      const glm::mat4& viewMatrix) {
    for (auto& drawable : drawables) {
       if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
          { 

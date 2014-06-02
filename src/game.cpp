@@ -11,7 +11,7 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool debug = false;
+   bool debuggingDeferredFBO = true;
 
    int lighting = 0;
    int raining = 0;
@@ -76,7 +76,7 @@ Game::Game() :
    curCam(&deerCam),
    airMode(false),
 
-   deferred_fbo_(kScreenWidth, kScreenHeight),
+   deferred_fbo_(kScreenWidth, kScreenHeight, debuggingDeferredFBO),
 
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
@@ -337,9 +337,11 @@ void Game::draw() {
       culledDrawables.push_back(culledDrawable);
    }
 
-   for(auto& drawable : culledDrawables) {
-      if(drawable.draw_template.shader_type == ShaderType::TEXTURE) {
-         drawable.draw_template.shader_type = ShaderType::DEFERRED;
+   if(!debuggingDeferredFBO) {
+      for(auto& drawable : culledDrawables) {
+         if(drawable.draw_template.shader_type == ShaderType::TEXTURE) {
+            drawable.draw_template.shader_type = ShaderType::DEFERRED;
+         }
       }
    }
 
@@ -413,12 +415,6 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_tree)) {
                showTreeShadows = !showTreeShadows;
                treeGen.includeInShadows(showTreeShadows); 
-            }
-         }
-         { //handle debug for Katelyn
-            const auto key_quit = SDL_SCANCODE_1;
-            if (input.wasKeyPressed(key_quit)) {
-               debug = !debug;
             }
          }
          {
