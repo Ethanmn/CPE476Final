@@ -37,7 +37,8 @@ struct DrawShader {
 
    void setupReflectionShader(Shader& shader, glm::mat4 viewMatrix,
       glm::vec3 sunDir, float sunIntensity, int lightning);
-   void drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view);
+   void drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view,
+         bool needsModel);
 
    Shaders shaders;
    UniformLocationMap uniforms;

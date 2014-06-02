@@ -5,7 +5,6 @@
 
 using namespace std;
 namespace {
-   bool debug = false;
    const float kOrthoProjAmount = 70.0f;
    const glm::mat4 projectionMatrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
    const glm::mat4 biasMatrix(0.5, 0.0, 0.0, 0.0,
@@ -14,14 +13,15 @@ namespace {
          0.5, 0.5, 0.5, 1.0);
 
    void setupModelView(Shader& shader, const UniformLocationMap& locations,
-         const glm::mat4& modelMatrix, const glm::mat4& viewMatrix, bool needsNormal) {
+         const glm::mat4& modelMatrix, const glm::mat4& viewMatrix, bool needsNormal, bool needsModel) {
       glPolygonMode(GL_FRONT, GL_FILL);
       shader.sendUniform(Uniform::MODEL_VIEW, locations, viewMatrix * modelMatrix);
       if(needsNormal) {
          shader.sendUniform(Uniform::NORMAL, locations,
                glm::transpose(glm::inverse(viewMatrix * modelMatrix)));
       }
-      shader.sendUniform(Uniform::MODEL, locations, modelMatrix);
+      if(needsModel)
+         shader.sendUniform(Uniform::MODEL, locations, modelMatrix);
    }
 
    void setupSunShader(Shader& shader, const UniformLocationMap& locations,
@@ -31,13 +31,15 @@ namespace {
       shader.sendUniform(Uniform::SUN_DIR, locations, sunDir);
    }
 
-   void setupTextureShader(Shader& shader, const UniformLocationMap& locations, const Texture& texture, const TextureCache& texture_cache) {
+   void setupTextureShader(Shader& shader, const UniformLocationMap& locations, 
+         const Texture& texture, const TextureCache& texture_cache) {
       shader.sendUniform(Uniform::HAS_TEXTURE, locations, 1);
       shader.sendUniform(Uniform::TEXTURE, locations, texture.texture_slot());
       texture.enable(texture_cache);
    }
 
-   void setupHeightMap(Shader& shader, const UniformLocationMap& locations, const Texture& height_map, const TextureCache& texture_cache) {
+   void setupHeightMap(Shader& shader, const UniformLocationMap& locations,
+         const Texture& height_map, const TextureCache& texture_cache) {
       shader.sendUniform(Uniform::HEIGHT_MAP, locations, height_map.texture_slot());
       shader.sendUniform(Uniform::HAS_HEIGHT_MAP, locations, 1);
       height_map.enable(texture_cache);
@@ -155,22 +157,25 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
 
          case ShaderType::DEFERRED:
             //deferred_fbo_.bind();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
+            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable;
                newDrawable.draw_template = drawable.draw_template;
-
-               shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
-               newDrawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
-               SendHeightMap(shader, newDrawable);
-               SendBones(shader, newDrawable);
-               SendTexture(shader, newDrawable);
-               drawModelTransforms(shader, newDrawable, viewMatrix); 
+               
+               if(newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
+                  newDrawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
+                  SendHeightMap(shader, newDrawable);
+                  SendBones(shader, newDrawable);
+                  SendTexture(shader, newDrawable);
+                  drawModelTransforms(shader, newDrawable, viewMatrix, false);
+               } 
             }
 
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
 
          case ShaderType::REFLECTION:
@@ -225,7 +230,7 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
                newDrawable.draw_template = drawable.draw_template;
                if (drawable.draw_template.shader_type == ShaderType::WATER) {
                   setupTextureShader(shader, uniforms, *drawable.draw_template.texture, texture_cache_);
-                  drawModelTransforms(shader, newDrawable, viewMatrix);
+                  drawModelTransforms(shader, newDrawable, viewMatrix, true);
                }
             }
             break;
@@ -246,9 +251,10 @@ void DrawShader::Draw(FrameBufferObject shadow_map_fbo_,
    }
 }
 
-void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view) {
+void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, const glm::mat4& view,
+      bool needsModel) {
    for(const auto& mt : drawable.model_transforms) {
-      setupModelView(shader, uniforms, mt, view, true);
+      setupModelView(shader, uniforms, mt, view, true, needsModel);
       shader.drawMesh(drawable.draw_template.mesh);
    }
 }
@@ -264,7 +270,7 @@ void DrawShader::drawTextureShader(Shader& shader, std::vector<Drawable> drawabl
 
             drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
          }
-         drawModelTransforms(shader, drawable, viewMatrix);
+         drawModelTransforms(shader, drawable, viewMatrix, true);
       }
    }
 }

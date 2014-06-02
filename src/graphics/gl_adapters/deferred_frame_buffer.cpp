@@ -25,10 +25,10 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
 
    GenDepthDeferredTexture(&g_buff_depth_texture, width, height);
 
-   GLenum draw_buffers[] = {  GL_COLOR_ATTACHMENT0, 
-                              GL_COLOR_ATTACHMENT1,
-                              GL_COLOR_ATTACHMENT2   };
-   glDrawBuffers(NUM_DEF_TEX, (GLenum*) draw_buffers);
+   //GLenum draw_buffers[] = {  GL_COLOR_ATTACHMENT0, 
+                              //GL_COLOR_ATTACHMENT1,
+                              //GL_COLOR_ATTACHMENT2   };
+   //glDrawBuffers(NUM_DEF_TEX, (GLenum*) draw_buffers);
    
    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 

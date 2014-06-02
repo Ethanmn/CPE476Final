@@ -2,7 +2,10 @@ uniform int uHasTexture;
 uniform sampler2D uTexture;
 
 struct Material {
+   vec3 ambient;
    vec3 diffuse;
+   vec3 specular;
+   float shine;   
 };
 uniform Material uMat;
 
@@ -14,9 +17,9 @@ vec4 calculateDiffuse();
 
 void main() {
    gl_FragColor = calculateDiffuse();
-   gl_FragData[0] = vPosition;
-   gl_FragData[1] = calculateDiffuse();
-   gl_FragData[2] = vec4(vNormal, 1.0);
+   /*gl_FragData[0] = vPosition;*/
+   /*gl_FragData[1] = calculateDiffuse();*/
+   /*gl_FragData[2] = vec4(vNormal, 1.0);*/
 }
 
 vec4 calculateDiffuse() {
