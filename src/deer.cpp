@@ -30,8 +30,8 @@ Deer::Deer(const Mesh& mesh, const glm::vec3& position) :
          mesh,
          Texture(TextureType::DEER, DIFFUSE_TEXTURE),
          boost::none,
-         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION}), 
-         false}),
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
+         }),
    position_(position),
    velocity_(0, 0, 0),
    last_facing_(0, 1),

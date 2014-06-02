@@ -18,7 +18,7 @@ const int BUSH_RUSTLE_MAX = 450;
 
 BushGenerator::BushGenerator(const Mesh& mesh) : 
    draw_template_({ShaderType::TEXTURE, mesh, Texture(TextureType::TREE, DIFFUSE_TEXTURE), boost::none,
-         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION}), false }) 
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION}) }) 
 {
    draw_template_.mesh.material = Material(glm::vec3(0.45, 0.24, 0.15));
 }

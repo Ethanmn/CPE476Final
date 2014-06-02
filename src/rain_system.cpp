@@ -7,7 +7,7 @@
 
 RainSystem::RainSystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) : 
             draw_template_({ShaderType::TEXTURE, mesh, 
-                  Texture(TextureType::RAIN, DIFFUSE_TEXTURE), boost::none, EffectSet(), false }),
+                  Texture(TextureType::RAIN, DIFFUSE_TEXTURE), boost::none, EffectSet() }),
             origin_(origin),
             scale_(0.3f),
             velocity_(glm::vec3(0.0f, 0.0f, 0.0f)),

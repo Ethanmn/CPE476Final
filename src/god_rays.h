@@ -21,8 +21,8 @@ struct GodRays {
       draw_template_({ShaderType::TEXTURE, mesh,
             boost::none,
             boost::none,
-            EffectSet({}), 
-            true }),
+            EffectSet({EffectType::IS_GOD_RAY}), 
+            }),
       bounding_rectangle_(glm::vec2(position_.x, position_.z), glm::vec2(5.0f, 5.0f), 0.0f)
       { 
          draw_template_.mesh.material = Material(glm::vec3(1.0, 1.0, 1.0)); 

@@ -17,13 +17,13 @@ struct DayNightInteraction {
             mesh,
             Texture(TextureType::MOON_STONE, DIFFUSE_TEXTURE),
             boost::none,
-            EffectSet({EffectType::CASTS_SHADOW}),
-            false}),
+            EffectSet({EffectType::CASTS_SHADOW})
+            }),
       draw_template_sun_({ShaderType::TEXTURE, mesh,
             Texture(TextureType::SUN_STONE, DIFFUSE_TEXTURE),
             boost::none,
-            EffectSet({EffectType::CASTS_SHADOW}), 
-            false}),
+            EffectSet({EffectType::CASTS_SHADOW}) 
+            }),
       bounding_rectangle_sun_(glm::vec2(-30.0f, -30.0f), glm::vec2(8.0f, 8.0f),
             0.0f),
       bounding_rectangle_moon_(glm::vec2(20.0f, 20.0f), glm::vec2(8.0f, 8.0f),

@@ -30,7 +30,6 @@ DrawTemplate BoundingRectangle::draw_template() {
          boost::none,
          boost::none,
          EffectSet(),
-         false
          });
 }
 

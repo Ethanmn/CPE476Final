@@ -20,8 +20,7 @@ struct Water {
                mesh_,
                reflection_fbo_.texture(),
                boost::none,
-               EffectSet(),
-               false
+               EffectSet()
                }),
             std::vector<glm::mat4>({glm::scale(glm::mat4(), glm::vec3(10, 1, 10))})
             });
