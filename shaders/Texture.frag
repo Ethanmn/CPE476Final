@@ -29,8 +29,9 @@ varying vec4 vShadow;
 varying float vUnderWater;
 
 float calculateShadowAmount();
-vec3 calculateDiffuse(vec3 lightInt, vec3 lightDir);
+vec4 calculateDiffuse(vec3 lightInt, vec3 lightDir);
 vec3 calculateSpecular(vec3 lightInt, vec3 lightDir);
+vec3 calculateAmbient(float ambientAmount);
 void CheckIfUnderWater(float ShadowAmount);
 void CheckIfLightning();
 
@@ -38,21 +39,24 @@ void CheckIfLightning();
 
 void main() {
    vec3 color;
-   vec3 Specular, Diffuse, Ambient;
+   vec3 Specular, Ambient;
+   vec4 Diffuse;
    vec3 directionalColor = vec3(0.8 * uSunIntensity);
-   float ShadowAmount, LightningAmount;
+   float ShadowAmount, LightningAmount, AmbientAmount = 0.13f;
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0)); 
 
    ShadowAmount = calculateShadowAmount();
-   Ambient = uSunIntensity < 0.2 ? vec3(0.15, 0.15, 0.15) : vec3(0.1, 0.1, 0.1);
+   Ambient = calculateAmbient(AmbientAmount);
    Diffuse = calculateDiffuse(directionalColor, vLightAndDirectional.xyz);
    Specular = calculateSpecular(directionalColor, vLightAndDirectional.xyz);
 
-   color =  Diffuse + Specular + Ambient;
+   color =  vec3(Diffuse) + Specular + Ambient;
    gl_FragColor = vec4(ShadowAmount * color.rgb, 1.0);
 
    CheckIfUnderWater(ShadowAmount);
    CheckIfLightning();
+
+   gl_FragColor = Diffuse + vec4(Ambient, 0.0f);
 }
 
 float calculateShadowAmount() {
@@ -75,14 +79,24 @@ float calculateShadowAmount() {
    return applyShadow;
 }
 
-vec3 calculateDiffuse(vec3 lightInt, vec3 lightDir) {
+vec4 calculateDiffuse(vec3 lightInt, vec3 lightDir) {
    vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1);
-   if (Diffuse.a < 0.3) {
-      discard;
-   }
+//   if (Diffuse.a < 0.3) {
+//     discard;
+//   }
 
    float dotNLDir = dot(normalize(vNormal), lightDir);   
-   return lightInt * Diffuse.rgb * dotNLDir;
+   if (dotNLDir < 0) dotNLDir = 0.1f;
+   return vec4(lightInt, 1.0f) * Diffuse.rgba * dotNLDir;
+}
+
+vec3 calculateAmbient(float AmbientAmount) {
+   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1);
+//   if (Diffuse.a < 0.3) {
+//     discard;
+//   }
+ 
+   return Diffuse.rgb * AmbientAmount;
 }
 
 vec3 calculateSpecular(vec3 lightInt, vec3 lightDir) {
