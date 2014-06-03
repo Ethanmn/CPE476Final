@@ -98,6 +98,32 @@ void DrawShader::SendTexture(Shader& shader, const Drawable& drawable) {
    }
 }
 
+void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
+      const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
+      int lightning) {
+
+   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+   shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
+
+   shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
+   SendSun(shader, uniforms, sunIntensity, sunDir);
+
+
+   for (auto& drawable : drawables) {
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+         { 
+         // Per-Drawable Texture Shader Setup
+            SendHeightMap(shader, drawable);
+            SendBones(shader, drawable);
+            SendTexture(shader, drawable);
+
+            drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
+         }
+         drawModelTransforms(shader, drawable, viewMatrix, true);
+      }
+   }
+}
+
 void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, 
                       const FrameBufferObject& reflection_fbo, 
                       const DeferredFrameBuffer& deferred_fbo_,
@@ -246,10 +272,14 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
          case ShaderType::FINAL_LIGHT_PASS:
+            /* 
+            int halfWidth = kScreenWidth / 2, halfHeight = kScreenHeight / 2;
             if(printCurrentShaderName)
                printf("Final Light Pass\n");
-            break;
-         /*
+            
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
             SendSun(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, 
                   uniforms, TextureSlot::DIFFUSE_TEXTURE);
@@ -258,35 +288,9 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   uniforms, TextureSlot::DEFERRED_POS_TEXTURE;
             shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE 
                uniforms, TextureSlot::DEFERRED_NORM_TEXTURE;
-
+            */
             break;
-         */
       }
    }
 }
 
-void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
-      const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
-      int lightning) {
-
-   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
-   shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
-
-   shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-   SendSun(shader, uniforms, sunIntensity, sunDir);
-
-
-   for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
-         { 
-         // Per-Drawable Texture Shader Setup
-            SendHeightMap(shader, drawable);
-            SendBones(shader, drawable);
-            SendTexture(shader, drawable);
-
-            drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
-         }
-         drawModelTransforms(shader, drawable, viewMatrix, true);
-      }
-   }
-}
