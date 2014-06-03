@@ -15,5 +15,6 @@ extern const float kAspectRatio;
 extern const float kNear;
 extern const float kFar;
 extern const glm::mat4 kProjectionMatrix;
+extern const float kHeightMapScale;
 
 #endif // GLOBALS_H_

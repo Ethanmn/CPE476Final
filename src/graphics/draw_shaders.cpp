@@ -65,6 +65,7 @@ void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
    if (drawable.draw_template.height_map) {
       shader.sendUniform(Uniform::HEIGHT_MAP, uniforms, 
          (*drawable.draw_template.height_map).texture_slot());
+      shader.sendUniform(Uniform::HEIGHT_MAP_SCALE, uniforms, kHeightMapScale);
       shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 1);
       (*drawable.draw_template.height_map).enable(texture_cache_);
    }

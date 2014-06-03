@@ -16,6 +16,7 @@ uniform mat4 uBones[40];
 uniform int uHasHeightMap;
 #ifdef USE_HEIGHT_MAP
 uniform sampler2D uHeightMap;
+uniform float uHeightMapScale;
 #endif
 
 attribute vec3 aTexCoord;
@@ -68,9 +69,8 @@ mat4 calculateBones() {
 void main() {
    vec4 heightColor = vec4(0.0);
 #ifdef USE_HEIGHT_MAP
-   float HEIGHT_MAP_SCALE = 3.0;
    if (uHasHeightMap != 0) {
-      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;
+      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * uHeightMapScale;
    }
 #endif
 
@@ -81,5 +81,4 @@ void main() {
    vShadow = uShadowMap * pos;
    vUnderWater = heightColor.y < 0.0 ? 1.0 : 0.0;
    gl_Position = uProjectionMatrix * vViewer;
-
 }
