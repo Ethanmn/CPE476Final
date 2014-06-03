@@ -227,16 +227,13 @@ void Game::step(units::MS dt) {
 }
 
 void Game::draw() {
-   float sunIntensity = day_cycle_.getSunIntensity();
-   glm::vec3 sunDir = day_cycle_.getSunDir();
-   glm::vec3 deerPos;
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   const auto sunIntensity = day_cycle_.getSunIntensity();
    glClearColor (0.05098 * sunIntensity,
          0.6274509 * sunIntensity,
          sunIntensity, 1.0f);
 
-   glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
    if (draw_collision_box) {
       Drawable br_drawable;
@@ -293,10 +290,9 @@ void Game::draw() {
    //drawables.push_back(god_rays_.drawable());
    //br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
 
-   viewMatrix = deerCam.getViewMatrix();
-   deerPos = deer_.getPosition();
 
    // View Frustum Culling
+   auto viewMatrix = deerCam.getViewMatrix();
    const auto view_projection = kProjectionMatrix * viewMatrix;
    Frustum frustum(view_projection);
    auto culledDrawables = frustum.cullDrawables(drawables);
@@ -312,6 +308,9 @@ void Game::draw() {
    }
 
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+   const auto deerPos = deer_.getPosition();
+   const auto sunDir = day_cycle_.getSunDir();
    draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), deferred_fbo_, 
          culledDrawables, viewMatrix, switchBlinnPhongShading, 
          deerPos, sunDir, sunIntensity, lighting);
@@ -345,11 +344,8 @@ void Game::mainLoop() {
          }
          { // handle walk forward/backward for deer.
             const auto key_forward = SDL_SCANCODE_W;
-            const auto key_backward = SDL_SCANCODE_S;
-            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
+            if (input.isKeyHeld(key_forward)) {
                deer_.walkForward();
-            } else if (!input.isKeyHeld(key_forward) && input.isKeyHeld(key_backward)) {
-               //deer_.walkBackward();
             } else {
                deer_.stopWalking();
             }
@@ -415,8 +411,6 @@ void Game::mainLoop() {
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
                switchBlinnPhongShading = !switchBlinnPhongShading; 
-               glm::vec3 deerPos = deer_.getPosition();
-               printf("Deer Position %f %f %f\n", deerPos.x, deerPos.y, deerPos.z);
             }
          }
          { //handle quit
