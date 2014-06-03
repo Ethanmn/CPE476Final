@@ -201,6 +201,7 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
          step_timer_ = 0;
          sound_engine.playRandomWalkSound();
       }
+      position_.y = ground_plane.heightAt(position_) - draw_template_.mesh.min.y;
    } else {
       step_timer_ = 0;
       position_.y = ground_plane.heightAt(position_) - draw_template_.mesh.min.y;
