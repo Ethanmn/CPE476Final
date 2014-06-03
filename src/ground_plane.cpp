@@ -5,7 +5,6 @@
 #include "graphics/texture.h"
 
 const int GroundPlane::GROUND_SCALE = 1000;
-const int PLANE_SIZE = 50;
 
 const float HEIGHT_MAP_SCALE = 3.0f;
 
@@ -14,43 +13,25 @@ const std::vector<unsigned short> ground_indices{
 };
 
 GroundPlane::GroundPlane(const Mesh& mesh) :
-   draw_template_({ShaderType::TEXTURE, mesh, Texture(TextureType::GRASS, DIFFUSE_TEXTURE), 
-         Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE), EffectSet({EffectType::CASTS_SHADOW})
+   drawable_({
+         DrawTemplate({
+            ShaderType::TEXTURE,
+            mesh,
+            Texture(TextureType::GRASS, DIFFUSE_TEXTURE), 
+            Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE),
+            EffectSet({EffectType::CASTS_SHADOW})
+            }),
+         std::vector<glm::mat4>({glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, 1, GROUND_SCALE))}),
          }),
    // TODO(chebert): Loaded it twice because textures confuse me.
-   height_map_image_(texture_path(TextureType::HEIGHT_MAP)) {
-
-      const glm::mat4 scale(glm::scale(glm::mat4(1.0), glm::vec3(PLANE_SIZE, 1, PLANE_SIZE)));
-      //COLUMN MAJOR
-      for (int x = -GROUND_SCALE/2; x < GROUND_SCALE/2; x += PLANE_SIZE) {
-         for (int y = -GROUND_SCALE/2; y < GROUND_SCALE/2; y += PLANE_SIZE) {
-            transforms_.push_back(
-                  glm::translate(glm::mat4(), glm::vec3(x, 0, y)) * scale);
-         }
-      }
-   }
-
-Drawable GroundPlane::drawable() const {
-   std::vector<glm::mat4> model_matrices;
-   for (auto& transform : transforms_) 
-      model_matrices.push_back(transform);
-   return Drawable({draw_template_, model_matrices});
- 
-}
+   height_map_image_(texture_path(TextureType::HEIGHT_MAP)) { }
 
 float GroundPlane::heightAt(const glm::vec3& position) const {
    glm::vec4 pos(position, 1.0f);
    // 1.translate position from world into texture space.
-   // a. determine which ground plane to test.
-   const int row = (pos.z + GROUND_SCALE / 2) / PLANE_SIZE;
-   const int col = (pos.x + GROUND_SCALE / 2) / PLANE_SIZE;
-   const int index = (col * GROUND_SCALE / PLANE_SIZE) + row;
-   if (row < 0 || col < 0 || (size_t)index >= transforms_.size()) {
-      std::clog << "Warning: out of bounds" << std::endl;
-      return 0.0f;
-   }
+   // a. determine which ground plane to test. OBSOLETE
    // b. translate position from world into mesh space.
-   pos = glm::inverse(transforms_.at(index)) * pos;
+   pos = glm::inverse(drawable_.model_transforms.front()) * pos;
    // c. translate position from mesh into texture space.
    // TODO(chebert): this is a total hack. we assume that the mesh is 2x2x0
    // centered at the origin, and rotated (C?)CW 90 degrees. deadline is monday.
