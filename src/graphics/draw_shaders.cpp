@@ -28,14 +28,7 @@ namespace {
       shader.sendUniform(Uniform::SUN_DIR, uniforms, sunDir);
    }
 
-   void setupShadowShader(Shader& shader, const UniformLocationMap& uniforms, 
-         const glm::mat4& view_projection,const glm::mat4& modelMatrix) {
-     const glm::mat4 mvp = view_projection * modelMatrix;
-     shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, mvp);
-  }
-
-
-   void sendShadowInverseProjectionView(Shader& shader, const UniformLocationMap& uniforms,
+   void SendInverseShadow(Shader& shader, const UniformLocationMap& uniforms,
          const glm::vec3& lightDir, const glm::vec3& deerPos) {
       glm::mat4 lightMat, shadowProjection, shadowView;
 
@@ -44,6 +37,13 @@ namespace {
       lightMat = shadowProjection * shadowView;
 
       shader.sendUniform(Uniform::SHADOW_MAP, uniforms, lightMat);
+   }
+   void SendShadow(Shader& shader, const UniformLocationMap& uniforms,
+         const FrameBufferObject& shadow_map_fbo_, 
+         const glm::vec3& deerPos, const glm::vec3& sunDir) {
+      shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
+      shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
+      SendInverseShadow(shader, uniforms, sunDir, deerPos);
    }
 }
 
@@ -59,33 +59,6 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
       
       shader.drawMesh(drawable.draw_template.mesh);
    }
-}
-
-// Setup common to both Texture/Sun Shaders
-void DrawShader::setupTexture(Shader& shader, const FrameBufferObject& shadow_map_fbo_, 
-         const glm::mat4& viewMatrix, int useBlinnPhong, const glm::vec3& deerPos, const glm::vec3& sunDir, 
-         float sunIntensity, int lightning) {
-   shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
-   shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
-   shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
-   sendShadowInverseProjectionView(shader, uniforms, sunDir, deerPos);
-
-   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
-   shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
-
-   shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-   SendSun(shader, uniforms, sunIntensity, sunDir);
-}
-
-void DrawShader::setupReflectionShader(Shader& shader, const glm::mat4& viewMatrix,
-      const glm::vec3& sunDir, float sunIntensity, int lightning) {
-   shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
-
-   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
-   shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
-
-   shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
-   SendSun(shader, uniforms, sunIntensity, sunDir);
 }
 
 void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
@@ -159,7 +132,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                         for(auto& mt : drawable.model_transforms) {
                            if (!mt.cullFlag.count(CullType::SHADOW_CULLING)) {
-                              setupShadowShader(shader, uniforms, view_projection, mt.model);
+                              shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, 
+                                    view_projection * mt.model);
                               shader.drawMesh(drawable.draw_template.mesh);
                            }
                         }
@@ -180,7 +154,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             reflection_fbo.bind();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
-            setupReflectionShader(shader, viewMatrix, sunDir, sunIntensity, lightning);
+            shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
             {
                std::vector<Drawable> reflected;
                const auto scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
@@ -193,7 +167,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                      }
                   }
                }
-               drawTextureShader(shader, reflected, viewMatrix);
+               drawTextureShader(shader, reflected, viewMatrix, sunDir, sunIntensity,
+                  lightning);
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
@@ -247,9 +222,10 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                for (auto& drawable : culledDrawables) {
                   drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING));
                }
-               setupTexture(shader, shadow_map_fbo_, viewMatrix, useBlinnPhong, 
-                     deerPos, sunDir, sunIntensity, lightning);
-               drawTextureShader(shader, drawables, viewMatrix);
+               shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
+               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
+               drawTextureShader(shader, drawables, viewMatrix, sunDir, sunIntensity, 
+                  lightning);
             }
             break;
 
@@ -290,7 +266,16 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 }
 
 void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
-      const glm::mat4& viewMatrix) {
+      const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
+      int lightning) {
+
+   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+   shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
+
+   shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
+   SendSun(shader, uniforms, sunIntensity, sunDir);
+
+
    for (auto& drawable : drawables) {
       if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
          { 

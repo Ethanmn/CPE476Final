@@ -28,31 +28,18 @@ struct DrawShader {
    Shaders getShaders() const { return shaders; }
 
   private:
-   void setupTexture(Shader& shader,
-            const FrameBufferObject& shadow_map_fbo_,
+   void drawTextureShader(Shader& shader, 
+            const std::vector<Drawable>& drawables, 
             const glm::mat4& viewMatrix, 
-            int useBlinnPhong, 
-            const glm::vec3& deerPos, 
             const glm::vec3& sunDir, 
             float sunIntensity, 
             int lightning);
-
-   void drawTextureShader(Shader& shader, 
-            const std::vector<Drawable>& drawables, 
-            const glm::mat4& viewMatrix);
 
    void sendOutputShaderType(ShaderType shaderT, Shader& shader);
 
    void SendHeightMap(Shader& shader, const Drawable& drawable);
    void SendBones(Shader& shader, const Drawable& drawable);
    void SendTexture(Shader& shader, const Drawable& drawable);
-
-   void setupReflectionShader(Shader& shader, 
-            const glm::mat4& viewMatrix,
-            const glm::vec3& sunDir, 
-            float sunIntensity, 
-            int lightning);
-
    void drawModelTransforms(Shader& shader, 
             const Drawable& drawable,
             const glm::mat4& view,

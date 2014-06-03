@@ -42,7 +42,7 @@ void main() {
    vec3 Specular, Ambient;
    vec4 Diffuse;
    vec3 directionalColor = vec3(0.8 * uSunIntensity);
-   float ShadowAmount, LightningAmount, AmbientAmount = 0.13f;
+   float ShadowAmount, LightningAmount, AmbientAmount = 0.13;
    vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0)); 
    
    ShadowAmount = calculateShadowAmount();
@@ -56,7 +56,6 @@ void main() {
    CheckIfUnderWater(ShadowAmount);
    CheckIfLightning();
 
-   gl_FragColor = Diffuse + vec4(Ambient, 0.0f);
 }
 
 float calculateShadowAmount() {
@@ -86,8 +85,8 @@ vec4 calculateDiffuse(vec3 lightInt, vec3 lightDir) {
    }
 
    float dotNLDir = dot(normalize(vNormal), lightDir);   
-   if (dotNLDir < 0) dotNLDir = 0.1f;
-   return vec4(lightInt, 1.0f) * Diffuse.rgba * dotNLDir;
+   if (dotNLDir < 0.0) dotNLDir = 0.1;
+   return vec4(lightInt, 1.0) * Diffuse.rgba * dotNLDir;
 }
 
 vec3 calculateAmbient(float AmbientAmount) {

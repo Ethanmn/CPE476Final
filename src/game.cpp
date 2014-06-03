@@ -13,7 +13,7 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool useDeferredNotTexture = true;
+   bool useDeferredNotTexture = false;
 
    int lighting = 0;
    int raining = 0;
