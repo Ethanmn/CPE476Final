@@ -84,9 +84,6 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::SKYBOX))),
  
    deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
-   airCam(Camera(glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f))),
-   curCam(&deerCam),
-   airMode(false),
 
    deferred_fbo_(kScreenWidth, kScreenHeight),
 
@@ -99,7 +96,6 @@ Game::Game() :
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
    deerCam.setLookAt(deer_.getPosition());
-   airCam.setLookAt(deer_.getPosition());
 
    std::vector<GameObject*> objects;
 
@@ -226,10 +222,8 @@ void Game::step(units::MS dt) {
    day_cycle_.autoAdjustTime(dt);
 
    deerCam.setLookAt(deer_.getPosition());
-   airCam.setLookAt(deer_.getPosition());
 
    deerCam.step(dt);
-   //airCam.step(dt);
 }
 
 void Game::draw() {
@@ -242,7 +236,7 @@ void Game::draw() {
          0.6274509 * sunIntensity,
          sunIntensity, 1.0f);
 
-   glm::mat4 viewMatrix = curCam->getViewMatrix();
+   glm::mat4 viewMatrix = deerCam.getViewMatrix();
    std::vector<Drawable> drawables;
    if (draw_collision_box) {
       Drawable br_drawable;
@@ -299,7 +293,7 @@ void Game::draw() {
    //drawables.push_back(god_rays_.drawable());
    //br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
 
-   viewMatrix = curCam->getViewMatrix();
+   viewMatrix = deerCam.getViewMatrix();
    deerPos = deer_.getPosition();
 
    // View Frustum Culling
@@ -415,18 +409,6 @@ void Game::mainLoop() {
             const auto key_rain = SDL_SCANCODE_R;
             if (input.wasKeyPressed(key_rain)) {
                raining = !raining;
-            }
-         }
-         { //handle toggle between cameras
-            const auto key_air_mode = SDL_SCANCODE_V;
-            if (input.wasKeyPressed(key_air_mode)) {
-               airMode = !airMode;
-               if (airMode) {
-                  //curCam = &airCam;
-               }
-               else {
-                  curCam = &deerCam;
-               }
             }
          }
          { //Change shading models
