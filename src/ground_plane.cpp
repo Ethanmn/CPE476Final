@@ -20,7 +20,7 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
             Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE),
             EffectSet({EffectType::CASTS_SHADOW})
             }),
-         std::vector<glm::mat4>({glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, 1, GROUND_SCALE))}),
+         std::vector<glm::mat4>({glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE / 2.0f, 1, GROUND_SCALE / 2.0f))}),
          }),
    // TODO(chebert): Loaded it twice because textures confuse me.
    height_map_image_(texture_path(TextureType::HEIGHT_MAP)) { }
