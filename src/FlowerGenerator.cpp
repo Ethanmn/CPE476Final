@@ -7,8 +7,8 @@ const int FLOWER_SIZE = 10;
 const float FLOWER_SCALE_MIN = 0.8 * 100;
 const float FLOWER_SCALE_MAX = 1.3 * 100;
 
-FlowerGenerator::FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten, 
-      TextureType texture_type) : 
+FlowerGenerator::FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten,
+      TextureType texture_type, const GroundPlane& ground) : 
    draw_template_({ShaderType::TEXTURE, mesh, 
          Texture(texture_type, DIFFUSE_TEXTURE), 
          boost::none, EffectSet({EffectType::CASTS_SHADOW}) }),
@@ -17,6 +17,7 @@ FlowerGenerator::FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten,
          boost::none, EffectSet({EffectType::CASTS_SHADOW}) })    
 {
    draw_template_.mesh.material = Material(glm::vec3(0.45, 0.0, 0.45));
+   generate(ground);
 }
 
 //Generate the trees

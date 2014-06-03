@@ -15,6 +15,7 @@ TreeGenerator::TreeGenerator(const Mesh& mesh) :
          })
 {
    draw_template_.mesh.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
+   generate();
 }
 
 //Generate the trees

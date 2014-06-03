@@ -37,17 +37,20 @@ Game::Game() :
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TREE))),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUSH))),
+            mesh_loader_.loadMesh(MeshType::BUSH)),
+         ground_),
 
    /* temporary solution to two flower meshes and textures */
    daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::DAISY)), 
             Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::EATEN_DAISY)), TextureType::DAISY),
+            mesh_loader_.loadMesh(MeshType::EATEN_DAISY)), TextureType::DAISY,
+            ground_),
    roseGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::ROSE)), 
             Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::EATEN_ROSE)), TextureType::ROSE),
+            mesh_loader_.loadMesh(MeshType::EATEN_ROSE)), TextureType::ROSE,
+            ground_),
 
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
@@ -93,29 +96,10 @@ Game::Game() :
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GEM)))
 {
-
-   std::cout << "GL version " << glGetString(GL_VERSION) << std::endl;
-   std::cout << "Shader version " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-   glClearDepth(1.0f);
-   glDepthFunc(GL_LESS);
-   glEnable(GL_DEPTH_TEST);// Enable Depth Testing
-   glDisable(GL_LIGHTING);
-   glShadeModel(GL_SMOOTH);
-   glDisable(GL_LINE_SMOOTH);
-   glEnable(GL_CULL_FACE);
-
-   glPolygonMode(GL_FRONT, GL_LINE);
-   glLineWidth(1.0);
-
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
    deerCam.setLookAt(deer_.getPosition());
    airCam.setLookAt(deer_.getPosition());
-
-   treeGen.generate();
-   bushGen.generate(ground_);
-   daisyGen.generate(ground_);
-   roseGen.generate(ground_);
 
    std::vector<GameObject*> objects;
 
@@ -132,10 +116,7 @@ Game::Game() :
       objects.push_back(&flower);
    }
 
-   
-   //Pre-processing BVH Tree
    objTree.calculateTree(objects);
-   //objTree.printTree();
 }
 
 void Game::step(units::MS dt) {
@@ -174,16 +155,14 @@ void Game::step(units::MS dt) {
    if (deer_.isMoving()) {
       BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt);
       std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
-      for (int index = 0; index < (int)(collObjs.size()); index++) {
-         collObjs.at(index)->performObjectHit(sound_engine_);
-         deerBlocked = deerBlocked || collObjs.at(index)->isBlocker();
+      for (auto collObj : collObjs) {
+         collObj->performObjectHit(sound_engine_);
+         deerBlocked = deerBlocked || collObj->isBlocker();
       }
 
       glm::vec2 center = nextDeerRect.getCenter();
 
       deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
-
-      //printf("Next deer rect at (%f, %f) with dim (%f, %f)\n", center.x, center.y, nextDeerRect.getDimensions().x, nextDeerRect.getDimensions().y);
    }
 
    if (deerBlocked) {
