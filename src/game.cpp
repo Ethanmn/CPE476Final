@@ -354,11 +354,11 @@ void Game::mainLoop() {
             const auto key_left = SDL_SCANCODE_A;
             const auto key_right = SDL_SCANCODE_D;
             if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
-               deer_.strafeLeft();
+               deer_.turnLeft();
             } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
-               deer_.strafeRight();
+               deer_.turnRight();
             } else {
-               deer_.stopStrafing();
+               deer_.stopTurning();
             }
          }
          { // handle jumping

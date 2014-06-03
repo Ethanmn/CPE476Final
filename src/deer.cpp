@@ -42,12 +42,10 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& positio
    desired_lean_(0.0f),
    current_lean_(0.0f),
    walk_direction_(WalkDirection::NONE),
-   strafe_direction_(StrafeDirection::NONE),
    bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
    step_timer_(0),
    is_jumping_(false),
    is_walking_(false),
-   is_strafing_(false),
    blocked(false)
       {}
 
@@ -99,16 +97,6 @@ glm::vec3 Deer::acceleration() const {
          acceleration = glm::vec3(forward.x, 0.0f, forward.y);
       //} else if (walk_direction_ == WalkDirection::BACKWARD) {
       //   acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
-      }
-   }
-
-   { // Add in strafe from deer, if strafing.
-      glm::vec3 lastFacingWithY(last_facing_.x, 0.0f, last_facing_.y);
-      const glm::vec3 left(glm::cross(up_, lastFacingWithY) / glm::length(glm::cross(up_, lastFacingWithY)));
-      if (strafe_direction_ == StrafeDirection::LEFT) {
-         acceleration += glm::vec3(left.x, 0.0f, left.z);
-      } else if (strafe_direction_ == StrafeDirection::RIGHT) {
-         acceleration -= glm::vec3(left.x, 0.0f, left.z);
       }
    }
    return acceleration;
@@ -231,17 +219,16 @@ void Deer::stopWalking() {
    is_walking_ = false;
 }
 
-void Deer::strafeLeft() {
-   strafe_direction_ = StrafeDirection::LEFT;
-   is_strafing_ = true;
+void Deer::turnLeft() {
+   turn_direction_ = TurnDirection::LEFT;
 }
-void Deer::strafeRight() {
-   strafe_direction_ = StrafeDirection::RIGHT;
-   is_strafing_ = true;
+
+void Deer::turnRight() {
+   turn_direction_ = TurnDirection::RIGHT;
 }
-void Deer::stopStrafing() {
-   strafe_direction_ = StrafeDirection::NONE;
-   is_strafing_ = false;
+
+void Deer::stopTurning() {
+   turn_direction_ = TurnDirection::NONE;
 }
 
 void Deer::jump() {
@@ -261,7 +248,6 @@ glm::vec3 Deer::getPosition() const {
 
 void Deer::block() {
    stopWalking();
-   stopStrafing();
    velocity_ = glm::vec3(0, 0, 0);
    blocked = true;
 }

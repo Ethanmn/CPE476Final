@@ -23,9 +23,9 @@ struct Deer {
    void walkBackward();
    void stopWalking();
 
-   void strafeLeft();
-   void strafeRight();
-   void stopStrafing();
+   void turnLeft();
+   void turnRight();
+   void stopTurning();
 
    void jump();
    void eat();
@@ -48,14 +48,14 @@ struct Deer {
       BACKWARD,
       NONE
    };
-   enum class StrafeDirection {
+   enum class TurnDirection {
       LEFT,
       RIGHT,
       NONE
    };
 
    bool has_acceleration() const {
-      return walk_direction_ != WalkDirection::NONE || strafe_direction_ != StrafeDirection::NONE;
+      return walk_direction_ != WalkDirection::NONE;
    }
 
    glm::vec3 acceleration() const;
@@ -77,14 +77,13 @@ struct Deer {
    float current_lean_;
 
    WalkDirection walk_direction_;
-   StrafeDirection strafe_direction_;
+   TurnDirection turn_direction_;
    BoundingRectangle bounding_rectangle_;
 
    units::MS step_timer_;
 
    bool is_jumping_;
    bool is_walking_;
-   bool is_strafing_;
    bool blocked;
 };
 
