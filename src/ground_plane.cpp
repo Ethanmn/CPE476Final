@@ -3,10 +3,9 @@
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
 #include "graphics/texture.h"
+#include "globals.h"
 
 const int GroundPlane::GROUND_SCALE = 1000;
-
-const float HEIGHT_MAP_SCALE = 3.0f;
 
 const std::vector<unsigned short> ground_indices{
    0, 2, 1, 3, 1, 2
@@ -51,7 +50,7 @@ float GroundPlane::heightAt(const glm::vec3& position) const {
       // multiply by some constant
       // TODO(chebert): This should match the texture shader. Deadline monday,
       // so I am postponing good coding stuffz.
-      return (pixel_packet->red / 65535.0f - 0.5f) * HEIGHT_MAP_SCALE;
+      return (pixel_packet->red / 65535.0f - 0.5f) * kHeightMapScale;
    }
    // return a height of 0 if we are out of bounds (for testing).
    return 0.0f;
