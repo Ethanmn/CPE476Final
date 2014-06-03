@@ -68,10 +68,7 @@ struct Game {
    Skybox skybox;
 
    Camera deerCam;
-   Camera airCam;
-   Camera *curCam;
 
-   bool airMode;
    DeferredFrameBuffer deferred_fbo_;
    FrameBufferObject shadow_map_fbo_;
    Water water_;

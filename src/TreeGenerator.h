@@ -20,15 +20,15 @@
 struct TreeGenerator {
    TreeGenerator(const Mesh& mesh);
 
-   void generate();
    std::vector<Tree>& getTrees();
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
    void includeInShadows(bool value); 
 
-   private:
-      std::vector<Tree> trees;
-      DrawTemplate draw_template_;
+  private:
+   void generate();
+   std::vector<Tree> trees;
+   DrawTemplate draw_template_;
 };
 
 #endif //TREE_GEN_H_

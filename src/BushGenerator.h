@@ -18,17 +18,18 @@
 #include "graphics/draw_template.h"
 
 struct BushGenerator {
-   BushGenerator(const Mesh& mesh);
+   BushGenerator(const Mesh& mesh, const GroundPlane& ground);
 
-   void generate(const GroundPlane& ground);
    std::vector<Bush>& getBushes();
 
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
 
-   private:
-      std::vector<Bush> bushes;
-      DrawTemplate draw_template_;
+  private:
+   void generate(const GroundPlane& ground);
+
+   std::vector<Bush> bushes;
+   DrawTemplate draw_template_;
 };
 
 #endif //BUSH_GEN_H_
