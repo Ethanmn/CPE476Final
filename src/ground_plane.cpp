@@ -20,7 +20,7 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
             Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE),
             EffectSet({EffectType::CASTS_SHADOW})
             }),
-         std::vector<glm::mat4>({glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE / 2.0f, 1, GROUND_SCALE / 2.0f))}),
+         std::vector<glm::mat4>({glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, 1, GROUND_SCALE))}),
          }),
    // TODO(chebert): Loaded it twice because textures confuse me.
    height_map_image_(texture_path(TextureType::HEIGHT_MAP)) { }
@@ -32,11 +32,10 @@ float GroundPlane::heightAt(const glm::vec3& position) const {
    // b. translate position from world into mesh space.
    pos = glm::inverse(drawable_.model_transforms.front()) * pos;
    // c. translate position from mesh into texture space.
-   // TODO(chebert): this is a total hack. we assume that the mesh is 2x2x0
+   // TODO(chebert): this is a total hack. we assume that the mesh is
    // centered at the origin, and rotated (C?)CW 90 degrees. deadline is monday.
    pos = glm::translate(glm::mat4(), glm::vec3(0.5f, 0, 0.5f)) *
-      glm::rotate(glm::mat4(), -90.0f, glm::vec3(0, 1, 0)) *
-      glm::scale(glm::mat4(), glm::vec3(0.5f)) * pos;
+      glm::rotate(glm::mat4(), -90.0f, glm::vec3(0, 1, 0)) * pos;
 
    // if within  [0-1], [0-1]
    if (0.0f <= pos.x && pos.x <= 1.0f &&
