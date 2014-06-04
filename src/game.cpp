@@ -95,8 +95,6 @@ Game::Game() :
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
-   deerCam.setLookAt(deer_.getPosition());
-
    std::vector<GameObject*> objects;
 
    for (auto& tree : treeGen.getTrees()) {
@@ -221,9 +219,7 @@ void Game::step(units::MS dt) {
    }
    day_cycle_.autoAdjustTime(dt);
 
-   deerCam.setLookAt(deer_.getPosition());
-
-   deerCam.step(dt);
+   deerCam.step(dt, deer_.getPosition(), deer_.getFacing());
 }
 
 void Game::draw() {
