@@ -42,7 +42,7 @@ void Camera::step(float dT, const glm::vec3& target_pos, const glm::vec3& target
    const auto dispLength = glm::length(displacement);
 
    //Only move if the distance is not super small
-   if (dispLength >= 0.001) {
+   if (dispLength >= 0.09f) {
       //Find the magnitude of the spring for this distance
       const auto springMag = kSpringStrength * dispLength + kDampConst * (1 / dispLength);
 
@@ -51,5 +51,7 @@ void Camera::step(float dT, const glm::vec3& target_pos, const glm::vec3& target
 
       //Apply the scale and move based on the scaled displacement
       position -= dT * kSpringSpeed * displacement * scalar;
+   } else {
+      position = camera_target;
    }
 }
