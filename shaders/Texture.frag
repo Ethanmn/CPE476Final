@@ -91,7 +91,7 @@ vec4 calculateDiffuse(vec3 lightInt, vec3 lightDir) {
 
 vec3 calculateAmbient(float AmbientAmount) {
    vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1);
-   if (Diffuse.a < 0.3) {
+   if (Diffuse.a < 0.7) {
      discard;
    }
  
