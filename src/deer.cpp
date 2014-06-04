@@ -43,11 +43,17 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& positio
    desired_lean_(0.0f),
    current_lean_(0.0f),
    walk_direction_(WalkDirection::NONE),
-   bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
+   bounding_rectangle_(xz(position_),
+         glm::vec2(draw_template_.mesh.max.z - draw_template_.mesh.min.z,
+                   draw_template_.mesh.max.x - draw_template_.mesh.min.x), 0.0f),
    step_timer_(0),
    is_jumping_(false),
    is_walking_(false),
-   blocked(false)
+   blocked(false),
+   pivot_(glm::translate(
+            glm::mat4(),
+            glm::vec3(0, 0, (draw_template_.mesh.max.z - draw_template_.mesh.min.z)) / 3.0f)),
+   inverse_pivot_(glm::inverse(pivot_))
       {}
 
 glm::mat4 Deer::calculateModel() const {
@@ -69,7 +75,7 @@ glm::mat4 Deer::calculateModel() const {
             glm::mat4(1.0f),
             position_));
 
-   return glm::mat4(translate * rotate * lean);
+   return glm::mat4(translate * inverse_pivot_ * rotate * pivot_ * lean);
 }
 
 Drawable Deer::drawable() const {

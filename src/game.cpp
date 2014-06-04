@@ -10,7 +10,7 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = false;
+   bool draw_collision_box = true;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool useDeferredNotTexture = false;

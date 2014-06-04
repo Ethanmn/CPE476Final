@@ -85,6 +85,8 @@ struct Deer {
    bool is_jumping_;
    bool is_walking_;
    bool blocked;
+
+   glm::mat4 pivot_, inverse_pivot_;
 };
 
 #endif // DEER_H_
