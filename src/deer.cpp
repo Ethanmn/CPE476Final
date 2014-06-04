@@ -108,8 +108,6 @@ glm::vec3 Deer::acceleration() const {
 }
 
 glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) const {
-   if (eating_) {
-   }
    glm::vec3 velocity(velocity_);
    if (!has_acceleration()) {
       glm::vec2 xz_velocity(xz(velocity));
