@@ -60,7 +60,7 @@ struct Deer {
 
    glm::vec3 acceleration() const;
    glm::vec3 predictVelocity(units::MS dt, const glm::vec3& acceleration) const;
-   glm::vec2 predictFacing(const glm::vec3& velocity) const;
+   glm::vec2 predictFacing(units::MS dt) const;
    glm::vec3 predictPosition(units::MS dt, const glm::vec3& velocity) const;
 
    DrawTemplate draw_template_;

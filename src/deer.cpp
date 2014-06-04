@@ -21,6 +21,7 @@ const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
 const float kJumpSpeed = 0.015f;
 const float kLeanFactor = 2.0f;
+const float kTurnSpeed = 0.08f;
 
 const float kStepTime = 300;
 
@@ -81,7 +82,7 @@ glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
 
 BoundingRectangle Deer::getNextBoundingBox(units::MS dt) {
    auto velocity(predictVelocity(dt, acceleration()));
-   auto facing(predictFacing(velocity));
+   auto facing(predictFacing(dt));
    auto tempPosition(predictPosition(dt, velocity));
    auto tempBoundingBox(bounding_rectangle_);
    tempBoundingBox.set_position(xz(tempPosition));
@@ -95,8 +96,6 @@ glm::vec3 Deer::acceleration() const {
       const glm::vec2 forward(last_facing_ / glm::length(last_facing_));
       if (walk_direction_ == WalkDirection::FORWARD) {
          acceleration = glm::vec3(forward.x, 0.0f, forward.y);
-      //} else if (walk_direction_ == WalkDirection::BACKWARD) {
-      //   acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
       }
    }
    return acceleration;
@@ -136,13 +135,14 @@ void Deer::eat() {
    draw_template_.mesh = eat_mesh_;
 }
 
-glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
-   if (has_acceleration()) {
-      return glm::normalize(glm::vec2(
-               velocity.x,
-               velocity.z));
+glm::vec2 Deer::predictFacing(units::MS dt) const {
+   float rotate = 0.f;
+   if (turn_direction_ == TurnDirection::LEFT) {
+      rotate -= kTurnSpeed * dt;
+   } else if (turn_direction_ == TurnDirection::RIGHT) {
+      rotate += kTurnSpeed * dt;
    }
-   return last_facing_;
+   return glm::rotate(last_facing_, rotate);
 }
 
 void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
@@ -155,6 +155,15 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
          draw_template_.mesh = walk_mesh_;
       }
       return;
+   } else {
+      // Turn
+      const auto next_facing(predictFacing(dt));
+      desired_lean_ = glm::orientedAngle(last_facing_, next_facing);
+      last_facing_ = next_facing;
+      if (desired_lean_ > 45.0f)
+         desired_lean_ = 0.0f;
+      if (desired_lean_ < -45.0f)
+         desired_lean_ = 0.0f;
    }
 
    if (!has_acceleration()) {
@@ -163,15 +172,6 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
       draw_template_.mesh.animation.step(dt);
       if (draw_template_.mesh.animation.is_finished()) {
          draw_template_.mesh.animation.reset();
-      }
-      { // Accelerate velocity, capping at kSpeed.
-         const auto next_facing(predictFacing(velocity_));
-         desired_lean_ = glm::orientedAngle(last_facing_, next_facing);
-         last_facing_ = next_facing;
-         if (desired_lean_ > 45.0f)
-            desired_lean_ = 0.0f;
-         if (desired_lean_ < -45.0f)
-            desired_lean_ = 0.0f;
       }
    }
    if (is_jumping_) {
