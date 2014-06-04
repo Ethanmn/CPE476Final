@@ -4,8 +4,8 @@
 #include "graphics/texture.h"
 
 enum class GBufferType {
-   G_BUFF_POS,
    G_BUFF_DIFFUSE,
+   G_BUFF_POS,
    G_BUFF_NORM,
 }; 
 
@@ -23,8 +23,7 @@ struct DeferredFrameBuffer {
    GLuint g_buff_textures_[3];
    GLuint g_buff_depth_texture_;
 
-   //Texture position_texture_;
-   //Texture normal_texture_;
+   //Texture deferred_textures_;
 };
 
 #endif // DEFERRED_FRAME_BUFFER_H_

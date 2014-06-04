@@ -15,10 +15,10 @@ enum class ShaderType {
    SHADOW,
    /* Reflection generates a texture, so must be before TEXTURE */
    REFLECTION,
+   DEFERRED,
    TEXTURE,
    WATER,
    SKYBOX,
-   DEFERRED,
    FINAL_LIGHT_PASS
 };
 

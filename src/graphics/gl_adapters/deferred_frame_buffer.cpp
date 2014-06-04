@@ -4,21 +4,17 @@
 #include <assert.h>
 #define NUM_DEF_TEX 3
 
-namespace {
-   bool useFBO = true; /* debugging purposes */
-}
-
 void GenDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
 void GenDepthDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
 
 DeferredFrameBuffer::DeferredFrameBuffer(unsigned int width, unsigned int height) 
 {
-   if(useFBO)
-      Initialize(width, height);
+   Initialize(width, height);
 }
 
 
 void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
+   printf("Initializing DFBO\n");
    glGenFramebuffers(1, &fbo_id_);
    glBindFramebuffer(GL_FRAMEBUFFER, fbo_id_);
 
@@ -36,7 +32,6 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
    glDrawBuffers(NUM_DEF_TEX, (GLenum*) draw_buffers);
    
    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
@@ -49,8 +44,6 @@ void DeferredFrameBuffer::bind() const {
 void DeferredFrameBuffer::SetBufferToRead(GBufferType buffType) {
    glReadBuffer(GL_COLOR_ATTACHMENT0 + (int)buffType);
 }
-
-
 
 void GenDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height) {
    glGenTextures(1, texture_id);

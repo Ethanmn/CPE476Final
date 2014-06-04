@@ -16,14 +16,13 @@ varying vec3 vNormal;
 vec4 calculateDiffuse();
 
 void main() {
-   gl_FragColor = calculateDiffuse();
-   /*gl_FragData[0] = vPosition;*/
-   /*gl_FragData[1] = calculateDiffuse();*/
-   /*gl_FragData[2] = vec4(vNormal, 1.0);*/
+   gl_FragData[0] = calculateDiffuse();
+   gl_FragData[1] = vPosition;
+   gl_FragData[2] = vec4(vNormal, 1.0);
 }
 
 vec4 calculateDiffuse() {
-   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1.0);
+   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord)  : vec4(uMat.diffuse, 1.0);
    if (Diffuse.a < 0.3) {
       discard;
    } 
