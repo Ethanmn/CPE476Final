@@ -203,12 +203,11 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
 
    if (!blocked) {
       position_ = predictPosition(dt, velocity_);
-
-      bounding_rectangle_.set_position(xz(position_));
-      bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
    }
    blocked = false;
-   bounding_rectangle_.set_position(xz(position_));
+
+   auto pos = calculateModel() * glm::vec4((draw_template_.mesh.max + draw_template_.mesh.min) / 2.f, 1.0f);
+   bounding_rectangle_.set_position(glm::vec2(pos.x, pos.z));
    bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
 }
 
