@@ -11,9 +11,11 @@ const int BOUNDING_SIZE = 4;
 const float BOUNDING_ERR_X = -0.5;
 const float BOUNDING_ERR_Z = -3;
 
-Tree::Tree(glm::vec3 position) :
+Tree::Tree(glm::vec3 position, float heightOffset, float angleRot) :
    bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
+   heightOffset(heightOffset),
+   angleRot(angleRot),
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(200),
@@ -24,13 +26,13 @@ Tree::Tree(glm::vec3 position) :
             glm::vec3(position.x, position.y - 10.0f, position.z)) *
          glm::scale(
             glm::mat4(),
-            glm::vec3(TREE_SCALE))),
+            glm::vec3(TREE_SCALE) * glm::vec3(1, heightOffset, 1))),
    default_model_(
          translate_scale_ *
          glm::rotate(
             glm::rotate(
                glm::mat4(),
-               rotate_,
+               angleRot,
                glm::vec3(0, 1.0f, 0)
                ),
             -90.0f,
@@ -50,7 +52,14 @@ glm::mat4 Tree::calculateModel() const {
             -90.0f,
             glm::vec3(1, 0, 0)));
 
-   return glm::mat4(translate_scale_ * rotate);
+   const glm::mat4 rotate2(
+            glm::rotate(
+               glm::mat4(),
+               angleRot,
+               glm::vec3(0, 1.0f, 0)
+               ));
+
+   return glm::mat4(translate_scale_ * rotate2 * rotate);
 }
 
 bool Tree::isBlocker() {
