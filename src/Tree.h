@@ -20,7 +20,7 @@
 
 
 struct Tree : public GameObject {
-   Tree(glm::vec3 position, MeshLoader mesh_loader, AttributeLocationMap attribute_location_map);
+   Tree(glm::vec3 position, const Mesh& leaf);
 
    BoundingRectangle getBoundingRectangle() {
       return bRect;
@@ -33,6 +33,9 @@ struct Tree : public GameObject {
 
    void step(units::MS dt);
 
+   public:
+      LeafSystem leaf_system_;
+
    private:
       BoundingRectangle bRect;
       float rotate_;
@@ -43,7 +46,6 @@ struct Tree : public GameObject {
       MeshLoader mesh_loader_;
       AttributeLocationMap attribute_location_map_;
       glm::vec3 position_;
-      LeafSystem leaf_system_;
 };
 
 #endif //TREE_H_

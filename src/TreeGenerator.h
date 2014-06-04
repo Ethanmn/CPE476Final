@@ -18,19 +18,19 @@
 #include "graphics/draw_template.h"
 
 struct TreeGenerator {
-   TreeGenerator(const Mesh& mesh, MeshLoader mesh_loader, AttributeLocationMap attribute_location_map);
+   TreeGenerator(const Mesh& mesh, const Mesh& leaf);
 
    void generate();
    std::vector<Tree>& getTrees();
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
+   std::vector<Drawable> leafDrawable() const;
    void includeInShadows(bool value); 
 
    private:
       std::vector<Tree> trees;
       DrawTemplate draw_template_;
-      MeshLoader mesh_loader_;
-      AttributeLocationMap attribute_location_map_;
+      Mesh leaf_;
 };
 
 #endif //TREE_GEN_H_

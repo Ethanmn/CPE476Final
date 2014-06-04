@@ -56,7 +56,7 @@ void LeafSystem::reset() {
 }
 
 void LeafSystem::add() {
-   int numAdd = rand() % 5 + 1;
+   int numAdd = rand() % 10 + 4;
    for (int i = 0; i < numAdd; i++) {
       glm::vec3 randVec = getRandomVec();
       float randAngle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / ROT_MAX));
