@@ -27,7 +27,7 @@ const float kStepTime = 300;
 
 Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position) :
    draw_template_({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          walk_mesh,
          Texture(TextureType::DEER, DIFFUSE_TEXTURE),
          boost::none,

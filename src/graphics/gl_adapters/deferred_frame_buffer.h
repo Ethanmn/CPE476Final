@@ -13,7 +13,7 @@ struct DeferredFrameBuffer {
    DeferredFrameBuffer(unsigned int width, unsigned int height); 
 
    void Initialize(unsigned int width, unsigned int height);
-   void bind();
+   void bind() const;
    void SetBufferToRead(GBufferType buffType);
    //int texture_slot() const { return texture_.texture_slot(); }
    //Texture texture() const { return texture_; }

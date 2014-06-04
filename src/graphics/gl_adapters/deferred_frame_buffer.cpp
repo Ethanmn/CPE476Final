@@ -5,7 +5,7 @@
 #define NUM_DEF_TEX 3
 
 namespace {
-   bool useFBO = false; /* debugging purposes */
+   bool useFBO = true; /* debugging purposes */
 }
 
 void GenDeferredTexture(GLuint *texture_id, unsigned int width, unsigned int height);
@@ -41,7 +41,7 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
 }
 
 
-void DeferredFrameBuffer::bind() {
+void DeferredFrameBuffer::bind() const {
    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_id_);
 }
 

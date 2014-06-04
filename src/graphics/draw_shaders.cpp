@@ -222,7 +222,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
          case ShaderType::DEFERRED:
             if(printCurrentShaderName)
                printf("Deferred\n");
-            //deferred_fbo_.bind();
+            deferred_fbo_.bind();
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
@@ -237,8 +237,9 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   SendBones(shader, newDrawable);
                   SendTexture(shader, newDrawable);
                   drawModelTransforms(shader, newDrawable, viewMatrix, false);
-               } 
+               }
             }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0); 
             break;
 
          case ShaderType::TEXTURE:
