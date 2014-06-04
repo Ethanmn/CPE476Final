@@ -9,7 +9,7 @@
 using namespace std;
 namespace {
    bool debug = false;
-   bool printCurrentShaderName = false;
+   bool printCurrentShaderName = true;
    const float kOrthoProjAmount = 70.0f;
    const glm::mat4 kShadowProjection = glm::ortho(
          -kOrthoProjAmount, kOrthoProjAmount,
