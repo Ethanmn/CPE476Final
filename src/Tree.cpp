@@ -6,6 +6,7 @@
 #include "Tree.h"
 
 const int TREE_SCALE = 3;
+const int TREE_VARIATION_HEIGHT = 10;
 
 const int BOUNDING_SIZE = 4;
 const float BOUNDING_ERR_X = -0.5;
@@ -14,14 +15,16 @@ const float BOUNDING_ERR_Z = -3;
 Tree::Tree(glm::vec3 position) :
    bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
-   rotate_(0.0f),
+   rotate_(rand() % 360),
    elapsed_time_(0),
    rustle_time_(200),
    kMaxRustleTime(200),
    translate_scale_(
          glm::translate(
             glm::mat4(),
-            glm::vec3(position.x, position.y - 10.0f, position.z)) *
+            glm::vec3(position.x,
+                      position.y - 10.0f - (rand() % TREE_VARIATION_HEIGHT), 
+                      position.z)) *
          glm::scale(
             glm::mat4(),
             glm::vec3(TREE_SCALE))),
