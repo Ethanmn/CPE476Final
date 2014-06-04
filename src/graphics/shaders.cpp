@@ -45,6 +45,7 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::TEXTURE,
    
    Uniform::HEIGHT_MAP,
+   Uniform::HEIGHT_MAP_SCALE,
    Uniform::HAS_HEIGHT_MAP,
    
    Uniform::USE_BLINN_PHONG,

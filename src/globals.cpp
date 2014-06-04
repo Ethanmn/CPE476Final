@@ -14,3 +14,5 @@ const float kNear = 1.0f;
 const float kFar = 500.0f;
 
 const glm::mat4 kProjectionMatrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
+
+const float kHeightMapScale = 3.0f;

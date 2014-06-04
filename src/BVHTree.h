@@ -9,17 +9,13 @@
 
 #include "bounding_rectangle.h"
 #include "GameObject.h"
-#include "BVHNode.h"
 
 struct BVHTree {
-   BVHTree();
-   void calculateTree(std::vector<GameObject*> objects);
-   std::vector<GameObject*> getCollidingObjects(BoundingRectangle bRect);
-   void printTree();
+   void calculateTree(const std::vector<GameObject*>& objects);
+   std::vector<GameObject*> getCollidingObjects(const BoundingRectangle& bRect);
 
-   private:
-      BVHNode *head;
-      std::vector<BVHNode> allNodes;
+  private:
+   std::vector<GameObject*> allNodes;
 };
 
 #endif //BVHTREE_H_

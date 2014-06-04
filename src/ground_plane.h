@@ -21,12 +21,10 @@ struct GroundPlane {
 
    float heightAt(const glm::vec3& position) const;
 
-   DrawTemplate draw_template() const { return draw_template_; }
-   Drawable drawable() const;
+   Drawable drawable() const { return drawable_; }
 
   private:
-   DrawTemplate draw_template_;
-   std::vector<glm::mat4> transforms_;
+   Drawable drawable_;
    Magick::Image height_map_image_;
 };
 
