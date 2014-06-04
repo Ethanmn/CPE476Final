@@ -16,7 +16,7 @@ Tree::Tree(glm::vec3 position, MeshLoader mesh_loader, AttributeLocationMap attr
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
    leaf_system_(Mesh::fromAssimpMesh(attribute_location_map_,
               mesh_loader_.loadMesh(MeshType::LEAF)), TextureType::BUTTERFLY_PINK,
-              glm::vec3(position_.x, position_.y + 5.0f, position_.z), 5),
+              glm::vec3(position_.x, position_.y + 5.0f, position_.z), 0),
    position_(position),
    rotate_(0.0f),
    elapsed_time_(0),
