@@ -95,8 +95,6 @@ Game::Game() :
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
-   deerCam.setLookAt(deer_.getPosition());
-
    std::vector<GameObject*> objects;
 
    for (auto& tree : treeGen.getTrees()) {
@@ -221,9 +219,7 @@ void Game::step(units::MS dt) {
    }
    day_cycle_.autoAdjustTime(dt);
 
-   deerCam.setLookAt(deer_.getPosition());
-
-   deerCam.step(dt);
+   deerCam.step(dt, deer_.getPosition(), deer_.getFacing());
 }
 
 void Game::draw() {
@@ -354,11 +350,11 @@ void Game::mainLoop() {
             const auto key_left = SDL_SCANCODE_A;
             const auto key_right = SDL_SCANCODE_D;
             if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
-               deer_.strafeLeft();
+               deer_.turnLeft();
             } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
-               deer_.strafeRight();
+               deer_.turnRight();
             } else {
-               deer_.stopStrafing();
+               deer_.stopTurning();
             }
          }
          { // handle jumping

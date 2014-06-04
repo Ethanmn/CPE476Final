@@ -13,29 +13,16 @@
 #include "units.h"
 #include "globals.h"
 
+struct Deer;
 struct Camera {
-   Camera(glm::vec3 position = glm::vec3(0, 0, 0), glm::vec3 lookAt = glm::vec3(0, 0, 1));
-
-   void setPosition(const glm::vec3& endPosition);
-   void setLookAt(const glm::vec3& lookAtPoint);
-   glm::vec3 getPosition() const;
-   glm::vec3 getLookAt() const;
-   glm::vec3 getCamForwardVec() const;
-   glm::vec3 getCamLeftVec() const;
+   Camera(glm::vec3 position, glm::vec3 lookAt);
    glm::mat4 getViewMatrix() const;
 
-   void step(float dT);
-   
-   private:
-      glm::vec3 position;
-      glm::vec3 lookAt;
-      glm::vec3 up;
-
-      glm::vec3 target;
-
-      float springStrength;
-      float dampConst;
-      float speed;
+   void step(float dT, const glm::vec3& target_pos, const glm::vec3& target_facing);
+  private:
+   glm::vec3 position;
+   glm::vec3 lookAt;
+   glm::vec3 camera_target;
 };
 
 #endif // CAMERA_H_
