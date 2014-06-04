@@ -6,12 +6,14 @@
 #define LEAF_MIN -20.0f
 #define ROT_MAX 360.0f
 
-glm::vec3 getRandomVec() {
-   float rx = LEAF_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (LEAF_MAX - LEAF_MIN));
-   float ry = LEAF_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (LEAF_MAX - LEAF_MIN));
-   float rz = LEAF_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (LEAF_MAX - LEAF_MIN));
+namespace {
+   glm::vec3 getRandomVec() {
+      float rx = LEAF_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (LEAF_MAX - LEAF_MIN));
+      float ry = LEAF_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (LEAF_MAX - LEAF_MIN));
+      float rz = LEAF_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (LEAF_MAX - LEAF_MIN));
 
-   return glm::vec3(rx, ry, rz);
+      return glm::vec3(rx, ry, rz);
+   }
 }
 
 LeafSystem::LeafSystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles) : 
@@ -20,7 +22,7 @@ LeafSystem::LeafSystem(const Mesh& mesh, TextureType texture_type, const glm::ve
                   EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
                   }),
             origin_(origin),
-            scale_(0.3f),
+            scale_(0.7f),
             velocity_(glm::vec3(0.0f, 0.0f, 0.0f)),
             acceleration_(glm::vec3(0.0f, -0.000001f, 0.0f)) {
                for (int i = 0; i < numParticles; i++) {
@@ -50,6 +52,16 @@ void LeafSystem::reset() {
       glm::vec3 randVec = getRandomVec();
       particle.setVel(0.0f, 0.0f, 0.0f);
       particle.setPos(origin_.x + randVec.x, origin_.y + randVec.y, origin_.z + randVec.z);
+   }
+}
+
+void LeafSystem::add() {
+   int numAdd = rand() % 5 + 1;
+   for (int i = 0; i < numAdd; i++) {
+      glm::vec3 randVec = getRandomVec();
+      float randAngle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / ROT_MAX));
+      particles_.push_back(Particle(glm::vec3(origin_.x + randVec.x, origin_.y + randVec.y, origin_.z + randVec.z), 
+      scale_, randAngle, velocity_,  acceleration_));
    }
 }
 

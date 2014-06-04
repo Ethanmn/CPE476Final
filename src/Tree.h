@@ -16,10 +16,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
 #include "sound_engine.h"
+#include "leaf_system.h"
 
 
 struct Tree : public GameObject {
-   Tree(glm::vec3 position);
+   Tree(glm::vec3 position, MeshLoader mesh_loader, AttributeLocationMap attribute_location_map);
 
    BoundingRectangle getBoundingRectangle() {
       return bRect;
@@ -39,6 +40,10 @@ struct Tree : public GameObject {
       const units::MS kMaxRustleTime;
       glm::mat4 translate_scale_;
       glm::mat4 default_model_;
+      MeshLoader mesh_loader_;
+      AttributeLocationMap attribute_location_map_;
+      glm::vec3 position_;
+      LeafSystem leaf_system_;
 };
 
 #endif //TREE_H_

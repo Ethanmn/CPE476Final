@@ -80,7 +80,7 @@ float calculateShadowAmount() {
 
 vec4 calculateDiffuse(vec3 lightInt, vec3 lightDir) {
    vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1);
-   if (Diffuse.a < 0.3) {
+   if (Diffuse.a < 0.5) {
      discard;
    }
 

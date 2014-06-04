@@ -18,7 +18,7 @@
 #include "graphics/draw_template.h"
 
 struct TreeGenerator {
-   TreeGenerator(const Mesh& mesh);
+   TreeGenerator(const Mesh& mesh, MeshLoader mesh_loader, AttributeLocationMap attribute_location_map);
 
    void generate();
    std::vector<Tree>& getTrees();
@@ -29,6 +29,8 @@ struct TreeGenerator {
    private:
       std::vector<Tree> trees;
       DrawTemplate draw_template_;
+      MeshLoader mesh_loader_;
+      AttributeLocationMap attribute_location_map_;
 };
 
 #endif //TREE_GEN_H_

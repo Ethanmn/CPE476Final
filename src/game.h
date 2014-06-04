@@ -21,6 +21,7 @@
 #include "day_night_interaction.h"
 #include "butterfly_system.h"
 #include "rain_system.h"
+#include "leaf_system.h"
 #include "water.h"
 #include "song_path.h"
 #include "dist.h"
@@ -59,6 +60,7 @@ struct Game {
    ButterflySystem butterfly_system_pink_;
    ButterflySystem butterfly_system_blue_;
    
+   LeafSystem leaf_system_;
    RainSystem rain_system_;
    Lightning lightning_trigger_;
    GodRays god_rays_; 

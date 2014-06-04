@@ -35,7 +35,7 @@ Game::Game() :
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::TREE))),
+            mesh_loader_.loadMesh(MeshType::TREE)), mesh_loader_, attribute_location_map_),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH))),
 
@@ -64,6 +64,10 @@ Game::Game() :
    butterfly_system_blue_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
          glm::vec3(-60.0f, 0.f, -70.0f), 10),
+
+   leaf_system_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::LEAF)), TextureType::BUTTERFLY_PINK,
+         glm::vec3(0.0f, 100.0f, 0.0f), 30),
 
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
@@ -152,6 +156,8 @@ void Game::step(units::MS dt) {
    butterfly_system_red_.step(dt);
    butterfly_system_pink_.step(dt);
    butterfly_system_blue_.step(dt);
+
+   leaf_system_.step(dt);
 
    rain_system_.step(dt);
 
@@ -307,6 +313,8 @@ void Game::draw() {
    drawables.push_back(song_path_.drawable());
    if (raining)
       drawables.push_back(rain_system_.drawable());
+
+   drawables.push_back(leaf_system_.drawable());
 
    drawables.push_back(butterfly_system_red_.drawable());
    drawables.push_back(butterfly_system_pink_.drawable());

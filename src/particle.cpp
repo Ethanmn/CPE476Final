@@ -35,6 +35,10 @@ void Particle::setPos(float x, float y, float z) {
    position_ = glm::vec3(x, y, z);
 }
 
+void Particle::setRot(float angle) {
+   rotate_ = angle;
+}
+
 glm::vec3 Particle::getPos() {
    return position_;
 }
@@ -49,4 +53,8 @@ glm::vec3 Particle::getAccel() {
 
 units::MS Particle::getLife() {
    return life_time_;
+}
+
+float Particle::getRot() {
+   return rotate_;
 }

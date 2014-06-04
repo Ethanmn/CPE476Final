@@ -11,13 +11,19 @@ const int BOUNDING_SIZE = 4;
 const float BOUNDING_ERR_X = -0.5;
 const float BOUNDING_ERR_Z = -3;
 
-Tree::Tree(glm::vec3 position) :
+Tree::Tree(glm::vec3 position, MeshLoader mesh_loader, AttributeLocationMap attribute_location_map) :
    bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
+   leaf_system_(Mesh::fromAssimpMesh(attribute_location_map_,
+              mesh_loader_.loadMesh(MeshType::LEAF)), TextureType::BUTTERFLY_PINK,
+              glm::vec3(position_.x, position_.y + 5.0f, position_.z), 5),
+   position_(position),
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(200),
    kMaxRustleTime(200),
+   mesh_loader_(mesh_loader),
+   attribute_location_map_(attribute_location_map),
    translate_scale_(
          glm::translate(
             glm::mat4(),
@@ -63,6 +69,7 @@ void Tree::performObjectHit(SoundEngine& sound_engine) {
          false,
          glm::vec3());
    rustle_time_ = 0;
+   leaf_system_.add();
 }
 
 void Tree::step(units::MS dt) {
@@ -71,5 +78,6 @@ void Tree::step(units::MS dt) {
       elapsed_time_ += dt;
       rotate_ = 10 * glm::sin(elapsed_time_ / 60.0f);
    }
+   leaf_system_.step(dt);
 }
 

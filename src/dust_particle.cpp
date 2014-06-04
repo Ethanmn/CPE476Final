@@ -8,7 +8,7 @@ Dust::Dust(const Mesh& mesh, const glm::vec3& origin, int numParticles) :
       velocity_(glm::vec3(1.0f, 0.0f, 0.0f)),
       acceleration_(glm::vec3(-0.1f, 1.0f, 0.0f)) {
          for (int i = 0; i < numParticles; i++) {
-            particles_.push_back(Particle(origin_, scale_, velocity_, acceleration_));
+            particles_.push_back(Particle(origin_, scale_, 0.0f, velocity_, acceleration_));
          }
       }
 

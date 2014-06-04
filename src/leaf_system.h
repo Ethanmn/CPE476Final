@@ -14,6 +14,8 @@ struct LeafSystem {
    void step(units::MS dt);
 
    void reset();
+
+   void add();
   
    DrawTemplate draw_template() { return draw_template_; }
    Drawable drawable() const;
