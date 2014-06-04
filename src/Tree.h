@@ -45,7 +45,6 @@ struct Tree : public GameObject {
       glm::mat4 default_model_;
       MeshLoader mesh_loader_;
       AttributeLocationMap attribute_location_map_;
-      glm::vec3 position_;
 };
 
 #endif //TREE_H_

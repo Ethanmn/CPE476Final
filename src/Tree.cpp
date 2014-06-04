@@ -4,6 +4,7 @@
    CPE 476 - Deer
    */
 #include "Tree.h"
+#include <iostream>
 
 const int TREE_SCALE = 3;
 
@@ -15,8 +16,7 @@ Tree::Tree(glm::vec3 position, const Mesh& leaf) :
    bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
    leaf_system_(leaf, TextureType::BUTTERFLY_PINK,
-              glm::vec3(position_.x, position_.y + 5.0f, position_.z), 0),
-   position_(position),
+              glm::vec3(position.x, position.y + 5.0f, position.z), 0),
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(200),
@@ -39,7 +39,7 @@ Tree::Tree(glm::vec3 position, const Mesh& leaf) :
             -90.0f,
             glm::vec3(1, 0, 0)))
 
-{}
+{} 
 
 glm::mat4 Tree::calculateModel() const {
    if (rustle_time_ >= kMaxRustleTime)
