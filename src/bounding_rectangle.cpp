@@ -55,6 +55,24 @@ glm::mat4 BoundingRectangle::model_matrix() const {
    return translate * rotate * scale * orient;
 }
 
+glm::mat4 BoundingRectangle::model_matrix_screen() const {
+   //printf("%f\n", bounding_mesh_.attribute_buffer_objects[2]. 
+   const auto orient(
+         glm::rotate(
+            glm::mat4(),
+            45.0f,
+            glm::vec3(1, 0, 0)));
+   const auto scale(
+         glm::scale(
+            glm::mat4(),
+            glm::vec3(20.f, 20.f, 20.01f)));
+   const auto translate(
+         glm::translate(
+            glm::mat4(),
+            glm::vec3(center_.x, 0.0f, center_.y)));
+   return translate * scale * orient;
+}
+
 bool BoundingRectangle::collidesWith(const BoundingRectangle& other) const {
    auto has_separation = hasSeparatingLineForAxis(vec2FromAngle(y_rotation_), other);
    has_separation = has_separation || hasSeparatingLineForAxis(vec2FromAngle(y_rotation_ + 90), other);

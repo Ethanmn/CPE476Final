@@ -93,7 +93,9 @@ Game::Game() :
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::GEM)))
+            mesh_loader_.loadMesh(MeshType::GEM))),
+   screen_plane_mesh_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::GROUND)))
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
@@ -258,6 +260,14 @@ void Game::draw() {
       drawables.push_back(br_drawable);
    }
 
+
+   Drawable screen_drawable;
+   screen_drawable.draw_template = BoundingRectangle::draw_template();
+   screen_drawable.draw_template.mesh = screen_plane_mesh_;
+   screen_drawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
+   screen_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix_screen());
+   drawables.push_back(screen_drawable);
+
    drawables.push_back(deer_.drawable());
 
    drawables.push_back(lightning_trigger_.drawable());
@@ -283,9 +293,9 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
-   god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
-   god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
-   drawables.push_back(god_rays_.drawable());
+   //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
+   //god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
+   //drawables.push_back(god_rays_.drawable());
    
 
 

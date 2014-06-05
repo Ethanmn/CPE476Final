@@ -30,7 +30,8 @@ enum class MeshType {
    GEM,
    SKYBOX,
    SPHERE,
-   BOX
+   BOX,
+   PLANE
 };
 
 std::string mesh_path(MeshType mesh);

@@ -84,9 +84,9 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::BONES,
    Uniform::HAS_BONES,
 
-   //Uniform::HAS_SHADOWS,
-   //Uniform::SHADOW_MAP,
-   //Uniform::SHADOW_MAP_TEXTURE,
+   Uniform::HAS_SHADOWS,
+   Uniform::SHADOW_MAP,
+   Uniform::SHADOW_MAP_TEXTURE,
 };
 
 const std::vector<Attribute> kShadowAttrs{
@@ -141,6 +141,7 @@ const std::vector<Attribute> kFinalPassAttrs{
 };
 const std::vector<Uniform> kFinalPassUniforms{
    Uniform::MODEL_VIEW,
+   Uniform::MODEL,
    Uniform::PROJECTION,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
@@ -150,7 +151,6 @@ const std::vector<Uniform> kFinalPassUniforms{
 };
 
 Shaders::Shaders() {
-   if(runDeferred) {
       shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
       shaders_.insert(std::make_pair(ShaderType::DEF_DIFFUSE,
@@ -159,20 +159,12 @@ Shaders::Shaders() {
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
       shaders_.insert(std::make_pair(ShaderType::DEF_NORMAL,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+
+   if(runDeferred) {
       shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
    }
    else {
-      shaders_.insert(std::make_pair(ShaderType::SHADOW, 
-            Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-
-      shaders_.insert(std::make_pair(ShaderType::DEF_DIFFUSE,
-            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::DEF_POSITION,
-            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::DEF_NORMAL,
-            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
-
       shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
       shaders_.insert(std::make_pair(ShaderType::REFLECTION,

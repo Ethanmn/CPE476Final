@@ -233,16 +233,19 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
          case ShaderType::DEF_DIFFUSE:
             if(setOutputType < 0) {
                setOutputType = 0;
+               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
                deferred_diffuse_fbo_.bind();
             }
          case ShaderType::DEF_POSITION:
             if(setOutputType < 0) {
                setOutputType = 1;
+               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
                deferred_position_fbo_.bind();
             }
          case ShaderType::DEF_NORMAL:
             if(setOutputType < 0) {
                setOutputType = 2;
+               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
                deferred_normal_fbo_.bind();
             }
          case ShaderType::DEFERRED:
