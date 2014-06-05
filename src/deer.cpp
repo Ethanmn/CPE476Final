@@ -108,6 +108,8 @@ glm::vec3 Deer::acceleration() const {
       const glm::vec2 forward(model_state_.last_facing / glm::length(model_state_.last_facing));
       if (walk_direction_ == WalkDirection::FORWARD) {
          acceleration = glm::vec3(forward.x, 0.0f, forward.y);
+      } else if (walk_direction_ == WalkDirection::BACKWARD) {
+         acceleration = glm::vec3(-forward.x, 0.0f, -forward.y);
       }
    }
    return acceleration;
@@ -141,16 +143,20 @@ glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) con
 }
 
 void Deer::eat() {
-   eating_ = true;
-   draw_template_.mesh = eat_mesh_;
+   if (!sleeping_) {
+      eating_ = true;
+      draw_template_.mesh = eat_mesh_;
+   }
 }
 
 glm::vec2 Deer::predictFacing(units::MS dt) const {
    float rotate = 0.f;
-   if (turn_direction_ == TurnDirection::LEFT) {
-      rotate -= kTurnSpeed * dt;
-   } else if (turn_direction_ == TurnDirection::RIGHT) {
-      rotate += kTurnSpeed * dt;
+   if (!sleeping_) {
+      if (turn_direction_ == TurnDirection::LEFT) {
+         rotate -= kTurnSpeed * dt;
+      } else if (turn_direction_ == TurnDirection::RIGHT) {
+         rotate += kTurnSpeed * dt;
+      }
    }
    return glm::rotate(model_state_.last_facing, rotate);
 }

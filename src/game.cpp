@@ -336,8 +336,11 @@ void Game::mainLoop() {
          }
          { // handle walk forward/backward for deer.
             const auto key_forward = SDL_SCANCODE_W;
-            if (input.isKeyHeld(key_forward)) {
+            const auto key_backward = SDL_SCANCODE_S;
+            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
                deer_.walkForward();
+            } else if (input.isKeyHeld(key_backward) && !input.isKeyHeld(key_forward)) {
+               deer_.walkBackward();
             } else {
                deer_.stopWalking();
             }
