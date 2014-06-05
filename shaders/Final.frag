@@ -16,10 +16,12 @@ vec4 calculateDiffuse(vec2 texCoord);
 void main() {
    vec4 color;
    vec2 pixelOnScreen = vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight);
+   vec4 depthOfImage =  texture2D(uPositionTexture, pixelOnScreen);
 
    if(uIsGodRay == 1) {
       color = calculateDiffuse(pixelOnScreen);
-      if(gl_FragCoord.z - 0.005 < texture2D(uPositionTexture, pixelOnScreen).z) {
+
+      if(depthOfImage.z - gl_FragCoord.z > 0.0) {
          color *= vGodRayIntensity; 
       }
       else

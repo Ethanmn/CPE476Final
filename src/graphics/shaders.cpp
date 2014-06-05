@@ -143,6 +143,7 @@ const std::vector<Attribute> kFinalPassAttrs{
 };
 const std::vector<Uniform> kFinalPassUniforms{
    Uniform::MODEL_VIEW,
+   Uniform::MODEL,
    Uniform::PROJECTION,
 
    Uniform::IS_GOD_RAY,

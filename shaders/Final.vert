@@ -1,5 +1,6 @@
 uniform mat4 uProjectionMatrix;
 uniform mat4 uModelViewMatrix;
+uniform mat4 uModelMatrix;
 
 uniform sampler2D uPositionTexture;
 varying vec2 vTexCoord;
@@ -18,7 +19,7 @@ void main() {
 
    if(uIsGodRay == 1) {
       pos.z = 0.0;
-      vGodRayIntensity = min(2.0, max(0.0,  distance(vec3(pos), uGodRayCenter) / 10.0));
+      vGodRayIntensity = 1.0 + distance(vec3(uModelMatrix*vec4(aPosition, 1.0)), uGodRayCenter)/40.0;
    }
 
    gl_Position = pos;
