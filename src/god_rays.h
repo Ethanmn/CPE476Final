@@ -18,7 +18,7 @@ struct GodRays {
       current_scale_(glm::vec3(1.0)), 
       scale_(scale),
       rotate_(45.0),
-      draw_template_({ShaderType::TEXTURE, mesh,
+      draw_template_({ShaderType::FINAL_LIGHT_PASS, mesh,
             boost::none,
             boost::none,
             EffectSet({EffectType::IS_GOD_RAY}), 

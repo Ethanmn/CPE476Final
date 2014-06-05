@@ -33,7 +33,14 @@ struct DrawShader {
             const glm::mat4& viewMatrix, 
             const glm::vec3& sunDir, 
             float sunIntensity, 
-            int lightning);
+            int lightning,
+            const DeferredFrameBuffer& deferred_fbo_
+            );
+
+   void SendDeferred(Shader& shader, 
+            const UniformLocationMap& uniforms,
+            const DeferredFrameBuffer& deferred_fbo_);
+   void EnableDeferredTextures(const DeferredFrameBuffer& deferred_fbo_);
 
    void sendOutputShaderType(ShaderType shaderT, Shader& shader);
 

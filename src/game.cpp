@@ -13,7 +13,7 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool useDeferredNotTexture = true;
+   bool useDeferredNotTexture = false;
 
    int lighting = 0;
    int raining = 0;
@@ -257,7 +257,6 @@ void Game::draw() {
    }
 
    drawables.push_back(deer_.drawable());
-   drawables.push_back(deer_.drawableFINAL());
 
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
@@ -282,10 +281,10 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
-   //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
-   //god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
-   //drawables.push_back(god_rays_.drawable());
-   //br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
+   god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
+   god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
+   drawables.push_back(god_rays_.drawable());
+   
 
 
    // View Frustum Culling

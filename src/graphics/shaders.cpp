@@ -2,7 +2,7 @@
 #include <assert.h>
 
 namespace {
-   bool runDeferred = true;
+   bool runDeferred = false;
 }
 
 const std::vector<Attribute> kTextureAttrs{
@@ -142,7 +142,7 @@ const std::vector<Uniform> kFinalPassUniforms{
    Uniform::PROJECTION,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
-   Uniform::FINAL_PASS_POSITION_TEXTURE,
+   //Uniform::FINAL_PASS_POSITION_TEXTURE,
    Uniform::FINAL_PASS_DIFFUSE_TEXTURE,
    Uniform::FINAL_PASS_NORMAL_TEXTURE,
 };
@@ -153,12 +153,14 @@ Shaders::Shaders() {
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
       shaders_.insert(std::make_pair(ShaderType::DEFERRED,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
-      //shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
-            //Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
+            Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
    }
    else {
       shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::DEFERRED,
+            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
       shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
       shaders_.insert(std::make_pair(ShaderType::REFLECTION,
