@@ -1,4 +1,5 @@
 uniform mat4 uModelViewMatrix;
+uniform mat4 uModelMatrix;
 uniform mat4 uProjectionMatrix;
 uniform mat4 uNormalMatrix;
 uniform int uHasTexture;
@@ -30,6 +31,9 @@ attribute float aBoneWeight3;
 attribute float aBoneID4;
 attribute float aBoneWeight4;
 #endif
+
+uniform mat4 uShadowMap;
+varying vec4 vShadow;
 
 varying vec4 vPosition;
 varying vec3 vNormal;
@@ -69,6 +73,7 @@ void main() {
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
    gl_Position = uProjectionMatrix * vPosition;
+   vShadow = uShadowMap * uModelMatrix * vec4(aPosition, 1.0); 
 
 }
 

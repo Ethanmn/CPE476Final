@@ -88,7 +88,7 @@ std::string mesh_path(MeshType mesh) {
       case MeshType::BOX:
          return kMeshPath + "box.dae";
       case MeshType::PLANE:
-         return kMeshPath + "plane.obj";
+         return kMeshPath + "test_plane.obj";
 
    }
 }
