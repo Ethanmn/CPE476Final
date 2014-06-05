@@ -26,6 +26,7 @@ struct Animation {
    void reset() { current_time_ = 0; }
 
    bool past_percentage(double percent) const { return percent < (current_time_ / duration_); }
+   void set_percentage(double percent) { current_time_ = percent * duration_; }
 
   private:
    double current_time_;

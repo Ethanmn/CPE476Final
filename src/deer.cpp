@@ -221,8 +221,8 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
       desired_lean_ = 0.0f;
    } else if (!sleeping_) {
       draw_template_.mesh.animation.step(dt);
-      if (draw_template_.mesh.animation.is_finished()) {
-         draw_template_.mesh.animation.reset();
+      if (draw_template_.mesh.animation.past_percentage(32. / 40.)) {
+         draw_template_.mesh.animation.set_percentage(16. / 40.);
       }
    }
    if (is_jumping_) {
