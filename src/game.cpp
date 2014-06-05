@@ -263,7 +263,7 @@ void Game::draw() {
 
    Drawable screen_drawable;
    BoundingRectangle screen_br = BoundingRectangle(glm::vec2(0.0f, 0.0f), 
-            glm::vec2(1.0f, 1.0f), 0.0f);
+            glm::vec2(kScreenWidthf, kScreenHeightf), 0.0f);
    screen_drawable.draw_template = BoundingRectangle::draw_template();
    screen_drawable.draw_template.mesh = screen_plane_mesh_;
    screen_drawable.draw_template.texture = deer_.drawable().draw_template.texture;
