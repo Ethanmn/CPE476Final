@@ -43,6 +43,35 @@ struct Deer {
 
    bool isMoving();
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
+   BoundingRectangle head_bounding_rectangle() const {
+      BoundingRectangle head(bounding_rectangle_);
+      head.set_dimensions(
+            glm::vec2(
+               bounding_rectangle_.getDimensions().x / 3,
+               bounding_rectangle_.getDimensions().y));
+      head.set_position(
+            bounding_rectangle_.getCenter() +
+            bounding_rectangle_.getDimensions().x/2.f * glm::vec2(
+               glm::sin(glm::radians(bounding_rectangle_.getRotation() + 90.f)),
+               glm::cos(glm::radians(bounding_rectangle_.getRotation() + 90.f)))
+            );
+      return head;
+   }
+
+   BoundingRectangle front_feet_bounding_rectangle() const {
+      BoundingRectangle head(bounding_rectangle_);
+      head.set_dimensions(
+            glm::vec2(
+               bounding_rectangle_.getDimensions().x / 6,
+               bounding_rectangle_.getDimensions().y));
+      head.set_position(
+            bounding_rectangle_.getCenter() +
+            bounding_rectangle_.getDimensions().x/5.f * glm::vec2(
+               glm::sin(glm::radians(bounding_rectangle_.getRotation() + 90.f)),
+               glm::cos(glm::radians(bounding_rectangle_.getRotation() + 90.f)))
+            );
+      return head;
+   }
 
    void block();
 

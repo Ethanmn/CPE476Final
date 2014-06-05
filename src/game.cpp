@@ -10,7 +10,7 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = false;
+   bool draw_collision_box = true;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool useDeferredNotTexture = false;
@@ -174,12 +174,12 @@ void Game::step(units::MS dt) {
    }
 
    for(auto& flower : daisyGen.getFlowers()) {
-      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
+      if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
          deer_.eat(flower);
       }
    }
    for(auto& flower : roseGen.getFlowers()) {
-      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
+      if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
          deer_.eat(flower);
       }
    }
@@ -228,7 +228,9 @@ void Game::draw() {
    if (draw_collision_box) {
       Drawable br_drawable;
       br_drawable.draw_template = BoundingRectangle::draw_template();
-      br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
+      //br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
+      //br_drawable.model_transforms.push_back(deer_.head_bounding_rectangle().model_matrix());
+      br_drawable.model_transforms.push_back(deer_.front_feet_bounding_rectangle().model_matrix());
       br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
       br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
       br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
