@@ -33,7 +33,7 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::DEER_EAT)),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::DEER_SLEEP)),
-         glm::vec3(GroundPlane::GROUND_SCALE / 2.0f - 70.f)),
+         glm::vec3()),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
