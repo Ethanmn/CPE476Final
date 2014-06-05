@@ -19,7 +19,7 @@
 
 
 struct Tree : public GameObject {
-   Tree(glm::vec3 position);
+   Tree(glm::vec3 position, float heightOffset, float angleRot);
 
    BoundingRectangle getBoundingRectangle() {
       return bRect;
@@ -34,6 +34,11 @@ struct Tree : public GameObject {
 
    private:
       BoundingRectangle bRect;
+      glm::vec3 offset;
+      float angleRot;
+      glm::vec3 colorOffset;
+      float heightOffset;
+
       float rotate_;
       units::MS elapsed_time_, rustle_time_;
       const units::MS kMaxRustleTime;
