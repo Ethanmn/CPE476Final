@@ -144,9 +144,17 @@ const std::vector<Attribute> kFinalPassAttrs{
 const std::vector<Uniform> kFinalPassUniforms{
    Uniform::MODEL_VIEW,
    Uniform::PROJECTION,
+
+   Uniform::IS_GOD_RAY,
+   Uniform::GOD_RAY_CENTER,
+
+   Uniform::SCREEN_WIDTH,
+   Uniform::SCREEN_HEIGHT,
+   
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
-   //Uniform::FINAL_PASS_POSITION_TEXTURE,
+
+   Uniform::FINAL_PASS_POSITION_TEXTURE,
    Uniform::FINAL_PASS_DIFFUSE_TEXTURE,
    Uniform::FINAL_PASS_NORMAL_TEXTURE,
 };

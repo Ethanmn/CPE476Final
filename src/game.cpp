@@ -296,12 +296,10 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
-   //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
-   //god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
-   //drawables.push_back(god_rays_.drawable());
+   god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
+   god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
+   drawables.push_back(god_rays_.drawable());
    
-
-
    // View Frustum Culling
    auto viewMatrix = deerCam.getViewMatrix();
    const auto view_projection = kProjectionMatrix * viewMatrix;

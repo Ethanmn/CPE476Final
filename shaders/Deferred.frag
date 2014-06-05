@@ -22,14 +22,19 @@ varying vec3 vNormal;
 
 vec4 calculateDiffuse();
 float calculateShadowAmount();
+int alphaCheck();
 
 void main() {
    vec4 color = vec4(1, 0, 0, 1); //red if OutputShaderType is not correct
+   int alpha = alphaCheck();
+
+   if(alpha == 0)
+      discard;
 
    if(uOutputShaderType == 0)
       color = calculateDiffuse();
    else if(uOutputShaderType == 1)
-      color = vPosition;
+      color = vec4(vec3(gl_FragCoord.z + 0.001), 1.0);
    else if(uOutputShaderType == 2)
       color = vec4(vNormal, 1.0);
 
@@ -38,10 +43,15 @@ void main() {
 
 vec4 calculateDiffuse() {
    vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord)  : vec4(uMat.diffuse, 1.0);
-   if (Diffuse.a < 0.3) {
-      discard;
-   }
    return Diffuse;
+}
+
+int alphaCheck() {
+   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord)  : vec4(uMat.diffuse, 1.0);
+   if (Diffuse.a < 0.3) {
+      return 0;
+   }
+   return 1;
 }
 
 float calculateShadowAmount() {

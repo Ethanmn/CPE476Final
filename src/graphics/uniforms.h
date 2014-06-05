@@ -30,16 +30,17 @@ enum class Uniform {
    SCREEN_WIDTH,
    SCREEN_HEIGHT,
    USE_BLINN_PHONG,
-   IS_GOD_RAY,
-   GOD_RAY_POSITION,
-   GOD_RAY_RADIUS,
    OUTPUT_SHADER_TYPE,
 
    SUN_DIR,
    SUN_INTENSITY,
+   IS_GOD_RAY,
+   GOD_RAY_CENTER,
+   GOD_RAY_RADIUS,
    FINAL_PASS_POSITION_TEXTURE,
    FINAL_PASS_DIFFUSE_TEXTURE,
    FINAL_PASS_NORMAL_TEXTURE,
+   DEF_MODEL_VIEW, /*for deferred*/
 
    LAST_UNIFORM,
 };
@@ -102,8 +103,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uUseBlinnPhong";
       case Uniform::IS_GOD_RAY:
          return "uIsGodRay";
-      case Uniform::GOD_RAY_POSITION:
-         return "uGodRayPosition";
+      case Uniform::GOD_RAY_CENTER:
+         return "uGodRayCenter";
       case Uniform::GOD_RAY_RADIUS:
          return "uGodRayRadius";
       case Uniform::OUTPUT_SHADER_TYPE:
@@ -115,6 +116,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uDiffuseTexture";
       case Uniform::FINAL_PASS_NORMAL_TEXTURE:
          return "uNormalTexture";
+      case Uniform::DEF_MODEL_VIEW:
+         return "uDeferredModelViewMatrix";
 
       case Uniform::LAST_UNIFORM:
          throw "Unknown uniform type, shouldn't even compile";

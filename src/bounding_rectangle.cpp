@@ -56,7 +56,6 @@ glm::mat4 BoundingRectangle::model_matrix() const {
 }
 
 glm::mat4 BoundingRectangle::model_matrix_screen() const {
-   const int dimScale = 400.f;
    const auto orient(
          glm::rotate(
             glm::mat4(),
@@ -70,9 +69,10 @@ glm::mat4 BoundingRectangle::model_matrix_screen() const {
    const auto scale(
          glm::scale(
             glm::mat4(),
-            glm::vec3(dimensions_.x / dimScale, 
-            dimensions_.y / dimScale,
-            dimensions_.x / dimScale)));
+            glm::vec3(
+            0.1f, 
+            2.0f,
+            2.7f)));
    const auto translate(
          glm::translate(
             glm::mat4(),

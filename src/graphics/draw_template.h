@@ -15,7 +15,6 @@ enum class EffectType {
    CASTS_SHADOW,
    CASTS_REFLECTION,
    IS_GOD_RAY,
-   USE_DEF_TEXT
 };
 
 typedef std::set<EffectType> EffectSet;

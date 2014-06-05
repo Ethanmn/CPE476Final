@@ -302,29 +302,43 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
          case ShaderType::FINAL_LIGHT_PASS:
-            glm::mat4 orthoProj = glm::ortho(0.0f, kScreenWidthf/2.0f, 0.0f, kScreenHeightf, -15.0f, 11.0f);
+            glm::mat4 curView;
             glm::mat4 lookAt = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) );
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             deferred_diffuse_fbo_.texture().enable(texture_cache_);
             shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, uniforms, deferred_diffuse_fbo_.texture_slot());
-            //deferred_position_fbo_.texture().enable(texture_cache_);
-            //shader.sendUniform(Uniform::FINAL_PASS_POSITION_TEXTURE, uniforms, deferred_position_fbo_.texture_slot());
+            deferred_position_fbo_.texture().enable(texture_cache_);
+            shader.sendUniform(Uniform::FINAL_PASS_POSITION_TEXTURE, uniforms, deferred_position_fbo_.texture_slot());
             deferred_normal_fbo_.texture().enable(texture_cache_);
             shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_normal_fbo_.texture_slot());
 
-
             SendSun(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
-            //shader.sendUniform(Uniform::PROJECTION, uniforms, orthoProj);
+            shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
+            shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
 
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
 
                if(newDrawable.draw_template.shader_type == ShaderType::FINAL_LIGHT_PASS) {
+
+                  if (drawable.draw_template.effects.count(EffectType::IS_GOD_RAY)) {
+                     shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, 1);
+                     curView = viewMatrix;
+                  }
+                  else {
+                     shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, 0);
+                     curView = lookAt;
+                  }
+
                   for(const auto& mt : drawable.model_transforms) {
-                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, lookAt * mt.model);
+                  //shader.sendUniform(Uniform::DEF_MODEL_VIEW, uniforms, lookAt * mt.model);
+                  if (drawable.draw_template.effects.count(EffectType::IS_GOD_RAY)) {
+                     shader.sendUniform(Uniform::GOD_RAY_CENTER, uniforms, glm::vec3(mt.model * glm::vec4(0,0,0,1)));
+                  }
+                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, curView * mt.model);
                   shader.drawMesh(drawable.draw_template.mesh);
                   }
                }
