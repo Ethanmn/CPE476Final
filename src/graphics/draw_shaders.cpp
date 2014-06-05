@@ -280,13 +280,15 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
          case ShaderType::FINAL_LIGHT_PASS:
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            deferred_fbo_.bind();
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
             SendDeferred(shader, uniforms, deferred_fbo_);
             SendSun(shader, uniforms, sunIntensity, sunDir);
 
             int halfWidth = kScreenWidth / 2, halfHeight = kScreenHeight / 2;
-            deferred_fbo_.SetBufferToRead(GBufferType::G_BUFF_DIFFUSE);
+            deferred_fbo_.SetBufferToRead(GBufferType::G_BUFF_NORM);
                glBlitFramebuffer(0, 0, kScreenWidth, kScreenHeight, 
                0, halfHeight, halfWidth, kScreenHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
