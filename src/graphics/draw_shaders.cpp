@@ -119,11 +119,6 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
             SendBones(shader, drawable);
             SendTexture(shader, drawable);
 
-            if (drawable.draw_template.effects.count(EffectType::USE_DEF_TEXT)) { 
-               fbo.texture().enable(texture_cache_);
-               shader.sendUniform(Uniform::TEXTURE, uniforms, fbo.texture_slot());
-            }
-
             drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
          }
          drawModelTransforms(shader, drawable, viewMatrix, true);
