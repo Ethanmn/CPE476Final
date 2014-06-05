@@ -175,8 +175,9 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
           (model_state_.position.x < -GroundPlane::GROUND_SCALE / 2 + offset) ||
           (model_state_.position.z > GroundPlane::GROUND_SCALE / 2 - offset) ||
           (model_state_.position.z < -GroundPlane::GROUND_SCALE / 2 + offset)) {
-         if (!draw_template_.mesh.animation.past_percentage(38. / 69.))
+         if (!draw_template_.mesh.animation.past_percentage(38. / 69.)) {
             draw_template_.mesh.animation.step(dt);
+         }
       } else if (!draw_template_.mesh.animation.is_finished()) {
          blocked = true;
          draw_template_.mesh.animation.step(dt);
@@ -207,7 +208,7 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
 
    if (!has_acceleration()) {
       desired_lean_ = 0.0f;
-   } else {
+   } else if (!sleeping_) {
       draw_template_.mesh.animation.step(dt);
       if (draw_template_.mesh.animation.is_finished()) {
          draw_template_.mesh.animation.reset();
