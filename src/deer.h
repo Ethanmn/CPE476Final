@@ -10,8 +10,8 @@
 
 struct GroundPlane;
 struct Shader;
+struct Flower;
 struct SoundEngine;
-
 
 struct Deer {
   private:
@@ -36,7 +36,7 @@ struct Deer {
    void stopTurning();
 
    void jump();
-   void eat();
+   void eat(Flower& flower);
 
    glm::vec3 getPosition() const;
    glm::vec3 getFacing() const;
@@ -94,6 +94,7 @@ struct Deer {
    bool blocked;
 
    glm::mat4 pivot_, inverse_pivot_;
+   boost::optional<Flower&> flower_;
 };
 
 #endif // DEER_H_

@@ -175,14 +175,12 @@ void Game::step(units::MS dt) {
 
    for(auto& flower : daisyGen.getFlowers()) {
       if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
-         flower.eat(sound_engine_);
-         deer_.eat();
+         deer_.eat(flower);
       }
    }
    for(auto& flower : roseGen.getFlowers()) {
       if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
-         flower.eat(sound_engine_);
-         deer_.eat();
+         deer_.eat(flower);
       }
    }
    eatFlower = false;

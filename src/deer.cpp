@@ -8,6 +8,7 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 #include "ground_plane.h"
+#include "Flower.h"
 
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
@@ -142,10 +143,11 @@ glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) con
    return velocity;
 }
 
-void Deer::eat() {
+void Deer::eat(Flower& flower) {
    if (!sleeping_) {
       eating_ = true;
       draw_template_.mesh = eat_mesh_;
+      flower_ = flower;
    }
 }
 
@@ -196,6 +198,9 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
 
    if (eating_) {
       draw_template_.mesh.animation.step(dt);
+      if (flower_ && draw_template_.mesh.animation.past_percentage(16. / 56.)) {
+         flower_->eat(sound_engine);
+      }
       if (draw_template_.mesh.animation.is_finished()) {
          eating_ = false;
          draw_template_.mesh = walk_mesh_;
