@@ -157,6 +157,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   for (auto& drawable : shadow_drawables) {
                      SendBones(shader, Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
+                        SendTexture(shader, 
+                           Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
                         for(auto& mt : drawable.model_transforms) {
                            if (!mt.cullFlag.count(CullType::SHADOW_CULLING)) {
                               shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, 

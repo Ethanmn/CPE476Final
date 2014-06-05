@@ -35,7 +35,9 @@ Game::Game() :
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::TREE))),
+            mesh_loader_.loadMesh(MeshType::TREE)), 
+            Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::LEAF))),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH)),
          ground_),
@@ -264,6 +266,10 @@ void Game::draw() {
 
    drawables.push_back(bushGen.drawable());
    drawables.push_back(treeGen.drawable());
+   std::vector<Drawable> leaf_drawables = treeGen.leafDrawable();
+   for (auto& leafDrawable : leaf_drawables) {
+      drawables.push_back(leafDrawable);
+   }
 
    drawables.push_back(daisyGen.drawable());
    drawables.push_back(daisyGen.drawableEaten());

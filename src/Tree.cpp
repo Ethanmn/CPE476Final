@@ -4,6 +4,7 @@
    CPE 476 - Deer
    */
 #include "Tree.h"
+#include <iostream>
 
 const int TREE_SCALE = 3;
 
@@ -11,11 +12,13 @@ const int BOUNDING_SIZE = 4;
 const float BOUNDING_ERR_X = -0.5;
 const float BOUNDING_ERR_Z = -3;
 
-Tree::Tree(glm::vec3 position, float heightOffset, float angleRot) :
+Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& leaf) :
    bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
    heightOffset(heightOffset),
    angleRot(angleRot),
+   leaf_system_(leaf, TextureType::LEAF,
+              glm::vec3(position.x, position.y + 5.0f, position.z), 0),
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(200),
@@ -38,7 +41,7 @@ Tree::Tree(glm::vec3 position, float heightOffset, float angleRot) :
             -90.0f,
             glm::vec3(1, 0, 0)))
 
-{}
+{} 
 
 glm::mat4 Tree::calculateModel() const {
    if (rustle_time_ >= kMaxRustleTime)
@@ -72,6 +75,7 @@ void Tree::performObjectHit(SoundEngine& sound_engine) {
          false,
          glm::vec3());
    rustle_time_ = 0;
+   leaf_system_.add();
 }
 
 void Tree::step(units::MS dt) {
@@ -80,5 +84,6 @@ void Tree::step(units::MS dt) {
       elapsed_time_ += dt;
       rotate_ = 10 * glm::sin(elapsed_time_ / 60.0f);
    }
+   leaf_system_.step(dt);
 }
 

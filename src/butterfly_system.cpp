@@ -22,7 +22,7 @@ ButterflySystem::ButterflySystem(const Mesh& mesh, TextureType texture_type, con
                   float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
                   float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
                   float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
-                  particles_.push_back(Particle(glm::vec3(origin_.x + rx, origin_.y + ry, origin_.z + rz), scale_,
+                  particles_.push_back(Particle(glm::vec3(origin_.x + rx, origin_.y + ry, origin_.z + rz), scale_, 0.0f,
                                        glm::vec3(rvx, 0.0f, rvz), acceleration_));
 
                }
@@ -38,10 +38,10 @@ void ButterflySystem::step(units::MS dt) {
          float rvx = MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (MAX - MIN));
          float rvz = MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (MAX - MIN));
          
-         particle.setVel(rvx, rvy * dt, rvz);
+         particle.setVel(rvx, rvy, rvz);
       }
       else {
-         particle.setVel(particle.getVel().x, -(rvy * dt), particle.getVel().z);
+         particle.setVel(particle.getVel().x, -(rvy), particle.getVel().z);
       }
       particle.step(dt);
    }
