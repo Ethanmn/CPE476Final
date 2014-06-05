@@ -9,7 +9,7 @@
 using namespace std;
 namespace {
    bool debug = false;
-   bool printCurrentShaderName = true;
+   bool printCurrentShaderName = false;
    const float kOrthoProjAmount = 70.0f;
    const glm::mat4 kShadowProjection = glm::ortho(
          -kOrthoProjAmount, kOrthoProjAmount,
@@ -45,6 +45,12 @@ namespace {
       shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
       SendInverseShadow(shader, uniforms, sunDir, deerPos);
    }
+   void SendDeferred(Shader& shader, const UniformLocationMap& uniforms,
+         const DeferredFrameBuffer& deferred_fbo_) {
+      shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, uniforms, deferred_fbo_.diffuse_texture_slot());
+      shader.sendUniform(Uniform::FINAL_PASS_POSITION_TEXTURE, uniforms, deferred_fbo_.position_texture_slot());
+      shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_fbo_.normal_texture_slot());
+   } 
 }
 
 void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, 

@@ -23,11 +23,6 @@ enum class TextureType {
    GEM,
    SKYBOX_DAY,
    SKYBOX_NIGHT,
-
-   DEFERRED_DIFFUSE,
-   DEFERRED_POSITION,
-   DEFERRED_NORMAL,
-
    LAST_TEXTURE_TYPE,
 };
 

@@ -18,11 +18,29 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
    glGenFramebuffers(1, &fbo_id_);
    glBindFramebuffer(GL_FRAMEBUFFER, fbo_id_);
 
+   printf("\n");
    for(int i = 0; i < NUM_DEF_TEX; i++) {
       GenDeferredTexture(&g_buff_textures_[i], width, height);  
       glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
          GL_TEXTURE_2D, g_buff_textures_[i], 0);
+
+      printf("Deferred texture Glint %d at texture slot %d\n", g_buff_textures_[i], DEFERRED_DIFFUSE_TEXTURE + i);
+
+      TextureSlot ts;
+      if(i == 0)
+         ts = DEFERRED_DIFFUSE_TEXTURE;
+      else if(i == 1)
+         ts = DEFERRED_POSITION_TEXTURE;
+      else if(i == 2)
+         ts = DEFERRED_NORMAL_TEXTURE;
+      else {
+         ts = DIFFUSE_TEXTURE;
+         printf("ERROR -- too many g_buff_textures\n");
+      }
+
+      deferred_textures_.push_back(Texture((GLTextureID)g_buff_textures_[i], ts));
    }
+   printf("\n");
 
    GenDepthDeferredTexture(&g_buff_depth_texture_, width, height);
 
@@ -72,3 +90,30 @@ void GenDepthDeferredTexture(GLuint *texture_id, unsigned int width, unsigned in
    glFramebufferTexture2D (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 
          GL_TEXTURE_2D, *texture_id, 0);
 }
+
+
+int DeferredFrameBuffer::diffuse_texture_slot() const {
+   return deferred_textures_[0].texture_slot(); 
+}
+
+Texture DeferredFrameBuffer::diffuse_texture() const {
+   return deferred_textures_[0];
+}
+
+int DeferredFrameBuffer::position_texture_slot() const {
+   return deferred_textures_[1].texture_slot(); 
+}
+
+Texture DeferredFrameBuffer::position_texture() const {
+   return deferred_textures_[1];
+}
+
+int DeferredFrameBuffer::normal_texture_slot() const {
+   return deferred_textures_[2].texture_slot(); 
+}
+
+Texture DeferredFrameBuffer::normal_texture() const {
+   return deferred_textures_[2];
+}
+
+
