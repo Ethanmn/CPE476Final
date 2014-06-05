@@ -14,11 +14,10 @@ DeferredFrameBuffer::DeferredFrameBuffer(unsigned int width, unsigned int height
 
 
 void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
-   printf("Initializing DFBO\n");
+   printf("\nInitializing DFBO\n");
    glGenFramebuffers(1, &fbo_id_);
    glBindFramebuffer(GL_FRAMEBUFFER, fbo_id_);
 
-   printf("\n");
    for(int i = 0; i < NUM_DEF_TEX; i++) {
       GenDeferredTexture(&g_buff_textures_[i], width, height);  
       glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,

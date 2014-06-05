@@ -280,6 +280,21 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
          case ShaderType::FINAL_LIGHT_PASS:
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+            SendDeferred(shader, uniforms, deferred_fbo_);
+            SendSun(shader, uniforms, sunIntensity, sunDir);
+
+            for (auto& drawable : culledDrawables) {
+               Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
+
+               if(newDrawable.draw_template.shader_type == ShaderType::FINAL_LIGHT_PASS) {
+                  for(const auto& mt : drawable.model_transforms) {
+                     shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model);
+                     shader.drawMesh(drawable.draw_template.mesh);  
+                  }             
+               }
+            }
             /* 
             int halfWidth = kScreenWidth / 2, halfHeight = kScreenHeight / 2;
             if(printCurrentShaderName)
