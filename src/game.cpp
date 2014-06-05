@@ -13,7 +13,7 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool useDeferredNotTexture = true;
+   bool useDeferredNotTexture = false;
 
    int lighting = 0;
    int raining = 0;
@@ -95,7 +95,7 @@ Game::Game() :
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GEM))),
    screen_plane_mesh_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::GROUND)))
+            mesh_loader_.loadMesh(MeshType::PLANE)))
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
@@ -264,6 +264,7 @@ void Game::draw() {
    Drawable screen_drawable;
    screen_drawable.draw_template = BoundingRectangle::draw_template();
    screen_drawable.draw_template.mesh = screen_plane_mesh_;
+   screen_drawable.draw_template.texture = deer_.drawable().draw_template.texture;
    screen_drawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
    screen_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix_screen());
    drawables.push_back(screen_drawable);

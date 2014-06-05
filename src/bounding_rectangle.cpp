@@ -60,8 +60,13 @@ glm::mat4 BoundingRectangle::model_matrix_screen() const {
    const auto orient(
          glm::rotate(
             glm::mat4(),
-            45.0f,
+            90.0f,
             glm::vec3(1, 0, 0)));
+   const auto rotate(
+         glm::rotate(
+            glm::mat4(),
+            90.0f,
+            glm::vec3(0, 1, 0)));
    const auto scale(
          glm::scale(
             glm::mat4(),
@@ -69,8 +74,8 @@ glm::mat4 BoundingRectangle::model_matrix_screen() const {
    const auto translate(
          glm::translate(
             glm::mat4(),
-            glm::vec3(center_.x, 0.0f, center_.y)));
-   return translate * scale * orient;
+            glm::vec3(0.0f, 0.0f, 0.0f)));
+   return translate * scale * rotate * orient;
 }
 
 bool BoundingRectangle::collidesWith(const BoundingRectangle& other) const {

@@ -2,7 +2,7 @@
 #include <assert.h>
 
 namespace {
-   bool runDeferred = true;
+   bool runDeferred = false;
 }
 
 const std::vector<Attribute> kTextureAttrs{
