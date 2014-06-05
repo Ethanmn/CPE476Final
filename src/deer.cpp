@@ -25,7 +25,7 @@ const float kTurnSpeed = 0.08f;
 
 const float kStepTime = 300;
 
-Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position) :
+Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const glm::vec3& position) :
    draw_template_({
          ShaderType::TEXTURE,
          walk_mesh,
@@ -34,8 +34,10 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& positio
          EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
          }),
    eating_(false),
+   sleeping_(false),
    walk_mesh_(walk_mesh),
    eat_mesh_(eat_mesh),
+   sleep_mesh_(sleep_mesh),
    model_state_({
          position,
          glm::vec3(0, 0, 0),
@@ -156,6 +158,35 @@ glm::vec2 Deer::predictFacing(units::MS dt) const {
 void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    model_state_.current_lean += (desired_lean_ - model_state_.current_lean) * 0.1f;
    model_state_.velocity = predictVelocity(dt, acceleration());
+
+   const auto offset = 60.f;
+   if ((model_state_.position.x > GroundPlane::GROUND_SCALE / 2 - offset && model_state_.velocity.x > 0.f) ||
+       (model_state_.position.x < -GroundPlane::GROUND_SCALE / 2 + offset && model_state_.velocity.x < 0.f) ||
+       (model_state_.position.z > GroundPlane::GROUND_SCALE / 2 - offset && model_state_.velocity.z > 0.f) ||
+       (model_state_.position.z < -GroundPlane::GROUND_SCALE / 2 + offset && model_state_.velocity.z < 0.f)) {
+      blocked = true;
+      if (!sleeping_)
+         draw_template_.mesh = sleep_mesh_;
+      sleeping_ = true;
+      if (!draw_template_.mesh.animation.past_percentage(38. / 69.))
+         draw_template_.mesh.animation.step(dt);
+   } else if (sleeping_) {
+      if ((model_state_.position.x > GroundPlane::GROUND_SCALE / 2 - offset) ||
+          (model_state_.position.x < -GroundPlane::GROUND_SCALE / 2 + offset) ||
+          (model_state_.position.z > GroundPlane::GROUND_SCALE / 2 - offset) ||
+          (model_state_.position.z < -GroundPlane::GROUND_SCALE / 2 + offset)) {
+         if (!draw_template_.mesh.animation.past_percentage(38. / 69.))
+            draw_template_.mesh.animation.step(dt);
+      } else if (!draw_template_.mesh.animation.is_finished()) {
+         blocked = true;
+         draw_template_.mesh.animation.step(dt);
+      } else {
+         draw_template_.mesh = walk_mesh_;
+         sleeping_ = false;
+         blocked = false;
+      }
+   }
+
    if (eating_) {
       draw_template_.mesh.animation.step(dt);
       if (draw_template_.mesh.animation.is_finished()) {

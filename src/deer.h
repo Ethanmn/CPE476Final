@@ -22,7 +22,7 @@ struct Deer {
       float current_lean;
    };
   public:
-   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position);
+   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const glm::vec3& position);
 
    BoundingRectangle getNextBoundingBox(units::MS dt);
 
@@ -75,8 +75,9 @@ struct Deer {
 
    DrawTemplate draw_template_;
    bool eating_;
+   bool sleeping_;
    Mesh walk_mesh_;
-   Mesh eat_mesh_;
+   Mesh eat_mesh_, sleep_mesh_;
 
    ModelState model_state_;
 

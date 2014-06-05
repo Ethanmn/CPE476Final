@@ -25,6 +25,8 @@ struct Animation {
    bool is_finished() const { return current_time_ >= duration_; }
    void reset() { current_time_ = 0; }
 
+   bool past_percentage(double percent) const { return percent < (current_time_ / duration_); }
+
   private:
    double current_time_;
    double duration_, ticks_per_ms_;

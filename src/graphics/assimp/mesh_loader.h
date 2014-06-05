@@ -16,6 +16,7 @@ enum class MeshType {
    GROUND,
    DEER_WALK,
    DEER_EAT,
+   DEER_SLEEP,
    TIME_STONE,
    TREE,
    BUSH,

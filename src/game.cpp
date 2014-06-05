@@ -10,7 +10,7 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = true;
+   bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool useDeferredNotTexture = false;
@@ -31,7 +31,9 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::DEER_WALK)),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::DEER_EAT)),
-         glm::vec3(0.0f)),
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::DEER_SLEEP)),
+         glm::vec3(GroundPlane::GROUND_SCALE / 2.0f - 10.f)),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -120,7 +122,6 @@ void Game::step(units::MS dt) {
       canary2_bird_sound_.step(dt, sound_engine_);
       woodpecker_bird_sound_.step(dt, sound_engine_);
    }
-   bool deerBlocked = false;
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
 
@@ -146,6 +147,7 @@ void Game::step(units::MS dt) {
       lighting = 0;
    }
 
+   bool deerBlocked = false;
    if (deer_.isMoving()) {
       BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt);
       std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
@@ -153,16 +155,11 @@ void Game::step(units::MS dt) {
          collObj->performObjectHit(sound_engine_);
          deerBlocked = deerBlocked || collObj->isBlocker();
       }
-
-      glm::vec2 center = nextDeerRect.getCenter();
-
-      deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
    }
 
    if (deerBlocked) {
       deer_.block();
-   }
-   else {
+   } else {
       deer_.step(dt, ground_, sound_engine_);
    }
 
@@ -223,7 +220,6 @@ void Game::step(units::MS dt) {
 }
 
 void Game::draw() {
-
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    const auto sunIntensity = day_cycle_.getSunIntensity();
    glClearColor (0.05098 * sunIntensity,

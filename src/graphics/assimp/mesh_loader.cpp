@@ -57,6 +57,8 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "deer_walk.dae";
       case MeshType::DEER_EAT:
          return kMeshPath + "deer_eat.dae";
+      case MeshType::DEER_SLEEP:
+         return kMeshPath + "deer_sleep.dae";
       case MeshType::TIME_STONE:
          return kMeshPath + "time_stone.dae";
       case MeshType::TREE:
