@@ -11,6 +11,7 @@ uniform mat4 uBones[40];
 uniform int uHasHeightMap;
 #ifdef USE_HEIGHT_MAP
 uniform sampler2D uHeightMap;
+uniform float uHeightMapScale;
 #endif
 
 attribute vec3 aTexCoord;
@@ -60,7 +61,7 @@ void main() {
 #ifdef USE_HEIGHT_MAP
    float HEIGHT_MAP_SCALE = 3.0;
    if (uHasHeightMap != 0) {
-      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * HEIGHT_MAP_SCALE;
+      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * uHeightMapScale;
    }
 #endif
 

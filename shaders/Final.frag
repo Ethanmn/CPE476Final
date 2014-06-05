@@ -8,6 +8,6 @@ uniform float uSunIntensity;
 varying vec4 vPixelSpacePos;
 
 void main() {
-   gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+   gl_FragColor = texture2D(uNormalTexture, gl_FragCoord.xy);
 
 }

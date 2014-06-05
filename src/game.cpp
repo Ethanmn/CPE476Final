@@ -13,7 +13,7 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool useDeferredNotTexture = false;
+   bool useDeferredNotTexture = true;
 
    int lighting = 0;
    int raining = 0;
@@ -257,6 +257,7 @@ void Game::draw() {
    }
 
    drawables.push_back(deer_.drawable());
+   drawables.push_back(deer_.drawableFINAL());
 
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
