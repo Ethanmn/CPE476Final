@@ -19,7 +19,7 @@ boost::optional<Mesh> BoundingRectangle::bounding_mesh_ = boost::none;
 
 //static
 void BoundingRectangle::loadBoundingMesh(MeshLoader& mesh_loader, const AttributeLocationMap& locations) {
-   bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh("../models/cube.obj"));
+   bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh("../models/plane.3ds"));
 }
 
 //static
@@ -34,6 +34,11 @@ DrawTemplate BoundingRectangle::draw_template() {
 }
 
 glm::mat4 BoundingRectangle::model_matrix() const {
+   const auto orient(
+         glm::rotate(
+            glm::mat4(),
+            -90.0f,
+            glm::vec3(1, 0, 0)));
    const auto rotate(
          glm::rotate(
             glm::mat4(),
@@ -42,12 +47,12 @@ glm::mat4 BoundingRectangle::model_matrix() const {
    const auto scale(
          glm::scale(
             glm::mat4(),
-            glm::vec3(dimensions_.x / 2.0f, 0.01f, dimensions_.y / 2.0f)));
+            glm::vec3(dimensions_.x / 2.0f, 1.f, dimensions_.y / 2.0f)));
    const auto translate(
          glm::translate(
             glm::mat4(),
             glm::vec3(center_.x, 5.0f, center_.y)));
-   return translate * rotate * scale;
+   return translate * rotate * scale * orient;
 }
 
 bool BoundingRectangle::collidesWith(const BoundingRectangle& other) const {
