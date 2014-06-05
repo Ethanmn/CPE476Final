@@ -7,7 +7,7 @@
 #include "graphics/assimp/mesh_loader.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
-
+#include "globals.h"
 namespace {
    glm::vec2 vec2FromAngle(float y_rotation) {
       return glm::rotate(glm::vec2(1, 0), 360.0f - y_rotation);
@@ -70,7 +70,7 @@ glm::mat4 BoundingRectangle::model_matrix_screen() const {
    const auto scale(
          glm::scale(
             glm::mat4(),
-            glm::vec3(20.f, 20.f, 20.01f)));
+            glm::vec3(1.0f, 1.0f, 1.0f)));
    const auto translate(
          glm::translate(
             glm::mat4(),

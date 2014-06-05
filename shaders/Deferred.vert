@@ -72,8 +72,8 @@ void main() {
    vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
-   gl_Position = uProjectionMatrix * vPosition;
    vShadow = uShadowMap * uModelMatrix * vec4(aPosition, 1.0); 
+   gl_Position = uProjectionMatrix * vPosition;
 
 }
 

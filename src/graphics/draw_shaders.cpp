@@ -307,6 +307,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
          case ShaderType::FINAL_LIGHT_PASS:
+            glm::mat4 orthoProj = glm::ortho(0.0f, kScreenWidthf/2.0f, 0.0f, kScreenHeightf, -15.0f, 11.0f);
+            glm::mat4 lookAt = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) );
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -320,13 +322,14 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
             SendSun(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+            //shader.sendUniform(Uniform::PROJECTION, uniforms, orthoProj);
 
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
 
                if(newDrawable.draw_template.shader_type == ShaderType::FINAL_LIGHT_PASS) {
                   for(const auto& mt : drawable.model_transforms) {
-                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model);
+                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, lookAt * mt.model);
                   shader.drawMesh(drawable.draw_template.mesh);
                   }
                }
