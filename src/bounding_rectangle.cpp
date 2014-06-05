@@ -19,7 +19,7 @@ boost::optional<Mesh> BoundingRectangle::bounding_mesh_ = boost::none;
 
 //static
 void BoundingRectangle::loadBoundingMesh(MeshLoader& mesh_loader, const AttributeLocationMap& locations) {
-   bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh("../models/plane.3ds"));
+   bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh("../models/box.dae"));
 }
 
 //static
@@ -47,7 +47,7 @@ glm::mat4 BoundingRectangle::model_matrix() const {
    const auto scale(
          glm::scale(
             glm::mat4(),
-            glm::vec3(dimensions_.x / 2.0f, 1.f, dimensions_.y / 2.0f)));
+            glm::vec3(dimensions_.x / 4.0f, 0.01f, dimensions_.y / 4.0f))); // divide by 4 for the box model
    const auto translate(
          glm::translate(
             glm::mat4(),
