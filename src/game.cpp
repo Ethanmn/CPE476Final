@@ -85,7 +85,9 @@ Game::Game() :
  
    deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
 
-   deferred_fbo_(kScreenWidth, kScreenHeight),
+   deferred_diffuse_fbo_(kScreenWidth, kScreenHeight, DEFERRED_DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH),
+   deferred_position_fbo_(kScreenWidth, kScreenHeight, DEFERRED_POSITION_TEXTURE, FBOType::COLOR_WITH_DEPTH),
+   deferred_normal_fbo_(kScreenWidth, kScreenHeight, DEFERRED_NORMAL_TEXTURE, FBOType::COLOR_WITH_DEPTH),
 
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
@@ -307,9 +309,13 @@ void Game::draw() {
 
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
-   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), deferred_fbo_, 
-         culledDrawables, viewMatrix, switchBlinnPhongShading, 
-         deerPos, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_, 
+                     water_.fbo(), 
+                     deferred_diffuse_fbo_,
+                     deferred_position_fbo_,
+                     deferred_normal_fbo_,
+                     culledDrawables, viewMatrix, switchBlinnPhongShading, 
+                     deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {

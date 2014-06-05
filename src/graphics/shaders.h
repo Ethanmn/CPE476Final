@@ -15,7 +15,12 @@ enum class ShaderType {
    SHADOW,
    /* Reflection generates a texture, so must be before TEXTURE */
    REFLECTION,
+
    DEFERRED,
+   DEF_DIFFUSE, 
+   DEF_POSITION,
+   DEF_NORMAL,
+
    TEXTURE,
    WATER,
    SKYBOX,

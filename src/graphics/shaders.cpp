@@ -57,8 +57,8 @@ const std::vector<Uniform> kTextureUniforms{
   
    Uniform::LIGHTNING,
 
-   Uniform::GOD_RAY_POSITION,
-   Uniform::GOD_RAY_RADIUS
+   //Uniform::GOD_RAY_POSITION,
+   //Uniform::GOD_RAY_RADIUS
 };
 
 /* Deferred Pass Attributes are the same as Texture's */
@@ -71,6 +71,8 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::M_DIF,
    Uniform::M_SPEC,
    Uniform::M_SHINE,
+   
+   Uniform::OUTPUT_SHADER_TYPE,
    
    Uniform::HAS_TEXTURE,
    Uniform::HEIGHT_MAP_SCALE,
@@ -159,8 +161,14 @@ Shaders::Shaders() {
    else {
       shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::DEFERRED,
+
+      shaders_.insert(std::make_pair(ShaderType::DEF_DIFFUSE,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::DEF_POSITION,
+            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::DEF_NORMAL,
+            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+
       shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
       shaders_.insert(std::make_pair(ShaderType::REFLECTION,
