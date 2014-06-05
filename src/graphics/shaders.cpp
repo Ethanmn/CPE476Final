@@ -2,7 +2,7 @@
 #include <assert.h>
 
 namespace {
-   bool runDeferred = false;
+   bool runDeferred = true;
 }
 
 const std::vector<Attribute> kTextureAttrs{
@@ -153,7 +153,11 @@ Shaders::Shaders() {
    if(runDeferred) {
       shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::DEFERRED,
+      shaders_.insert(std::make_pair(ShaderType::DEF_DIFFUSE,
+            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::DEF_POSITION,
+            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::DEF_NORMAL,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
       shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));

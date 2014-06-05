@@ -83,12 +83,6 @@ Drawable Deer::drawable() const {
    return Drawable({draw_template_, std::vector<glm::mat4>({calculateModel(model_state_)})});
 }
 
-Drawable Deer::drawableFINAL() const {
-   DrawTemplate ndt = draw_template_;
-   ndt.shader_type = ShaderType::FINAL_LIGHT_PASS;
-   return Drawable({ndt, std::vector<glm::mat4>({calculateModel(model_state_)})});
-} 
-
 glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
    return model_state_.position + velocity * static_cast<float>(dt);
 }

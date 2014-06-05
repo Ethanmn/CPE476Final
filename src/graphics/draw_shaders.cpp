@@ -47,13 +47,6 @@ namespace {
    }
 }
 
-//void DrawShader::SendDeferred(Shader& shader, const UniformLocationMap& uniforms,
-         //const DeferredFrameBuffer& deferred_fbo_) {
-      //shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, uniforms, deferred_fbo_.diffuse_texture_slot());
-      ////shader.sendUniform(Uniform::FINAL_PASS_POSITION_TEXTURE, uniforms, deferred_fbo_.position_texture_slot());
-      //shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_fbo_.normal_texture_slot());
-//} 
-
 void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, 
       const glm::mat4& view, bool needsModel) {
    for(const auto& mt : drawable.model_transforms) {
@@ -264,7 +257,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
 
-               if(newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
+               if(newDrawable.draw_template.shader_type == ShaderType::DEFERRED ||
+                  newDrawable.draw_template.shader_type == ShaderType::SKYBOX) {
                   newDrawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
                   SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
@@ -288,7 +282,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
 
                drawTextureShader(shader, drawables, viewMatrix, sunDir, sunIntensity, 
-                  lightning, deferred_diffuse_fbo_);
+                  lightning, deferred_normal_fbo_);
             }
             break;
 
@@ -311,6 +305,14 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
          case ShaderType::FINAL_LIGHT_PASS:
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            deferred_diffuse_fbo_.texture().enable(texture_cache_);
+            shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, uniforms, deferred_diffuse_fbo_.texture_slot());
+            //deferred_position_fbo_.texture().enable(texture_cache_);
+            //shader.sendUniform(Uniform::FINAL_PASS_POSITION_TEXTURE, uniforms, deferred_position_fbo_.texture_slot());
+            deferred_normal_fbo_.texture().enable(texture_cache_);
+            shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_normal_fbo_.texture_slot());
+
 
             SendSun(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);

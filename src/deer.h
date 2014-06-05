@@ -49,7 +49,6 @@ struct Deer {
    glm::mat4 calculateModel(const ModelState& model_state) const;
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
-   Drawable drawableFINAL() const;
 
   private:
    enum class WalkDirection {

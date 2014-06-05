@@ -8,7 +8,6 @@ uniform float uSunIntensity;
 vec4 calculateDiffuse();
 void main() {
    gl_FragColor = calculateDiffuse();
-   gl_FragColor = texture2D(uDiffuseTexture, gl_FragCoord.xy);
 }
 
 vec4 calculateDiffuse() {
