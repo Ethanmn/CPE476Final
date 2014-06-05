@@ -68,10 +68,10 @@ GLTextureID TextureCache::getTexture(TextureType texture_type) const {
 }
 
 GLTextureID TextureCache::load(const std::string& path) const {
-   Magick::Image* image = nullptr;
+   std::unique_ptr<Magick::Image> image;
    Magick::Blob blob;
    try {
-      image = new Magick::Image(path.c_str());
+      image.reset(new Magick::Image(path.c_str()));
       image->flip();
       image->write(&blob, "RGBA");
    }
@@ -88,7 +88,6 @@ GLTextureID TextureCache::load(const std::string& path) const {
    glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->columns(), image->rows(), 0,
          GL_RGBA, GL_UNSIGNED_BYTE, blob.data());
-   free(image);
    return static_cast<GLTextureID>(texture_id);
 }
 
