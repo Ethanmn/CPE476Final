@@ -14,7 +14,6 @@ DeferredFrameBuffer::DeferredFrameBuffer(unsigned int width, unsigned int height
 
 
 void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
-   printf("\nInitializing DFBO\n");
    glGenFramebuffers(1, &fbo_id_);
    glBindFramebuffer(GL_FRAMEBUFFER, fbo_id_);
 
@@ -23,7 +22,7 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
       glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
          GL_TEXTURE_2D, g_buff_textures_[i], 0);
 
-      printf("Deferred texture Glint %d at texture slot %d\n", g_buff_textures_[i], DEFERRED_DIFFUSE_TEXTURE + i);
+      //printf("Deferred texture Glint %d at texture slot %d\n", g_buff_textures_[i], DEFERRED_DIFFUSE_TEXTURE + i);
 
       TextureSlot ts;
       if(i == 0)
@@ -39,7 +38,6 @@ void DeferredFrameBuffer::Initialize(unsigned int width, unsigned int height) {
 
       deferred_textures_.push_back(Texture((GLTextureID)g_buff_textures_[i], ts));
    }
-   printf("\n");
 
    GenDepthDeferredTexture(&g_buff_depth_texture_, width, height);
 
@@ -58,7 +56,7 @@ void DeferredFrameBuffer::bind() const {
 }
 
 
-void DeferredFrameBuffer::SetBufferToRead(GBufferType buffType) {
+void DeferredFrameBuffer::SetBufferToRead(GBufferType buffType) const {
    glReadBuffer(GL_COLOR_ATTACHMENT0 + (int)buffType);
 }
 

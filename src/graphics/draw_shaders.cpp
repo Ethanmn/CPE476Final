@@ -285,18 +285,12 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             SendDeferred(shader, uniforms, deferred_fbo_);
             SendSun(shader, uniforms, sunIntensity, sunDir);
 
-            for (auto& drawable : culledDrawables) {
-               Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
-
-               if(newDrawable.draw_template.shader_type == ShaderType::FINAL_LIGHT_PASS) {
-                  for(const auto& mt : drawable.model_transforms) {
-                     shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model);
-                     shader.drawMesh(drawable.draw_template.mesh);  
-                  }             
-               }
-            }
-            /* 
             int halfWidth = kScreenWidth / 2, halfHeight = kScreenHeight / 2;
+            deferred_fbo_.SetBufferToRead(GBufferType::G_BUFF_DIFFUSE);
+               glBlitFramebuffer(0, 0, kScreenWidth, kScreenHeight, 
+               0, halfHeight, halfWidth, kScreenHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+            /* 
             if(printCurrentShaderName)
                printf("Final Light Pass\n");
             

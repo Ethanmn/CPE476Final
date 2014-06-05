@@ -15,7 +15,7 @@ struct DeferredFrameBuffer {
 
    void Initialize(unsigned int width, unsigned int height);
    void bind() const;
-   void SetBufferToRead(GBufferType buffType);
+   void SetBufferToRead(GBufferType buffType) const;
 
 
    int diffuse_texture_slot() const;
