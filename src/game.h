@@ -59,8 +59,7 @@ struct Game {
    ButterflySystem butterfly_system_red_;
    ButterflySystem butterfly_system_pink_;
    ButterflySystem butterfly_system_blue_;
-   
-   LeafSystem leaf_system_;
+
    RainSystem rain_system_;
    Lightning lightning_trigger_;
    GodRays god_rays_; 
@@ -70,10 +69,7 @@ struct Game {
    Skybox skybox;
 
    Camera deerCam;
-   Camera airCam;
-   Camera *curCam;
 
-   bool airMode;
    DeferredFrameBuffer deferred_fbo_;
    FrameBufferObject shadow_map_fbo_;
    Water water_;

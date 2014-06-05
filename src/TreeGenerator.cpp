@@ -16,6 +16,7 @@ TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
          })
 {
    draw_template_.mesh.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
+   generate();
 }
 
 //Generate the trees
@@ -26,12 +27,14 @@ void TreeGenerator::generate() {
    for (int row = 0; row < size; row++) {
       for (int col = 0; col < size; col++) {
          if (rand() % TREE_DENSITY == 0) {
-            float x = row * TREE_SIZE - groundSize;
-            float y = TREE_SCALE * TREE_SIZE / 2;
-            float z = col * TREE_SIZE - groundSize;
+            float height =  ((rand() % TREE_SIZE) / (float)TREE_SIZE) + 1;
+            float angleRot = rand() % 180;
+            float x = row * TREE_SIZE - groundSize + rand() % TREE_SIZE;
+            float y = height * TREE_SCALE * TREE_SIZE / 2;
+            float z = col * TREE_SIZE - groundSize + rand() % TREE_SIZE;
 
             if (! (x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
-               trees.push_back(Tree(glm::vec3(x, y, z), leaf_));
+               trees.push_back(Tree(glm::vec3(x, y, z), height, angleRot, leaf_));
             }
          }
       }

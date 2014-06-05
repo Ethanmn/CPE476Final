@@ -21,6 +21,7 @@ const float kGravity = 0.00006f;
 const float kAcceleration = 0.00007f;
 const float kJumpSpeed = 0.015f;
 const float kLeanFactor = 2.0f;
+const float kTurnSpeed = 0.08f;
 
 const float kStepTime = 300;
 
@@ -35,89 +36,83 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& positio
    eating_(false),
    walk_mesh_(walk_mesh),
    eat_mesh_(eat_mesh),
-   up_(glm::vec3(0.0f, 1.0f, 0.0f)),
-   position_(position),
-   velocity_(0, 0, 0),
-   last_facing_(0, 1),
+   model_state_({
+         position,
+         glm::vec3(0, 0, 0),
+         glm::vec2(0, 1),
+         0.0f
+         }),
    desired_lean_(0.0f),
-   current_lean_(0.0f),
    walk_direction_(WalkDirection::NONE),
-   strafe_direction_(StrafeDirection::NONE),
-   bounding_rectangle_(xz(position_), glm::vec2(10.0f, 5.0f), 0.0f),
+   bounding_rectangle_(xz(model_state_.position),
+         glm::vec2(draw_template_.mesh.max.z - draw_template_.mesh.min.z,
+                   draw_template_.mesh.max.x - draw_template_.mesh.min.x), 0.0f),
    step_timer_(0),
    is_jumping_(false),
    is_walking_(false),
-   is_strafing_(false),
-   blocked(false)
+   blocked(false),
+   pivot_(glm::translate(
+            glm::mat4(),
+            glm::vec3(0, 0, (draw_template_.mesh.max.z - draw_template_.mesh.min.z)) / 3.0f)),
+   inverse_pivot_(glm::inverse(pivot_))
       {}
 
-glm::mat4 Deer::calculateModel() const {
+glm::mat4 Deer::calculateModel(const ModelState& model_state) const {
    const glm::mat4 rotate(
          glm::lookAt(
             glm::vec3(0.0f),
-            glm::vec3(last_facing_.x, 0.0f, -last_facing_.y),
+            glm::vec3(model_state.last_facing.x, 0.0f, -model_state.last_facing.y),
             glm::vec3(0, 1, 0)));
 
    const glm::mat4 lean(
          glm::rotate(
             glm::mat4(),
-            current_lean_ * kLeanFactor,
+            model_state.current_lean * kLeanFactor,
             glm::vec3(0, 0, 1)
             ));
 
    const glm::mat4 translate(
       glm::translate(
             glm::mat4(1.0f),
-            position_));
+            model_state.position));
 
-   return glm::mat4(translate * rotate * lean);
+   return glm::mat4(translate * inverse_pivot_ * rotate * pivot_ * lean);
 }
 
 Drawable Deer::drawable() const {
-   return Drawable({draw_template_, std::vector<glm::mat4>({calculateModel()})});
+   return Drawable({draw_template_, std::vector<glm::mat4>({calculateModel(model_state_)})});
 } 
 
 glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
-   return position_ + velocity * static_cast<float>(dt);
+   return model_state_.position + velocity * static_cast<float>(dt);
 }
 
 BoundingRectangle Deer::getNextBoundingBox(units::MS dt) {
    auto velocity(predictVelocity(dt, acceleration()));
-   auto facing(predictFacing(velocity));
+   auto facing(predictFacing(dt));
    auto tempPosition(predictPosition(dt, velocity));
-   auto tempBoundingBox(bounding_rectangle_);
-   tempBoundingBox.set_position(xz(tempPosition));
-   tempBoundingBox.set_rotation(glm::degrees(std::atan2(-facing.y, facing.x)));
-   return tempBoundingBox;
+   ModelState model_state({
+         tempPosition,
+         velocity,
+         facing,
+         0.0f // assume no lean.
+         });
+   return boundingRectangleFromModel(model_state);
 }
 
 glm::vec3 Deer::acceleration() const {
    glm::vec3 acceleration(0.0f);
    { // If walking add in walk based on deer's forward.
-      const glm::vec2 forward(last_facing_ / glm::length(last_facing_));
+      const glm::vec2 forward(model_state_.last_facing / glm::length(model_state_.last_facing));
       if (walk_direction_ == WalkDirection::FORWARD) {
          acceleration = glm::vec3(forward.x, 0.0f, forward.y);
-      //} else if (walk_direction_ == WalkDirection::BACKWARD) {
-      //   acceleration = -glm::vec3(forward.x, 0.0f, forward.y);
-      }
-   }
-
-   { // Add in strafe from deer, if strafing.
-      glm::vec3 lastFacingWithY(last_facing_.x, 0.0f, last_facing_.y);
-      const glm::vec3 left(glm::cross(up_, lastFacingWithY) / glm::length(glm::cross(up_, lastFacingWithY)));
-      if (strafe_direction_ == StrafeDirection::LEFT) {
-         acceleration += glm::vec3(left.x, 0.0f, left.z);
-      } else if (strafe_direction_ == StrafeDirection::RIGHT) {
-         acceleration -= glm::vec3(left.x, 0.0f, left.z);
       }
    }
    return acceleration;
 }
 
 glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) const {
-   if (eating_) {
-   }
-   glm::vec3 velocity(velocity_);
+   glm::vec3 velocity(model_state_.velocity);
    if (!has_acceleration()) {
       glm::vec2 xz_velocity(xz(velocity));
       xz_velocity -= xz_velocity * (kFriction * dt);
@@ -148,18 +143,19 @@ void Deer::eat() {
    draw_template_.mesh = eat_mesh_;
 }
 
-glm::vec2 Deer::predictFacing(const glm::vec3& velocity) const {
-   if (has_acceleration()) {
-      return glm::normalize(glm::vec2(
-               velocity.x,
-               velocity.z));
+glm::vec2 Deer::predictFacing(units::MS dt) const {
+   float rotate = 0.f;
+   if (turn_direction_ == TurnDirection::LEFT) {
+      rotate -= kTurnSpeed * dt;
+   } else if (turn_direction_ == TurnDirection::RIGHT) {
+      rotate += kTurnSpeed * dt;
    }
-   return last_facing_;
+   return glm::rotate(model_state_.last_facing, rotate);
 }
 
 void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
-   current_lean_ += (desired_lean_ - current_lean_) * 0.1f;
-   velocity_ = predictVelocity(dt, acceleration());
+   model_state_.current_lean += (desired_lean_ - model_state_.current_lean) * 0.1f;
+   model_state_.velocity = predictVelocity(dt, acceleration());
    if (eating_) {
       draw_template_.mesh.animation.step(dt);
       if (draw_template_.mesh.animation.is_finished()) {
@@ -167,6 +163,15 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
          draw_template_.mesh = walk_mesh_;
       }
       return;
+   } else {
+      // Turn
+      const auto next_facing(predictFacing(dt));
+      desired_lean_ = glm::orientedAngle(model_state_.last_facing, next_facing);
+      model_state_.last_facing = next_facing;
+      if (desired_lean_ > 45.0f)
+         desired_lean_ = 0.0f;
+      if (desired_lean_ < -45.0f)
+         desired_lean_ = 0.0f;
    }
 
    if (!has_acceleration()) {
@@ -176,23 +181,14 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
       if (draw_template_.mesh.animation.is_finished()) {
          draw_template_.mesh.animation.reset();
       }
-      { // Accelerate velocity, capping at kSpeed.
-         const auto next_facing(predictFacing(velocity_));
-         desired_lean_ = glm::orientedAngle(last_facing_, next_facing);
-         last_facing_ = next_facing;
-         if (desired_lean_ > 45.0f)
-            desired_lean_ = 0.0f;
-         if (desired_lean_ < -45.0f)
-            desired_lean_ = 0.0f;
-      }
    }
    if (is_jumping_) {
-      const auto ground_height = ground_plane.heightAt(position_);
-      if (position_.y + draw_template_.mesh.min.y < ground_height) {
-         velocity_.y = 0.0f;
-         position_.y = ground_height - draw_template_.mesh.min.y;
+      const auto ground_height = ground_plane.heightAt(model_state_.position);
+      if (model_state_.position.y + draw_template_.mesh.min.y < ground_height) {
+         model_state_.velocity.y = 0.0f;
+         model_state_.position.y = ground_height - draw_template_.mesh.min.y;
          is_jumping_ = false;
-         sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, false, position_);
+         sound_engine.playSoundEffect(SoundEngine::SoundEffect::GRASS_LAND, false, model_state_.position);
       }
       step_timer_ = 0;
    } else if (isMoving()) {
@@ -201,20 +197,26 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
          step_timer_ = 0;
          sound_engine.playRandomWalkSound();
       }
+      model_state_.position.y = ground_plane.heightAt(model_state_.position) - draw_template_.mesh.min.y;
    } else {
       step_timer_ = 0;
-      position_.y = ground_plane.heightAt(position_) - draw_template_.mesh.min.y;
+      model_state_.position.y = ground_plane.heightAt(model_state_.position) - draw_template_.mesh.min.y;
    }
 
    if (!blocked) {
-      position_ = predictPosition(dt, velocity_);
-
-      bounding_rectangle_.set_position(xz(position_));
-      bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
+      model_state_.position = predictPosition(dt, model_state_.velocity);
    }
    blocked = false;
-   bounding_rectangle_.set_position(xz(position_));
-   bounding_rectangle_.set_rotation(glm::degrees(std::atan2(-last_facing_.y, last_facing_.x)));
+
+   bounding_rectangle_ = boundingRectangleFromModel(model_state_);
+}
+
+BoundingRectangle Deer::boundingRectangleFromModel(const ModelState& model_state) const {
+   auto pos = calculateModel(model_state) * glm::vec4((draw_template_.mesh.max + draw_template_.mesh.min) / 2.f, 1.0f);
+   BoundingRectangle rect(bounding_rectangle_);
+   rect.set_position(glm::vec2(pos.x, pos.z));
+   rect.set_rotation(glm::degrees(std::atan2(-model_state.last_facing.y, model_state.last_facing.x)));
+   return rect;
 }
 
 void Deer::walkForward() {
@@ -230,41 +232,39 @@ void Deer::stopWalking() {
    is_walking_ = false;
 }
 
-void Deer::strafeLeft() {
-   strafe_direction_ = StrafeDirection::LEFT;
-   is_strafing_ = true;
+void Deer::turnLeft() {
+   turn_direction_ = TurnDirection::LEFT;
 }
-void Deer::strafeRight() {
-   strafe_direction_ = StrafeDirection::RIGHT;
-   is_strafing_ = true;
+
+void Deer::turnRight() {
+   turn_direction_ = TurnDirection::RIGHT;
 }
-void Deer::stopStrafing() {
-   strafe_direction_ = StrafeDirection::NONE;
-   is_strafing_ = false;
+
+void Deer::stopTurning() {
+   turn_direction_ = TurnDirection::NONE;
 }
 
 void Deer::jump() {
    if (!is_jumping_) {
-      velocity_.y = kJumpSpeed;
+      model_state_.velocity.y = kJumpSpeed;
       is_jumping_ = true;
    }
 }
 
 bool Deer::isMoving() {
-   return velocity_.x != 0.0 && velocity_.z != 0.0;
+   return model_state_.velocity.x != 0.0 && model_state_.velocity.z != 0.0;
 }
 
 glm::vec3 Deer::getPosition() const {
-   return position_;
+   return model_state_.position;
 }
 
 void Deer::block() {
    stopWalking();
-   stopStrafing();
-   velocity_ = glm::vec3(0, 0, 0);
+   model_state_.velocity = glm::vec3(0, 0, 0);
    blocked = true;
 }
 
 glm::vec3 Deer::getFacing() const {
-   return glm::vec3(last_facing_.x, 0.0f, last_facing_.y);
+   return glm::vec3(model_state_.last_facing.x, 0.0f, model_state_.last_facing.y);
 }

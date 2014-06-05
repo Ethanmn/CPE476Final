@@ -32,11 +32,10 @@ float GroundPlane::heightAt(const glm::vec3& position) const {
    // b. translate position from world into mesh space.
    pos = glm::inverse(drawable_.model_transforms.front()) * pos;
    // c. translate position from mesh into texture space.
-   // TODO(chebert): this is a total hack. we assume that the mesh is 2x2x0
+   // TODO(chebert): this is a total hack. we assume that the mesh is
    // centered at the origin, and rotated (C?)CW 90 degrees. deadline is monday.
    pos = glm::translate(glm::mat4(), glm::vec3(0.5f, 0, 0.5f)) *
-      glm::rotate(glm::mat4(), -90.0f, glm::vec3(0, 1, 0)) *
-      glm::scale(glm::mat4(), glm::vec3(0.5f)) * pos;
+      glm::rotate(glm::mat4(), -90.0f, glm::vec3(0, 1, 0)) * pos;
 
    // if within  [0-1], [0-1]
    if (0.0f <= pos.x && pos.x <= 1.0f &&

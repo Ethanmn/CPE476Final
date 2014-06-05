@@ -13,9 +13,7 @@
 #include "graphics/draw_template.h"
 
 struct FlowerGenerator {
-   FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten, TextureType texture_type);
-
-   void generate(const GroundPlane& ground);
+   FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten, TextureType texture_type, const GroundPlane& ground);
 
    std::vector<Flower>& getFlowers();
 
@@ -24,10 +22,11 @@ struct FlowerGenerator {
    Drawable drawableEaten() const;
 
    
-   private:
-      std::vector<Flower> flowers;
-      DrawTemplate draw_template_;
-      DrawTemplate draw_template_eaten_;
+  private:
+   void generate(const GroundPlane& ground);
+   std::vector<Flower> flowers;
+   DrawTemplate draw_template_;
+   DrawTemplate draw_template_eaten_;
 };
 
 

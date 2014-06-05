@@ -14,6 +14,14 @@ struct SoundEngine;
 
 
 struct Deer {
+  private:
+   struct ModelState {
+      glm::vec3 position;
+      glm::vec3 velocity;
+      glm::vec2 last_facing;
+      float current_lean;
+   };
+  public:
    Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position);
 
    BoundingRectangle getNextBoundingBox(units::MS dt);
@@ -23,9 +31,9 @@ struct Deer {
    void walkBackward();
    void stopWalking();
 
-   void strafeLeft();
-   void strafeRight();
-   void stopStrafing();
+   void turnLeft();
+   void turnRight();
+   void stopTurning();
 
    void jump();
    void eat();
@@ -38,7 +46,7 @@ struct Deer {
 
    void block();
 
-   glm::mat4 calculateModel() const;
+   glm::mat4 calculateModel(const ModelState& model_state) const;
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
 
@@ -48,19 +56,21 @@ struct Deer {
       BACKWARD,
       NONE
    };
-   enum class StrafeDirection {
+   enum class TurnDirection {
       LEFT,
       RIGHT,
       NONE
    };
 
    bool has_acceleration() const {
-      return walk_direction_ != WalkDirection::NONE || strafe_direction_ != StrafeDirection::NONE;
+      return walk_direction_ != WalkDirection::NONE;
    }
+
+   BoundingRectangle boundingRectangleFromModel(const ModelState& model_state) const;
 
    glm::vec3 acceleration() const;
    glm::vec3 predictVelocity(units::MS dt, const glm::vec3& acceleration) const;
-   glm::vec2 predictFacing(const glm::vec3& velocity) const;
+   glm::vec2 predictFacing(units::MS dt) const;
    glm::vec3 predictPosition(units::MS dt, const glm::vec3& velocity) const;
 
    DrawTemplate draw_template_;
@@ -68,24 +78,21 @@ struct Deer {
    Mesh walk_mesh_;
    Mesh eat_mesh_;
 
-   glm::vec3 up_;
+   ModelState model_state_;
 
-   glm::vec3 position_;
-   glm::vec3 velocity_;
-   glm::vec2 last_facing_;
    float desired_lean_;
-   float current_lean_;
 
    WalkDirection walk_direction_;
-   StrafeDirection strafe_direction_;
+   TurnDirection turn_direction_;
    BoundingRectangle bounding_rectangle_;
 
    units::MS step_timer_;
 
    bool is_jumping_;
    bool is_walking_;
-   bool is_strafing_;
    bool blocked;
+
+   glm::mat4 pivot_, inverse_pivot_;
 };
 
 #endif // DEER_H_

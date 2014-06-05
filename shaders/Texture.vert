@@ -81,5 +81,4 @@ void main() {
    vShadow = uShadowMap * pos;
    vUnderWater = heightColor.y < 0.0 ? 1.0 : 0.0;
    gl_Position = uProjectionMatrix * vViewer;
-
 }
