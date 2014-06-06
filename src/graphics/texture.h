@@ -25,6 +25,7 @@ enum class TextureType {
    SKYBOX_NIGHT,
    LEAF,
    PINECONE,
+   ROCK,
    LAST_TEXTURE_TYPE,
 };
 
