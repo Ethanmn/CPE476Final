@@ -147,6 +147,7 @@ const std::vector<Uniform> kFinalPassUniforms{
    Uniform::PROJECTION,
 
    Uniform::IS_GOD_RAY,
+   Uniform::IS_FIREFLY,
    Uniform::GOD_RAY_CENTER,
 
    Uniform::SCREEN_WIDTH,

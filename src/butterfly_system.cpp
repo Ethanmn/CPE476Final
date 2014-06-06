@@ -14,7 +14,7 @@ ButterflySystem::ButterflySystem(const Mesh& mesh, TextureType texture_type, con
                   Material(),
                   Texture(texture_type, DIFFUSE_TEXTURE),
                   boost::none,
-                  EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
+                  EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::IS_FIREFLY, EffectType::IS_GOD_RAY})
                   }),
             origin_(origin),
             scale_(0.3f),
