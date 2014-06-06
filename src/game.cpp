@@ -13,6 +13,7 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
+   bool deerInWater = false;
 
    int lighting = 0;
    int raining = 0;
@@ -163,6 +164,26 @@ void Game::step(units::MS dt) {
 
       deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
    }
+
+   /*last minute addition, needs to be moved to deer*/
+   if(ground_.heightAt(deer_.getPosition()) < 0.1f) { //enter water
+      if(!deerInWater) {
+         deerInWater = true;
+         sound_engine_.playSoundEffect(
+         SoundEngine::SoundEffect::WATER,
+         false,
+         deer_.getPosition());
+         printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
+      }
+   }
+   else if(deerInWater) { //leave water
+      deerInWater = false;
+      sound_engine_.playSoundEffect(
+         SoundEngine::SoundEffect::WATER,
+         false,
+         deer_.getPosition());
+   }
+   
 
    if (deerBlocked) {
       deer_.block();

@@ -44,11 +44,11 @@ void main() {
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun) {
    vec3 sunDir = normalize(vec3(uViewMatrix * vec4(uSunDir, 0.0)));
-   float sunInt = uSunIntensity * 0.8;
+   float sunInt = uSunIntensity;
      
    if(useSun == 0) {
       sunDir = vec3(0.2, 1.0, 0.2);
-      sunInt = min(0.8, uSunIntensity + 0.2);
+      sunInt = min(0.8, uSunIntensity + 0.3);
    }
 
    vec4 Diffuse = texture2D(uDiffuseTexture, texCoord);
