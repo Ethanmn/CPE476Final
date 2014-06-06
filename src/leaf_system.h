@@ -25,7 +25,6 @@ struct LeafSystem {
       DrawTemplate draw_template_;
       glm::vec3 origin_;
       float scale_;
-      float rotate_;
       glm::vec3 velocity_;
       glm::vec3 acceleration_;
 };

@@ -23,7 +23,7 @@ LeafSystem::LeafSystem(const Mesh& mesh, TextureType texture_type, const glm::ve
                   }),
             origin_(origin),
             scale_(0.7f),
-            velocity_(glm::vec3(0.0f, 0.0f, 0.0f)),
+            velocity_(glm::vec3(0.0f, -0.00001f, 0.0f)),
             acceleration_(glm::vec3(0.0f, -0.000001f, 0.0f)) {
                for (int i = 0; i < numParticles; i++) {
                   glm::vec3 randVec = getRandomVec();
@@ -34,16 +34,25 @@ LeafSystem::LeafSystem(const Mesh& mesh, TextureType texture_type, const glm::ve
             }
 
 void LeafSystem::step(units::MS dt) {
-   for (auto& particle : particles_) {
-      if (particle.getPos().y <= 1.0f) {
-         particle.setPos(particle.getPos().x, 1.0f, particle.getPos().z);
-         particle.setVel(0.0f, 0.0f, 0.0f);
-         particle.setAccel(0.0f, 0.0f, 0.0f);
+   for (std::vector<Particle>::iterator iter = particles_.begin(); iter != particles_.end();) {
+      auto& particle = *iter;
+      if (particle.getLife() > 30000) {
+         //remove partile
+         iter = particles_.erase(iter);
       }
       else {
-         particle.setRot(particle.getRot() + 10.0f * (dt / 100));
+
+         if (particle.getPos().y <= 1.0f) {
+            particle.setPos(particle.getPos().x, 1.0f, particle.getPos().z);
+            particle.setVel(0.0f, 0.0f, 0.0f);
+            particle.setAccel(0.0f, 0.0f, 0.0f);
+         }
+         else {
+            particle.setRot(particle.getRot() + 10.0f * (dt / 100));
+         }
+         particle.step(dt);
+         iter++;
       }
-      particle.step(dt);
    }
 }
 
@@ -56,11 +65,11 @@ void LeafSystem::reset() {
 }
 
 void LeafSystem::add() {
-   int numAdd = rand() % 10 + 4;
+   int numAdd = rand() % 9 + 3;
    for (int i = 0; i < numAdd; i++) {
       glm::vec3 randVec = getRandomVec();
       float randAngle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / ROT_MAX));
-      particles_.push_back(Particle(glm::vec3(origin_.x + randVec.x, origin_.y + randVec.y, origin_.z + randVec.z), 
+      particles_.push_back(Particle(glm::vec3(origin_.x + randVec.x, origin_.y + randVec.y - 10.0f, origin_.z + randVec.z), 
       scale_, randAngle, velocity_,  acceleration_));
    }
 }
