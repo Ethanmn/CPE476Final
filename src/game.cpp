@@ -177,7 +177,7 @@ void Game::step(units::MS dt) {
          SoundEngine::SoundEffect::WATER,
          false,
          deer_.getPosition());
-         printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
+         //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
       }
    }
    else if(deerInWater) { //leave water
