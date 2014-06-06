@@ -170,7 +170,7 @@ void Game::step(units::MS dt) {
    }
 
    /*last minute addition, needs to be moved to deer*/
-   if(ground_.heightAt(deer_.getPosition()) < 0.1f) { //enter water
+   if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
       if(!deerInWater) {
          deerInWater = true;
          sound_engine_.playSoundEffect(
