@@ -7,7 +7,7 @@ void checkIfAlpha();
 void main() {
    checkIfAlpha(); //discards pixel if alpha < 1.0;
    float depth = gl_FragCoord.z - 0.01;
-   gl_FragData[0] = vec4(depth, depth, depth, 1.0);
+   gl_FragColor = vec4(depth, depth, depth, 1.0);
 }
 
 void checkIfAlpha() { 

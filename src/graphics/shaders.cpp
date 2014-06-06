@@ -57,8 +57,6 @@ const std::vector<Uniform> kTextureUniforms{
   
    Uniform::LIGHTNING,
 
-   //Uniform::GOD_RAY_POSITION,
-   //Uniform::GOD_RAY_RADIUS
 };
 
 /* Deferred Pass Attributes are the same as Texture's */
@@ -85,9 +83,9 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::BONES,
    Uniform::HAS_BONES,
 
-   //Uniform::HAS_SHADOWS,
-   //Uniform::SHADOW_MAP,
-   //Uniform::SHADOW_MAP_TEXTURE,
+   Uniform::HAS_SHADOWS,
+   Uniform::SHADOW_MAP,
+   Uniform::SHADOW_MAP_TEXTURE,
 };
 
 const std::vector<Attribute> kShadowAttrs{
@@ -164,10 +162,6 @@ const std::vector<Uniform> kFinalPassUniforms{
    Uniform::FINAL_PASS_POSITION_TEXTURE,
    Uniform::FINAL_PASS_DIFFUSE_TEXTURE,
    Uniform::FINAL_PASS_NORMAL_TEXTURE,
-
-   //Uniform::HAS_SHADOWS,
-   //Uniform::SHADOW_MAP,
-   //Uniform::SHADOW_MAP_TEXTURE,
 };
 
 Shaders::Shaders() {

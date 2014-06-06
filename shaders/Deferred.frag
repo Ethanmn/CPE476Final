@@ -1,8 +1,8 @@
 uniform int uOutputShaderType;
 
-/*uniform sampler2D uShadowMapTexture;*/
-/*uniform int uHasShadows;*/
-/*uniform mat4 uShadowMap;*/
+uniform sampler2D uShadowMapTexture;
+uniform int uHasShadows;
+uniform mat4 uShadowMap;
 
 uniform int uHasTexture;
 uniform sampler2D uTexture;
@@ -41,17 +41,16 @@ void main() {
    else if(uOutputShaderType == 2)
       color = vec4(vNormal, 1.0);
 
-   gl_FragColor = color;
-   /*gl_FragColor = vec4(calculateShadowAmount());*/
+   gl_FragColor = color - vec4(vec3(calculateDiffuse()), 0.0);
 }
 
 vec4 calculateDiffuse() {
-   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord)  : vec4(uMat.diffuse, 1.0);
+   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1.0);
    return Diffuse;
 }
 
 int alphaCheck() {
-   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord)  : vec4(uMat.diffuse, 1.0);
+   vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1.0);
    if (Diffuse.a < 0.8) {
       return 0;
    }
@@ -60,29 +59,29 @@ int alphaCheck() {
 
 vec4 checkIfUnderWater(vec4 Diffuse, float ShadowAmount) {
    vec4 DiffuseWithWater = Diffuse;
-   if(vUnderWater > 0.0)
+   if(vUnderWater > 0.0) {
       DiffuseWithWater = vec4(0.0, vUnderWater * DiffuseWithWater.y + ShadowAmount * 0.2, 
-                                 vUnderWater * DiffuseWithWater.z + ShadowAmount * 0.6, 1.0);
+                              vUnderWater * DiffuseWithWater.z + ShadowAmount * 0.6, 1.0);
+   }
    return DiffuseWithWater;
 }
 
 float calculateShadowAmount() {
    float applyShadow = 1.0;
    
-   /*float bias = 0.005;*/
-   /*vec3 directionalColor = vec3(0.8 * 0.3);*/
-   /*vec4 shadowMapTexColor = vec4(1.0);*/
+   float bias = 0.005;
+   vec3 directionalColor = vec3(0.8 * 0.3);
+   vec4 shadowMapTexColor = vec4(1.0);
+   vec3 texCoord = vec3(uShadowMap * vPosition);
 
-   /*vec3 texCoord = vec3(uShadowMap * vPosition);*/
+   if(uHasShadows != 0) {
+      shadowMapTexColor = texture2D(uShadowMapTexture, texCoord.xy);
+      if(texCoord.x > 1.0 || texCoord.y > 1.0 || texCoord.x < 0.0 || texCoord.y < 0.0)
+         shadowMapTexColor.z = 1.0;
+   }
 
-   /*if(uHasShadows != 0) {*/
-      /*shadowMapTexColor = texture2D(uShadowMapTexture, texCoord.xy);*/
-      /*if(texCoord.x > 1.0 || texCoord.y > 1.0 || texCoord.x < 0.0 || texCoord.y < 0.0)*/
-         /*shadowMapTexColor.z = 1.0;*/
-   /*}*/
-
-   /*if(shadowMapTexColor.z <=  texCoord.z - bias)*/
-      /*applyShadow = 0.7;*/
+   if(shadowMapTexColor.z <=  texCoord.z - bias)
+      applyShadow = 0.7;
    
    return applyShadow;
 }
