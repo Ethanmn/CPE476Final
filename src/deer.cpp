@@ -218,7 +218,9 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
       const auto angle = glm::orientedAngle(model_state_.last_facing, target_facing);
       if (glm::abs(angle) > 7.f) {
          const auto rotate_speed = 5.f / 16.f;
-         const auto rotate_angle = (angle > 1.f ? 1.f : -1.f) * dt * rotate_speed;
+         const auto sign = angle > 1.f ? 1.f : -1.f;
+         const auto abs_angle = std::min(dt * rotate_speed, glm::abs(angle));
+         const auto rotate_angle = abs_angle * sign;
          model_state_.last_facing = glm::rotate(model_state_.last_facing, rotate_angle);
       } else {
          model_state_.last_facing = target_facing;
@@ -228,6 +230,7 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
             draw_template_.mesh = walk_mesh_;
          }
       }
+      bounding_rectangle_ = boundingRectangleFromModel(model_state_);
       return;
    } else {
       // Turn

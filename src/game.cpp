@@ -256,7 +256,6 @@ void Game::draw() {
       Drawable br_drawable;
       br_drawable.draw_template = BoundingRectangle::draw_template();
       br_drawable.model_transforms.push_back(deer_.front_feet_bounding_rectangle().model_matrix());
-      /*
       br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
       br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
       br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
@@ -275,7 +274,6 @@ void Game::draw() {
       for (auto& br : song_path_.bounding_rectangles()) {
          br_drawable.model_transforms.push_back(br.model_matrix());
       }
-      */
       br_drawable.model_transforms.push_back(pinecone_.bounding_rectangle().model_matrix());
       br_drawable.model_transforms.push_back(pinecone_.aoe_bounding_rectangle().model_matrix());
       drawables.push_back(br_drawable);
@@ -283,7 +281,6 @@ void Game::draw() {
 
    drawables.push_back(deer_.drawable());
 
-   /*
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
@@ -311,7 +308,6 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
-   */
    drawables.push_back(pinecone_.drawable());
 
    //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
