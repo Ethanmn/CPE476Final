@@ -32,7 +32,7 @@ void main() {
       discard;
 
    if(uOutputShaderType == 0)
-      color = calculateDiffuse() * calculateShadowAmount();
+      color = calculateDiffuse() * vec4(vec3(calculateShadowAmount()), 1.0);
    else if(uOutputShaderType == 1)
       color = vec4(vec3(gl_FragCoord.z + 0.001), 1.0);
    else if(uOutputShaderType == 2)
@@ -56,7 +56,7 @@ int alphaCheck() {
 
 float calculateShadowAmount() {
    float bias = 0.005;
-   vec3 directionalColor = vec3(0.8 * 0.9/*sunintensity*/);
+   vec3 directionalColor = vec3(0.8 * 0.3/*sunintensity*/);
    float applyShadow = 1.0;
    vec4 shadowMapTexColor = vec4(1.0);
 
