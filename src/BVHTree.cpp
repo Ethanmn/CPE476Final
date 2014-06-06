@@ -13,7 +13,6 @@ head(NULL)
 void BVHTree::calculateTree(std::vector<GameObject*> objects) {
    std::vector<BVHNode*> nodeQ;
    BVHNode *curNode;
-   BVHNode *otherNode;
    BVHNode *closestNode;
 
    glm::vec2 curCenter;
@@ -106,25 +105,21 @@ void BVHTree::calculateTree(std::vector<GameObject*> objects) {
       if (newDimX < curRect.getDimensions().x) {
          newDimX = curRect.getDimensions().x;
          newCenterX = curCenter.x;
-         //printf("Found a smaller x.\n");
       }
 
       if (newDimX < closestRect.getDimensions().x) {
          newDimX = closestRect.getDimensions().x;
          newCenterX = closestCenter.x;
-         //printf("Found a smaller x.\n");
       }
 
       if (newDimY < curRect.getDimensions().y) {
          newDimY = curRect.getDimensions().y;
          newCenterY = curCenter.y;
-         //printf("Found a smaller y.\n");
       }
 
       if (newDimY < closestRect.getDimensions().y) {
          newDimY = closestRect.getDimensions().y;
          newCenterY = closestCenter.y;
-         //printf("Found a smaller y.\n");
       }
 
        glm::vec2 newCenter = glm::vec2(newCenterX, newCenterY);
@@ -145,8 +140,6 @@ void BVHTree::calculateTree(std::vector<GameObject*> objects) {
    if (!nodeQ.empty()) {
       head = nodeQ.front();
    }
-
-   //printf("%d Game Object nodes created.\n", numObjNodes);
 }
 
 std::vector<GameObject*> BVHTree::getCollidingObjects(BoundingRectangle bRect) {

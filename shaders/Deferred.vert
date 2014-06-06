@@ -38,13 +38,12 @@ varying vec2 vTexCoord;
 varying float vUnderWater;
 
 mat4 calculateBones();
-vec4 calculateHeight();
+vec3 calculateHeight();
 
 void main() {
    mat4 bone = calculateBones();
-   vec4 heightColor = calculateHeight();
 
-   vec4 pos = bone * vec4(heightColor.xyz + aPosition, 1.0);
+   vec4 pos = bone * vec4(calculateHeight() + aPosition, 1.0);
    vPosition = uModelMatrix * pos;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
@@ -77,14 +76,14 @@ mat4 calculateBones() {
    return bone;
 }
 
-vec4 calculateHeight() {
-   vec4 heightColor = vec4(0.0);
+vec3 calculateHeight() {
+   vec3 heightOffset = vec3(0.0);
 #ifdef USE_HEIGHT_MAP
    float HEIGHT_MAP_SCALE = 3.0;
    if (uHasHeightMap != 0) {
-      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * uHeightMapScale;
+      heightOffset = vec3(0, (texture2D(uHeightMap, aTexCoord.xy).x - 0.5) * uHeightMapScale, 0);
    }
-   vUnderWater = heightColor.y < 0.0 ? heightColor.y * -0.5 : 0.0; 
+   vUnderWater = heightOffset.y < 0.0 ? heightOffset.y * -0.5 : 0.0; 
 #endif
-   return heightColor;
+   return heightOffset;
 }
