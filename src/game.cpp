@@ -236,24 +236,24 @@ void Game::draw() {
    if (draw_collision_box) {
       Drawable br_drawable;
       br_drawable.draw_template = BoundingRectangle::draw_template();
-      br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
-      br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
-      br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
-      br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
+      br_drawable.draw_instances.push_back(deer_.bounding_rectangle().model_matrix());
+      br_drawable.draw_instances.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
+      br_drawable.draw_instances.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
+      br_drawable.draw_instances.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
       for (auto& bush : bushGen.getBushes()) {
-         br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
+         br_drawable.draw_instances.push_back(bush.getBoundingRectangle().model_matrix());
       }
       for (auto& tree : treeGen.getTrees()) {
-         br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
+         br_drawable.draw_instances.push_back(tree.getBoundingRectangle().model_matrix());
       }
       for (auto& flower : daisyGen.getFlowers()) {
-         br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
+         br_drawable.draw_instances.push_back(flower.getBoundingRectangle().model_matrix());
       }
       for (auto& flower : roseGen.getFlowers()) {
-         br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
+         br_drawable.draw_instances.push_back(flower.getBoundingRectangle().model_matrix());
       }
       for (auto& br : song_path_.bounding_rectangles()) {
-         br_drawable.model_transforms.push_back(br.model_matrix());
+         br_drawable.draw_instances.push_back(br.model_matrix());
       }
       drawables.push_back(br_drawable);
    }
@@ -290,7 +290,7 @@ void Game::draw() {
    //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
    //god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
    //drawables.push_back(god_rays_.drawable());
-   //br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
+   //br_drawable.draw_instances.push_back(god_rays_.bounding_rectangle().model_matrix());
 
 
    // View Frustum Culling

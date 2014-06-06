@@ -31,7 +31,7 @@ float GroundPlane::heightAt(const glm::vec3& position) const {
    // 1.translate position from world into texture space.
    // a. determine which ground plane to test. OBSOLETE
    // b. translate position from world into mesh space.
-   pos = glm::inverse(drawable_.model_transforms.front().model_transform) * pos;
+   pos = glm::inverse(drawable_.draw_instances.front().model_transform) * pos;
    // c. translate position from mesh into texture space.
    // TODO(chebert): this is a total hack. we assume that the mesh is
    // centered at the origin, and rotated (C?)CW 90 degrees. deadline is monday.

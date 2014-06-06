@@ -4,9 +4,9 @@
 Drawable Drawable::fromCulledDrawable(const CulledDrawable& cd, CullType cull_type) {
    Drawable d;
    d.draw_template = cd.draw_template;
-   for (auto& mt : cd.model_transforms) {
+   for (auto& mt : cd.draw_instances) {
       if (!mt.cullFlag.count(cull_type)) {
-         d.model_transforms.push_back(mt.model);
+         d.draw_instances.push_back(mt.model);
       }
    }
    return d;

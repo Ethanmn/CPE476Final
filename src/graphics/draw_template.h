@@ -39,18 +39,18 @@ struct DrawTemplate {
 
 struct DrawInstance {
    DrawInstance(const glm::mat4& model_transform=glm::mat4(), const Material& material=Material()) :
-      material(material),
-      model_transform(model_transform)
+      model_transform(model_transform),
+      material(material)
       {}
-   boost::optional<Material> material;
    glm::mat4 model_transform;
+   boost::optional<Material> material;
 };
 
 struct CulledDrawable;
 struct Drawable {
    static Drawable fromCulledDrawable(const CulledDrawable& d, CullType cull_type);
    DrawTemplate draw_template;
-   std::vector<DrawInstance> model_transforms;
+   std::vector<DrawInstance> draw_instances;
 };
 void switchTextureAndBlinn(Drawable *drawObj);
 
@@ -63,13 +63,13 @@ struct CulledDrawable {
    static CulledDrawable fromDrawable(const Drawable& d) {
       CulledDrawable cd;
       cd.draw_template = d.draw_template;
-      for (const auto& mt : d.model_transforms) {
-         cd.model_transforms.push_back(CulledTransform({mt, CullSet()}));
+      for (const auto& mt : d.draw_instances) {
+         cd.draw_instances.push_back(CulledTransform({mt, CullSet()}));
       }
       return cd;
    }
    DrawTemplate draw_template;
-   std::vector<CulledTransform> model_transforms;
+   std::vector<CulledTransform> draw_instances;
 };
 
 #endif

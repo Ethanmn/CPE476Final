@@ -49,13 +49,13 @@ namespace {
 
 void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, 
       const glm::mat4& view, bool needsModel) {
-   for(const auto& mt : drawable.model_transforms) {
+   for(const auto& instance : drawable.draw_instances) {
       glPolygonMode(GL_FRONT, GL_FILL);
-      shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * mt.model_transform);
+      shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * instance.model_transform);
       shader.sendUniform(Uniform::NORMAL, uniforms,
-               glm::transpose(glm::inverse(view * mt.model_transform)));
+               glm::transpose(glm::inverse(view * instance.model_transform)));
       if(needsModel)
-         shader.sendUniform(Uniform::MODEL, uniforms, mt.model_transform);   
+         shader.sendUniform(Uniform::MODEL, uniforms, instance.model_transform);   
       
       shader.drawMesh(drawable.draw_template.mesh);
    }
@@ -159,10 +159,10 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
                         SendTexture(shader, 
                            Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
-                        for(auto& mt : drawable.model_transforms) {
-                           if (!mt.cullFlag.count(CullType::SHADOW_CULLING)) {
+                        for(auto& instance : drawable.draw_instances) {
+                           if (!instance.cullFlag.count(CullType::SHADOW_CULLING)) {
                               shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, 
-                                    view_projection * mt.model.model_transform);
+                                    view_projection * instance.model.model_transform);
                               shader.drawMesh(drawable.draw_template.mesh);
                            }
                         }
@@ -191,8 +191,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   Drawable newDrawable;
                   if (drawable.draw_template.effects.count(EffectType::CASTS_REFLECTION)) {
                      reflected.push_back(newDrawable);
-                     for (auto& mt : reflected.back().model_transforms) {
-                        mt.model_transform = scale * mt.model_transform;
+                     for (auto& instance : reflected.back().draw_instances) {
+                        instance.model_transform = scale * instance.model_transform;
                      }
                   }
                }
@@ -210,11 +210,11 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             for (auto& drawable : culledDrawables) {
                if (drawable.draw_template.shader_type == ShaderType::SKYBOX) {
                /* doesn't use drawModelTransforms because no normals */
-               for(const auto& mt : drawable.model_transforms) {
+               for(const auto& instance : drawable.draw_instances) {
                   shader.sendUniform(Uniform::TEXTURE, uniforms, 
                         (*drawable.draw_template.texture).texture_slot());
                   (*drawable.draw_template.texture).enable(texture_cache_);
-                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model.model_transform);
+                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * instance.model.model_transform);
                   shader.drawMesh(drawable.draw_template.mesh);
                }
                }
