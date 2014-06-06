@@ -28,7 +28,7 @@ std::vector<CulledDrawable> Frustum::cullDrawables(const std::vector<Drawable>& 
    for (auto& drawable : drawables) {
       CulledDrawable culledDrawable;
       for (auto& instance : drawable.draw_instances) {
-         CulledTransform culledTransform;
+         CulledDrawInstance culledTransform;
          culledTransform.model = instance;
 
          if (testSphere(BoundingSphere(drawable.draw_template, instance.model_transform)) == Frustum::TestResult::OUTSIDE) {

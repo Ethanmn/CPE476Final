@@ -54,7 +54,7 @@ struct Drawable {
 };
 void switchTextureAndBlinn(Drawable *drawObj);
 
-struct CulledTransform {
+struct CulledDrawInstance {
    DrawInstance model;
    CullSet cullFlag;
 };
@@ -64,12 +64,12 @@ struct CulledDrawable {
       CulledDrawable cd;
       cd.draw_template = d.draw_template;
       for (const auto& mt : d.draw_instances) {
-         cd.draw_instances.push_back(CulledTransform({mt, CullSet()}));
+         cd.draw_instances.push_back(CulledDrawInstance({mt, CullSet()}));
       }
       return cd;
    }
    DrawTemplate draw_template;
-   std::vector<CulledTransform> draw_instances;
+   std::vector<CulledDrawInstance> draw_instances;
 };
 
 #endif
