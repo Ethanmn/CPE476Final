@@ -38,6 +38,7 @@ varying vec4 vShadow;
 varying vec4 vPosition;
 varying vec3 vNormal;
 varying vec2 vTexCoord;
+varying float vUnderWater;
 
 void main() {
    mat4 bone = mat4(1.0);
@@ -72,7 +73,8 @@ void main() {
    vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
-   vShadow = uShadowMap * uModelMatrix * vec4(aPosition, 1.0); 
+   vShadow = uShadowMap * uModelMatrix * vec4(aPosition, 1.0);
+   vUnderWater = heightColor.y < 0.0 ? heightColor.y * -0.5 - 0.2 : 0.0; 
    gl_Position = uProjectionMatrix * vPosition;
 
 }

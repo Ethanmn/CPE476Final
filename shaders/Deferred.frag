@@ -19,9 +19,11 @@ uniform Material uMat;
 varying vec2 vTexCoord;
 varying vec4 vPosition;
 varying vec3 vNormal;
+varying float vUnderWater;
 
 vec4 calculateDiffuse();
 float calculateShadowAmount();
+vec4 checkIfUnderWater(vec4 Diffuse, float ShadowAmount);
 int alphaCheck();
 
 void main() {
@@ -31,8 +33,8 @@ void main() {
    if(alpha == 0)
       discard;
 
-   if(uOutputShaderType == 0)
-      color = calculateDiffuse() * vec4(vec3(calculateShadowAmount()), 1.0);
+   if(uOutputShaderType == 0) 
+      color = checkIfUnderWater(calculateDiffuse(), calculateShadowAmount());
    else if(uOutputShaderType == 1)
       color = vec4(vec3(gl_FragCoord.z + 0.001), 1.0);
    else if(uOutputShaderType == 2)
@@ -48,7 +50,7 @@ vec4 calculateDiffuse() {
 
 int alphaCheck() {
    vec4 Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord)  : vec4(uMat.diffuse, 1.0);
-   if (Diffuse.a < 0.3) {
+   if (Diffuse.a < 0.8) {
       return 0;
    }
    return 1;
@@ -70,4 +72,15 @@ float calculateShadowAmount() {
       applyShadow = 0.7;
 
    return applyShadow;
+}
+
+vec4 checkIfUnderWater(vec4 Diffuse, float ShadowAmount) {
+   vec4 DiffuseWithWater = Diffuse;
+   if(vUnderWater > 0.0) {
+      DiffuseWithWater = vec4(0.0, 
+                              vUnderWater * DiffuseWithWater.y + ShadowAmount * 0.2, 
+                              vUnderWater * DiffuseWithWater.z + ShadowAmount * 0.4, 
+                              1.0);
+   }
+   return DiffuseWithWater;
 }

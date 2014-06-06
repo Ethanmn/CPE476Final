@@ -31,7 +31,7 @@ enum class MeshType {
    SKYBOX,
    SPHERE,
    BOX,
-   PLANE
+   PLANE,
    LEAF,
 };
 

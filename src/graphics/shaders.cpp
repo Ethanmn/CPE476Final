@@ -146,8 +146,8 @@ const std::vector<Attribute> kFinalPassAttrs{
    Attribute::TEX_COORD
 };
 const std::vector<Uniform> kFinalPassUniforms{
-   Uniform::MODEL_VIEW,
    Uniform::MODEL,
+   Uniform::VIEW,
    Uniform::PROJECTION,
 
    Uniform::IS_GOD_RAY,

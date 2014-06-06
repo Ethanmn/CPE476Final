@@ -340,7 +340,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                      shader.sendUniform(Uniform::GOD_RAY_CENTER, uniforms, ray_pos);
                   }
                   shader.sendUniform(Uniform::MODEL, uniforms, mt.model);
-                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, curView * mt.model);
+                  shader.sendUniform(Uniform::VIEW, uniforms, curView);
                   shader.drawMesh(drawable.draw_template.mesh);
                   }
                }
