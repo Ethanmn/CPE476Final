@@ -270,23 +270,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
-/*
-         case ShaderType::TEXTURE:
-            if(printCurrentShaderName)
-               printf("Texture\n");
-            {
-               std::vector<Drawable> drawables;
-               for (auto& drawable : culledDrawables) {
-                  drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING));
-               }
-               shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
-               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
-
-               drawTextureShader(shader, drawables, viewMatrix, sunDir, sunIntensity, 
-                  lightning, deferred_normal_fbo_);
-            }
-            break;
-*/
+         
+         
          case ShaderType::WATER:
             if(printCurrentShaderName)
                printf("Water\n");
