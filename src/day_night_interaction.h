@@ -22,7 +22,7 @@ struct DayNightInteraction {
                boost::none,
                EffectSet({EffectType::CASTS_SHADOW})
                }),
-            std::vector<glm::mat4>({
+            std::vector<DrawInstance>({
                glm::translate(
                   glm::mat4(),
                   glm::vec3(-30.0f, ground.heightAt(glm::vec3(-30, 0, -30)) + 3, -30.0f))
@@ -37,7 +37,7 @@ struct DayNightInteraction {
                boost::none,
                EffectSet({EffectType::CASTS_SHADOW})
                }),
-            std::vector<glm::mat4>({
+            std::vector<DrawInstance>({
                glm::translate(
                   glm::mat4(),
                   glm::vec3(20.0f, ground.heightAt(glm::vec3(20, 0, 20)) + 3, 20.0f))

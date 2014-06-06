@@ -70,7 +70,7 @@ void LeafSystem::add() {
 }
 
 Drawable LeafSystem::drawable() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    for (auto& particle : particles_) 
       model_matrices.push_back(particle.calculateModel());
    return Drawable({draw_template_, model_matrices});

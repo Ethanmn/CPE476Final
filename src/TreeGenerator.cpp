@@ -58,7 +58,7 @@ std::vector<Tree>& TreeGenerator::getTrees() {
 }
 
 Drawable TreeGenerator::drawable() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    for (auto& tree : trees) {
       model_matrices.push_back(tree.calculateModel());
    }

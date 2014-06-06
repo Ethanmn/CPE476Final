@@ -51,7 +51,7 @@ std::vector<Bush>& BushGenerator::getBushes() {
 }
 
 Drawable BushGenerator::drawable() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    for(auto& bush : bushes)
       model_matrices.push_back(bush.calculateModel());
    return Drawable({draw_template_, model_matrices});

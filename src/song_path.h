@@ -24,7 +24,7 @@ struct SongPath {
    }
 
    Drawable drawable() const {
-      std::vector<glm::mat4> models;
+      std::vector<DrawInstance> models;
       models.push_back(song_stones_[current_stone_].model());
       if (current_stone_ + 1 < song_stones_.size())
          models.push_back(song_stones_[current_stone_ + 1].model());

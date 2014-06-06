@@ -23,7 +23,7 @@ struct Water {
                boost::none,
                EffectSet()
                }),
-            std::vector<glm::mat4>({glm::scale(glm::mat4(), glm::vec3(10, 1, 10))})
+            std::vector<DrawInstance>({glm::scale(glm::mat4(), glm::vec3(10, 1, 10))})
             });
    }
 

@@ -51,11 +51,11 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
       const glm::mat4& view, bool needsModel) {
    for(const auto& mt : drawable.model_transforms) {
       glPolygonMode(GL_FRONT, GL_FILL);
-      shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * mt);
+      shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * mt.model_transform);
       shader.sendUniform(Uniform::NORMAL, uniforms,
-               glm::transpose(glm::inverse(view * mt)));
+               glm::transpose(glm::inverse(view * mt.model_transform)));
       if(needsModel)
-         shader.sendUniform(Uniform::MODEL, uniforms, mt);   
+         shader.sendUniform(Uniform::MODEL, uniforms, mt.model_transform);   
       
       shader.drawMesh(drawable.draw_template.mesh);
    }
@@ -162,7 +162,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                         for(auto& mt : drawable.model_transforms) {
                            if (!mt.cullFlag.count(CullType::SHADOW_CULLING)) {
                               shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, 
-                                    view_projection * mt.model);
+                                    view_projection * mt.model.model_transform);
                               shader.drawMesh(drawable.draw_template.mesh);
                            }
                         }
@@ -192,7 +192,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   if (drawable.draw_template.effects.count(EffectType::CASTS_REFLECTION)) {
                      reflected.push_back(newDrawable);
                      for (auto& mt : reflected.back().model_transforms) {
-                        mt = scale * mt;
+                        mt.model_transform = scale * mt.model_transform;
                      }
                   }
                }
@@ -214,7 +214,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   shader.sendUniform(Uniform::TEXTURE, uniforms, 
                         (*drawable.draw_template.texture).texture_slot());
                   (*drawable.draw_template.texture).enable(texture_cache_);
-                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model);
+                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model.model_transform);
                   shader.drawMesh(drawable.draw_template.mesh);
                }
                }

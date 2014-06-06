@@ -37,16 +37,25 @@ struct DrawTemplate {
    EffectSet effects;
 };
 
+struct DrawInstance {
+   DrawInstance(const glm::mat4& model_transform=glm::mat4(), const Material& material=Material()) :
+      material(material),
+      model_transform(model_transform)
+      {}
+   boost::optional<Material> material;
+   glm::mat4 model_transform;
+};
+
 struct CulledDrawable;
 struct Drawable {
    static Drawable fromCulledDrawable(const CulledDrawable& d, CullType cull_type);
    DrawTemplate draw_template;
-   std::vector<glm::mat4> model_transforms;
+   std::vector<DrawInstance> model_transforms;
 };
 void switchTextureAndBlinn(Drawable *drawObj);
 
 struct CulledTransform {
-   glm::mat4 model;
+   DrawInstance model;
    CullSet cullFlag;
 };
 

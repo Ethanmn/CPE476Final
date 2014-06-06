@@ -30,7 +30,7 @@ void GodRays::setCurrentRayScale(float scale_amount) {
 }
 
 Drawable GodRays::drawable() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    model_matrices.push_back(calculateModel(position_, current_scale_));
    model_matrices.push_back(calculateModel(next_position_, glm::vec3(1.0)));
    return Drawable({draw_template_, model_matrices}); 

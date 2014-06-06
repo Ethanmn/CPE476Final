@@ -49,7 +49,7 @@ std::vector<Flower>& FlowerGenerator::getFlowers() {
 }
 
 Drawable FlowerGenerator::drawable() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    for(auto& flower : flowers) {
       if(!flower.isEaten())
          model_matrices.push_back(flower.calculateModel());
@@ -58,7 +58,7 @@ Drawable FlowerGenerator::drawable() const {
 } 
 
 Drawable FlowerGenerator::drawableEaten() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    for(auto& flower : flowers) {
       if(flower.isEaten())
          model_matrices.push_back(flower.calculateModel());

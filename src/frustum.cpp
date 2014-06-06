@@ -13,7 +13,7 @@ Frustum::Plane::Plane(const glm::vec4& coefficients) :
 std::vector<CulledDrawable> Frustum::cullShadowDrawables(std::vector<CulledDrawable> drawables) {
    for (auto& drawable : drawables) {
       for (auto& transform : drawable.model_transforms) {
-         if (testSphere(BoundingSphere(drawable.draw_template, transform.model)) == Frustum::TestResult::OUTSIDE) {
+         if (testSphere(BoundingSphere(drawable.draw_template, transform.model.model_transform)) == Frustum::TestResult::OUTSIDE) {
             transform.cullFlag.insert(CullType::SHADOW_CULLING);
          }
       }
@@ -31,7 +31,7 @@ std::vector<CulledDrawable> Frustum::cullDrawables(const std::vector<Drawable>& 
          CulledTransform culledTransform;
          culledTransform.model = transform;
 
-         if (testSphere(BoundingSphere(drawable.draw_template, transform)) == Frustum::TestResult::OUTSIDE) {
+         if (testSphere(BoundingSphere(drawable.draw_template, transform.model_transform)) == Frustum::TestResult::OUTSIDE) {
             culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
             culledObject++;
          }

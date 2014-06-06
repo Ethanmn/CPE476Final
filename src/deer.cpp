@@ -81,7 +81,7 @@ glm::mat4 Deer::calculateModel(const ModelState& model_state) const {
 }
 
 Drawable Deer::drawable() const {
-   return Drawable({draw_template_, std::vector<glm::mat4>({calculateModel(model_state_)})});
+   return Drawable({draw_template_, std::vector<DrawInstance>({calculateModel(model_state_)})});
 } 
 
 glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
