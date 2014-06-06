@@ -9,12 +9,14 @@ Skybox::Skybox(Mesh mesh) :
    draw_template_day({
       ShaderType::SKYBOX,
       mesh,
+      Material(),
       Texture(TextureType::SKYBOX_DAY, DIFFUSE_TEXTURE),
       boost::none,
       EffectSet({})}),
    draw_template_night({
       ShaderType::SKYBOX,
       mesh,
+      Material(),
       Texture(TextureType::SKYBOX_NIGHT, DIFFUSE_TEXTURE),
       boost::none,
       EffectSet({})})
@@ -29,7 +31,7 @@ glm::mat4 Skybox::calculateModel() const {
 }
 
 Drawable Skybox::drawable(bool isDay) const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    model_matrices.push_back(calculateModel());
   
    if (isDay) {
@@ -41,7 +43,7 @@ Drawable Skybox::drawable(bool isDay) const {
 }
 
 std::vector<Drawable> Skybox::drawables(bool isDay) const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    std::vector<Drawable> drawables;
    glm::mat4 planeMat = calculateModel();
 

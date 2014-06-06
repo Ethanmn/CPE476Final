@@ -13,7 +13,6 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool useDeferredNotTexture = false;
 
    int lighting = 0;
    int raining = 0;
@@ -39,7 +38,7 @@ Game::Game() :
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::TREE)), 
+            mesh_loader_.loadMesh(MeshType::TREE)),
             Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::LEAF))),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -48,12 +47,12 @@ Game::Game() :
 
    /* temporary solution to two flower meshes and textures */
    daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::DAISY)), 
+            mesh_loader_.loadMesh(MeshType::DAISY)),
             Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::EATEN_DAISY)), TextureType::DAISY,
             ground_),
    roseGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::ROSE)), 
+            mesh_loader_.loadMesh(MeshType::ROSE)),
             Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::EATEN_ROSE)), TextureType::ROSE,
             ground_),
@@ -79,25 +78,29 @@ Game::Game() :
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
 
    lightning_trigger_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::LIGHTNING)), 
+            mesh_loader_.loadMesh(MeshType::LIGHTNING)),
             glm::vec3(52.0f, 10.0f, 50.0f), 0.5),
 
    god_rays_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::GOD_RAYS)), 
-            glm::vec3(0.0f, 10.0f, 0.0f), 2.0),
+            mesh_loader_.loadMesh(MeshType::GOD_RAYS)),
+            glm::vec3(0.0f, 0.0f, 0.0f), 1.5),
 
    skybox(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::SKYBOX))),
- 
+
    deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
 
-   deferred_fbo_(kScreenWidth, kScreenHeight),
+   deferred_diffuse_fbo_(kScreenWidth, kScreenHeight, DEFERRED_DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH),
+   deferred_position_fbo_(kScreenWidth, kScreenHeight, DEFERRED_POSITION_TEXTURE, FBOType::COLOR_WITH_DEPTH),
+   deferred_normal_fbo_(kScreenWidth, kScreenHeight, DEFERRED_NORMAL_TEXTURE, FBOType::COLOR_WITH_DEPTH),
 
-   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
+   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GEM))),
+   screen_plane_mesh_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::PLANE))),
    pinecone_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::PINECONE)),
          ground_,
@@ -255,29 +258,43 @@ void Game::draw() {
    if (draw_collision_box) {
       Drawable br_drawable;
       br_drawable.draw_template = BoundingRectangle::draw_template();
-      br_drawable.model_transforms.push_back(deer_.front_feet_bounding_rectangle().model_matrix());
-      br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
-      br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
-      br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
+      br_drawable.draw_instances.push_back(deer_.bounding_rectangle().model_matrix());
+      br_drawable.draw_instances.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
+      br_drawable.draw_instances.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
+      br_drawable.draw_instances.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
       for (auto& bush : bushGen.getBushes()) {
-         br_drawable.model_transforms.push_back(bush.getBoundingRectangle().model_matrix());
+         br_drawable.draw_instances.push_back(bush.getBoundingRectangle().model_matrix());
+      }
+      for (auto& bush : bushGen.getBushes()) {
+         br_drawable.draw_instances.push_back(bush.getBoundingRectangle().model_matrix());
       }
       for (auto& tree : treeGen.getTrees()) {
-         br_drawable.model_transforms.push_back(tree.getBoundingRectangle().model_matrix());
+         br_drawable.draw_instances.push_back(tree.getBoundingRectangle().model_matrix());
       }
       for (auto& flower : daisyGen.getFlowers()) {
-         br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
+         br_drawable.draw_instances.push_back(flower.getBoundingRectangle().model_matrix());
       }
       for (auto& flower : roseGen.getFlowers()) {
-         br_drawable.model_transforms.push_back(flower.getBoundingRectangle().model_matrix());
+         br_drawable.draw_instances.push_back(flower.getBoundingRectangle().model_matrix());
       }
       for (auto& br : song_path_.bounding_rectangles()) {
-         br_drawable.model_transforms.push_back(br.model_matrix());
+         br_drawable.draw_instances.push_back(br.model_matrix());
       }
-      br_drawable.model_transforms.push_back(pinecone_.bounding_rectangle().model_matrix());
-      br_drawable.model_transforms.push_back(pinecone_.aoe_bounding_rectangle().model_matrix());
+      br_drawable.draw_instances.push_back(pinecone_.bounding_rectangle().model_matrix());
+      br_drawable.draw_instances.push_back(pinecone_.aoe_bounding_rectangle().model_matrix());
       drawables.push_back(br_drawable);
    }
+
+
+   Drawable screen_drawable;
+   BoundingRectangle screen_br = BoundingRectangle(glm::vec2(0.0f, 0.0f),
+            glm::vec2(kScreenWidthf, kScreenHeightf), 0.0f);
+   screen_drawable.draw_template = BoundingRectangle::draw_template();
+   screen_drawable.draw_template.mesh = screen_plane_mesh_;
+   screen_drawable.draw_template.texture = deer_.drawable().draw_template.texture;
+   screen_drawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
+   screen_drawable.draw_instances.push_back(screen_br.model_matrix_screen());
+   drawables.push_back(screen_drawable);
 
    drawables.push_back(deer_.drawable());
 
@@ -308,12 +325,9 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
-   drawables.push_back(pinecone_.drawable());
-
-   //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
-   //god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
-   //drawables.push_back(god_rays_.drawable());
-   //br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
+   god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
+   god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
+   drawables.push_back(god_rays_.drawable());
 
    // View Frustum Culling
    auto viewMatrix = deerCam.getViewMatrix();
@@ -324,20 +338,17 @@ void Game::draw() {
    // Skybox is never culled, so we add it after.
    culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
 
-   if(useDeferredNotTexture) {
-      for(auto& drawable : culledDrawables) {
-         if(drawable.draw_template.shader_type == ShaderType::TEXTURE) 
-            drawable.draw_template.shader_type = ShaderType::DEFERRED;
-      }
-   }
-
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
-   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), deferred_fbo_, 
-         culledDrawables, viewMatrix, switchBlinnPhongShading, 
-         deerPos, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_,
+                     water_.fbo(),
+                     deferred_diffuse_fbo_,
+                     deferred_position_fbo_,
+                     deferred_normal_fbo_,
+                     culledDrawables, viewMatrix, switchBlinnPhongShading,
+                     deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {
@@ -404,7 +415,7 @@ void Game::mainLoop() {
             const auto key_tree = SDL_SCANCODE_T;
             if (input.wasKeyPressed(key_tree)) {
                showTreeShadows = !showTreeShadows;
-               treeGen.includeInShadows(showTreeShadows); 
+               treeGen.includeInShadows(showTreeShadows);
             }
          }
          {
@@ -437,7 +448,7 @@ void Game::mainLoop() {
          { //Change shading models
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
-               switchBlinnPhongShading = !switchBlinnPhongShading; 
+               switchBlinnPhongShading = !switchBlinnPhongShading;
             }
          }
          { //handle quit

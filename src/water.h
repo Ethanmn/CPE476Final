@@ -18,11 +18,12 @@ struct Water {
             DrawTemplate({
                ShaderType::WATER,
                mesh_,
+               Material(),
                reflection_fbo_.texture(),
                boost::none,
                EffectSet()
                }),
-            std::vector<glm::mat4>({glm::scale(glm::mat4(), glm::vec3(10, 1, 10))})
+            std::vector<DrawInstance>({glm::scale(glm::mat4(), glm::vec3(10, 1, 10))})
             });
    }
 

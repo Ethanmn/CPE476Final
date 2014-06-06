@@ -8,8 +8,9 @@ const auto kAreaOfEffect = 30.f;
 
 Pinecone::Pinecone(const Mesh& mesh, const GroundPlane& ground, const glm::vec2& position) :
    draw_template_({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          mesh,
+         Material(),
          Texture(TextureType::PINECONE, DIFFUSE_TEXTURE),
          boost::none,
          EffectSet({
@@ -34,6 +35,6 @@ Drawable Pinecone::drawable() const {
    const auto mt = glm::translate(glm::mat4(), position_);
    return Drawable({
          draw_template_,
-         std::vector<glm::mat4>({mt})
+         std::vector<DrawInstance>({mt})
          });
 }

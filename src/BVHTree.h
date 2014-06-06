@@ -1,7 +1,7 @@
-/* 
-   BVHTree.h (Bounding Volume Hierarchy Tree)
-   Katie Keim
-   Deer - CPE 476
+/*
+BVHTree.h (Bounding Volume Hierarchy Tree)
+Katie Keim
+Deer - CPE 476
 */
 
 #ifndef BVHTREE_H_
@@ -9,13 +9,18 @@
 
 #include "bounding_rectangle.h"
 #include "GameObject.h"
+#include "BVHNode.h"
+#include <list>
 
 struct BVHTree {
-   void calculateTree(const std::vector<GameObject*>& objects);
-   std::vector<GameObject*> getCollidingObjects(const BoundingRectangle& bRect);
+   BVHTree();
+   void calculateTree(std::vector<GameObject*> objects);
+   std::vector<GameObject*> getCollidingObjects(BoundingRectangle bRect);
+   void printTree();
 
-  private:
-   std::vector<GameObject*> allNodes;
+   private:
+      BVHNode *head;
+      std::vector<BVHNode> allNodes;
 };
 
 #endif //BVHTREE_H_

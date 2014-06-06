@@ -71,10 +71,14 @@ struct Game {
 
    Camera deerCam;
 
-   DeferredFrameBuffer deferred_fbo_;
+   FrameBufferObject deferred_diffuse_fbo_;
+   FrameBufferObject deferred_position_fbo_;
+   FrameBufferObject deferred_normal_fbo_;
+
    FrameBufferObject shadow_map_fbo_;
    Water water_;
    SongPath song_path_;
+   Mesh screen_plane_mesh_;
 
    Pinecone pinecone_;
 

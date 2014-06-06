@@ -37,6 +37,7 @@ struct BoundingRectangle {
 
    static DrawTemplate draw_template();
    glm::mat4 model_matrix() const;
+   glm::mat4 model_matrix_screen() const;
 
   private:
    std::vector<glm::vec2> corners() const;

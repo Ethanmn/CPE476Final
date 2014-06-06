@@ -11,11 +11,16 @@ const int TREE_SCALE = 5;
 
 TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
    leaf_(leaf),
-   draw_template_({ShaderType::TEXTURE, mesh, 
-         Texture(TextureType::TREE, DIFFUSE_TEXTURE), boost::none, EffectSet({EffectType::CASTS_REFLECTION})
+   draw_template_({
+         ShaderType::DEFERRED,
+         mesh, 
+         Material(),
+         Texture(TextureType::TREE, DIFFUSE_TEXTURE),
+         boost::none,
+         EffectSet({EffectType::CASTS_REFLECTION, EffectType::VARY_MATERIAL})
          })
 {
-   draw_template_.mesh.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
+   draw_template_.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
    generate();
 }
 
@@ -53,9 +58,9 @@ std::vector<Tree>& TreeGenerator::getTrees() {
 }
 
 Drawable TreeGenerator::drawable() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    for (auto& tree : trees) {
-      model_matrices.push_back(tree.calculateModel());
+      model_matrices.push_back(tree.draw_instance());
    }
    return Drawable({draw_template_, model_matrices});
 }

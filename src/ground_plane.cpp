@@ -14,13 +14,14 @@ const std::vector<unsigned short> ground_indices{
 GroundPlane::GroundPlane(const Mesh& mesh) :
    drawable_({
          DrawTemplate({
-            ShaderType::TEXTURE,
+            ShaderType::DEFERRED,
             mesh,
+            Material(glm::vec3(0.105f, 0.275f, 0.133f)),
             Texture(TextureType::GRASS, DIFFUSE_TEXTURE), 
             Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE),
             EffectSet({EffectType::CASTS_SHADOW})
             }),
-         std::vector<glm::mat4>({glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, 1, GROUND_SCALE))}),
+         std::vector<DrawInstance>({glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, 1, GROUND_SCALE))}),
          }),
    // TODO(chebert): Loaded it twice because textures confuse me.
    height_map_image_(texture_path(TextureType::HEIGHT_MAP)) { }
@@ -30,7 +31,7 @@ float GroundPlane::heightAt(const glm::vec3& position) const {
    // 1.translate position from world into texture space.
    // a. determine which ground plane to test. OBSOLETE
    // b. translate position from world into mesh space.
-   pos = glm::inverse(drawable_.model_transforms.front()) * pos;
+   pos = glm::inverse(drawable_.draw_instances.front().model_transform) * pos;
    // c. translate position from mesh into texture space.
    // TODO(chebert): this is a total hack. we assume that the mesh is
    // centered at the origin, and rotated (C?)CW 90 degrees. deadline is monday.

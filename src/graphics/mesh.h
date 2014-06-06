@@ -19,7 +19,6 @@ struct Mesh {
 
    std::vector<Bone> bone_array;
    Animation animation;
-   Material material;
 };
 
 #endif // MESH_H_
