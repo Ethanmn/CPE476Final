@@ -52,6 +52,7 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
    for(const auto& instance : drawable.draw_instances) {
       glPolygonMode(GL_FRONT, GL_FILL);
       if (instance.material) {
+         std::clog << "sending material" << std::endl;
          instance.material->sendMaterial(shader, uniforms);
       }
       shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * instance.model_transform);
@@ -114,7 +115,7 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
 
    for (auto& drawable : drawables) {
       if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
-         { 
+         {
          // Per-Drawable Texture Shader Setup
             SendHeightMap(shader, drawable);
             SendBones(shader, drawable);

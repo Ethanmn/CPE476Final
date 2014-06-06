@@ -15,14 +15,15 @@ const float BOUNDING_ERR_Z = -3;
 Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& leaf) :
    bRect(BoundingRectangle(glm::vec2(position.x + BOUNDING_ERR_X, position.z + BOUNDING_ERR_Z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
-   heightOffset(heightOffset),
    angleRot(angleRot),
+   heightOffset(heightOffset),
    leaf_system_(leaf, TextureType::LEAF,
               glm::vec3(position.x, position.y + 5.0f, position.z), 0),
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(200),
    kMaxRustleTime(200),
+   material_(glm::vec3((rand() % 360) / 360.f)),
    translate_scale_(
          glm::translate(
             glm::mat4(),
@@ -43,9 +44,9 @@ Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& l
 
 {} 
 
-glm::mat4 Tree::calculateModel() const {
+DrawInstance Tree::draw_instance() const {
    if (rustle_time_ >= kMaxRustleTime)
-      return default_model_;
+      return DrawInstance(default_model_, material_);
    const glm::mat4 rotate(glm::rotate(
             glm::rotate(
                glm::mat4(),
@@ -62,7 +63,7 @@ glm::mat4 Tree::calculateModel() const {
                glm::vec3(0, 1.0f, 0)
                ));
 
-   return glm::mat4(translate_scale_ * rotate2 * rotate);
+   return DrawInstance(translate_scale_ * rotate2 * rotate, material_);
 }
 
 bool Tree::isBlocker() {

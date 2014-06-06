@@ -38,7 +38,7 @@ struct DrawTemplate {
 };
 
 struct DrawInstance {
-   DrawInstance(const glm::mat4& model_transform=glm::mat4(), const Material& material=Material()) :
+   DrawInstance(const glm::mat4& model_transform=glm::mat4(), const boost::optional<Material>& material=boost::none) :
       model_transform(model_transform),
       material(material)
       {}

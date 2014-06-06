@@ -60,7 +60,7 @@ std::vector<Tree>& TreeGenerator::getTrees() {
 Drawable TreeGenerator::drawable() const {
    std::vector<DrawInstance> model_matrices;
    for (auto& tree : trees) {
-      model_matrices.push_back(tree.calculateModel());
+      model_matrices.push_back(tree.draw_instance());
    }
    return Drawable({draw_template_, model_matrices});
 }
