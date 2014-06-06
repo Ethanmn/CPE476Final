@@ -173,11 +173,13 @@ void Game::step(units::MS dt) {
    if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
       if(!deerInWater) {
          deerInWater = true;
+         /*
          sound_engine_.playSoundEffect(
          SoundEngine::SoundEffect::WATER,
          false,
          deer_.getPosition());
          //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
+         */
       }
    }
    else if(deerInWater) { //leave water
@@ -339,22 +341,23 @@ void Game::draw() {
    if (raining)
       drawables.push_back(rain_system_.drawable());
 
-   drawables.push_back(butterfly_system_red_.drawable());
-   drawables.push_back(butterfly_system_pink_.drawable());
-   drawables.push_back(butterfly_system_blue_.drawable());
-
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
-
-   Drawable glowingButterfliesDrawable = butterfly_system_red_.drawable();
-   glowingButterfliesDrawable.draw_template.mesh = song_path_.drawable().draw_template.mesh;
-   for(auto& instance : glowingButterfliesDrawable.draw_instances)
-      instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.4)) * glm::translate(glm::mat4(), glm::vec3(15.0, 10.0, 15.0)) 
-         * instance.model_transform;
-   drawables.push_back(glowingButterfliesDrawable); 
-   glowingButterfliesDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
-   drawables.push_back(glowingButterfliesDrawable); 
+   if (day_cycle_.isDay()) {
+      drawables.push_back(butterfly_system_red_.drawable());
+      drawables.push_back(butterfly_system_pink_.drawable());
+      drawables.push_back(butterfly_system_blue_.drawable());
+   } else {
+      Drawable glowingButterfliesDrawable = butterfly_system_red_.drawable();
+      glowingButterfliesDrawable.draw_template.mesh = song_path_.drawable().draw_template.mesh;
+      for(auto& instance : glowingButterfliesDrawable.draw_instances)
+         instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.4)) * glm::translate(glm::mat4(), glm::vec3(15.0, 10.0, 15.0)) 
+            * instance.model_transform;
+      drawables.push_back(glowingButterfliesDrawable); 
+      glowingButterfliesDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
+      drawables.push_back(glowingButterfliesDrawable); 
+   }
 
    god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
    god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
