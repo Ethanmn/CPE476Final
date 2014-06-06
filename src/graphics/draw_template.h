@@ -16,6 +16,7 @@ enum class EffectType {
    CASTS_REFLECTION,
    VARY_MATERIAL,
    IS_GOD_RAY,
+   IS_FIREFLY
 };
 
 typedef std::set<EffectType> EffectSet;

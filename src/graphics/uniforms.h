@@ -36,6 +36,7 @@ enum class Uniform {
    SUN_DIR,
    SUN_INTENSITY,
    IS_GOD_RAY,
+   IS_FIREFLY,
    GOD_RAY_CENTER,
    GOD_RAY_RADIUS,
    FINAL_PASS_POSITION_TEXTURE,
@@ -104,6 +105,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uUseBlinnPhong";
       case Uniform::IS_GOD_RAY:
          return "uIsGodRay";
+      case Uniform::IS_FIREFLY:
+         return "uIsFirefly";
       case Uniform::GOD_RAY_CENTER:
          return "uGodRayCenter";
       case Uniform::GOD_RAY_RADIUS:

@@ -9,6 +9,7 @@ uniform float uScreenHeight;
 uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uIsGodRay;
+uniform int uIsFirefly;
 uniform int uLightning;
 
 varying vec4 vPosition;
@@ -39,6 +40,8 @@ void main() {
       color = calculateDiffuse(pixelOnScreen, 0);
 
    gl_FragColor = color + calculateAmbient(pixelOnScreen, AmbientAmount);
+   if(uIsFirefly == 1)
+      gl_FragColor *= vec4(2.5, 2.5, 250.0/255.0, 1.0);
 
 }
 

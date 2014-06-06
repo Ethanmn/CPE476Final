@@ -322,8 +322,11 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
                if(newDrawable.draw_template.shader_type == ShaderType::FINAL_LIGHT_PASS) {
 
+                  shader.sendUniform(Uniform::IS_FIREFLY, uniforms, 0);
                   if (drawable.draw_template.effects.count(EffectType::IS_GOD_RAY)) {
                      shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, 1);
+                     if(drawable.draw_template.effects.count(EffectType::IS_FIREFLY))
+                        shader.sendUniform(Uniform::IS_FIREFLY, uniforms, 1);
                      curView = viewMatrix;
                   }
                   else {

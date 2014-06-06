@@ -346,6 +346,16 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
+
+   Drawable glowingButterfliesDrawable = butterfly_system_red_.drawable();
+   glowingButterfliesDrawable.draw_template.mesh = song_path_.drawable().draw_template.mesh;
+   for(auto& instance : glowingButterfliesDrawable.draw_instances)
+      instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.4)) * glm::translate(glm::mat4(), glm::vec3(15.0, 10.0, 15.0)) 
+         * instance.model_transform;
+   drawables.push_back(glowingButterfliesDrawable); 
+   glowingButterfliesDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
+   drawables.push_back(glowingButterfliesDrawable); 
+
    god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
    god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
    drawables.push_back(god_rays_.drawable());
