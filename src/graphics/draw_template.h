@@ -30,6 +30,7 @@ typedef std::set<CullType> CullSet;
 struct DrawTemplate {
    ShaderType shader_type;
    Mesh mesh;
+   Material material;
    boost::optional<Texture> texture;
    boost::optional<Texture> height_map;
    bool has_bones() const { return !mesh.bone_array.empty(); }

@@ -20,6 +20,7 @@ struct Lightning {
             DrawTemplate({
                ShaderType::TEXTURE,
                mesh,
+               Material(),
                Texture(TextureType::LIGHTNING, DIFFUSE_TEXTURE),
                boost::none,
                EffectSet({EffectType::CASTS_SHADOW})

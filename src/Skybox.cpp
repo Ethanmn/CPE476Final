@@ -9,12 +9,14 @@ Skybox::Skybox(Mesh mesh) :
    draw_template_day({
       ShaderType::SKYBOX,
       mesh,
+      Material(),
       Texture(TextureType::SKYBOX_DAY, DIFFUSE_TEXTURE),
       boost::none,
       EffectSet({})}),
    draw_template_night({
       ShaderType::SKYBOX,
       mesh,
+      Material(),
       Texture(TextureType::SKYBOX_NIGHT, DIFFUSE_TEXTURE),
       boost::none,
       EffectSet({})})

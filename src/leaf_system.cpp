@@ -17,8 +17,12 @@ namespace {
 }
 
 LeafSystem::LeafSystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles) : 
-            draw_template_({ShaderType::TEXTURE, mesh, 
-                  Texture(texture_type, DIFFUSE_TEXTURE), boost::none,
+            draw_template_({
+                  ShaderType::TEXTURE,
+                  mesh, 
+                  Material(),
+                  Texture(texture_type, DIFFUSE_TEXTURE),
+                  boost::none,
                   EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
                   }),
             origin_(origin),

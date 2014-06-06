@@ -16,6 +16,7 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
          DrawTemplate({
             ShaderType::TEXTURE,
             mesh,
+            Material(),
             Texture(TextureType::GRASS, DIFFUSE_TEXTURE), 
             Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE),
             EffectSet({EffectType::CASTS_SHADOW})

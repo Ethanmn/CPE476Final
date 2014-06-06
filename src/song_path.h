@@ -29,13 +29,7 @@ struct SongPath {
       if (current_stone_ + 1 < song_stones_.size())
          models.push_back(song_stones_[current_stone_ + 1].model());
       return Drawable({
-            DrawTemplate({
-               ShaderType::TEXTURE,
-               mesh_,
-               Texture(TextureType::GEM, DIFFUSE_TEXTURE),
-               boost::none,
-               EffectSet(),
-            }),
+            draw_template_,
             models
             });
    }
@@ -50,7 +44,7 @@ struct SongPath {
 
    std::vector<SongStone> song_stones_;
    irrklang::ISound* song_;
-   Mesh mesh_;
+   DrawTemplate draw_template_;
 };
 
 #endif // SONG_PATH_H_

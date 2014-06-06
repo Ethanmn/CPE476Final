@@ -2,7 +2,13 @@
 #include "dust_particle.h"
 
 Dust::Dust(const Mesh& mesh, const glm::vec3& origin, int numParticles) : 
-      draw_template_({ShaderType::TEXTURE, mesh, boost::none, boost::none, EffectSet() }),
+      draw_template_({
+            ShaderType::TEXTURE,
+            mesh,
+            Material(),
+            boost::none,
+            boost::none,
+            EffectSet() }),
       origin_(origin),
       scale_(1.0f),
       velocity_(glm::vec3(1.0f, 0.0f, 0.0f)),

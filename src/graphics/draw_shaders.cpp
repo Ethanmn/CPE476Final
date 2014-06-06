@@ -118,7 +118,7 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
             SendBones(shader, drawable);
             SendTexture(shader, drawable);
 
-            drawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
+            drawable.draw_template.material.sendMaterial(shader, uniforms);
          }
          drawModelTransforms(shader, drawable, viewMatrix, true);
       }
@@ -234,7 +234,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
 
                if(newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
-                  newDrawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
+                  newDrawable.draw_template.material.sendMaterial(shader, uniforms);
                   SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
                   SendTexture(shader, newDrawable);

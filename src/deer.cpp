@@ -29,6 +29,7 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& positio
    draw_template_({
          ShaderType::TEXTURE,
          walk_mesh,
+         Material(),
          Texture(TextureType::DEER, DIFFUSE_TEXTURE),
          boost::none,
          EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})

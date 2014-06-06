@@ -27,6 +27,7 @@ DrawTemplate BoundingRectangle::draw_template() {
    return DrawTemplate({
          ShaderType::TEXTURE,
          *bounding_mesh_,
+         Material(),
          boost::none,
          boost::none,
          EffectSet(),

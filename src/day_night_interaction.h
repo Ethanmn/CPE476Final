@@ -17,6 +17,7 @@ struct DayNightInteraction {
             DrawTemplate({
                ShaderType::TEXTURE,
                mesh,
+               Material(),
                Texture(TextureType::MOON_STONE, DIFFUSE_TEXTURE),
                boost::none,
                EffectSet({EffectType::CASTS_SHADOW})
@@ -29,7 +30,9 @@ struct DayNightInteraction {
             }),
       sun_drawable_({
             DrawTemplate({
-               ShaderType::TEXTURE, mesh,
+               ShaderType::TEXTURE,
+               mesh,
+               Material(),
                Texture(TextureType::SUN_STONE, DIFFUSE_TEXTURE),
                boost::none,
                EffectSet({EffectType::CASTS_SHADOW})

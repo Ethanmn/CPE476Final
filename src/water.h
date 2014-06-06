@@ -18,6 +18,7 @@ struct Water {
             DrawTemplate({
                ShaderType::WATER,
                mesh_,
+               Material(),
                reflection_fbo_.texture(),
                boost::none,
                EffectSet()

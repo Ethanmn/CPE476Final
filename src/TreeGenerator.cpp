@@ -11,11 +11,16 @@ const int TREE_SCALE = 5;
 
 TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
    leaf_(leaf),
-   draw_template_({ShaderType::TEXTURE, mesh, 
-         Texture(TextureType::TREE, DIFFUSE_TEXTURE), boost::none, EffectSet({EffectType::CASTS_REFLECTION})
+   draw_template_({
+         ShaderType::TEXTURE,
+         mesh, 
+         Material(),
+         Texture(TextureType::TREE, DIFFUSE_TEXTURE),
+         boost::none,
+         EffectSet({EffectType::CASTS_REFLECTION})
          })
 {
-   draw_template_.mesh.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
+   draw_template_.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
    generate();
 }
 

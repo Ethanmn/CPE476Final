@@ -18,14 +18,17 @@ struct GodRays {
       current_scale_(glm::vec3(1.0)), 
       scale_(scale),
       rotate_(45.0),
-      draw_template_({ShaderType::TEXTURE, mesh,
+      draw_template_({
+            ShaderType::TEXTURE,
+            mesh,
+            Material(),
             boost::none,
             boost::none,
             EffectSet({EffectType::IS_GOD_RAY}), 
             }),
       bounding_rectangle_(glm::vec2(position_.x, position_.z), glm::vec2(5.0f, 5.0f), 0.0f)
-      { 
-         draw_template_.mesh.material = Material(glm::vec3(1.0, 1.0, 1.0)); 
+      {
+         draw_template_.material = Material(glm::vec3(1.0, 1.0, 1.0)); 
       }
 
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
