@@ -30,7 +30,7 @@ struct SongPath {
          models.push_back(song_stones_[current_stone_ + 1].model());
       return Drawable({
             DrawTemplate({
-               ShaderType::TEXTURE,
+               ShaderType::DEFERRED,
                mesh_,
                Texture(TextureType::GEM, DIFFUSE_TEXTURE),
                boost::none,

@@ -14,7 +14,7 @@ const std::vector<unsigned short> ground_indices{
 GroundPlane::GroundPlane(const Mesh& mesh) :
    drawable_({
          DrawTemplate({
-            ShaderType::TEXTURE,
+            ShaderType::DEFERRED,
             mesh,
             Texture(TextureType::GRASS, DIFFUSE_TEXTURE), 
             Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE),

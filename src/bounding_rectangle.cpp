@@ -25,7 +25,7 @@ void BoundingRectangle::loadBoundingMesh(MeshLoader& mesh_loader, const Attribut
 //static
 DrawTemplate BoundingRectangle::draw_template() {
    return DrawTemplate({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          *bounding_mesh_,
          boost::none,
          boost::none,

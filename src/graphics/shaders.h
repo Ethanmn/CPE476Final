@@ -19,7 +19,6 @@ enum class ShaderType {
    DEF_DIFFUSE, 
    DEF_POSITION,
    DEF_NORMAL,
-   TEXTURE,
    WATER,
    FINAL_LIGHT_PASS,
    SKYBOX

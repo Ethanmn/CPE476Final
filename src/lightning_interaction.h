@@ -18,7 +18,7 @@ struct Lightning {
       rotate_(0),
       drawable_({
             DrawTemplate({
-               ShaderType::TEXTURE,
+               ShaderType::DEFERRED,
                mesh,
                Texture(TextureType::LIGHTNING, DIFFUSE_TEXTURE),
                boost::none,

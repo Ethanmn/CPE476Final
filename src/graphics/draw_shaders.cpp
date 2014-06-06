@@ -99,10 +99,10 @@ void DrawShader::SendTexture(Shader& shader, const Drawable& drawable) {
    }
 }
 
+
 void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
       const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
-      int lightning,
-      const FrameBufferObject& fbo) {
+      int lightning) {
 
    shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
@@ -112,7 +112,7 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
 
 
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+      if (drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
          { 
          // Per-Drawable Texture Shader Setup
             SendHeightMap(shader, drawable);
@@ -203,9 +203,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   }
                }
                drawTextureShader(shader, reflected, viewMatrix, sunDir, sunIntensity,
-                  lightning,
-                  deferred_diffuse_fbo_
-                  );
+                  lightning);
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
@@ -272,7 +270,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             break;
-
+/*
          case ShaderType::TEXTURE:
             if(printCurrentShaderName)
                printf("Texture\n");
@@ -288,7 +286,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   lightning, deferred_normal_fbo_);
             }
             break;
-
+*/
          case ShaderType::WATER:
             if(printCurrentShaderName)
                printf("Water\n");

@@ -37,9 +37,7 @@ struct DrawShader {
             const glm::mat4& viewMatrix, 
             const glm::vec3& sunDir, 
             float sunIntensity, 
-            int lightning,
-            const FrameBufferObject& fbo
-            );
+            int lightning);
 
    void SendDeferred(Shader& shader, 
             const UniformLocationMap& uniforms,

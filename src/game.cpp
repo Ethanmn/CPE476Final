@@ -13,7 +13,6 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool useDeferredNotTexture = true;
 
    int lighting = 0;
    int raining = 0;
@@ -314,13 +313,6 @@ void Game::draw() {
 
    // Skybox is never culled, so we add it after.
    culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
-
-   if(useDeferredNotTexture) {
-      for(auto& drawable : culledDrawables) {
-         if(drawable.draw_template.shader_type == ShaderType::TEXTURE) 
-            drawable.draw_template.shader_type = ShaderType::DEFERRED;
-      }
-   }
 
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
