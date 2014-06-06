@@ -48,7 +48,7 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
      
    if(useSun == 0) {
       sunDir = vec3(0.2, 1.0, 0.2);
-      sunInt = min(0.7, uSunIntensity + 0.2);
+      sunInt = min(0.8, uSunIntensity + 0.2);
    }
 
    vec4 Diffuse = texture2D(uDiffuseTexture, texCoord);
