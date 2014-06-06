@@ -21,7 +21,7 @@ varying vec3 vNormal;
 varying float vUnderWater;
 
 vec4 calculateDiffuse();
-vec4 checkIfUnderWater(vec4 Diffuse, float ShadowAmount);
+vec4 checkIfUnderWater(vec4 Diffuse);
 int alphaCheck();
 float calculateShadowAmount();
 
@@ -34,14 +34,14 @@ void main() {
       discard;
 
    if(uOutputShaderType == 0) { 
-      color = checkIfUnderWater(calculateDiffuse(), 1.0);
+      color = checkIfUnderWater(calculateDiffuse() - vec4(vec3(calculateShadowAmount()), 0.0));
    }
    else if(uOutputShaderType == 1)
       color = vec4(vec3(gl_FragCoord.z + 0.001), 1.0);
    else if(uOutputShaderType == 2)
       color = vec4(vNormal, 1.0);
 
-   gl_FragColor = color - vec4(vec3(calculateDiffuse()), 0.0);
+   gl_FragColor = color;
 }
 
 vec4 calculateDiffuse() {
@@ -57,17 +57,17 @@ int alphaCheck() {
    return 1;
 }
 
-vec4 checkIfUnderWater(vec4 Diffuse, float ShadowAmount) {
+vec4 checkIfUnderWater(vec4 Diffuse) {
    vec4 DiffuseWithWater = Diffuse;
    if(vUnderWater > 0.0) {
-      DiffuseWithWater = vec4(0.0, vUnderWater * DiffuseWithWater.y + ShadowAmount * 0.2, 
-                              vUnderWater * DiffuseWithWater.z + ShadowAmount * 0.6, 1.0);
+      DiffuseWithWater = vec4(0.0, vUnderWater + DiffuseWithWater.y, 
+                                   vUnderWater + DiffuseWithWater.z + 0.2 , 1.0);
    }
    return DiffuseWithWater;
 }
 
 float calculateShadowAmount() {
-   float applyShadow = 1.0;
+   float applyShadow = 0.0;
    
    float bias = 0.005;
    vec3 directionalColor = vec3(0.8 * 0.3);
@@ -81,7 +81,7 @@ float calculateShadowAmount() {
    }
 
    if(shadowMapTexColor.z <=  texCoord.z - bias)
-      applyShadow = 0.7;
+      applyShadow = 0.05;
    
    return applyShadow;
 }

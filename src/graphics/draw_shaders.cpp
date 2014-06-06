@@ -326,9 +326,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
             shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
 
-               //shadow_map_fbo_.texture().enable(texture_cache_);
-               //SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
-
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
 

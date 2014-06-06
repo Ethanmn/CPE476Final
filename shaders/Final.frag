@@ -2,10 +2,6 @@ uniform sampler2D uDiffuseTexture;
 uniform sampler2D uPositionTexture;
 uniform sampler2D uNormalTexture;
 
-/*uniform sampler2D uShadowMapTexture;*/
-/*uniform int uHasShadows;*/
-/*uniform mat4 uShadowMap;*/
-
 uniform mat4 uViewMatrix;
 uniform float uScreenWidth;
 uniform float uScreenHeight;
@@ -22,7 +18,6 @@ varying float vGodRayIntensity;
 vec4 calculateDiffuse(vec2 texCoord, int useSun);
 vec4 calculateAmbient(vec2 texCoord, float AmbientAmount);
 vec4 checkIfLightning(vec4 Diffuse);
-float calculateShadowAmount(vec4 depthOfImage, vec2 texCoord);
 
 void main() {
    vec4 color;
@@ -43,7 +38,7 @@ void main() {
    else
       color = calculateDiffuse(pixelOnScreen, 0);
 
-   gl_FragColor = color;// + calculateAmbient(pixelOnScreen, AmbientAmount);
+   gl_FragColor = color + calculateAmbient(pixelOnScreen, AmbientAmount);
 
 }
 
@@ -84,26 +79,3 @@ vec4 checkIfLightning(vec4 Diffuse) {
    }
    return Diffuse;
 }
-
-
-float calculateShadowAmount(vec4 depthOfImage, vec2 texCoord) {
-   float applyShadow = 1.0;
-   
-   /*float bias = 0.005;*/
-   /*vec3 directionalColor = vec3(0.8 * 0.3);*/
-   /*vec4 shadowMapTexColor = vec4(1.0);*/
-   /*vec2 shadowCoord = (uShadowMap * depthOfImage).xy; */
-
-   /*if(uHasShadows != 0) {*/
-      /*shadowMapTexColor = texture2D(uShadowMapTexture, shadowCoord);*/
-      /*if(texCoord.x > 1.0 || texCoord.y > 1.0 || texCoord.x < 0.0 || texCoord.y < 0.0) {*/
-         /*shadowMapTexColor.z = 1.0;*/
-      /*}*/
-   /*}*/
-   /*if(shadowMapTexColor.z <= depthOfImage.z - bias)*/
-      /*applyShadow = 0.7;*/
-  
-   return applyShadow;
-}
-
-
