@@ -67,18 +67,18 @@ mat4 calculateBones() {
 }
 
 void main() {
-   vec4 heightColor = vec4(0.0);
+   vec3 heightOffset = vec3(0.0);
 #ifdef USE_HEIGHT_MAP
    if (uHasHeightMap != 0) {
-      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * uHeightMapScale;
+      heightOffset.y = (vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * uHeightMapScale).x;
    }
 #endif
 
-   vec4 pos = uModelMatrix * calculateBones() * vec4(heightColor.xyz + aPosition, 1.0);
+   vec4 pos = uModelMatrix * calculateBones() * vec4(heightOffset + aPosition, 1.0);
    vViewer = uViewMatrix * pos;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord) : vec2(0.0, 0.0);
    vShadow = uShadowMap * pos;
-   vUnderWater = heightColor.y < 0.0 ? 1.0 : 0.0;
+   vUnderWater = heightOffset.y < 0.0 ? 1.0 : 0.0;
    gl_Position = uProjectionMatrix * vViewer;
 }
