@@ -162,7 +162,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                         for(auto& instance : drawable.draw_instances) {
                            if (!instance.cullFlag.count(CullType::SHADOW_CULLING)) {
                               shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, 
-                                    view_projection * instance.model.model_transform);
+                                    view_projection * instance.instance.model_transform);
                               shader.drawMesh(drawable.draw_template.mesh);
                            }
                         }
@@ -214,7 +214,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   shader.sendUniform(Uniform::TEXTURE, uniforms, 
                         (*drawable.draw_template.texture).texture_slot());
                   (*drawable.draw_template.texture).enable(texture_cache_);
-                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * instance.model.model_transform);
+                  shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * instance.instance.model_transform);
                   shader.drawMesh(drawable.draw_template.mesh);
                }
                }

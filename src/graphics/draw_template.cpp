@@ -6,7 +6,7 @@ Drawable Drawable::fromCulledDrawable(const CulledDrawable& cd, CullType cull_ty
    d.draw_template = cd.draw_template;
    for (auto& mt : cd.draw_instances) {
       if (!mt.cullFlag.count(cull_type)) {
-         d.draw_instances.push_back(mt.model);
+         d.draw_instances.push_back(mt.instance);
       }
    }
    return d;

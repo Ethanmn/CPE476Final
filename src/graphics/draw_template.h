@@ -55,7 +55,7 @@ struct Drawable {
 void switchTextureAndBlinn(Drawable *drawObj);
 
 struct CulledDrawInstance {
-   DrawInstance model;
+   DrawInstance instance;
    CullSet cullFlag;
 };
 
