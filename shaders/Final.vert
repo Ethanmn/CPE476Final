@@ -14,13 +14,13 @@ varying float vGodRayIntensity;
 
 void main() {
    vTexCoord = vec2(aTexCoord);
-   vec4 pos = uModelViewMatrix * vec4(aPosition, 1.0);
-   pos = uProjectionMatrix * pos;
+   vec4 pos = vec4(aPosition, 1.0);
+   vec4 pixel_pos = uProjectionMatrix * uModelViewMatrix * pos;
 
    if(uIsGodRay == 1) {
-      pos.z = 0.0;
-      vGodRayIntensity = 1.0 + distance(vec3(uModelMatrix*vec4(aPosition, 1.0)), uGodRayCenter)/40.0;
+      pixel_pos.z = 0.0;
+      vGodRayIntensity = 1.0 + distance(vec3(uModelMatrix * pos), uGodRayCenter)/40.0;
    }
 
-   gl_Position = pos;
+   gl_Position = pixel_pos;
 }
