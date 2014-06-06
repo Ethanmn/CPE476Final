@@ -52,6 +52,8 @@ std::string texture_path(TextureType texture) {
          return "../textures/sky_night.tga";
       case TextureType::LEAF:
          return "../textures/leaf.tga";
+      case TextureType::PINECONE:
+         return "../textures/pinecone.tga";
       case TextureType::LAST_TEXTURE_TYPE:
          return "";
 

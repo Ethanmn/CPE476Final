@@ -33,6 +33,8 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::DEER_EAT)),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::DEER_SLEEP)),
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::DEER_POUNCE)),
          glm::vec3()),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
@@ -95,7 +97,11 @@ Game::Game() :
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::GEM)))
+            mesh_loader_.loadMesh(MeshType::GEM))),
+   pinecone_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::PINECONE)),
+         ground_,
+         glm::vec2(40))
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
@@ -187,6 +193,11 @@ void Game::step(units::MS dt) {
    }
    eatFlower = false;
 
+   if (!pinecone_.been_pounced() && deer_.bounding_rectangle().collidesWith(pinecone_.aoe_bounding_rectangle())) {
+      deer_.pounce(pinecone_.bounding_rectangle().getCenter());
+      pinecone_.deer_pounces();
+   }
+
    if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
       if (numLightning == 0) {
          if (!raining) {
@@ -244,9 +255,8 @@ void Game::draw() {
    if (draw_collision_box) {
       Drawable br_drawable;
       br_drawable.draw_template = BoundingRectangle::draw_template();
-      //br_drawable.model_transforms.push_back(deer_.bounding_rectangle().model_matrix());
-      //br_drawable.model_transforms.push_back(deer_.head_bounding_rectangle().model_matrix());
       br_drawable.model_transforms.push_back(deer_.front_feet_bounding_rectangle().model_matrix());
+      /*
       br_drawable.model_transforms.push_back(lightning_trigger_.bounding_rectangle().model_matrix());
       br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_sun().model_matrix());
       br_drawable.model_transforms.push_back(day_night_boxes_.bounding_rectangle_moon().model_matrix());
@@ -265,11 +275,15 @@ void Game::draw() {
       for (auto& br : song_path_.bounding_rectangles()) {
          br_drawable.model_transforms.push_back(br.model_matrix());
       }
+      */
+      br_drawable.model_transforms.push_back(pinecone_.bounding_rectangle().model_matrix());
+      br_drawable.model_transforms.push_back(pinecone_.aoe_bounding_rectangle().model_matrix());
       drawables.push_back(br_drawable);
    }
 
    drawables.push_back(deer_.drawable());
 
+   /*
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
@@ -297,11 +311,13 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
+   */
+   drawables.push_back(pinecone_.drawable());
+
    //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
    //god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
    //drawables.push_back(god_rays_.drawable());
    //br_drawable.model_transforms.push_back(god_rays_.bounding_rectangle().model_matrix());
-
 
    // View Frustum Culling
    auto viewMatrix = deerCam.getViewMatrix();

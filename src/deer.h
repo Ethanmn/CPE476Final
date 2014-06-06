@@ -22,7 +22,7 @@ struct Deer {
       float current_lean;
    };
   public:
-   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const glm::vec3& position);
+   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const glm::vec3& position);
 
    BoundingRectangle getNextBoundingBox(units::MS dt);
 
@@ -37,12 +37,14 @@ struct Deer {
 
    void jump();
    void eat(Flower& flower);
+   void pounce(const glm::vec2& pounce_target);
 
    glm::vec3 getPosition() const;
    glm::vec3 getFacing() const;
 
    bool is_sleeping() const { return sleeping_; }
    bool is_eating() const { return eating_; }
+   bool is_pouncing() const { return pounce_target_; }
 
    bool isMoving();
 
@@ -109,8 +111,9 @@ struct Deer {
    DrawTemplate draw_template_;
    bool eating_;
    bool sleeping_;
+   boost::optional<glm::vec2> pounce_target_;
    Mesh walk_mesh_;
-   Mesh eat_mesh_, sleep_mesh_;
+   Mesh eat_mesh_, sleep_mesh_, pounce_mesh_;
 
    ModelState model_state_;
 
