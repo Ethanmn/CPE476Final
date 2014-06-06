@@ -23,8 +23,8 @@ enum class ShaderType {
 
    TEXTURE,
    WATER,
-   SKYBOX,
-   FINAL_LIGHT_PASS
+   FINAL_LIGHT_PASS,
+   SKYBOX
 };
 
 struct Shaders {

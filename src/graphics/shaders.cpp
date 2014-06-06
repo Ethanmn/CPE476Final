@@ -163,6 +163,8 @@ const std::vector<Uniform> kFinalPassUniforms{
 Shaders::Shaders() {
       shaders_.insert(std::make_pair(ShaderType::SHADOW, 
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::SKYBOX,
+            Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));      
       shaders_.insert(std::make_pair(ShaderType::DEF_DIFFUSE,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
       shaders_.insert(std::make_pair(ShaderType::DEF_POSITION,

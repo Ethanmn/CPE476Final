@@ -220,7 +220,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   (*drawable.draw_template.texture).enable(texture_cache_);
                   shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * mt.model);
                   shader.drawMesh(drawable.draw_template.mesh);
-               }
+                }
                }
             }
             break;
@@ -256,8 +256,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
 
-               if(newDrawable.draw_template.shader_type == ShaderType::DEFERRED ||
-                  newDrawable.draw_template.shader_type == ShaderType::SKYBOX) {
+               if(newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
                   newDrawable.draw_template.mesh.material.sendMaterial(shader, uniforms);
                   SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
@@ -334,10 +333,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   }
 
                   for(const auto& mt : drawable.model_transforms) {
-                  //shader.sendUniform(Uniform::DEF_MODEL_VIEW, uniforms, lookAt * mt.model);
                   if (drawable.draw_template.effects.count(EffectType::IS_GOD_RAY)) {
                      glm::vec3 ray_pos = glm::vec3(mt.model * glm::vec4(0,0,0,1));
-                     //printf("ray pos %f %f %f\n", ray_pos.x, ray_pos.y, ray_pos.z);
                      shader.sendUniform(Uniform::GOD_RAY_CENTER, uniforms, ray_pos);
                   }
                   shader.sendUniform(Uniform::MODEL, uniforms, mt.model);

@@ -21,7 +21,8 @@ void main() {
    if(uIsGodRay == 1) {
       color = calculateDiffuse(pixelOnScreen, 0);
 
-      if(depthOfImage.z - gl_FragCoord.z > 0.0) {
+      if(depthOfImage.z - gl_FragCoord.z > 0.0 &&
+         depthOfImage.z - gl_FragCoord.z < 10.0) {
          color *= vGodRayIntensity; 
       }
       else
@@ -45,8 +46,9 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
    vec4 Diffuse = texture2D(uDiffuseTexture, texCoord);
    if(Diffuse.a < 0.3)
       discard;
-   float dotNLDir = dot(normalize(vec3(texture2D(uNormalTexture, texCoord))), sunDir);   
-   if (dotNLDir < 0.0) dotNLDir = 0.1;
+   float dotNLDir = dot(normalize(vec3(texture2D(uNormalTexture, texCoord))), sunDir);
+      
+   if (dotNLDir < 0.0) dotNLDir = 0.15;
    
    Diffuse = vec4(vec3(sunInt), 1.0) * Diffuse.rgba * dotNLDir;
    return Diffuse;
