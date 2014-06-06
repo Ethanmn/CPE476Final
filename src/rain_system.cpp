@@ -2,8 +2,21 @@
 #include "rain_system.h"
 #include <stdlib.h>
 
-#define RAIN_MAX 200.0f
-#define RAIN_MIN -200.0f
+#define RAIN_MAX_XZ 200.0f
+#define RAIN_MIN_XZ -200.0f
+#define RAIN_MAX_Y 300.0f
+#define RAIN_MIN_Y 50.0f
+
+namespace {
+   glm::vec3 getRandomVec() {
+      float rx = RAIN_MIN_XZ + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX_XZ - RAIN_MIN_XZ));
+      float ry = RAIN_MIN_Y + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX_Y - RAIN_MIN_Y));
+      float rz = RAIN_MIN_XZ + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX_XZ - RAIN_MIN_XZ));
+
+      return glm::vec3(rx, ry, rz);
+   }
+}
+
 
 RainSystem::RainSystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) : 
             draw_template_({ShaderType::TEXTURE, mesh, 
@@ -13,22 +26,18 @@ RainSystem::RainSystem(const Mesh& mesh, const glm::vec3& origin, int numParticl
             velocity_(glm::vec3(0.0f, 0.0f, 0.0f)),
             acceleration_(glm::vec3(0.0f, -0.00001f, 0.0f)) {
                for (int i = 0; i < numParticles; i++) {
-                  float rx = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
-                  float ry = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
-                  float rz = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
-                  particles_.push_back(Particle(glm::vec3(origin_.x + rx, origin_.y + ry + 150, origin_.z + rz), 
-                              scale_, velocity_, acceleration_));
+                  glm::vec3 randVec = getRandomVec();
+                  particles_.push_back(Particle(glm::vec3(origin_.x + randVec.x, origin_.y + randVec.y, origin_.z + randVec.z), 
+                              scale_, 0.0f, velocity_, acceleration_));
                }
             }
 
 void RainSystem::step(units::MS dt) {
    for (auto& particle : particles_) {
-      if (particle.getPos().y <= -25.0f) {
-         float rx = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
-         float ry = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
-         float rz = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
+      if (particle.getPos().y <= -5.0f) {
+         glm::vec3 randVec = getRandomVec();
          particle.setVel(0.0f, 0.0f, 0.0f);
-         particle.setPos(origin_.x + rx, origin_.y + ry, origin_.z + rz);
+         particle.setPos(origin_.x + randVec.x, origin_.y + randVec.y, origin_.z + randVec.z);
       }
       particle.step(dt);
    }
@@ -36,11 +45,9 @@ void RainSystem::step(units::MS dt) {
 
 void RainSystem::reset() {
    for (auto& particle : particles_) {
-      float rx = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
-      float ry = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
-      float rz = RAIN_MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (RAIN_MAX - RAIN_MIN));
+      glm::vec3 randVec = getRandomVec();
       particle.setVel(0.0f, 0.0f, 0.0f);
-      particle.setPos(origin_.x + rx, origin_.y + ry, origin_.z + rz);
+      particle.setPos(origin_.x + randVec.x, origin_.y + randVec.y, origin_.z + randVec.z);
    }
 }
 

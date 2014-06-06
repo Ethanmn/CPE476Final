@@ -1,3 +1,7 @@
+uniform int uHasTexture;
+attribute vec3 aTexCoord;
+varying vec2 vTexCoord;
+
 uniform mat4 uModelViewProjectionMatrix;
 attribute vec3 aPosition;
 
@@ -45,4 +49,5 @@ mat4 calculateBones() {
 
 void main() {
    gl_Position = uModelViewProjectionMatrix * calculateBones() * vec4(aPosition, 1.0);
+   vTexCoord = uHasTexture != 0 ? vec2(aTexCoord) : vec2(0.0, 0.0);
 }

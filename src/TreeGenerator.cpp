@@ -9,13 +9,10 @@ const int TREE_SIZE = 20;
 const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
 const int TREE_SCALE = 5;
 
-TreeGenerator::TreeGenerator(const Mesh& mesh) :
-   draw_template_({
-         ShaderType::TEXTURE,
-         mesh,
-         Texture(TextureType::TREE, DIFFUSE_TEXTURE),
-         boost::none,
-         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
+TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
+   leaf_(leaf),
+   draw_template_({ShaderType::TEXTURE, mesh, 
+         Texture(TextureType::TREE, DIFFUSE_TEXTURE), boost::none, EffectSet({EffectType::CASTS_REFLECTION})
          })
 {
    draw_template_.mesh.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
@@ -36,9 +33,9 @@ void TreeGenerator::generate() {
             float y = height * TREE_SCALE * TREE_SIZE / 2;
             float z = col * TREE_SIZE - groundSize + rand() % TREE_SIZE;
 
-            if (! (x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
-               trees.push_back(Tree(glm::vec3(x, y, z), height, angleRot));
-            }
+           if (! (x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
+               trees.push_back(Tree(glm::vec3(x, y, z), height, angleRot, leaf_));
+           }
          }
       }
    }
@@ -57,7 +54,16 @@ std::vector<Tree>& TreeGenerator::getTrees() {
 
 Drawable TreeGenerator::drawable() const {
    std::vector<glm::mat4> model_matrices;
-   for (auto& tree : trees) 
+   for (auto& tree : trees) {
       model_matrices.push_back(tree.calculateModel());
+   }
    return Drawable({draw_template_, model_matrices});
+}
+
+std::vector<Drawable> TreeGenerator::leafDrawable() const {
+   std::vector<Drawable> ret;
+   for (auto& tree : trees) {
+      ret.push_back(tree.leaf_system_.drawable());
+   }
+   return ret;
 }

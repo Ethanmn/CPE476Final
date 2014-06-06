@@ -87,6 +87,8 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "skybox.dae";
       case MeshType::SPHERE:
          return kMeshPath + "sphere.obj";
+      case MeshType::LEAF:
+         return kMeshPath + "leaf.dae";
    }
 }
 
