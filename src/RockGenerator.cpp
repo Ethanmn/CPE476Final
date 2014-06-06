@@ -5,7 +5,7 @@
 */
 #include "RockGenerator.h"
 
-const int ROCK_INVERSE_DENSITY = 20; //Larger value means LESS rcoks
+const int ROCK_INVERSE_DENSITY = 75; //Larger value means LESS rcoks
 
 const int ROCK_SIZE = 8;
 
@@ -18,7 +18,7 @@ RockGenerator::RockGenerator(const Mesh& mesh, const GroundPlane& ground) :
          ShaderType::DEFERRED,
          mesh,
          Material(),
-         Texture(TextureType::TREE, DIFFUSE_TEXTURE),
+         Texture(TextureType::ROCK, DIFFUSE_TEXTURE),
          boost::none,
          EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION}) }) 
 {
