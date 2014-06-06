@@ -57,6 +57,10 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "deer_walk.dae";
       case MeshType::DEER_EAT:
          return kMeshPath + "deer_eat.dae";
+      case MeshType::DEER_SLEEP:
+         return kMeshPath + "deer_sleep.dae";
+      case MeshType::DEER_POUNCE:
+         return kMeshPath + "deer_butt.dae";
       case MeshType::TIME_STONE:
          return kMeshPath + "time_stone.dae";
       case MeshType::TREE:
@@ -91,6 +95,8 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "test_plane.obj";
       case MeshType::LEAF:
          return kMeshPath + "leaf.dae";
+      case MeshType::PINECONE:
+         return kMeshPath + "pinecone.dae";
    }
 }
 

@@ -16,6 +16,8 @@ enum class MeshType {
    GROUND,
    DEER_WALK,
    DEER_EAT,
+   DEER_SLEEP,
+   DEER_POUNCE,
    TIME_STONE,
    TREE,
    BUSH,
@@ -33,6 +35,7 @@ enum class MeshType {
    BOX,
    PLANE,
    LEAF,
+   PINECONE,
 };
 
 std::string mesh_path(MeshType mesh);

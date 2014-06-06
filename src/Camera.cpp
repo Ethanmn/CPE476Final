@@ -8,6 +8,8 @@
 
 #include "deer.h"
 
+#include <glm/gtx/rotate_vector.hpp>
+
 //Height offsets
 const float kLookAtHeight = 12.0f;
 
@@ -31,11 +33,25 @@ glm::mat4 Camera::getViewMatrix() const {
 }
 
 /* Steps the camera foward by dT amount of time with spring-based movement. */
-void Camera::step(float dT, const glm::vec3& target_pos, const glm::vec3& target_facing) {
+void Camera::step(float dT, const glm::vec3& target_pos, const glm::vec3& target_facing, Position relative_position) {
    // Update our lookat to look at the target
    lookAt = target_pos;
    //Get our target camera position from the position of the target
-   camera_target = target_pos - kDistanceFromDeer * target_facing + glm::vec3(0, kLookAtHeight, 0);
+   switch (relative_position) {
+      case Position::BEHIND:
+         camera_target = target_pos - kDistanceFromDeer * target_facing + glm::vec3(0, kLookAtHeight, 0);
+         break;
+      case Position::FRONT_RIGHT:
+         camera_target = target_pos -
+            kDistanceFromDeer/2.f * glm::rotateY(target_facing, 110.f) +
+            glm::vec3(0, kLookAtHeight / 3.f, 0);
+         break;
+      case Position::LEFT:
+         camera_target = target_pos -
+            kDistanceFromDeer/1.5f * glm::rotateY(target_facing, -100.f) +
+            glm::vec3(0, kLookAtHeight / 2.f, 0);
+         break;
+   }
 
    //Get the distance between the current position and our target
    const auto displacement = position - camera_target;
