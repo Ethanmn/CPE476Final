@@ -97,6 +97,8 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "leaf.dae";
       case MeshType::PINECONE:
          return kMeshPath + "pinecone.dae";
+      case MeshType::ROCK:
+         return kMeshPath + "rock1.dae";
    }
 }
 
