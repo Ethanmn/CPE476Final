@@ -32,6 +32,7 @@ enum class MeshType {
    SPHERE,
    BOX,
    PLANE
+   LEAF,
 };
 
 std::string mesh_path(MeshType mesh);

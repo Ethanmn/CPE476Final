@@ -2,6 +2,7 @@
 #include "texture.h"
 #include <stdio.h>
 #include <string>
+#include <memory>
 
 #include <Magick++.h>
 
@@ -49,6 +50,8 @@ std::string texture_path(TextureType texture) {
          return "../textures/sky_day.tga";
       case TextureType::SKYBOX_NIGHT:
          return "../textures/sky_night.tga";
+      case TextureType::LEAF:
+         return "../textures/leaf.tga";
       case TextureType::LAST_TEXTURE_TYPE:
          return "";
 
