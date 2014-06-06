@@ -48,15 +48,17 @@ namespace {
 }
 
 void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, 
-      const glm::mat4& view, bool needsModel) {
+      const glm::mat4& view, bool needsModel, const UniformLocationMap& uniforms) {
    for(const auto& instance : drawable.draw_instances) {
       glPolygonMode(GL_FRONT, GL_FILL);
+      if (instance.material) {
+         instance.material->sendMaterial(shader, uniforms);
+      }
       shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * instance.model_transform);
       shader.sendUniform(Uniform::NORMAL, uniforms,
                glm::transpose(glm::inverse(view * instance.model_transform)));
-      if(needsModel)
-         shader.sendUniform(Uniform::MODEL, uniforms, instance.model_transform);   
-      
+      if (needsModel)
+         shader.sendUniform(Uniform::MODEL, uniforms, instance.model_transform);
       shader.drawMesh(drawable.draw_template.mesh);
    }
 }
@@ -120,7 +122,7 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
 
             drawable.draw_template.material.sendMaterial(shader, uniforms);
          }
-         drawModelTransforms(shader, drawable, viewMatrix, true);
+         drawModelTransforms(shader, drawable, viewMatrix, true, uniforms);
       }
    }
 }
@@ -238,7 +240,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
                   SendTexture(shader, newDrawable);
-                  drawModelTransforms(shader, newDrawable, viewMatrix, false);
+                  drawModelTransforms(shader, newDrawable, viewMatrix, false, uniforms);
                } 
             }
             break;
@@ -270,7 +272,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                newDrawable.draw_template = drawable.draw_template;
                if (drawable.draw_template.shader_type == ShaderType::WATER) {
                   SendTexture(shader, Drawable::fromCulledDrawable(drawable, CullType::REFLECT_CULLING));
-                  drawModelTransforms(shader, newDrawable, viewMatrix, true);
+                  drawModelTransforms(shader, newDrawable, viewMatrix, true, uniforms);
                }
             }
             break;

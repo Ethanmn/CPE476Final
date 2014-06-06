@@ -43,7 +43,8 @@ struct DrawShader {
    void drawModelTransforms(Shader& shader, 
             const Drawable& drawable,
             const glm::mat4& view,
-            bool needsModel);
+            bool needsModel,
+            const UniformLocationMap& uniforms);
 
    Shaders shaders;
    UniformLocationMap uniforms;
