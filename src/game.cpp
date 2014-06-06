@@ -216,7 +216,14 @@ void Game::step(units::MS dt) {
    }
    day_cycle_.autoAdjustTime(dt);
 
-   deerCam.step(dt, deer_.getPosition(), deer_.getFacing());
+   Camera::Position cam_pos;
+   if (deer_.is_sleeping())
+      cam_pos = Camera::Position::FRONT_RIGHT;
+   else if (deer_.is_eating())
+      cam_pos = Camera::Position::LEFT;
+   else
+      cam_pos = Camera::Position::BEHIND;
+   deerCam.step(dt, deer_.getPosition(), deer_.getFacing(), cam_pos);
 }
 
 void Game::draw() {

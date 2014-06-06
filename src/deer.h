@@ -41,6 +41,9 @@ struct Deer {
    glm::vec3 getPosition() const;
    glm::vec3 getFacing() const;
 
+   bool is_sleeping() const { return sleeping_; }
+   bool is_eating() const { return eating_; }
+
    bool isMoving();
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
    BoundingRectangle head_bounding_rectangle() const {

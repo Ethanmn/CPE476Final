@@ -15,10 +15,17 @@
 
 struct Deer;
 struct Camera {
+   enum class Position {
+      BEHIND,
+      FRONT_RIGHT,
+      LEFT
+   };
+
    Camera(glm::vec3 position, glm::vec3 lookAt);
    glm::mat4 getViewMatrix() const;
 
-   void step(float dT, const glm::vec3& target_pos, const glm::vec3& target_facing);
+   void step(float dT, const glm::vec3& target_pos, const glm::vec3& target_facing, Position relative_position);
+
   private:
    glm::vec3 position;
    glm::vec3 lookAt;
