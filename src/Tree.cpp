@@ -31,7 +31,7 @@ Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& l
       ) *
       glm::scale(
          glm::mat4(),
-         glm::vec3(TREE_SCALE) * glm::vec3(1, heightOffset, 1)
+         glm::vec3(TREE_SCALE + (rand() % 20)/20.0f) * glm::vec3(1, heightOffset, 1)
       )
    ),
    default_model_(
