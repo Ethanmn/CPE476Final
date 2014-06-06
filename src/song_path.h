@@ -29,7 +29,14 @@ struct SongPath {
       if (current_stone_ + 1 < song_stones_.size())
          models.push_back(song_stones_[current_stone_ + 1].model());
       return Drawable({
-            draw_template_,
+            DrawTemplate({
+               ShaderType::DEFERRED,
+               draw_template_.mesh,
+               Material(),
+               Texture(TextureType::GEM, DIFFUSE_TEXTURE),
+               boost::none,
+               EffectSet(),
+            }),
             models
             });
    }

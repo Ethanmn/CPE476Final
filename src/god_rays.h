@@ -19,7 +19,7 @@ struct GodRays {
       scale_(scale),
       rotate_(45.0),
       draw_template_({
-            ShaderType::TEXTURE,
+            ShaderType::FINAL_LIGHT_PASS,
             mesh,
             Material(),
             boost::none,

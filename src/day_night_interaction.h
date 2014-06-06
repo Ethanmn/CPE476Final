@@ -15,7 +15,7 @@ struct DayNightInteraction {
    DayNightInteraction(const Mesh& mesh, const GroundPlane& ground) :
       moon_drawable_({
             DrawTemplate({
-               ShaderType::TEXTURE,
+               ShaderType::DEFERRED,
                mesh,
                Material(),
                Texture(TextureType::MOON_STONE, DIFFUSE_TEXTURE),
@@ -30,7 +30,7 @@ struct DayNightInteraction {
             }),
       sun_drawable_({
             DrawTemplate({
-               ShaderType::TEXTURE,
+               ShaderType::DEFERRED,
                mesh,
                Material(),
                Texture(TextureType::SUN_STONE, DIFFUSE_TEXTURE),

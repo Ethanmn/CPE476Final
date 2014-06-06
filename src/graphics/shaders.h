@@ -15,11 +15,13 @@ enum class ShaderType {
    SHADOW,
    /* Reflection generates a texture, so must be before TEXTURE */
    REFLECTION,
-   TEXTURE,
-   WATER,
-   SKYBOX,
    DEFERRED,
-   FINAL_LIGHT_PASS
+   DEF_DIFFUSE, 
+   DEF_POSITION,
+   DEF_NORMAL,
+   WATER,
+   FINAL_LIGHT_PASS,
+   SKYBOX
 };
 
 struct Shaders {

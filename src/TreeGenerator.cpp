@@ -12,7 +12,7 @@ const int TREE_SCALE = 5;
 TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
    leaf_(leaf),
    draw_template_({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          mesh, 
          Material(),
          Texture(TextureType::TREE, DIFFUSE_TEXTURE),
@@ -38,9 +38,9 @@ void TreeGenerator::generate() {
             float y = height * TREE_SCALE * TREE_SIZE / 2;
             float z = col * TREE_SIZE - groundSize + rand() % TREE_SIZE;
 
-            if (! (x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
+           if (! (x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
                trees.push_back(Tree(glm::vec3(x, y, z), height, angleRot, leaf_));
-            }
+           }
          }
       }
    }

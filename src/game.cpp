@@ -13,7 +13,6 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
-   bool useDeferredNotTexture = false;
 
    int lighting = 0;
    int raining = 0;
@@ -80,20 +79,24 @@ Game::Game() :
 
    god_rays_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GOD_RAYS)), 
-            glm::vec3(0.0f, 10.0f, 0.0f), 2.0),
+            glm::vec3(0.0f, 0.0f, 0.0f), 1.5),
 
    skybox(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::SKYBOX))),
  
    deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
 
-   deferred_fbo_(kScreenWidth, kScreenHeight),
+   deferred_diffuse_fbo_(kScreenWidth, kScreenHeight, DEFERRED_DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH),
+   deferred_position_fbo_(kScreenWidth, kScreenHeight, DEFERRED_POSITION_TEXTURE, FBOType::COLOR_WITH_DEPTH),
+   deferred_normal_fbo_(kScreenWidth, kScreenHeight, DEFERRED_NORMAL_TEXTURE, FBOType::COLOR_WITH_DEPTH),
 
-   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::DEPTH),
+   shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::GEM)))
+            mesh_loader_.loadMesh(MeshType::GEM))),
+   screen_plane_mesh_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::PLANE)))
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
@@ -258,6 +261,17 @@ void Game::draw() {
       drawables.push_back(br_drawable);
    }
 
+
+   Drawable screen_drawable;
+   BoundingRectangle screen_br = BoundingRectangle(glm::vec2(0.0f, 0.0f), 
+            glm::vec2(kScreenWidthf, kScreenHeightf), 0.0f);
+   screen_drawable.draw_template = BoundingRectangle::draw_template();
+   screen_drawable.draw_template.mesh = screen_plane_mesh_;
+   screen_drawable.draw_template.texture = deer_.drawable().draw_template.texture;
+   screen_drawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
+   screen_drawable.draw_instances.push_back(screen_br.model_matrix_screen());
+   drawables.push_back(screen_drawable);
+
    drawables.push_back(deer_.drawable());
 
    drawables.push_back(lightning_trigger_.drawable());
@@ -287,12 +301,10 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
-   //god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
-   //god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
-   //drawables.push_back(god_rays_.drawable());
-   //br_drawable.draw_instances.push_back(god_rays_.bounding_rectangle().model_matrix());
-
-
+   god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
+   god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
+   drawables.push_back(god_rays_.drawable());
+   
    // View Frustum Culling
    auto viewMatrix = deerCam.getViewMatrix();
    const auto view_projection = kProjectionMatrix * viewMatrix;
@@ -302,20 +314,17 @@ void Game::draw() {
    // Skybox is never culled, so we add it after.
    culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
 
-   if(useDeferredNotTexture) {
-      for(auto& drawable : culledDrawables) {
-         if(drawable.draw_template.shader_type == ShaderType::TEXTURE) 
-            drawable.draw_template.shader_type = ShaderType::DEFERRED;
-      }
-   }
-
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
-   draw_shader_.Draw(shadow_map_fbo_, water_.fbo(), deferred_fbo_, 
-         culledDrawables, viewMatrix, switchBlinnPhongShading, 
-         deerPos, sunDir, sunIntensity, lighting);
+   draw_shader_.Draw(shadow_map_fbo_, 
+                     water_.fbo(), 
+                     deferred_diffuse_fbo_,
+                     deferred_position_fbo_,
+                     deferred_normal_fbo_,
+                     culledDrawables, viewMatrix, switchBlinnPhongShading, 
+                     deerPos, sunDir, sunIntensity, lighting);
 }
 
 void Game::mainLoop() {

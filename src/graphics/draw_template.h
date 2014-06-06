@@ -14,7 +14,7 @@ struct Bone;
 enum class EffectType {
    CASTS_SHADOW,
    CASTS_REFLECTION,
-   IS_GOD_RAY
+   IS_GOD_RAY,
 };
 
 typedef std::set<EffectType> EffectSet;

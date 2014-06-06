@@ -18,7 +18,7 @@ const int BUSH_RUSTLE_MAX = 450;
 
 BushGenerator::BushGenerator(const Mesh& mesh, const GroundPlane& ground) : 
    draw_template_({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          mesh,
          Material(),
          Texture(TextureType::TREE, DIFFUSE_TEXTURE),

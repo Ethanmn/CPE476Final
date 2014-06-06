@@ -102,6 +102,7 @@ void DrawShader::SendTexture(Shader& shader, const Drawable& drawable) {
    }
 }
 
+
 void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
       const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
       int lightning) {
@@ -114,8 +115,8 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
 
 
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
-         {
+      if (drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
+         { 
          // Per-Drawable Texture Shader Setup
             SendHeightMap(shader, drawable);
             SendBones(shader, drawable);
@@ -130,7 +131,9 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
 
 void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, 
                       const FrameBufferObject& reflection_fbo, 
-                      const DeferredFrameBuffer& deferred_fbo_,
+                      const FrameBufferObject& deferred_diffuse_fbo_,
+                      const FrameBufferObject& deferred_position_fbo_,
+                      const FrameBufferObject& deferred_normal_fbo_,
                       const vector<CulledDrawable>& culledDrawables,
                       const glm::mat4& viewMatrix, 
                       int useBlinnPhong, 
@@ -142,6 +145,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
       shader.use();
+      int setOutputType = -1;
       switch (shader_pair.first) {
          case ShaderType::SHADOW:
             if(printCurrentShaderName)
@@ -157,6 +161,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   glClear(GL_DEPTH_BUFFER_BIT);
                }
                {
+                  glPolygonMode(GL_FRONT, GL_FILL);
                   for (auto& drawable : shadow_drawables) {
                      SendBones(shader, Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
@@ -166,6 +171,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                            if (!instance.cullFlag.count(CullType::SHADOW_CULLING)) {
                               shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, 
                                     view_projection * instance.instance.model_transform);
+                              shader.sendUniform(Uniform::MODEL, uniforms, instance.instance.model_transform);
                               shader.drawMesh(drawable.draw_template.mesh);
                            }
                         }
@@ -219,19 +225,39 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   (*drawable.draw_template.texture).enable(texture_cache_);
                   shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * instance.instance.model_transform);
                   shader.drawMesh(drawable.draw_template.mesh);
-               }
+                }
                }
             }
             break;
 
+         case ShaderType::DEF_DIFFUSE:
+            if(setOutputType < 0) {
+               setOutputType = 0;
+               deferred_diffuse_fbo_.bind();
+
+               shadow_map_fbo_.texture().enable(texture_cache_);
+               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
+            }
+         case ShaderType::DEF_POSITION:
+            if(setOutputType < 0) {
+               setOutputType = 1;
+               deferred_position_fbo_.bind();
+               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
+            }
+         case ShaderType::DEF_NORMAL:
+            if(setOutputType < 0) {
+               setOutputType = 2;
+               deferred_normal_fbo_.bind();
+               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
+            }
          case ShaderType::DEFERRED:
             if(printCurrentShaderName)
                printf("Deferred\n");
-            //deferred_fbo_.bind();
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+            shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, setOutputType); 
 
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
@@ -241,26 +267,14 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
                   SendTexture(shader, newDrawable);
-                  drawModelTransforms(shader, newDrawable, viewMatrix, false, uniforms);
-               } 
-            }
-            break;
-
-         case ShaderType::TEXTURE:
-            if(printCurrentShaderName)
-               printf("Texture\n");
-            {
-               std::vector<Drawable> drawables;
-               for (auto& drawable : culledDrawables) {
-                  drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING));
+                  drawModelTransforms(shader, newDrawable, viewMatrix, true, uniforms);
                }
-               shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
-               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
-               drawTextureShader(shader, drawables, viewMatrix, sunDir, sunIntensity, 
-                  lightning);
             }
-            break;
 
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            break;
+         
+         
          case ShaderType::WATER:
             if(printCurrentShaderName)
                printf("Water\n");
@@ -277,25 +291,53 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
             }
             break;
+
+
          case ShaderType::FINAL_LIGHT_PASS:
-            /* 
-            int halfWidth = kScreenWidth / 2, halfHeight = kScreenHeight / 2;
-            if(printCurrentShaderName)
-               printf("Final Light Pass\n");
-            
+            glm::mat4 curView;
+            glm::mat4 lookAt = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) );
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            SendSun(shader, uniforms, sunIntensity, sunDir);
-            shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, 
-                  uniforms, TextureSlot::DIFFUSE_TEXTURE);
+            deferred_diffuse_fbo_.texture().enable(texture_cache_);
+            shader.sendUniform(Uniform::FINAL_PASS_DIFFUSE_TEXTURE, uniforms, deferred_diffuse_fbo_.texture_slot());
+            deferred_position_fbo_.texture().enable(texture_cache_);
+            shader.sendUniform(Uniform::FINAL_PASS_POSITION_TEXTURE, uniforms, deferred_position_fbo_.texture_slot());
+            deferred_normal_fbo_.texture().enable(texture_cache_);
+            shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_normal_fbo_.texture_slot());
 
-            shader.sendUniform(Uniform::FINAL_PASS_POSITION_TEXTURE, 
-                  uniforms, TextureSlot::DEFERRED_POS_TEXTURE;
-            shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE 
-               uniforms, TextureSlot::DEFERRED_NORM_TEXTURE;
-            */
-            break;
+            SendSun(shader, uniforms, sunIntensity, sunDir);
+            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+            shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
+            shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
+            shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
+
+            for (auto& drawable : culledDrawables) {
+               Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
+
+               if(newDrawable.draw_template.shader_type == ShaderType::FINAL_LIGHT_PASS) {
+
+                  if (drawable.draw_template.effects.count(EffectType::IS_GOD_RAY)) {
+                     shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, 1);
+                     curView = viewMatrix;
+                  }
+                  else {
+                     shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, 0);
+                     curView = lookAt;
+                  }
+
+                  for(const auto& instance : drawable.draw_instances) {
+                  if (drawable.draw_template.effects.count(EffectType::IS_GOD_RAY)) {
+                     glm::vec3 ray_pos = glm::vec3(instance.instance.model_transform * glm::vec4(0,0,0,1));
+                     shader.sendUniform(Uniform::GOD_RAY_CENTER, uniforms, ray_pos);
+                  }
+                  shader.sendUniform(Uniform::MODEL, uniforms, instance.instance.model_transform);
+                  shader.sendUniform(Uniform::VIEW, uniforms, curView);
+                  shader.drawMesh(drawable.draw_template.mesh);
+                  }
+               }
+            }
+         break;
       }
    }
 }

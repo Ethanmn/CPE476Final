@@ -3,7 +3,7 @@
 
 Dust::Dust(const Mesh& mesh, const glm::vec3& origin, int numParticles) : 
       draw_template_({
-            ShaderType::TEXTURE,
+            ShaderType::DEFERRED,
             mesh,
             Material(),
             boost::none,

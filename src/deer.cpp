@@ -27,12 +27,12 @@ const float kStepTime = 300;
 
 Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position) :
    draw_template_({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          walk_mesh,
          Material(),
          Texture(TextureType::DEER, DIFFUSE_TEXTURE),
          boost::none,
-         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::IS_GOD_RAY})
          }),
    eating_(false),
    walk_mesh_(walk_mesh),

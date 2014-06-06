@@ -20,7 +20,7 @@ namespace {
 
 RainSystem::RainSystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) : 
             draw_template_({
-                  ShaderType::TEXTURE,
+                  ShaderType::DEFERRED,
                   mesh, 
                   Material(),
                   Texture(TextureType::RAIN, DIFFUSE_TEXTURE),

@@ -10,14 +10,14 @@ const float FLOWER_SCALE_MAX = 1.3 * 100;
 FlowerGenerator::FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten,
       TextureType texture_type, const GroundPlane& ground) : 
    draw_template_({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          mesh,
          Material(),
          Texture(texture_type, DIFFUSE_TEXTURE),
          boost::none,
          EffectSet({EffectType::CASTS_SHADOW}) }),
    draw_template_eaten_({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          mesh_eaten, 
          Material(),
          Texture(texture_type, DIFFUSE_TEXTURE), 

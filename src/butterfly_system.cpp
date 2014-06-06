@@ -9,7 +9,7 @@
 
 ButterflySystem::ButterflySystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles) :
             draw_template_({
-                  ShaderType::TEXTURE,
+                  ShaderType::DEFERRED,
                   mesh, 
                   Material(),
                   Texture(texture_type, DIFFUSE_TEXTURE),

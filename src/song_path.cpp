@@ -21,7 +21,7 @@ SongPath::SongPath(irrklang::ISound* song, const Mesh& mesh) :
    song_stones_(create_path()),
    song_(song),
    draw_template_({
-               ShaderType::TEXTURE,
+               ShaderType::DEFERRED,
                mesh,
                Material(glm::vec3(1, 0, 0)),
                Texture(TextureType::GEM, DIFFUSE_TEXTURE),
