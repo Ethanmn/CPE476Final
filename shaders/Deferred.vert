@@ -32,9 +32,6 @@ attribute float aBoneID4;
 attribute float aBoneWeight4;
 #endif
 
-uniform mat4 uShadowMap;
-varying vec4 vShadow;
-
 varying vec4 vPosition;
 varying vec3 vNormal;
 varying vec2 vTexCoord;
@@ -47,12 +44,12 @@ void main() {
    mat4 bone = calculateBones();
    vec4 heightColor = calculateHeight();
 
-   vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
+   vec4 pos = bone * vec4(heightColor.xyz + aPosition, 1.0);
+   vPosition = uModelMatrix * pos;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
-   vShadow = uShadowMap * uModelMatrix * vec4(aPosition, 1.0);
 
-   gl_Position = uProjectionMatrix * vPosition;
+   gl_Position = uProjectionMatrix * uModelViewMatrix * pos;
 
 }
 

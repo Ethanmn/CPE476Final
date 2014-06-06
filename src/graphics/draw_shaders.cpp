@@ -158,6 +158,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   glClear(GL_DEPTH_BUFFER_BIT);
                }
                {
+                  glPolygonMode(GL_FRONT, GL_FILL);
                   for (auto& drawable : shadow_drawables) {
                      SendBones(shader, Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
@@ -167,6 +168,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                            if (!mt.cullFlag.count(CullType::SHADOW_CULLING)) {
                               shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, 
                                     view_projection * mt.model);
+                              shader.sendUniform(Uniform::MODEL, uniforms, mt.model);
                               shader.drawMesh(drawable.draw_template.mesh);
                            }
                         }
@@ -230,21 +232,23 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
          case ShaderType::DEF_DIFFUSE:
             if(setOutputType < 0) {
                setOutputType = 0;
-               SendInverseShadow(shader, uniforms, sunDir, deerPos);
-               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
                deferred_diffuse_fbo_.bind();
+
+               //shadow_map_fbo_.texture().enable(texture_cache_);
+               //SendInverseShadow(shader, uniforms, sunDir, deerPos);
+               //SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
             }
          case ShaderType::DEF_POSITION:
             if(setOutputType < 0) {
                setOutputType = 1;
-               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
                deferred_position_fbo_.bind();
+               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
             }
          case ShaderType::DEF_NORMAL:
             if(setOutputType < 0) {
                setOutputType = 2;
-               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
                deferred_normal_fbo_.bind();
+               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
             }
          case ShaderType::DEFERRED:
             if(printCurrentShaderName)
@@ -302,6 +306,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
             }
             break;
+
+
          case ShaderType::FINAL_LIGHT_PASS:
             glm::mat4 curView;
             glm::mat4 lookAt = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) );
@@ -320,6 +326,10 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
             shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
+
+            shadow_map_fbo_.texture().enable(texture_cache_);
+            SendInverseShadow(shader, uniforms, sunDir, deerPos);
+            SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
 
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);

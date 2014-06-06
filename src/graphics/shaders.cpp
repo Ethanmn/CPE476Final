@@ -85,9 +85,9 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::BONES,
    Uniform::HAS_BONES,
 
-   Uniform::HAS_SHADOWS,
-   Uniform::SHADOW_MAP,
-   Uniform::SHADOW_MAP_TEXTURE,
+   //Uniform::HAS_SHADOWS,
+   //Uniform::SHADOW_MAP,
+   //Uniform::SHADOW_MAP_TEXTURE,
 };
 
 const std::vector<Attribute> kShadowAttrs{
@@ -111,6 +111,7 @@ const std::vector<Attribute> kShadowAttrs{
 };
 const std::vector<Uniform> kShadowUniforms{
    Uniform::MODEL_VIEW_PROJECTION,
+   Uniform::MODEL,
    Uniform::PROJECTION,
 
    Uniform::HAS_TEXTURE,
@@ -163,6 +164,10 @@ const std::vector<Uniform> kFinalPassUniforms{
    Uniform::FINAL_PASS_POSITION_TEXTURE,
    Uniform::FINAL_PASS_DIFFUSE_TEXTURE,
    Uniform::FINAL_PASS_NORMAL_TEXTURE,
+
+   Uniform::HAS_SHADOWS,
+   Uniform::SHADOW_MAP,
+   Uniform::SHADOW_MAP_TEXTURE,
 };
 
 Shaders::Shaders() {
