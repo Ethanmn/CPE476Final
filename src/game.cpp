@@ -45,6 +45,9 @@ Game::Game() :
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH)),
          ground_),
+   rockGen(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::ROCK)),
+         ground_),
 
    /* temporary solution to two flower meshes and textures */
    daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -116,6 +119,9 @@ Game::Game() :
    }
    for (auto& bush : bushGen.getBushes()) {
       objects.push_back(&bush);
+   }
+   for (auto& rock : rockGen.getRocks()) {
+      objects.push_back(&rock);
    }
    for (auto& flower : daisyGen.getFlowers()) {
       objects.push_back(&flower);
@@ -327,6 +333,7 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableMoon());
 
    drawables.push_back(bushGen.drawable());
+   drawables.push_back(rockGen.drawable());
    drawables.push_back(treeGen.drawable());
    std::vector<Drawable> leaf_drawables = treeGen.leafDrawable();
    for (auto& leafDrawable : leaf_drawables) {

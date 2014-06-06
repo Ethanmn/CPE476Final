@@ -29,6 +29,7 @@
 #include "Skybox.h"
 #include "Camera.h"
 #include "pinecone.h"
+#include "RockGenerator.h"
 
 struct Game {
    Game();
@@ -48,6 +49,7 @@ struct Game {
 
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
+   RockGenerator rockGen;
 
    /*temporary solution for two textures*/
    FlowerGenerator daisyGen;
