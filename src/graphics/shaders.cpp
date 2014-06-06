@@ -1,10 +1,6 @@
 #include "graphics/shaders.h"
 #include <assert.h>
 
-namespace {
-   bool runDeferred = true;
-}
-
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
    Attribute::TEX_COORD,
@@ -169,27 +165,18 @@ Shaders::Shaders() {
             Shader("Shadow", kShadowAttrs, kShadowUniforms))); 
       shaders_.insert(std::make_pair(ShaderType::DEF_DIFFUSE,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
-
       shaders_.insert(std::make_pair(ShaderType::DEF_POSITION,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
       shaders_.insert(std::make_pair(ShaderType::DEF_NORMAL,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
       shaders_.insert(std::make_pair(ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));  
-
-   if(runDeferred) {
       shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
-   }
-   else {
-      shaders_.insert(std::make_pair(ShaderType::REFLECTION,
-            Shader("Texture", kTextureAttrs, kTextureUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::WATER,
-            Shader("Water", kWaterAttrs, kWaterUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::SKYBOX,
-            Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
-   }
-
+      //shaders_.insert(std::make_pair(ShaderType::REFLECTION,
+            //Shader("Texture", kTextureAttrs, kTextureUniforms)));
+      //shaders_.insert(std::make_pair(ShaderType::WATER,
+            //Shader("Water", kWaterAttrs, kWaterUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {
