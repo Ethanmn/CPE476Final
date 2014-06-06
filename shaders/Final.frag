@@ -2,9 +2,9 @@ uniform sampler2D uDiffuseTexture;
 uniform sampler2D uPositionTexture;
 uniform sampler2D uNormalTexture;
 
-uniform sampler2D uShadowMapTexture;
-uniform int uHasShadows;
-uniform mat4 uShadowMap;
+/*uniform sampler2D uShadowMapTexture;*/
+/*uniform int uHasShadows;*/
+/*uniform mat4 uShadowMap;*/
 
 uniform mat4 uViewMatrix;
 uniform float uScreenWidth;
@@ -15,6 +15,7 @@ uniform float uSunIntensity;
 uniform int uIsGodRay;
 uniform int uLightning;
 
+varying vec4 vPosition;
 varying vec2 vTexCoord;
 varying float vGodRayIntensity;
 
@@ -43,9 +44,8 @@ void main() {
       color = calculateDiffuse(pixelOnScreen, 1);
 
    gl_FragColor = color + calculateAmbient(pixelOnScreen, AmbientAmount);
-   gl_FragColor = vec4(vec3(calculateShadowAmount(depthOfImage.x, pixelOnScreen)), 1.0);
 
-   gl_FragColor = vec4(texture2D(uShadowMapTexture, pixelOnScreen).x);
+//   gl_FragColor = vec4(texture2D(uShadowMapTexture, pixelOnScreen).x);
 }
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun) {
@@ -88,10 +88,13 @@ vec4 checkIfLightning(vec4 Diffuse) {
 
 
 float calculateShadowAmount(float depthOfImage, vec2 texCoord) {
-   float bias = 0.005;
-   vec3 directionalColor = vec3(0.8 * 0.3/*sunintensity*/);
    float applyShadow = 1.0;
+   
+   /*
+   float bias = 0.005;
+   vec3 directionalColor = vec3(0.8 * 0.3);
    vec4 shadowMapTexColor = vec4(1.0);
+   vec2 texCoord = uShadowMap * 
 
    if(uHasShadows != 0) {
       shadowMapTexColor = texture2D(uShadowMapTexture, texCoord);
@@ -102,6 +105,7 @@ float calculateShadowAmount(float depthOfImage, vec2 texCoord) {
       applyShadow = 0.7;
    
    applyShadow = shadowMapTexColor.x;
+   */
 
    return applyShadow;
 }

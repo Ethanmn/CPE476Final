@@ -12,7 +12,7 @@ void main() {
 
 void checkIfAlpha() { 
    vec4 tex = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(0, 0, 0, 1);
-   if (tex.a < 0.7) {
+   if (tex.a < 0.8) {
      /* this alpha value should match the alpha check in texture */
      discard;
    }
