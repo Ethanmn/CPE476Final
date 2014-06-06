@@ -51,10 +51,15 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
       const glm::mat4& view, bool needsModel, const UniformLocationMap& uniforms) {
    for(const auto& instance : drawable.draw_instances) {
       glPolygonMode(GL_FRONT, GL_FILL);
-      if (instance.material) {
-         //std::clog << "sending material" << std::endl;
+
+      /* Note: only DEFERRED is usuing VARY_MATERIAL. */
+      if (instance.material && drawable.draw_template.effects.count(EffectType::VARY_MATERIAL)) {
+         shader.sendUniform(Uniform::VARY_MATERIAL, uniforms, 1);
          instance.material->sendMaterial(shader, uniforms);
       }
+      else
+         shader.sendUniform(Uniform::VARY_MATERIAL, uniforms, 0);
+
       shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * instance.model_transform);
       shader.sendUniform(Uniform::NORMAL, uniforms,
                glm::transpose(glm::inverse(view * instance.model_transform)));

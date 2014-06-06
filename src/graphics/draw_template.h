@@ -14,6 +14,7 @@ struct Bone;
 enum class EffectType {
    CASTS_SHADOW,
    CASTS_REFLECTION,
+   VARY_MATERIAL,
    IS_GOD_RAY,
 };
 

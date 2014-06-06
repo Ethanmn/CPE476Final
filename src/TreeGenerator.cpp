@@ -17,7 +17,7 @@ TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
          Material(),
          Texture(TextureType::TREE, DIFFUSE_TEXTURE),
          boost::none,
-         EffectSet({EffectType::CASTS_REFLECTION})
+         EffectSet({EffectType::CASTS_REFLECTION, EffectType::VARY_MATERIAL})
          })
 {
    draw_template_.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));

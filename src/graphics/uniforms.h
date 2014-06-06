@@ -31,6 +31,7 @@ enum class Uniform {
    SCREEN_HEIGHT,
    USE_BLINN_PHONG,
    OUTPUT_SHADER_TYPE,
+   VARY_MATERIAL,
 
    SUN_DIR,
    SUN_INTENSITY,
@@ -109,6 +110,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uGodRayRadius";
       case Uniform::OUTPUT_SHADER_TYPE:
          return "uOutputShaderType";
+      case Uniform::VARY_MATERIAL:
+         return "uVaryMaterial";
 
       case Uniform::FINAL_PASS_POSITION_TEXTURE:
          return "uPositionTexture";

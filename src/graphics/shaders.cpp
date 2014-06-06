@@ -72,6 +72,7 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::HAS_TEXTURE,
    Uniform::HEIGHT_MAP_SCALE,
    Uniform::TEXTURE,
+   Uniform::VARY_MATERIAL,
    
    Uniform::HEIGHT_MAP,
    Uniform::HAS_HEIGHT_MAP,
