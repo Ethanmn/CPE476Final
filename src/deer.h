@@ -45,6 +45,7 @@ struct Deer {
    bool is_eating() const { return eating_; }
 
    bool isMoving();
+
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
    BoundingRectangle head_bounding_rectangle() const {
       BoundingRectangle head(bounding_rectangle_);

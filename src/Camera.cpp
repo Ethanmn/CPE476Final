@@ -48,7 +48,7 @@ void Camera::step(float dT, const glm::vec3& target_pos, const glm::vec3& target
          break;
       case Position::LEFT:
          camera_target = target_pos -
-            kDistanceFromDeer/2.f * glm::rotateY(target_facing, -100.f) +
+            kDistanceFromDeer/1.5f * glm::rotateY(target_facing, -100.f) +
             glm::vec3(0, kLookAtHeight / 2.f, 0);
          break;
    }
