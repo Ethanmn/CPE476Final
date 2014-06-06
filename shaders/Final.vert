@@ -20,7 +20,7 @@ void main() {
 
    if(uIsGodRay == 1) {
       pixel_pos.z = 0.0;
-      vGodRayIntensity = 1.0 + distance(vec3(vPosition), uGodRayCenter)/60.0;
+      vGodRayIntensity = 1.0 + distance(vec3(vPosition), uGodRayCenter)/40.0;
    }
 
    gl_Position = pixel_pos;
