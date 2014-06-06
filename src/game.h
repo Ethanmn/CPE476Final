@@ -28,6 +28,8 @@
 #include "god_rays.h"
 #include "Skybox.h"
 #include "Camera.h"
+#include "pinecone.h"
+#include "RockGenerator.h"
 
 struct Game {
    Game();
@@ -47,6 +49,7 @@ struct Game {
 
    TreeGenerator treeGen; //May want this in a world generator class later
    BushGenerator bushGen;
+   RockGenerator rockGen;
 
    /*temporary solution for two textures*/
    FlowerGenerator daisyGen;
@@ -70,10 +73,16 @@ struct Game {
 
    Camera deerCam;
 
-   DeferredFrameBuffer deferred_fbo_;
+   FrameBufferObject deferred_diffuse_fbo_;
+   FrameBufferObject deferred_position_fbo_;
+   FrameBufferObject deferred_normal_fbo_;
+
    FrameBufferObject shadow_map_fbo_;
    Water water_;
    SongPath song_path_;
+   Mesh screen_plane_mesh_;
+
+   Pinecone pinecone_;
 
    void step(units::MS dt);
    void draw();

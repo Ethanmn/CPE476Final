@@ -12,9 +12,9 @@ Frustum::Plane::Plane(const glm::vec4& coefficients) :
 
 std::vector<CulledDrawable> Frustum::cullShadowDrawables(std::vector<CulledDrawable> drawables) {
    for (auto& drawable : drawables) {
-      for (auto& transform : drawable.model_transforms) {
-         if (testSphere(BoundingSphere(drawable.draw_template, transform.model)) == Frustum::TestResult::OUTSIDE) {
-            transform.cullFlag.insert(CullType::SHADOW_CULLING);
+      for (auto& instance : drawable.draw_instances) {
+         if (testSphere(BoundingSphere(drawable.draw_template, instance.instance.model_transform)) == Frustum::TestResult::OUTSIDE) {
+            instance.cullFlag.insert(CullType::SHADOW_CULLING);
          }
       }
    }
@@ -27,15 +27,15 @@ std::vector<CulledDrawable> Frustum::cullDrawables(const std::vector<Drawable>& 
    std::vector<CulledDrawable> culledDrawables;
    for (auto& drawable : drawables) {
       CulledDrawable culledDrawable;
-      for (auto& transform : drawable.model_transforms) {
-         CulledTransform culledTransform;
-         culledTransform.model = transform;
+      for (auto& instance : drawable.draw_instances) {
+         CulledDrawInstance culledTransform;
+         culledTransform.instance = instance;
 
-         if (testSphere(BoundingSphere(drawable.draw_template, transform)) == Frustum::TestResult::OUTSIDE) {
+         if (testSphere(BoundingSphere(drawable.draw_template, instance.model_transform)) == Frustum::TestResult::OUTSIDE) {
             culledTransform.cullFlag.insert(CullType::VIEW_CULLING);
             culledObject++;
          }
-         culledDrawable.model_transforms.push_back(culledTransform);
+         culledDrawable.draw_instances.push_back(culledTransform);
       }
       culledDrawable.draw_template = drawable.draw_template;
       culledDrawables.push_back(culledDrawable);

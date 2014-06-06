@@ -15,13 +15,14 @@ struct DayNightInteraction {
    DayNightInteraction(const Mesh& mesh, const GroundPlane& ground) :
       moon_drawable_({
             DrawTemplate({
-               ShaderType::TEXTURE,
+               ShaderType::DEFERRED,
                mesh,
+               Material(),
                Texture(TextureType::MOON_STONE, DIFFUSE_TEXTURE),
                boost::none,
                EffectSet({EffectType::CASTS_SHADOW})
                }),
-            std::vector<glm::mat4>({
+            std::vector<DrawInstance>({
                glm::translate(
                   glm::mat4(),
                   glm::vec3(-30.0f, ground.heightAt(glm::vec3(-30, 0, -30)) + 3, -30.0f))
@@ -29,12 +30,14 @@ struct DayNightInteraction {
             }),
       sun_drawable_({
             DrawTemplate({
-               ShaderType::TEXTURE, mesh,
+               ShaderType::DEFERRED,
+               mesh,
+               Material(),
                Texture(TextureType::SUN_STONE, DIFFUSE_TEXTURE),
                boost::none,
                EffectSet({EffectType::CASTS_SHADOW})
                }),
-            std::vector<glm::mat4>({
+            std::vector<DrawInstance>({
                glm::translate(
                   glm::mat4(),
                   glm::vec3(20.0f, ground.heightAt(glm::vec3(20, 0, 20)) + 3, 20.0f))

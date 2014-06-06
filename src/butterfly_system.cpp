@@ -8,9 +8,13 @@
 #define Y_MAX 0.00007f
 
 ButterflySystem::ButterflySystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles) :
-            draw_template_({ShaderType::TEXTURE, mesh, 
-                  Texture(texture_type, DIFFUSE_TEXTURE), boost::none,
-                  EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION})
+            draw_template_({
+                  ShaderType::DEFERRED,
+                  mesh, 
+                  Material(),
+                  Texture(texture_type, DIFFUSE_TEXTURE),
+                  boost::none,
+                  EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::IS_FIREFLY, EffectType::IS_GOD_RAY})
                   }),
             origin_(origin),
             scale_(0.3f),
@@ -48,7 +52,7 @@ void ButterflySystem::step(units::MS dt) {
 }
 
 Drawable ButterflySystem::drawable() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    for (auto& particle : particles_) 
       model_matrices.push_back(particle.calculateModel());
    return Drawable({draw_template_, model_matrices});

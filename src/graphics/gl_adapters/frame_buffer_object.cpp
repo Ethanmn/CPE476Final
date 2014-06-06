@@ -15,8 +15,8 @@ GLuint FrameBufferObject::initialize(unsigned int width, unsigned int height, FB
                height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
          break;
       case FBOType::COLOR_WITH_DEPTH:
-         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width,
-               height, 0, GL_RGB, GL_FLOAT, NULL);
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width,
+               height, 0, GL_RGBA, GL_FLOAT, NULL);
          break;
    }
 

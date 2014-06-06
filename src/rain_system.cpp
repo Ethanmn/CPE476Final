@@ -19,8 +19,13 @@ namespace {
 
 
 RainSystem::RainSystem(const Mesh& mesh, const glm::vec3& origin, int numParticles) : 
-            draw_template_({ShaderType::TEXTURE, mesh, 
-                  Texture(TextureType::RAIN, DIFFUSE_TEXTURE), boost::none, EffectSet() }),
+            draw_template_({
+                  ShaderType::DEFERRED,
+                  mesh, 
+                  Material(),
+                  Texture(TextureType::RAIN, DIFFUSE_TEXTURE),
+                  boost::none,
+                  EffectSet() }),
             origin_(origin),
             scale_(0.3f),
             velocity_(glm::vec3(0.0f, 0.0f, 0.0f)),
@@ -52,7 +57,7 @@ void RainSystem::reset() {
 }
 
 Drawable RainSystem::drawable() const {
-   std::vector<glm::mat4> model_matrices;
+   std::vector<DrawInstance> model_matrices;
    for (auto& particle : particles_) 
       model_matrices.push_back(particle.calculateModel());
    return Drawable({draw_template_, model_matrices});

@@ -28,12 +28,16 @@ struct BoundingRectangle {
    bool collidesWith(const BoundingRectangle& other) const;
 
    void set_position(const glm::vec2& center) { center_ = center; }
+   void set_dimensions(const glm::vec2& dims) { dimensions_ = dims; }
    void set_rotation(const float y_rotation) { y_rotation_ = y_rotation; }
-   glm::vec2 getCenter();
-   glm::vec2 getDimensions();
+
+   glm::vec2 getCenter() const { return center_; }
+   glm::vec2 getDimensions() const { return dimensions_; }
+   float getRotation() const { return y_rotation_; }
 
    static DrawTemplate draw_template();
    glm::mat4 model_matrix() const;
+   glm::mat4 model_matrix_screen() const;
 
   private:
    std::vector<glm::vec2> corners() const;
