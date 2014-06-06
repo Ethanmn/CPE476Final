@@ -14,8 +14,12 @@ struct DrawShader {
       projectionMatrix(glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar)) {}
 
    void Draw(const FrameBufferObject& shadow_map_fbo_, 
-            const FrameBufferObject& reflection_fbo, 
-            const DeferredFrameBuffer& deferred_fbo_,
+            const FrameBufferObject& reflection_fbo,
+
+            const FrameBufferObject& deferred_diffuse_fbo_,
+            const FrameBufferObject& deferred_position_fbo_,
+            const FrameBufferObject& deferred_normal_fbo_,
+
             const std::vector<CulledDrawable>& culledDrawables,
             const glm::mat4& viewMatrix, 
             int useBlinnPhong, 
@@ -35,6 +39,10 @@ struct DrawShader {
             float sunIntensity, 
             int lightning);
 
+   void SendDeferred(Shader& shader, 
+            const UniformLocationMap& uniforms,
+            const DeferredFrameBuffer& deferred_fbo_);
+
    void sendOutputShaderType(ShaderType shaderT, Shader& shader);
 
    void SendHeightMap(Shader& shader, const Drawable& drawable);
@@ -43,7 +51,8 @@ struct DrawShader {
    void drawModelTransforms(Shader& shader, 
             const Drawable& drawable,
             const glm::mat4& view,
-            bool needsModel);
+            bool needsModel,
+            const UniformLocationMap& uniforms);
 
    Shaders shaders;
    UniformLocationMap uniforms;

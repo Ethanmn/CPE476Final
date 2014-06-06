@@ -29,7 +29,7 @@ struct Tree : public GameObject {
    bool isBlocker();
    void performObjectHit(SoundEngine& sound_engine);
 
-   glm::mat4 calculateModel() const;
+   DrawInstance draw_instance() const;
 
    void step(units::MS dt);
 
@@ -46,6 +46,7 @@ struct Tree : public GameObject {
       float rotate_;
       units::MS elapsed_time_, rustle_time_;
       const units::MS kMaxRustleTime;
+      Material material_;
       glm::mat4 translate_scale_;
       glm::mat4 default_model_;
       MeshLoader mesh_loader_;

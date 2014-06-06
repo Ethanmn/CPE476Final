@@ -7,6 +7,7 @@
 #include <iostream>
 
 const int TREE_SCALE = 3;
+const int TREE_VARIATION_HEIGHT = 10;
 
 const int BOUNDING_SIZE = 4;
 const float BOUNDING_ERR_X = 0.15f;
@@ -15,14 +16,15 @@ const float BOUNDING_ERR_Z = 1.0f;
 Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& leaf) :
    bRect(BoundingRectangle(glm::vec2(position.x, position.z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
-   heightOffset(heightOffset),
    angleRot(angleRot),
+   heightOffset(heightOffset),
    leaf_system_(leaf, TextureType::LEAF,
               glm::vec3(position.x, position.y + 5.0f, position.z), 0),
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(200),
    kMaxRustleTime(200),
+   material_(glm::vec3((rand() % 360) / 360.f)),
    translate_scale_(
       glm::translate(
          glm::mat4(),
@@ -30,7 +32,7 @@ Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& l
       ) *
       glm::scale(
          glm::mat4(),
-         glm::vec3(TREE_SCALE) * glm::vec3(1, heightOffset, 1)
+         glm::vec3(TREE_SCALE + (rand() % 20)/20.0f) * glm::vec3(1, heightOffset, 1)
       )
    ),
    default_model_(
@@ -48,9 +50,9 @@ Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& l
 
 {} 
 
-glm::mat4 Tree::calculateModel() const {
+DrawInstance Tree::draw_instance() const {
    if (rustle_time_ >= kMaxRustleTime)
-      return default_model_;
+      return DrawInstance(default_model_, material_);
    const glm::mat4 rotate(glm::rotate(
             glm::rotate(
                glm::mat4(),
@@ -67,11 +69,7 @@ glm::mat4 Tree::calculateModel() const {
                glm::vec3(0, 1.0f, 0)
                ));
 
-   const glm::mat4 translateToCenter = glm::translate(
-            glm::mat4(),
-            glm::vec3(BOUNDING_ERR_X, 0.0f, BOUNDING_ERR_Z));
-
-   return glm::mat4(translate_scale_ * rotate2 * translateToCenter * rotate);
+   return DrawInstance(translate_scale_ * rotate2 * rotate, material_);
 }
 
 bool Tree::isBlocker() {

@@ -20,9 +20,15 @@ SongPath::SongPath(irrklang::ISound* song, const Mesh& mesh) :
    current_stone_(0),
    song_stones_(create_path()),
    song_(song),
-   mesh_(mesh)
+   draw_template_({
+               ShaderType::DEFERRED,
+               mesh,
+               Material(glm::vec3(1, 0, 0)),
+               Texture(TextureType::GEM, DIFFUSE_TEXTURE),
+               boost::none,
+               EffectSet(),
+            })
 {
-   mesh_.material.diffuse = glm::vec3(1, 0, 0);
 }
 
 glm::vec2 SongPath::CurrentStonePosition() {
@@ -51,9 +57,9 @@ void SongPath::reset() {
 
 void SongPath::step(units::MS dt, const BoundingRectangle& deer_rect) {
    if (!song_->getIsPaused()) {
-      mesh_.animation.step(dt);
-      if (mesh_.animation.is_finished()) {
-         mesh_.animation.reset();
+      draw_template_.mesh.animation.step(dt);
+      if (draw_template_.mesh.animation.is_finished()) {
+         draw_template_.mesh.animation.reset();
       }
    }
    if (!song_stones_[current_stone_].expired() &&

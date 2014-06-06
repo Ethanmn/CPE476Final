@@ -7,7 +7,7 @@
 #include "graphics/assimp/mesh_loader.h"
 #include "graphics/shader.h"
 #include "graphics/shaders.h"
-
+#include "globals.h"
 namespace {
    glm::vec2 vec2FromAngle(float y_rotation) {
       return glm::rotate(glm::vec2(1, 0), 360.0f - y_rotation);
@@ -19,14 +19,15 @@ boost::optional<Mesh> BoundingRectangle::bounding_mesh_ = boost::none;
 
 //static
 void BoundingRectangle::loadBoundingMesh(MeshLoader& mesh_loader, const AttributeLocationMap& locations) {
-   bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh("../models/box.dae"));
+   bounding_mesh_ = Mesh::fromAssimpMesh(locations, mesh_loader.loadMesh(MeshType::BOX));
 }
 
 //static
 DrawTemplate BoundingRectangle::draw_template() {
    return DrawTemplate({
-         ShaderType::TEXTURE,
+         ShaderType::DEFERRED,
          *bounding_mesh_,
+         Material(),
          boost::none,
          boost::none,
          EffectSet(),
@@ -53,6 +54,31 @@ glm::mat4 BoundingRectangle::model_matrix() const {
             glm::mat4(),
             glm::vec3(center_.x, 5.0f, center_.y)));
    return translate * rotate * scale * orient;
+}
+
+glm::mat4 BoundingRectangle::model_matrix_screen() const {
+   const auto orient(
+         glm::rotate(
+            glm::mat4(),
+            90.0f,
+            glm::vec3(1, 0, 0)));
+   const auto rotate(
+         glm::rotate(
+            glm::mat4(),
+            90.0f,
+            glm::vec3(0, 1, 0)));
+   const auto scale(
+         glm::scale(
+            glm::mat4(),
+            glm::vec3(
+            0.1f, 
+            2.0f,
+            2.7f)));
+   const auto translate(
+         glm::translate(
+            glm::mat4(),
+            glm::vec3(0.0f, 0.0f, 0.0f)));
+   return translate * scale * rotate * orient;
 }
 
 bool BoundingRectangle::collidesWith(const BoundingRectangle& other) const {

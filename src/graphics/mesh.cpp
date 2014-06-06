@@ -34,6 +34,5 @@ Mesh Mesh::fromAssimpMesh(AttributeLocationMap locations, const AssimpMesh& mesh
          mesh.max,
          mesh.bone_array,
          mesh.animation,
-         mesh.material,
    });
 }
