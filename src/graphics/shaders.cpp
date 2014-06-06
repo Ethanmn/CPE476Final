@@ -139,12 +139,14 @@ const std::vector<Uniform> kWaterUniforms{
 
 const std::vector<Attribute> kFinalPassAttrs{
    Attribute::VERTEX,
+   Attribute::NORMAL,
    Attribute::TEX_COORD
 };
 const std::vector<Uniform> kFinalPassUniforms{
    Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
+   Uniform::NORMAL,
 
    Uniform::IS_GOD_RAY,
    Uniform::IS_FIREFLY,

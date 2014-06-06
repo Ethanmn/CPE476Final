@@ -341,6 +341,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   }
                   shader.sendUniform(Uniform::MODEL, uniforms, instance.instance.model_transform);
                   shader.sendUniform(Uniform::VIEW, uniforms, curView);
+                  shader.sendUniform(Uniform::NORMAL, uniforms,
+                     glm::transpose(glm::inverse(curView * instance.instance.model_transform)));
                   shader.drawMesh(drawable.draw_template.mesh);
                   }
                }
