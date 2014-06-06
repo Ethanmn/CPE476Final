@@ -1,8 +1,8 @@
 uniform int uOutputShaderType;
 
-/*uniform sampler2D uShadowMapTexture;*/
-/*uniform int uHasShadows;*/
-/*uniform mat4 uShadowMap;*/
+uniform sampler2D uShadowMapTexture;
+uniform int uHasShadows;
+uniform mat4 uShadowMap;
 
 uniform int uHasTexture;
 uniform sampler2D uTexture;
@@ -41,6 +41,7 @@ void main() {
       color = vec4(vNormal, 1.0);
 
    gl_FragColor = color;
+   gl_FragColor = vec4(calculateShadowAmount());
 }
 
 vec4 calculateDiffuse() {
@@ -65,20 +66,20 @@ vec4 checkIfUnderWater(vec4 Diffuse, float ShadowAmount) {
 }
 
 float calculateShadowAmount() {
-   return 1.0;
-   /*float bias = 0.005;*/
-   /*vec3 directionalColor = vec3(0.8 * 0.3[>sunintensity<]);*/
-   /*float applyShadow = 1.0;*/
-   /*vec4 shadowMapTexColor = vec4(1.0);*/
-   /*vec2 texCoord = vec2(uShadowMap * vPosition);*/
-
-   /*if(uHasShadows != 0) {*/
-      /*shadowMapTexColor = texture2D(uShadowMapTexture, texCoord);*/
-      /*if(texCoord.x > 1.0 || texCoord.y > 1.0 || texCoord.x < 0.0 || texCoord.y < 0.0)*/
-         /*shadowMapTexColor.z = 1.0;*/
-   /*}*/
-   /*if(shadowMapTexColor.z <= gl_FragCoord.z - bias)*/
-      /*applyShadow = shadowMapTexColor.x;*/
+   float applyShadow = 1.0;
    
-   /*return applyShadow;*/
+   float bias = 0.005;
+   vec3 directionalColor = vec3(0.8 * 0.3);
+   vec4 shadowMapTexColor = vec4(1.0);
+   vec2 texCoord = vec2(uShadowMap * vPosition);
+
+   if(uHasShadows != 0) {
+      shadowMapTexColor = texture2D(uShadowMapTexture, texCoord);
+      if(texCoord.x > 1.0 || texCoord.y > 1.0 || texCoord.x < 0.0 || texCoord.y < 0.0)
+         shadowMapTexColor.z = 1.0;
+   }
+   if(shadowMapTexColor.z <= gl_FragCoord.z - bias)
+      applyShadow = shadowMapTexColor.z;
+   
+   return applyShadow;
 }

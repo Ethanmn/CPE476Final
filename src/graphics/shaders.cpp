@@ -85,9 +85,9 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::BONES,
    Uniform::HAS_BONES,
 
-   //Uniform::HAS_SHADOWS,
-   //Uniform::SHADOW_MAP,
-   //Uniform::SHADOW_MAP_TEXTURE,
+   Uniform::HAS_SHADOWS,
+   Uniform::SHADOW_MAP,
+   Uniform::SHADOW_MAP_TEXTURE,
 };
 
 const std::vector<Attribute> kShadowAttrs{
@@ -172,15 +172,16 @@ const std::vector<Uniform> kFinalPassUniforms{
 
 Shaders::Shaders() {
       shaders_.insert(std::make_pair(ShaderType::SHADOW, 
-            Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::SKYBOX,
-            Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));      
+            Shader("Shadow", kShadowAttrs, kShadowUniforms))); 
       shaders_.insert(std::make_pair(ShaderType::DEF_DIFFUSE,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+/*
       shaders_.insert(std::make_pair(ShaderType::DEF_POSITION,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
       shaders_.insert(std::make_pair(ShaderType::DEF_NORMAL,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+      shaders_.insert(std::make_pair(ShaderType::SKYBOX,
+            Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));  
 
    if(runDeferred) {
       shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
@@ -196,6 +197,7 @@ Shaders::Shaders() {
       shaders_.insert(std::make_pair(ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
    }
+*/
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

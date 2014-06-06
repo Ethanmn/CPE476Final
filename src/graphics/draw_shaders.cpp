@@ -232,11 +232,11 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
          case ShaderType::DEF_DIFFUSE:
             if(setOutputType < 0) {
                setOutputType = 0;
-               deferred_diffuse_fbo_.bind();
+               //deferred_diffuse_fbo_.bind();
 
-               //shadow_map_fbo_.texture().enable(texture_cache_);
-               //SendInverseShadow(shader, uniforms, sunDir, deerPos);
-               //SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
+               shadow_map_fbo_.texture().enable(texture_cache_);
+               SendInverseShadow(shader, uniforms, sunDir, deerPos);
+               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
             }
          case ShaderType::DEF_POSITION:
             if(setOutputType < 0) {
@@ -327,9 +327,9 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
             shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
 
-            shadow_map_fbo_.texture().enable(texture_cache_);
-            SendInverseShadow(shader, uniforms, sunDir, deerPos);
-            SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
+            //shadow_map_fbo_.texture().enable(texture_cache_);
+            //SendInverseShadow(shader, uniforms, sunDir, deerPos);
+            //SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
 
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
