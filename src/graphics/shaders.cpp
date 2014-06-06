@@ -158,6 +158,7 @@ const std::vector<Uniform> kFinalPassUniforms{
    
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
+   Uniform::LIGHTNING,
 
    Uniform::FINAL_PASS_POSITION_TEXTURE,
    Uniform::FINAL_PASS_DIFFUSE_TEXTURE,

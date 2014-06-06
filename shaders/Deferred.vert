@@ -40,7 +40,23 @@ varying vec3 vNormal;
 varying vec2 vTexCoord;
 varying float vUnderWater;
 
+mat4 calculateBones();
+vec4 calculateHeight();
+
 void main() {
+   mat4 bone = calculateBones();
+   vec4 heightColor = calculateHeight();
+
+   vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
+   vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
+   vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
+   vShadow = uShadowMap * uModelMatrix * vec4(aPosition, 1.0);
+
+   gl_Position = uProjectionMatrix * vPosition;
+
+}
+
+mat4 calculateBones() {
    mat4 bone = mat4(1.0);
 #ifdef USE_BONES
    if (uHasBones != 0) {
@@ -61,21 +77,17 @@ void main() {
       }
    }
 #endif
+   return bone;
+}
 
+vec4 calculateHeight() {
    vec4 heightColor = vec4(0.0);
 #ifdef USE_HEIGHT_MAP
    float HEIGHT_MAP_SCALE = 3.0;
    if (uHasHeightMap != 0) {
       heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * uHeightMapScale;
    }
+   vUnderWater = heightColor.y < 0.0 ? heightColor.y * -0.5 : 0.0; 
 #endif
-
-   vPosition = uModelViewMatrix * bone * vec4(heightColor.xyz + aPosition, 1.0);
-   vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
-   vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
-   vShadow = uShadowMap * uModelMatrix * vec4(aPosition, 1.0);
-   vUnderWater = heightColor.y < 0.0 ? heightColor.y * -0.5 - 0.2 : 0.0; 
-   gl_Position = uProjectionMatrix * vPosition;
-
+   return heightColor;
 }
-

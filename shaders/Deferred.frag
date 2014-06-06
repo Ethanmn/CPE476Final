@@ -33,8 +33,9 @@ void main() {
    if(alpha == 0)
       discard;
 
-   if(uOutputShaderType == 0) 
+   if(uOutputShaderType == 0) { 
       color = checkIfUnderWater(calculateDiffuse(), calculateShadowAmount());
+   }
    else if(uOutputShaderType == 1)
       color = vec4(vec3(gl_FragCoord.z + 0.001), 1.0);
    else if(uOutputShaderType == 2)
@@ -69,18 +70,16 @@ float calculateShadowAmount() {
          shadowMapTexColor.z = 1.0;
    }
    if(shadowMapTexColor.z <= vShadow.z - bias)
-      applyShadow = 0.7;
+      applyShadow = 0.3;
 
    return applyShadow;
 }
 
 vec4 checkIfUnderWater(vec4 Diffuse, float ShadowAmount) {
    vec4 DiffuseWithWater = Diffuse;
-   if(vUnderWater > 0.0) {
-      DiffuseWithWater = vec4(0.0, 
-                              vUnderWater * DiffuseWithWater.y + ShadowAmount * 0.2, 
-                              vUnderWater * DiffuseWithWater.z + ShadowAmount * 0.4, 
-                              1.0);
-   }
+   if(vUnderWater > 0.0)
+      DiffuseWithWater = vec4(0.0, vUnderWater * DiffuseWithWater.y + ShadowAmount * 0.2, 
+                              vUnderWater * DiffuseWithWater.z + ShadowAmount * 0.4, 1.0);
    return DiffuseWithWater;
 }
+

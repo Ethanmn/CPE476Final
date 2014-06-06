@@ -9,13 +9,14 @@ uniform float uScreenHeight;
 uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uIsGodRay;
+uniform int uLightning;
 
 varying vec2 vTexCoord;
 varying float vGodRayIntensity;
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun);
 vec4 calculateAmbient(vec2 texCoord, float AmbientAmount);
-void CheckIfLightning();
+vec4 checkIfLightning(vec4 Diffuse);
 
 void main() {
    vec4 color;
@@ -56,7 +57,7 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
    if (dotNLDir < 0.0) dotNLDir = 0.15;
    
    Diffuse = vec4(vec3(sunInt), 1.0) * Diffuse.rgba * dotNLDir;
-   return Diffuse;
+   return checkIfLightning(Diffuse);
 }
 
 vec4 calculateAmbient(vec2 texCoord, float AmbientAmount) {
@@ -65,14 +66,15 @@ vec4 calculateAmbient(vec2 texCoord, float AmbientAmount) {
 }
 
 
-
-void CheckIfLightning() {
+vec4 checkIfLightning(vec4 Diffuse) {
    float LightningAmount;
-   if(0 != 0) {
+   if(uLightning != 0) {
       if(uSunIntensity > 0.5)
-         LightningAmount = 2.0;
+         LightningAmount = 3.0;
       else
-         LightningAmount = 4.0;
-      gl_FragColor = vec4(gl_FragColor.rgb * LightningAmount, 1.0);
+         LightningAmount = 6.0;
+      Diffuse = vec4(Diffuse.rgb * LightningAmount, 1.0);
    }
+   return Diffuse;
 }
+

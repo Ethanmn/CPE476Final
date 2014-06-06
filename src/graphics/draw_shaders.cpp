@@ -319,6 +319,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
             shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
+            shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
 
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);

@@ -35,8 +35,6 @@ vec3 calculateAmbient(float ambientAmount);
 void CheckIfUnderWater(float ShadowAmount);
 void CheckIfLightning();
 
-
-
 void main() {
    vec3 color;
    vec3 Specular, Ambient;
