@@ -49,8 +49,8 @@ vec4 calculateDiffuse() {
    vec4 Diffuse;
    
    if(uVaryMaterial == 1) {
-      Diffuse = uHasTexture != 0 ? vec4(vec3(0.6), 1.0) * texture2D(uTexture, vTexCoord) 
-                                   + vec4(0.4 * uMat.diffuse,1.0) : vec4(uMat.diffuse, 1.0);
+      Diffuse = uHasTexture != 0 ? vec4(vec3(0.7), 1.0) * texture2D(uTexture, vTexCoord) 
+                                   + vec4(0.3 * uMat.diffuse,1.0) : vec4(uMat.diffuse, 1.0);
    }
    else {
       Diffuse = uHasTexture != 0 ? texture2D(uTexture, vTexCoord) : vec4(uMat.diffuse, 1.0);

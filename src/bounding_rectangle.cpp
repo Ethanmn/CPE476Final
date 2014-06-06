@@ -119,11 +119,3 @@ std::vector<glm::vec2> BoundingRectangle::corners() const {
       center_ + glm::rotate(glm::vec2(-dimensions_.x / 2, -dimensions_.y / 2), 360.0f - y_rotation_),
    };
 }
-
-glm::vec2 BoundingRectangle::getCenter() {
-   return center_;
-}
-
-glm::vec2 BoundingRectangle::getDimensions() {
-   return dimensions_;
-}

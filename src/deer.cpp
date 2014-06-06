@@ -8,6 +8,7 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 #include "ground_plane.h"
+#include "Flower.h"
 
 namespace {
    glm::vec2 xz(const glm::vec3& vec) {
@@ -25,7 +26,8 @@ const float kTurnSpeed = 0.08f;
 
 const float kStepTime = 300;
 
-Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position) :
+Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh,
+      const Mesh& pounce_mesh, const glm::vec3& position) :
    draw_template_({
          ShaderType::DEFERRED,
          walk_mesh,
@@ -35,8 +37,11 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& positio
          EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::IS_GOD_RAY})
          }),
    eating_(false),
+   sleeping_(false),
    walk_mesh_(walk_mesh),
    eat_mesh_(eat_mesh),
+   sleep_mesh_(sleep_mesh),
+   pounce_mesh_(pounce_mesh),
    model_state_({
          position,
          glm::vec3(0, 0, 0),
@@ -107,6 +112,8 @@ glm::vec3 Deer::acceleration() const {
       const glm::vec2 forward(model_state_.last_facing / glm::length(model_state_.last_facing));
       if (walk_direction_ == WalkDirection::FORWARD) {
          acceleration = glm::vec3(forward.x, 0.0f, forward.y);
+      } else if (walk_direction_ == WalkDirection::BACKWARD) {
+         acceleration = glm::vec3(-forward.x, 0.0f, -forward.y);
       }
    }
    return acceleration;
@@ -139,17 +146,27 @@ glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) con
    return velocity;
 }
 
-void Deer::eat() {
-   eating_ = true;
-   draw_template_.mesh = eat_mesh_;
+void Deer::pounce(const glm::vec2& pounce_target) {
+   pounce_target_ = pounce_target;
+   draw_template_.mesh = pounce_mesh_;
+}
+
+void Deer::eat(Flower& flower) {
+   if (!sleeping_) {
+      eating_ = true;
+      draw_template_.mesh = eat_mesh_;
+      flower_ = flower;
+   }
 }
 
 glm::vec2 Deer::predictFacing(units::MS dt) const {
    float rotate = 0.f;
-   if (turn_direction_ == TurnDirection::LEFT) {
-      rotate -= kTurnSpeed * dt;
-   } else if (turn_direction_ == TurnDirection::RIGHT) {
-      rotate += kTurnSpeed * dt;
+   if (!sleeping_) {
+      if (turn_direction_ == TurnDirection::LEFT) {
+         rotate -= kTurnSpeed * dt;
+      } else if (turn_direction_ == TurnDirection::RIGHT) {
+         rotate += kTurnSpeed * dt;
+      }
    }
    return glm::rotate(model_state_.last_facing, rotate);
 }
@@ -157,12 +174,64 @@ glm::vec2 Deer::predictFacing(units::MS dt) const {
 void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
    model_state_.current_lean += (desired_lean_ - model_state_.current_lean) * 0.1f;
    model_state_.velocity = predictVelocity(dt, acceleration());
+
+   const auto offset = 60.f;
+   if ((model_state_.position.x > GroundPlane::GROUND_SCALE / 2 - offset && model_state_.velocity.x > 0.f) ||
+       (model_state_.position.x < -GroundPlane::GROUND_SCALE / 2 + offset && model_state_.velocity.x < 0.f) ||
+       (model_state_.position.z > GroundPlane::GROUND_SCALE / 2 - offset && model_state_.velocity.z > 0.f) ||
+       (model_state_.position.z < -GroundPlane::GROUND_SCALE / 2 + offset && model_state_.velocity.z < 0.f)) {
+      blocked = true;
+      if (!sleeping_)
+         draw_template_.mesh = sleep_mesh_;
+      sleeping_ = true;
+      if (!draw_template_.mesh.animation.past_percentage(38. / 69.))
+         draw_template_.mesh.animation.step(dt);
+   } else if (sleeping_) {
+      if ((model_state_.position.x > GroundPlane::GROUND_SCALE / 2 - offset) ||
+          (model_state_.position.x < -GroundPlane::GROUND_SCALE / 2 + offset) ||
+          (model_state_.position.z > GroundPlane::GROUND_SCALE / 2 - offset) ||
+          (model_state_.position.z < -GroundPlane::GROUND_SCALE / 2 + offset)) {
+         if (!draw_template_.mesh.animation.past_percentage(38. / 69.)) {
+            draw_template_.mesh.animation.step(dt);
+         }
+      } else if (!draw_template_.mesh.animation.is_finished()) {
+         blocked = true;
+         draw_template_.mesh.animation.step(dt);
+      } else {
+         draw_template_.mesh = walk_mesh_;
+         sleeping_ = false;
+         blocked = false;
+      }
+   }
+
    if (eating_) {
       draw_template_.mesh.animation.step(dt);
+      if (flower_ && draw_template_.mesh.animation.past_percentage(16. / 56.)) {
+         flower_->eat(sound_engine);
+      }
       if (draw_template_.mesh.animation.is_finished()) {
          eating_ = false;
          draw_template_.mesh = walk_mesh_;
       }
+      return;
+   } else if (pounce_target_) {
+      const auto target_facing = glm::normalize(*pounce_target_ - xz(model_state_.position));
+      const auto angle = glm::orientedAngle(model_state_.last_facing, target_facing);
+      if (glm::abs(angle) > 7.f) {
+         const auto rotate_speed = 5.f / 16.f;
+         const auto sign = angle > 1.f ? 1.f : -1.f;
+         const auto abs_angle = std::min(dt * rotate_speed, glm::abs(angle));
+         const auto rotate_angle = abs_angle * sign;
+         model_state_.last_facing = glm::rotate(model_state_.last_facing, rotate_angle);
+      } else {
+         model_state_.last_facing = target_facing;
+         draw_template_.mesh.animation.step(dt);
+         if (draw_template_.mesh.animation.is_finished()) {
+            pounce_target_ = boost::none;
+            draw_template_.mesh = walk_mesh_;
+         }
+      }
+      bounding_rectangle_ = boundingRectangleFromModel(model_state_);
       return;
    } else {
       // Turn
@@ -177,10 +246,10 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
 
    if (!has_acceleration()) {
       desired_lean_ = 0.0f;
-   } else {
+   } else if (!sleeping_) {
       draw_template_.mesh.animation.step(dt);
-      if (draw_template_.mesh.animation.is_finished()) {
-         draw_template_.mesh.animation.reset();
+      if (draw_template_.mesh.animation.past_percentage(32. / 40.)) {
+         draw_template_.mesh.animation.set_percentage(16. / 40.);
       }
    }
    if (is_jumping_) {

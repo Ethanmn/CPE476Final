@@ -13,7 +13,6 @@ head(NULL)
 void BVHTree::calculateTree(std::vector<GameObject*> objects) {
    std::vector<BVHNode*> nodeQ;
    BVHNode *curNode;
-   BVHNode *otherNode;
    BVHNode *closestNode;
 
    glm::vec2 curCenter;

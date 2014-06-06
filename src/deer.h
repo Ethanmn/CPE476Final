@@ -10,8 +10,8 @@
 
 struct GroundPlane;
 struct Shader;
+struct Flower;
 struct SoundEngine;
-
 
 struct Deer {
   private:
@@ -22,7 +22,7 @@ struct Deer {
       float current_lean;
    };
   public:
-   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const glm::vec3& position);
+   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const glm::vec3& position);
 
    BoundingRectangle getNextBoundingBox(units::MS dt);
 
@@ -36,13 +36,48 @@ struct Deer {
    void stopTurning();
 
    void jump();
-   void eat();
+   void eat(Flower& flower);
+   void pounce(const glm::vec2& pounce_target);
 
    glm::vec3 getPosition() const;
    glm::vec3 getFacing() const;
 
+   bool is_sleeping() const { return sleeping_; }
+   bool is_eating() const { return eating_; }
+   bool is_pouncing() const { return pounce_target_; }
+
    bool isMoving();
+
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
+   BoundingRectangle head_bounding_rectangle() const {
+      BoundingRectangle head(bounding_rectangle_);
+      head.set_dimensions(
+            glm::vec2(
+               bounding_rectangle_.getDimensions().x / 3,
+               bounding_rectangle_.getDimensions().y));
+      head.set_position(
+            bounding_rectangle_.getCenter() +
+            bounding_rectangle_.getDimensions().x/2.f * glm::vec2(
+               glm::sin(glm::radians(bounding_rectangle_.getRotation() + 90.f)),
+               glm::cos(glm::radians(bounding_rectangle_.getRotation() + 90.f)))
+            );
+      return head;
+   }
+
+   BoundingRectangle front_feet_bounding_rectangle() const {
+      BoundingRectangle head(bounding_rectangle_);
+      head.set_dimensions(
+            glm::vec2(
+               bounding_rectangle_.getDimensions().x / 6,
+               bounding_rectangle_.getDimensions().y));
+      head.set_position(
+            bounding_rectangle_.getCenter() +
+            bounding_rectangle_.getDimensions().x/5.f * glm::vec2(
+               glm::sin(glm::radians(bounding_rectangle_.getRotation() + 90.f)),
+               glm::cos(glm::radians(bounding_rectangle_.getRotation() + 90.f)))
+            );
+      return head;
+   }
 
    void block();
 
@@ -75,8 +110,10 @@ struct Deer {
 
    DrawTemplate draw_template_;
    bool eating_;
+   bool sleeping_;
+   boost::optional<glm::vec2> pounce_target_;
    Mesh walk_mesh_;
-   Mesh eat_mesh_;
+   Mesh eat_mesh_, sleep_mesh_, pounce_mesh_;
 
    ModelState model_state_;
 
@@ -93,6 +130,7 @@ struct Deer {
    bool blocked;
 
    glm::mat4 pivot_, inverse_pivot_;
+   boost::optional<Flower&> flower_;
 };
 
 #endif // DEER_H_

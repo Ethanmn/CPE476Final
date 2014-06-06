@@ -30,7 +30,8 @@ struct SoundEngine {
 
       THUNDER_STRIKE,
       EAT_FLOWER,
-      TREE_HIT
+      TREE_HIT,
+      WATER,
    };
    enum class Song {
       DAY_SONG,

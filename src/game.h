@@ -28,6 +28,7 @@
 #include "god_rays.h"
 #include "Skybox.h"
 #include "Camera.h"
+#include "pinecone.h"
 
 struct Game {
    Game();
@@ -78,6 +79,8 @@ struct Game {
    Water water_;
    SongPath song_path_;
    Mesh screen_plane_mesh_;
+
+   Pinecone pinecone_;
 
    void step(units::MS dt);
    void draw();

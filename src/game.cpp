@@ -13,6 +13,7 @@ namespace {
    bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
+   bool deerInWater = false;
 
    int lighting = 0;
    int raining = 0;
@@ -30,11 +31,15 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::DEER_WALK)),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::DEER_EAT)),
-         glm::vec3(0.0f)),
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::DEER_SLEEP)),
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::DEER_POUNCE)),
+         glm::vec3()),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::TREE)), 
+            mesh_loader_.loadMesh(MeshType::TREE)),
             Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::LEAF))),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -43,12 +48,12 @@ Game::Game() :
 
    /* temporary solution to two flower meshes and textures */
    daisyGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::DAISY)), 
+            mesh_loader_.loadMesh(MeshType::DAISY)),
             Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::EATEN_DAISY)), TextureType::DAISY,
             ground_),
    roseGen(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::ROSE)), 
+            mesh_loader_.loadMesh(MeshType::ROSE)),
             Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::EATEN_ROSE)), TextureType::ROSE,
             ground_),
@@ -74,16 +79,16 @@ Game::Game() :
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
 
    lightning_trigger_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::LIGHTNING)), 
+            mesh_loader_.loadMesh(MeshType::LIGHTNING)),
             glm::vec3(52.0f, 10.0f, 50.0f), 0.5),
 
    god_rays_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::GOD_RAYS)), 
+            mesh_loader_.loadMesh(MeshType::GOD_RAYS)),
             glm::vec3(0.0f, 0.0f, 0.0f), 1.5),
 
    skybox(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::SKYBOX))),
- 
+
    deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
 
    deferred_diffuse_fbo_(kScreenWidth, kScreenHeight, DEFERRED_DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH),
@@ -96,7 +101,11 @@ Game::Game() :
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GEM))),
    screen_plane_mesh_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::PLANE)))
+            mesh_loader_.loadMesh(MeshType::PLANE))),
+   pinecone_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::PINECONE)),
+         ground_,
+         glm::vec2(40))
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
@@ -125,7 +134,6 @@ void Game::step(units::MS dt) {
       canary2_bird_sound_.step(dt, sound_engine_);
       woodpecker_bird_sound_.step(dt, sound_engine_);
    }
-   bool deerBlocked = false;
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
 
@@ -151,6 +159,7 @@ void Game::step(units::MS dt) {
       lighting = 0;
    }
 
+   bool deerBlocked = false;
    if (deer_.isMoving()) {
       BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt);
       std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
@@ -158,16 +167,31 @@ void Game::step(units::MS dt) {
          collObj->performObjectHit(sound_engine_);
          deerBlocked = deerBlocked || collObj->isBlocker();
       }
-
-      glm::vec2 center = nextDeerRect.getCenter();
-
-      deerBlocked = deerBlocked || center.x > GroundPlane::GROUND_SCALE / 2 || center.y > GroundPlane::GROUND_SCALE / 2 || center.x < -GroundPlane::GROUND_SCALE / 2 || center.y < -GroundPlane::GROUND_SCALE / 2;
    }
+
+   /*last minute addition, needs to be moved to deer*/
+   if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
+      if(!deerInWater) {
+         deerInWater = true;
+         sound_engine_.playSoundEffect(
+         SoundEngine::SoundEffect::WATER,
+         false,
+         deer_.getPosition());
+         //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
+      }
+   }
+   else if(deerInWater) { //leave water
+      deerInWater = false;
+      sound_engine_.playSoundEffect(
+         SoundEngine::SoundEffect::WATER,
+         false,
+         deer_.getPosition());
+   }
+   
 
    if (deerBlocked) {
       deer_.block();
-   }
-   else {
+   } else {
       deer_.step(dt, ground_, sound_engine_);
    }
 
@@ -182,18 +206,21 @@ void Game::step(units::MS dt) {
    }
 
    for(auto& flower : daisyGen.getFlowers()) {
-      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
-         flower.eat(sound_engine_);
-         deer_.eat();
+      if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
+         deer_.eat(flower);
       }
    }
    for(auto& flower : roseGen.getFlowers()) {
-      if(eatFlower && deer_.bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
-         flower.eat(sound_engine_);
-         deer_.eat();
+      if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
+         deer_.eat(flower);
       }
    }
    eatFlower = false;
+
+   if (!pinecone_.been_pounced() && deer_.bounding_rectangle().collidesWith(pinecone_.aoe_bounding_rectangle())) {
+      deer_.pounce(pinecone_.bounding_rectangle().getCenter());
+      pinecone_.deer_pounces();
+   }
 
    if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
       if (numLightning == 0) {
@@ -224,11 +251,24 @@ void Game::step(units::MS dt) {
    }
    day_cycle_.autoAdjustTime(dt);
 
-   deerCam.step(dt, deer_.getPosition(), deer_.getFacing());
+   Camera::Position cam_pos;
+   glm::vec3 target_pos(deer_.getPosition());
+   if (deer_.is_sleeping()) {
+      cam_pos = Camera::Position::FRONT_RIGHT;
+   } else if (deer_.is_eating()) {
+      cam_pos = Camera::Position::LEFT;
+   } else {
+      cam_pos = Camera::Position::BEHIND;
+   }
+   if (deer_.is_sleeping() || deer_.is_eating()) {
+      glm::vec2 head_pos(deer_.head_bounding_rectangle().getCenter());
+      target_pos.x = head_pos.x;
+      target_pos.z = head_pos.y;
+   }
+   deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
 }
 
 void Game::draw() {
-
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    const auto sunIntensity = day_cycle_.getSunIntensity();
    glClearColor (0.05098 * sunIntensity,
@@ -246,6 +286,9 @@ void Game::draw() {
       for (auto& bush : bushGen.getBushes()) {
          br_drawable.draw_instances.push_back(bush.getBoundingRectangle().model_matrix());
       }
+      for (auto& bush : bushGen.getBushes()) {
+         br_drawable.draw_instances.push_back(bush.getBoundingRectangle().model_matrix());
+      }
       for (auto& tree : treeGen.getTrees()) {
          br_drawable.draw_instances.push_back(tree.getBoundingRectangle().model_matrix());
       }
@@ -258,12 +301,14 @@ void Game::draw() {
       for (auto& br : song_path_.bounding_rectangles()) {
          br_drawable.draw_instances.push_back(br.model_matrix());
       }
+      br_drawable.draw_instances.push_back(pinecone_.bounding_rectangle().model_matrix());
+      br_drawable.draw_instances.push_back(pinecone_.aoe_bounding_rectangle().model_matrix());
       drawables.push_back(br_drawable);
    }
 
 
    Drawable screen_drawable;
-   BoundingRectangle screen_br = BoundingRectangle(glm::vec2(0.0f, 0.0f), 
+   BoundingRectangle screen_br = BoundingRectangle(glm::vec2(0.0f, 0.0f),
             glm::vec2(kScreenWidthf, kScreenHeightf), 0.0f);
    screen_drawable.draw_template = BoundingRectangle::draw_template();
    screen_drawable.draw_template.mesh = screen_plane_mesh_;
@@ -304,7 +349,7 @@ void Game::draw() {
    god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
    god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
    drawables.push_back(god_rays_.drawable());
-   
+
    // View Frustum Culling
    auto viewMatrix = deerCam.getViewMatrix();
    const auto view_projection = kProjectionMatrix * viewMatrix;
@@ -318,12 +363,12 @@ void Game::draw() {
 
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
-   draw_shader_.Draw(shadow_map_fbo_, 
-                     water_.fbo(), 
+   draw_shader_.Draw(shadow_map_fbo_,
+                     water_.fbo(),
                      deferred_diffuse_fbo_,
                      deferred_position_fbo_,
                      deferred_normal_fbo_,
-                     culledDrawables, viewMatrix, switchBlinnPhongShading, 
+                     culledDrawables, viewMatrix, switchBlinnPhongShading,
                      deerPos, sunDir, sunIntensity, lighting);
 }
 
@@ -355,8 +400,11 @@ void Game::mainLoop() {
          }
          { // handle walk forward/backward for deer.
             const auto key_forward = SDL_SCANCODE_W;
-            if (input.isKeyHeld(key_forward)) {
+            const auto key_backward = SDL_SCANCODE_S;
+            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
                deer_.walkForward();
+            } else if (input.isKeyHeld(key_backward) && !input.isKeyHeld(key_forward)) {
+               deer_.walkBackward();
             } else {
                deer_.stopWalking();
             }
@@ -388,7 +436,7 @@ void Game::mainLoop() {
             const auto key_tree = SDL_SCANCODE_T;
             if (input.wasKeyPressed(key_tree)) {
                showTreeShadows = !showTreeShadows;
-               treeGen.includeInShadows(showTreeShadows); 
+               treeGen.includeInShadows(showTreeShadows);
             }
          }
          {
@@ -421,7 +469,7 @@ void Game::mainLoop() {
          { //Change shading models
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
-               switchBlinnPhongShading = !switchBlinnPhongShading; 
+               switchBlinnPhongShading = !switchBlinnPhongShading;
             }
          }
          { //handle quit
