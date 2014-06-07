@@ -16,7 +16,7 @@ struct Water {
    Drawable drawable() const {
       return Drawable({
             DrawTemplate({
-               ShaderType::WATER,
+               ShaderType::DEFERRED,
                mesh_,
                Material(),
                reflection_fbo_.texture(),

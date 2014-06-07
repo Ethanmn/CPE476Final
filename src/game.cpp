@@ -10,12 +10,12 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = true;
+   bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool deerInWater = false;
 
-   bool useTextureShader = false; //Note: this also needs to be changed in shaders.cpp
+   bool useTextureShader = true; //Note: this also needs to be changed in shaders.cpp
 
    int lighting = 0;
    int raining = 0;
@@ -521,9 +521,9 @@ void Game::mainLoop() {
       }
 
       {
-         timer.start();
+         //timer.start();
          draw();
-         timer.end();
+         //timer.end();
          engine_.swapWindow();
       }
 
