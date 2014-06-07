@@ -1,6 +1,10 @@
 #include "graphics/shaders.h"
 #include <assert.h>
 
+namespace {
+   bool useTextureShader = false; //Note: this also needs to be changed in game.cpp
+}
+
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
    Attribute::TEX_COORD,
@@ -32,25 +36,25 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::M_DIF,
    Uniform::M_SPEC,
    Uniform::M_SHINE,
-   
+
    Uniform::HAS_SHADOWS,
    Uniform::SHADOW_MAP,
    Uniform::SHADOW_MAP_TEXTURE,
-   
+
    Uniform::HAS_TEXTURE,
    Uniform::TEXTURE,
-   
+
    Uniform::HEIGHT_MAP,
    Uniform::HEIGHT_MAP_SCALE,
    Uniform::HAS_HEIGHT_MAP,
-   
+
    Uniform::USE_BLINN_PHONG,
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
-   
+
    Uniform::BONES,
    Uniform::HAS_BONES,
-  
+
    Uniform::LIGHTNING,
 
 };
@@ -66,17 +70,17 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::M_DIF,
    Uniform::M_SPEC,
    Uniform::M_SHINE,
-   
+
    Uniform::OUTPUT_SHADER_TYPE,
-   
+
    Uniform::HAS_TEXTURE,
    Uniform::HEIGHT_MAP_SCALE,
    Uniform::TEXTURE,
    Uniform::VARY_MATERIAL,
-   
+
    Uniform::HEIGHT_MAP,
    Uniform::HAS_HEIGHT_MAP,
-      
+
    Uniform::BONES,
    Uniform::HAS_BONES,
 
@@ -111,7 +115,7 @@ const std::vector<Uniform> kShadowUniforms{
 
    Uniform::HAS_TEXTURE,
    Uniform::TEXTURE,
-   
+
    Uniform::BONES,
    Uniform::HAS_BONES,
 };
@@ -154,7 +158,7 @@ const std::vector<Uniform> kFinalPassUniforms{
 
    Uniform::SCREEN_WIDTH,
    Uniform::SCREEN_HEIGHT,
-   
+
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
    Uniform::LIGHTNING,
@@ -165,14 +169,15 @@ const std::vector<Uniform> kFinalPassUniforms{
 };
 
 Shaders::Shaders() {
-      shaders_.insert(std::make_pair(ShaderType::SHADOW, 
-            Shader("Shadow", kShadowAttrs, kShadowUniforms))); 
+      shaders_.insert(std::make_pair(ShaderType::SHADOW,
+            Shader("Shadow", kShadowAttrs, kShadowUniforms)));
+
 
       shaders_.insert(std::make_pair(ShaderType::DEFERRED,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
 
       shaders_.insert(std::make_pair(ShaderType::SKYBOX,
-            Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));  
+            Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
       shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
 }

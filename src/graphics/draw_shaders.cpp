@@ -46,7 +46,7 @@ namespace {
       shader.sendUniform(Uniform::SHADOW_MAP, uniforms, lightMat);
    }
    void SendShadow(Shader& shader, const UniformLocationMap& uniforms,
-         const FrameBufferObject& shadow_map_fbo_, 
+         const FrameBufferObject& shadow_map_fbo_,
          const glm::vec3& deerPos, const glm::vec3& sunDir) {
       shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
       shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
@@ -54,7 +54,7 @@ namespace {
    }
 }
 
-void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable, 
+void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
       const glm::mat4& view, bool needsModel, const UniformLocationMap& uniforms) {
    for(const auto& instance : drawable.draw_instances) {
       /* Note: only DEFERRED is usuing VARY_MATERIAL. */
@@ -75,7 +75,7 @@ void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
 }
 
 void DrawShader::drawModelTransforms(
-      Shader& shader, 
+      Shader& shader,
       const Drawable& drawable,
       const glm::mat4& view,
       const FrameBufferObject& deferred_diffuse_fbo,
@@ -111,7 +111,7 @@ void DrawShader::drawModelTransforms(
                break;
             default: break;
          }
-         shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, i); 
+         shader.sendUniform(Uniform::OUTPUT_SHADER_TYPE, uniforms, i);
          shader.drawMesh(drawable.draw_template.mesh);
       }
    }
@@ -119,7 +119,7 @@ void DrawShader::drawModelTransforms(
 
 void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
    if (drawable.draw_template.height_map) {
-      shader.sendUniform(Uniform::HEIGHT_MAP, uniforms, 
+      shader.sendUniform(Uniform::HEIGHT_MAP, uniforms,
             (*drawable.draw_template.height_map).texture_slot());
       shader.sendUniform(Uniform::HEIGHT_MAP_SCALE, uniforms, kHeightMapScale);
       shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 1);
@@ -155,19 +155,18 @@ void DrawShader::SendTexture(Shader& shader, const Drawable& drawable) {
    }
 }
 
-void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_, 
-      const FrameBufferObject& reflection_fbo, 
+void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
+      const FrameBufferObject& reflection_fbo,
       const FrameBufferObject& deferred_diffuse_fbo_,
       const FrameBufferObject& deferred_position_fbo_,
       const FrameBufferObject& deferred_normal_fbo_,
       const vector<CulledDrawable>& culledDrawables,
-      const glm::mat4& viewMatrix, 
-      int useBlinnPhong, 
+      const glm::mat4& viewMatrix,
+      int useBlinnPhong,
       const glm::vec3& deerPos,
-      const glm::vec3& sunDir, 
-      float sunIntensity, 
+      const glm::vec3& sunDir,
+      float sunIntensity,
       int lightning) {
-
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
       shader.use();
@@ -190,11 +189,11 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   for (auto& drawable : shadow_drawables) {
                      SendBones(shader, Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
-                        SendTexture(shader, 
+                        SendTexture(shader,
                               Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
                         for(auto& instance : drawable.draw_instances) {
                            if (!instance.cullFlag.count(CullType::SHADOW_CULLING)) {
-                              shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, 
+                              shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms,
                                     view_projection * instance.instance.model_transform);
                               shader.sendUniform(Uniform::MODEL, uniforms, instance.instance.model_transform);
                               shader.drawMesh(drawable.draw_template.mesh);
@@ -210,6 +209,26 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
             }
             break;
+
+         case ShaderType::TEXTURE:
+            if(printCurrentShaderName)
+               printf("Texture\n");
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            {
+               std::vector<Drawable> drawables;
+               for (auto& drawable : culledDrawables) {
+                  drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING));
+               }
+               shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
+               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
+
+               drawTextureShader(shader, drawables, viewMatrix, sunDir, sunIntensity,
+                     lightning);
+            }
+            break;
+
          case ShaderType::SKYBOX:
             if(printCurrentShaderName)
                printf("Skybox\n");
@@ -219,7 +238,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                if (drawable.draw_template.shader_type == ShaderType::SKYBOX) {
                   /* doesn't use drawModelTransforms because no normals */
                   for(const auto& instance : drawable.draw_instances) {
-                     shader.sendUniform(Uniform::TEXTURE, uniforms, 
+                     shader.sendUniform(Uniform::TEXTURE, uniforms,
                            (*drawable.draw_template.texture).texture_slot());
                      (*drawable.draw_template.texture).enable(texture_cache_);
                      shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * instance.instance.model_transform);
@@ -324,4 +343,3 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
       }
    }
 }
-
