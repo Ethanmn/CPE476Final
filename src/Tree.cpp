@@ -7,17 +7,16 @@
 #include <iostream>
 
 const int TREE_SCALE = 3;
-const int TREE_VARIATION_HEIGHT = 10;
 
 const int BOUNDING_SIZE = 4;
 const float BOUNDING_ERR_X = 0.15f;
 const float BOUNDING_ERR_Z = 1.0f;
 
 Tree::Tree(glm::vec3 position, float heightOffset, float widthOffset, float angleRot, const Mesh& leaf) :
-   bRect(BoundingRectangle(glm::vec2(position.x, position.z), 
-            glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
    leaf_system_(leaf, TextureType::LEAF,
               glm::vec3(position.x, position.y + 5.0f, position.z), 0),
+   bRect(BoundingRectangle(glm::vec2(position.x, position.z), 
+            glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(200),
