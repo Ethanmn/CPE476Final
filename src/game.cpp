@@ -10,7 +10,7 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = false;
+   bool draw_collision_box = true;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool deerInWater = false;
@@ -308,6 +308,9 @@ void Game::draw() {
       for (auto& flower : roseGen.getFlowers()) {
          br_drawable.draw_instances.push_back(flower.getBoundingRectangle().model_matrix());
       }
+      for (auto& rock : rockGen.getRocks()) {
+         br_drawable.draw_instances.push_back(rock.getBoundingRectangle().model_matrix());
+      }
       for (auto& br : song_path_.bounding_rectangles()) {
          br_drawable.draw_instances.push_back(br.model_matrix());
       }
@@ -518,7 +521,9 @@ void Game::mainLoop() {
       }
 
       {
+         timer.start();
          draw();
+         timer.end();
          engine_.swapWindow();
       }
 
