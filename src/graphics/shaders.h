@@ -20,6 +20,7 @@ enum class ShaderType {
    DEF_POSITION,
    DEF_NORMAL,
    WATER,
+   TEXTURE,
    FINAL_LIGHT_PASS,
    SKYBOX
 };
