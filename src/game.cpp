@@ -10,10 +10,12 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = false;
+   bool draw_collision_box = true;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool deerInWater = false;
+
+   bool useTextureShader = false; //Note: this also needs to be changed in shaders.cpp
 
    int lighting = 0;
    int raining = 0;
@@ -311,6 +313,9 @@ void Game::draw() {
       for (auto& flower : roseGen.getFlowers()) {
          br_drawable.draw_instances.push_back(flower.getBoundingRectangle().model_matrix());
       }
+      for (auto& rock : rockGen.getRocks()) {
+         br_drawable.draw_instances.push_back(rock.getBoundingRectangle().model_matrix());
+      }
       for (auto& br : song_path_.bounding_rectangles()) {
          br_drawable.draw_instances.push_back(br.model_matrix());
       }
@@ -380,6 +385,13 @@ void Game::draw() {
    culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
 
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+   if(useTextureShader) {
+      for(auto& drawables : culledDrawables) {
+         if(drawables.draw_template.shader_type == ShaderType::DEFERRED)
+            drawables.draw_template.shader_type = ShaderType::TEXTURE;
+      }
+   }
 
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
@@ -508,7 +520,9 @@ void Game::mainLoop() {
       }
 
       {
+         timer.start();
          draw();
+         timer.end();
          engine_.swapWindow();
       }
 
