@@ -10,7 +10,7 @@
 
 namespace {
    bool showTreeShadows = false;
-   bool draw_collision_box = true;
+   bool draw_collision_box = false;
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool deerInWater = false;
@@ -520,9 +520,9 @@ void Game::mainLoop() {
       }
 
       {
-         timer.start();
+         //timer.start();
          draw();
-         timer.end();
+         //timer.end();
          engine_.swapWindow();
       }
 
