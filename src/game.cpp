@@ -521,9 +521,9 @@ void Game::mainLoop() {
       }
 
       {
-         timer.start();
+         //timer.start();
          draw();
-         timer.end();
+         //timer.end();
          engine_.swapWindow();
       }
 
