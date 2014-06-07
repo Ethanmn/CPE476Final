@@ -120,7 +120,7 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
 
 
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
          { 
          // Per-Drawable Texture Shader Setup
             SendHeightMap(shader, drawable);
@@ -214,6 +214,25 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   lightning);
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            break;
+
+         case ShaderType::TEXTURE:
+            if(printCurrentShaderName)
+               printf("Texture\n");
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            {
+               std::vector<Drawable> drawables;
+               for (auto& drawable : culledDrawables) {
+                  drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING));
+               }
+               shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
+               SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
+
+               drawTextureShader(shader, drawables, viewMatrix, sunDir, sunIntensity, 
+                  lightning);
+            }
             break;
 
          case ShaderType::SKYBOX:

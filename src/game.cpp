@@ -15,6 +15,8 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
 
+   bool useTextureShader = true;
+
    int lighting = 0;
    int raining = 0;
 
@@ -381,6 +383,13 @@ void Game::draw() {
    culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
 
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+   if(useTextureShader) {
+      for(auto& drawables : culledDrawables) {
+         if(drawables.draw_template.shader_type == ShaderType::DEFERRED)
+            drawables.draw_template.shader_type = ShaderType::TEXTURE;
+      }
+   }
 
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
