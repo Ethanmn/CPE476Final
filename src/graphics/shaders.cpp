@@ -2,7 +2,7 @@
 #include <assert.h>
 
 namespace {
-   bool useTextureShader = true;
+   bool useTextureShader = true; //Note: this also needs to be changed in game.cpp
 }
 
 const std::vector<Attribute> kTextureAttrs{
@@ -188,6 +188,7 @@ Shaders::Shaders() {
          shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
       }
+
       //shaders_.insert(std::make_pair(ShaderType::REFLECTION,
             //Shader("Texture", kTextureAttrs, kTextureUniforms)));
       //shaders_.insert(std::make_pair(ShaderType::WATER,
