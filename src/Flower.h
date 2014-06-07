@@ -15,7 +15,7 @@ struct Shader;
 struct SoundEngine;
 
 struct Flower : GameObject {
-   Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale);
+   Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale, float errX, float errY);
 
    void eat(SoundEngine& sound_engine);
 
@@ -31,8 +31,6 @@ struct Flower : GameObject {
 
   private:
    glm::vec3 position_;
-   float scale_;
-   float rotate_;
    BoundingRectangle bounding_rectangle_;
    bool eaten;
    glm::mat4 model_;

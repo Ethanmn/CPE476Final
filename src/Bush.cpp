@@ -4,7 +4,7 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 
-Bush::Bush(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, 
+Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
       float scale, units::MS rustle_time) :
    rotate_(0.0f),
    elapsed_time_(0),
@@ -12,21 +12,23 @@ Bush::Bush(const Mesh& mesh, const glm::vec3& position, const GroundPlane& groun
    kMaxRustleTime(rustle_time),
    bounding_rectangle_(BoundingRectangle(
             glm::vec2(position.x, position.z),
-            glm::vec2(8.0f, 8.0f),
+            glm::vec2(8.0f * scale, 8.0f * scale),
             0.0f)),
    translate_scale_(
          glm::translate(glm::mat4(), glm::vec3(position.x, ground.heightAt(position) - mesh.min.y, position.z)) *
          glm::scale(glm::mat4(), glm::vec3(scale))),
    default_model_(
-         translate_scale_ *
+      translate_scale_ *
+      glm::rotate(
          glm::rotate(
-            glm::rotate(
-               glm::mat4(),
-               rotate_,
-               glm::vec3(0, 1, 0)
-               ),
-            -90.0f,
-            glm::vec3(1, 0, 0)))
+            glm::mat4(),
+            angleOffset,
+            glm::vec3(0, 1, 0)
+         ),
+         -90.0f,
+         glm::vec3(1, 0, 0)
+      )
+   )
 {}
 
 void Bush::step(units::MS dt) {
@@ -41,15 +43,14 @@ glm::mat4 Bush::calculateModel() const {
    if (rustle_time_ >= kMaxRustleTime) {
       return default_model_;
    }
-   const glm::mat4 rotate(glm::rotate(
-            glm::rotate(
-               glm::mat4(),
-               rotate_,
-               glm::vec3(0, 1, 0)
-               ),
-            -90.0f,
-            glm::vec3(1, 0, 0)));
-   return translate_scale_ * rotate;
+   const glm::mat4 rotate(
+      glm::rotate(
+         glm::mat4(),
+         rotate_,
+         glm::vec3(0, 0, 1.0f)
+      )
+   );
+   return default_model_ * rotate;
 } 
 
 void Bush::rustle(SoundEngine& sound_engine) {

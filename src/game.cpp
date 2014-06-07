@@ -15,6 +15,8 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
 
+   bool useTextureShader = true; //Note: this also needs to be changed in shaders.cpp
+
    int lighting = 0;
    int raining = 0;
 
@@ -54,12 +56,12 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::DAISY)),
             Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::EATEN_DAISY)), TextureType::DAISY,
-            ground_),
+            ground_, -0.1f, -1.6f),
    roseGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::ROSE)),
             Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::EATEN_ROSE)), TextureType::ROSE,
-            ground_),
+            ground_, 0.0f, 0.0f),
 
    cardinal_bird_sound_(SoundEngine::SoundEffect::CARDINAL_BIRD, 10000),
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
@@ -306,6 +308,9 @@ void Game::draw() {
       for (auto& flower : roseGen.getFlowers()) {
          br_drawable.draw_instances.push_back(flower.getBoundingRectangle().model_matrix());
       }
+      for (auto& rock : rockGen.getRocks()) {
+         br_drawable.draw_instances.push_back(rock.getBoundingRectangle().model_matrix());
+      }
       for (auto& br : song_path_.bounding_rectangles()) {
          br_drawable.draw_instances.push_back(br.model_matrix());
       }
@@ -327,6 +332,7 @@ void Game::draw() {
 
    drawables.push_back(deer_.drawable());
 
+   drawables.push_back(pinecone_.drawable());
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
    drawables.push_back(day_night_boxes_.drawableMoon());
@@ -351,19 +357,19 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
-   if (day_cycle_.isDay()) {
-      drawables.push_back(butterfly_system_red_.drawable());
-      drawables.push_back(butterfly_system_pink_.drawable());
-      drawables.push_back(butterfly_system_blue_.drawable());
-   } else {
-      Drawable glowingButterfliesDrawable = butterfly_system_red_.drawable();
-      glowingButterfliesDrawable.draw_template.mesh = song_path_.drawable().draw_template.mesh;
-      for(auto& instance : glowingButterfliesDrawable.draw_instances)
-         instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.4)) * glm::translate(glm::mat4(), glm::vec3(15.0, 10.0, 15.0)) 
-            * instance.model_transform;
-      drawables.push_back(glowingButterfliesDrawable); 
-      glowingButterfliesDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
-      drawables.push_back(glowingButterfliesDrawable); 
+   drawables.push_back(butterfly_system_red_.drawable());
+   drawables.push_back(butterfly_system_pink_.drawable());
+   drawables.push_back(butterfly_system_blue_.drawable());
+
+   if (!day_cycle_.isDay()) {
+      Drawable fireflyDrawable = butterfly_system_red_.drawable();
+      fireflyDrawable.draw_template.mesh = song_path_.drawable().draw_template.mesh;
+      for(auto& instance : fireflyDrawable.draw_instances)
+         instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.6)) * 
+            glm::translate(glm::mat4(), glm::vec3(-30.0, 10.0, -30.0)) * instance.model_transform;
+      drawables.push_back(fireflyDrawable); 
+      fireflyDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
+      drawables.push_back(fireflyDrawable); 
    }
 
    god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
@@ -380,6 +386,13 @@ void Game::draw() {
    culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
 
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+   if(useTextureShader) {
+      for(auto& drawables : culledDrawables) {
+         if(drawables.draw_template.shader_type == ShaderType::DEFERRED)
+            drawables.draw_template.shader_type = ShaderType::TEXTURE;
+      }
+   }
 
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
@@ -508,7 +521,9 @@ void Game::mainLoop() {
       }
 
       {
+         //timer.start();
          draw();
+         //timer.end();
          engine_.swapWindow();
       }
 

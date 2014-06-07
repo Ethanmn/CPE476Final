@@ -9,7 +9,7 @@ glm::mat4 GodRays::calculateModel(glm::vec3 position, glm::vec3 scaleAmount) con
             position));
    const glm::mat4 scale(glm::scale(
             glm::mat4(),
-            glm::vec3(scale_, 10.0f, scale_)));
+            glm::vec3(scale_, 4.0f, scale_)));
    const glm::mat4 shrinking_scale(glm::scale(
             glm::mat4(),
             scaleAmount));

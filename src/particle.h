@@ -17,7 +17,8 @@ struct Particle {
       acceleration_(accleration),
       scale_(scale),
       rotate_(rotate),
-      life_time_(0) {}
+      life_time_(0) 
+   {}
 
    void step(units::MS dt);
    void setAccel(float x, float y ,float z);

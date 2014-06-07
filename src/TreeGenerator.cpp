@@ -8,6 +8,7 @@
 const int TREE_SIZE = 20;
 const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
 const int TREE_SCALE = 5;
+const int TREE_VARIANCE = 40;
 
 TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
    draw_template_({
@@ -32,14 +33,15 @@ void TreeGenerator::generate() {
    for (int row = 0; row < size; row++) {
       for (int col = 0; col < size; col++) {
          if (rand() % TREE_DENSITY == 0) {
-            float height =  ((rand() % TREE_SIZE) / (float)TREE_SIZE) + 1;
-            float angleRot = rand() % 180;
+            float height =  ((rand() % TREE_VARIANCE) / (float)TREE_VARIANCE) + 1.0f;
+            float width =  ((rand() % TREE_VARIANCE) / (float)TREE_VARIANCE) + 1.0f;
+            float angleRot = rand() % 360;
             float x = row * TREE_SIZE - groundSize + rand() % TREE_SIZE;
             float y = height * TREE_SCALE * TREE_SIZE / 2;
             float z = col * TREE_SIZE - groundSize + rand() % TREE_SIZE;
 
            if (!(x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
-               trees.push_back(Tree(glm::vec3(x, y, z), height, angleRot, leaf_));
+               trees.push_back(Tree(glm::vec3(x, y, z), height, width, angleRot, leaf_));
            }
          }
       }

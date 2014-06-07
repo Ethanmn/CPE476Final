@@ -16,10 +16,10 @@ GroundPlane::GroundPlane(const Mesh& mesh) :
          DrawTemplate({
             ShaderType::DEFERRED,
             mesh,
-            Material(glm::vec3(0.105f, 0.275f, 0.133f)),
+            Material(glm::vec3(0.1 * 0.105f, 0.1 * 0.275f, 0.1 * 0.133f)),
             Texture(TextureType::GRASS, DIFFUSE_TEXTURE), 
             Texture(TextureType::HEIGHT_MAP, HEIGHT_MAP_TEXTURE),
-            EffectSet({EffectType::CASTS_SHADOW})
+            EffectSet({EffectType::CASTS_SHADOW, EffectType::VARY_MATERIAL})
             }),
          std::vector<DrawInstance>({glm::scale(glm::mat4(1.0), glm::vec3(GROUND_SCALE, 1, GROUND_SCALE))}),
          }),
