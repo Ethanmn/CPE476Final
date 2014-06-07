@@ -2,7 +2,7 @@
 #include <assert.h>
 
 namespace {
-   bool useTextureShader = true; //Note: this also needs to be changed in game.cpp
+   bool useTextureShader = false; //Note: this also needs to be changed in game.cpp
 }
 
 const std::vector<Attribute> kTextureAttrs{

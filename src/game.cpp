@@ -15,7 +15,7 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
 
-   bool useTextureShader = true; //Note: this also needs to be changed in shaders.cpp
+   bool useTextureShader = false; //Note: this also needs to be changed in shaders.cpp
 
    int lighting = 0;
    int raining = 0;
