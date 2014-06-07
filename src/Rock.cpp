@@ -9,7 +9,7 @@ Rock::Rock(const Mesh& mesh, const glm::vec3& position, const GroundPlane& groun
    rotate_(0.0f),
    bounding_rectangle_(BoundingRectangle(
             glm::vec2(position.x, position.z),
-            glm::vec2(8.0f, 8.0f),
+            glm::vec2(2.0f),
             0.0f)),
    translate_scale_(
          glm::translate(glm::mat4(), glm::vec3(position.x, ground.heightAt(position) - mesh.min.y, position.z)) *
