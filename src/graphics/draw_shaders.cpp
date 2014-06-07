@@ -117,6 +117,33 @@ void DrawShader::drawModelTransforms(
    }
 }
 
+void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
+      const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
+      int lightning) {
+
+   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+   shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
+
+   shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
+   SendSun(shader, uniforms, sunIntensity, sunDir);
+
+
+   for (auto& drawable : drawables) {
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+         { 
+         // Per-Drawable Texture Shader Setup
+            SendHeightMap(shader, drawable);
+            SendBones(shader, drawable);
+            SendTexture(shader, drawable);
+
+            drawable.draw_template.material.sendMaterial(shader, uniforms);
+         }
+         drawModelTransforms(shader, drawable, viewMatrix, true, uniforms);
+      }
+   }
+}
+
+
 void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
    if (drawable.draw_template.height_map) {
       shader.sendUniform(Uniform::HEIGHT_MAP, uniforms,
