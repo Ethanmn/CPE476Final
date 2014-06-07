@@ -13,11 +13,9 @@ const int BOUNDING_SIZE = 4;
 const float BOUNDING_ERR_X = 0.15f;
 const float BOUNDING_ERR_Z = 1.0f;
 
-Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& leaf) :
+Tree::Tree(glm::vec3 position, float heightOffset, float widthOffset, float angleRot, const Mesh& leaf) :
    bRect(BoundingRectangle(glm::vec2(position.x, position.z), 
             glm::vec2(BOUNDING_SIZE, BOUNDING_SIZE), 0.0f)),
-   angleRot(angleRot),
-   heightOffset(heightOffset),
    leaf_system_(leaf, TextureType::LEAF,
               glm::vec3(position.x, position.y + 5.0f, position.z), 0),
    rotate_(0.0f),
@@ -32,11 +30,16 @@ Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& l
       ) *
       glm::scale(
          glm::mat4(),
-         glm::vec3(TREE_SCALE + (rand() % 20)/20.0f) * glm::vec3(1, heightOffset, 1)
+         glm::vec3(TREE_SCALE) * glm::vec3(widthOffset, heightOffset, widthOffset)
       )
    ),
    default_model_(
       translate_scale_ *
+      glm::rotate(
+         glm::mat4(),
+         angleRot,
+         glm::vec3(0, 1.0f, 0)
+      ) *
       glm::translate (
          glm::mat4(),
          glm::vec3(BOUNDING_ERR_X, 0.0f, BOUNDING_ERR_Z)
@@ -44,7 +47,7 @@ Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& l
       glm::rotate(
          glm::mat4(),
          -90.0f,
-         glm::vec3(1, 0, 0)
+         glm::vec3(1.0f, 0, 0)
       )
    )
 
@@ -53,23 +56,15 @@ Tree::Tree(glm::vec3 position, float heightOffset, float angleRot, const Mesh& l
 DrawInstance Tree::draw_instance() const {
    if (rustle_time_ >= kMaxRustleTime)
       return DrawInstance(default_model_, material_);
-   const glm::mat4 rotate(glm::rotate(
-            glm::rotate(
-               glm::mat4(),
-               rotate_,
-               glm::vec3(0, 1.0f, 0)
-               ),
-            -90.0f,
-            glm::vec3(1, 0, 0)));
+   const glm::mat4 rotate(
+      glm::rotate(
+         glm::mat4(),
+         rotate_,
+         glm::vec3(0, 0, 1.0f)
+      )
+   );
 
-   const glm::mat4 rotate2(
-            glm::rotate(
-               glm::mat4(),
-               angleRot,
-               glm::vec3(0, 1.0f, 0)
-               ));
-
-   return DrawInstance(translate_scale_ * rotate2 * rotate, material_);
+   return DrawInstance(default_model_ * rotate, material_);
 }
 
 bool Tree::isBlocker() {
@@ -80,7 +75,8 @@ void Tree::performObjectHit(SoundEngine& sound_engine) {
    sound_engine.playSoundEffect(
          SoundEngine::SoundEffect::TREE_HIT,
          false,
-         glm::vec3());
+         glm::vec3()
+   );
    rustle_time_ = 0;
    leaf_system_.add();
 }
