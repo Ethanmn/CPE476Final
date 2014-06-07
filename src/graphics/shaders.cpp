@@ -2,7 +2,7 @@
 #include <assert.h>
 
 namespace {
-   bool useTextureShader = false; //Note: this also needs to be changed in game.cpp
+   bool useTextureShader = true; //Note: this also needs to be changed in game.cpp
 }
 
 const std::vector<Attribute> kTextureAttrs{
@@ -173,8 +173,16 @@ Shaders::Shaders() {
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
 
 
-      shaders_.insert(std::make_pair(ShaderType::DEFERRED,
-            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+      if(!useTextureShader) { 
+          shaders_.insert(std::make_pair(ShaderType::DEFERRED,
+                   Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+         shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
+            Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
+      }
+      else {
+         shaders_.insert(std::make_pair(ShaderType::TEXTURE,
+            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+      }
 
       shaders_.insert(std::make_pair(ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
