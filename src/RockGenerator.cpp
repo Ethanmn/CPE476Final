@@ -10,8 +10,8 @@ const int ROCK_INVERSE_DENSITY = 75; //Larger value means LESS rcoks
 const int ROCK_SIZE = 8;
 
 //Need the * 100 to translate between modulo and floats
-const float ROCK_SCALE_MIN = 0.8 * 100;
-const float ROCK_SCALE_MAX = 1.3 * 100;
+const float ROCK_SCALE_MIN = 0.1 * 100;
+const float ROCK_SCALE_MAX = 2.5 * 100;
 
 RockGenerator::RockGenerator(const Mesh& mesh, const GroundPlane& ground) : 
    draw_template_({
@@ -35,8 +35,11 @@ void RockGenerator::generate(const GroundPlane& ground) {
       for (int col = 0; col < size; col++) {
          if (rand() % ROCK_INVERSE_DENSITY == 0) {
             float scale = (rand() % (int)(ROCK_SCALE_MAX - ROCK_SCALE_MIN) + ROCK_SCALE_MIN)  / 100.0f;
-            glm::vec3 pos = glm::vec3(row * ROCK_SIZE - groundSize,  0, col * ROCK_SIZE - groundSize);
-            rocks.push_back(Rock(draw_template_.mesh, pos, ground, scale));
+            float x = row * ROCK_SIZE - groundSize + rand() % ROCK_SIZE;
+            float y = col * ROCK_SIZE - groundSize + rand() % ROCK_SIZE;
+            float angle = rand() % 360;
+
+            rocks.push_back(Rock(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale));
          }
       }
    }

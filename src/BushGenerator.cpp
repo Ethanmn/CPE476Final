@@ -10,10 +10,10 @@ const int BUSH_INVERSE_DENSITY = 10; //Larger value means LESS bushes
 const int BUSH_SIZE = 10;
 
 //Need the * 100 to translate between modulo and floats
-const float BUSH_SCALE_MIN = 0.8 * 100;
-const float BUSH_SCALE_MAX = 1.3 * 100;
+const float BUSH_SCALE_MIN = 0.4 * 100;
+const float BUSH_SCALE_MAX = 1.8 * 100;
 
-const int BUSH_RUSTLE_MIN = 150;
+const int BUSH_RUSTLE_MIN = 250;
 const int BUSH_RUSTLE_MAX = 450;
 
 BushGenerator::BushGenerator(const Mesh& mesh, const GroundPlane& ground) : 
@@ -29,7 +29,7 @@ BushGenerator::BushGenerator(const Mesh& mesh, const GroundPlane& ground) :
    generate(ground);
 }
 
-//Generate the trees
+//Generate the bushes
 void BushGenerator::generate(const GroundPlane& ground) {
    int size = GroundPlane::GROUND_SCALE / BUSH_SIZE; 
    int groundSize = GroundPlane::GROUND_SCALE / 2;
@@ -38,9 +38,12 @@ void BushGenerator::generate(const GroundPlane& ground) {
       for (int col = 0; col < size; col++) {
          if (rand() % BUSH_INVERSE_DENSITY == 0) {
             float scale = (rand() % (int)(BUSH_SCALE_MAX - BUSH_SCALE_MIN) + BUSH_SCALE_MIN)  / 100.0f;
-            glm::vec3 pos = glm::vec3(row * BUSH_SIZE - groundSize,  0, col * BUSH_SIZE - groundSize);
-            bushes.push_back(Bush(draw_template_.mesh, 
-               pos, ground, scale, rand() % (int)(BUSH_RUSTLE_MAX - BUSH_RUSTLE_MIN) + BUSH_RUSTLE_MIN));
+            float x = row * BUSH_SIZE - groundSize + rand() % BUSH_SIZE;
+            float y = col * BUSH_SIZE - groundSize + rand() % BUSH_SIZE;
+            float angle = rand() % 360;
+            float rustleTime = (rand() % (int)(BUSH_RUSTLE_MAX - BUSH_RUSTLE_MIN)) + BUSH_RUSTLE_MIN;
+
+            bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime));
          }
       }
    }

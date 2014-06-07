@@ -1,3 +1,8 @@
+/* 
+   Rock.h
+   Katie Keim
+   Deer - CPE 476
+*/
 #ifndef ROCK_H_
 #define ROCK_H_
 
@@ -12,7 +17,7 @@ struct Shader;
 struct SoundEngine;
 
 struct Rock : public GameObject {
-   Rock(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, 
+   Rock(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
         float scale);
 
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
@@ -28,10 +33,10 @@ struct Rock : public GameObject {
 
 
   private: 
-   float rotate_;
-   BoundingRectangle bounding_rectangle_;
-   glm::mat4 translate_scale_;
-   glm::mat4 default_model_;
+     BoundingRectangle bounding_rectangle_;
+     float scale;
+     glm::mat4 translate_scale_;
+     glm::mat4 default_model_;
 };
 
 #endif // ROCK_H_
