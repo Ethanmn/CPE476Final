@@ -26,6 +26,8 @@ namespace {
       FOV,
       NEAR,
       FAR,
+      CAM_HEIGHT,
+      CAM_DIST
    };
    AdjustType adjust_mode = AdjustType::FAR;
 }
@@ -525,19 +527,35 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(SDL_SCANCODE_F11)) {
                show_fps = !show_fps;
             }
+            if (input.wasKeyPressed(SDL_SCANCODE_F10)) {
+               draw_collision_box = !draw_collision_box;
+            }
+
             if (input.wasKeyPressed(SDL_SCANCODE_F1)) {
                adjust_mode = AdjustType::FAR;
+               std::clog << "adjusting far-plane" << std::endl;
             }
             if (input.wasKeyPressed(SDL_SCANCODE_F2)) {
                adjust_mode = AdjustType::FOV;
+               std::clog << "adjusting field-of-view" << std::endl;
             }
             if (input.wasKeyPressed(SDL_SCANCODE_F3)) {
                adjust_mode = AdjustType::NEAR;
+               std::clog << "adjusting near-plane" << std::endl;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F4)) {
+               adjust_mode = AdjustType::CAM_HEIGHT;
+               std::clog << "adjusting camera's height above deer" << std::endl;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F5)) {
+               adjust_mode = AdjustType::CAM_DIST;
+               std::clog << "adjusting camera's distance to deer" << std::endl;
             }
             {
                const auto far_adjust_speed = 100.f / 1000.f;
                const auto near_adjust_speed = 10.f / 1000.f;
                const auto fov_adjust_speed = 15.f / 1000.f;
+               const auto camera_dist_speed = 5.f / 1000.f;
                if (input.isKeyHeld(SDL_SCANCODE_K)) { // adjust up
                   switch (adjust_mode) {
                      case AdjustType::FAR:
@@ -548,6 +566,12 @@ void Game::mainLoop() {
                         break;
                      case AdjustType::FOV:
                         kFieldOfView += fov_adjust_speed * dt;
+                        break;
+                     case AdjustType::CAM_HEIGHT:
+                        cameraHeightAboveDeer += camera_dist_speed * dt;
+                        break;
+                     case AdjustType::CAM_DIST:
+                        cameraDistanceToDeer += camera_dist_speed * dt;
                         break;
                   }
                }
@@ -561,6 +585,12 @@ void Game::mainLoop() {
                         break;
                      case AdjustType::FOV:
                         kFieldOfView -= fov_adjust_speed * dt;
+                        break;
+                     case AdjustType::CAM_HEIGHT:
+                        cameraHeightAboveDeer -= camera_dist_speed * dt;
+                        break;
+                     case AdjustType::CAM_DIST:
+                        cameraDistanceToDeer -= camera_dist_speed * dt;
                         break;
                   }
                }

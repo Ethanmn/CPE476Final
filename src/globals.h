@@ -21,4 +21,7 @@ extern bool useTextureShader;
 
 glm::mat4 calculateProjection();
 
+extern float cameraDistanceToDeer;
+extern float cameraHeightAboveDeer;
+
 #endif // GLOBALS_H_

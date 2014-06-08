@@ -21,3 +21,6 @@ float kNear = 1.0f;
 float kFieldOfView = 80.0f;
 float kFar = 500.0f;
 bool useTextureShader = true;
+
+float cameraDistanceToDeer = 23.0f;
+float cameraHeightAboveDeer = 12.0f;
