@@ -56,6 +56,8 @@ std::string texture_path(TextureType texture) {
          return "../textures/pinecone.tga";
       case TextureType::ROCK:
          return "../textures/rock.tga";
+      case TextureType::FIREFLY:
+         return "../textures/firefly.tga";
       case TextureType::LAST_TEXTURE_TYPE:
          return "";
 

@@ -99,6 +99,8 @@ std::string mesh_path(MeshType mesh) {
          return kMeshPath + "pinecone.dae";
       case MeshType::ROCK:
          return kMeshPath + "rock1.dae";
+      case MeshType::FIREFLY:
+         return kMeshPath + "firefly.obj";
    }
 }
 

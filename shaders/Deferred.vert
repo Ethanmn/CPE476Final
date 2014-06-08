@@ -83,7 +83,7 @@ vec3 calculateHeight() {
    if (uHasHeightMap != 0) {
       heightOffset = vec3(0, (texture2D(uHeightMap, aTexCoord.xy).x - 0.5) * uHeightMapScale, 0);
    }
-   vUnderWater = heightOffset.y < 0.0 ? heightOffset.y * -0.5 : 0.0; 
+   vUnderWater = heightOffset.y < 0.1 ? heightOffset.y * -0.2 : 0.0; 
 #endif
    return heightOffset;
 }

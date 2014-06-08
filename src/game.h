@@ -20,6 +20,7 @@
 #include "bird_sound.h"
 #include "day_night_interaction.h"
 #include "butterfly_system.h"
+#include "firefly_system.h"
 #include "rain_system.h"
 #include "leaf_system.h"
 #include "water.h"
@@ -62,6 +63,7 @@ struct Game {
    ButterflySystem butterfly_system_red_;
    ButterflySystem butterfly_system_pink_;
    ButterflySystem butterfly_system_blue_;
+   FireflySystem firefly_system_;
 
    RainSystem rain_system_;
    Lightning lightning_trigger_;

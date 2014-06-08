@@ -15,7 +15,7 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
 
-   bool useTextureShader = true; //Note: this also needs to be changed in shaders.cpp
+   bool useTextureShader = false; //Note: this also needs to be changed in shaders.cpp
 
    int lighting = 0;
    int raining = 0;
@@ -79,6 +79,10 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
          glm::vec3(-60.0f, 0.f, -70.0f), 10),
 
+   firefly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::FIREFLY)), TextureType::FIREFLY,
+         glm::vec3(-20.0f, 0.f, -20.0f), 20),
+
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
@@ -99,8 +103,8 @@ Game::Game() :
    deferred_diffuse_fbo_(kScreenWidth, kScreenHeight, DEFERRED_DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    deferred_position_fbo_(kScreenWidth, kScreenHeight, DEFERRED_POSITION_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    deferred_normal_fbo_(kScreenWidth, kScreenHeight, DEFERRED_NORMAL_TEXTURE, FBOType::COLOR_WITH_DEPTH),
-
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::COLOR_WITH_DEPTH),
+
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
@@ -148,6 +152,7 @@ void Game::step(units::MS dt) {
    butterfly_system_red_.step(dt);
    butterfly_system_pink_.step(dt);
    butterfly_system_blue_.step(dt);
+   firefly_system_.step(dt);
 
    rain_system_.step(dt);
 
@@ -181,13 +186,11 @@ void Game::step(units::MS dt) {
    if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
       if(!deerInWater) {
          deerInWater = true;
-         /*
          sound_engine_.playSoundEffect(
          SoundEngine::SoundEffect::WATER,
          false,
          deer_.getPosition());
          //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
-         */
       }
    }
    else if(deerInWater) { //leave water
@@ -362,14 +365,8 @@ void Game::draw() {
    drawables.push_back(butterfly_system_blue_.drawable());
 
    if (!day_cycle_.isDay()) {
-      Drawable fireflyDrawable = butterfly_system_red_.drawable();
-      fireflyDrawable.draw_template.mesh = song_path_.drawable().draw_template.mesh;
-      for(auto& instance : fireflyDrawable.draw_instances)
-         instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.6)) * 
-            glm::translate(glm::mat4(), glm::vec3(-30.0, 10.0, -30.0)) * instance.model_transform;
-      drawables.push_back(fireflyDrawable); 
-      fireflyDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
-      drawables.push_back(fireflyDrawable); 
+      drawables.push_back(firefly_system_.drawable());
+      drawables.push_back(firefly_system_.drawable_glow());
    }
 
    god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
