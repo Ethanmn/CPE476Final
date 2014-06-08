@@ -30,7 +30,6 @@ void main() {
    if(uIsGodRay == 1) {
       vGodRayDepth = pixel_pos.z / pixel_pos.w;
       pixel_pos.z = 0.0;
-      /*vGodRayIntensity = 1.0 + distance(vec3(vPosition), uGodRayCenter)/40.0;*/
       if(vNormal.z > 0.1)
          vGodRayIntensity = max(1.0, 0.5 + 1.0 / vNormal.z);
       else

@@ -15,7 +15,7 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
 
-   bool useTextureShader = true; //Note: this also needs to be changed in shaders.cpp
+   bool useTextureShader = false; //Note: this also needs to be changed in shaders.cpp
 
    int lighting = 0;
    int raining = 0;
@@ -80,7 +80,7 @@ Game::Game() :
          glm::vec3(-60.0f, 0.f, -70.0f), 10),
 
    firefly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::GEM)), TextureType::GEM,
+            mesh_loader_.loadMesh(MeshType::FIREFLY)), TextureType::FIREFLY,
          glm::vec3(-20.0f, 0.f, -20.0f), 20),
 
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,

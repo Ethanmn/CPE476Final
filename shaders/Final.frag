@@ -33,7 +33,7 @@ void main() {
       color = vec4(1, 0, 0, 1); //Test: this should never appear.
 
       float differenceOfDepth = vGodRayDepth - depthOfImage.z;
-      if(differenceOfDepth < 0.0002)
+      if(vGodRayDepth > depthOfImage.z)
          color = calculateDiffuse(pixelOnScreen, 0) + calculateAmbient(pixelOnScreen, AmbientAmount);
       else
          discard;
