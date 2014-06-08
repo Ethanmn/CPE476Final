@@ -11,7 +11,7 @@ const float kScreenHeightf = kScreenHeight;
 const float kFieldOfView = 80.0f;
 const float kAspectRatio = kScreenWidthf / kScreenHeightf;
 const float kNear = 1.0f;
-const float kFar = 500.0f;
+const float kFar = 1000.0f;
 
 const glm::mat4 kProjectionMatrix = glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
 

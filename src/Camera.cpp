@@ -17,13 +17,16 @@ const float kSpringStrength(0.128f);  //Larger = stiffer spring
 const float kDampConst(0.0065f);      //Larger = lighter mass (more spring motion),
 const float kSpringSpeed(0.01f);      //Larger = faster spring movement
 const float kDistanceFromDeer(20.0f);
+const float kCircleRadius(300.f);
+const float kRotateSpeed(15.f / 1000.f);
 
 const auto kUp = glm::vec3(0, 1, 0);
 
 Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    position(pos),
    lookAt(look),
-   camera_target(pos)
+   camera_target(pos),
+   angle(0.f)
 {}
 
 
@@ -70,4 +73,10 @@ void Camera::step(float dT, const glm::vec3& target_pos, const glm::vec3& target
    } else {
       position = camera_target;
    }
+}
+
+void Camera::circle(float dT, const glm::vec3& target_pos) {
+   lookAt = target_pos;
+   angle += kRotateSpeed * dT;
+   camera_target = position = glm::vec3(kCircleRadius*glm::cos(glm::radians(angle)), position.y, kCircleRadius*glm::sin(glm::radians(angle)));
 }

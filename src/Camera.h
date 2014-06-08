@@ -25,11 +25,14 @@ struct Camera {
    glm::mat4 getViewMatrix() const;
 
    void step(float dT, const glm::vec3& target_pos, const glm::vec3& target_facing, Position relative_position);
+   void circle(float dT, const glm::vec3& target_pos);
 
   private:
    glm::vec3 position;
    glm::vec3 lookAt;
    glm::vec3 camera_target;
+
+   float angle;
 };
 
 #endif // CAMERA_H_

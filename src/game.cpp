@@ -23,6 +23,12 @@ namespace {
    float countLightning = 0.0;
    int numLightning = 0;
    Timer timer;
+
+   enum GameMode {
+      START,
+      PLAY,
+   };
+   GameMode current_mode = START;
 }
 
 Game::Game() :
@@ -94,7 +100,7 @@ Game::Game() :
    skybox(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::SKYBOX))),
 
-   deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
+   deerCam(Camera(glm::vec3(300.0f), glm::vec3(0.0f))),
 
    deferred_diffuse_fbo_(kScreenWidth, kScreenHeight, DEFERRED_DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    deferred_position_fbo_(kScreenWidth, kScreenHeight, DEFERRED_POSITION_TEXTURE, FBOType::COLOR_WITH_DEPTH),
@@ -145,137 +151,140 @@ void Game::step(units::MS dt) {
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
 
-   butterfly_system_red_.step(dt);
-   butterfly_system_pink_.step(dt);
-   butterfly_system_blue_.step(dt);
+   if (current_mode == PLAY) {
+      butterfly_system_red_.step(dt);
+      butterfly_system_pink_.step(dt);
+      butterfly_system_blue_.step(dt);
 
-   rain_system_.step(dt);
+      rain_system_.step(dt);
 
-   if(numLightning) {
-      countLightning += dt/100.0;
-      if(countLightning < 0.0)
+      if(numLightning) {
+         countLightning += dt/100.0;
+         if(countLightning < 0.0)
+            lighting = 0;
+         else if(countLightning >= 0.0 && countLightning <= 1.0)
+            lighting = 1;
+         else if(countLightning > 1.0) {
+            countLightning = -2.0;
+            numLightning--;
+            if(numLightning == 1)
+               countLightning = -7.5;
+         }
+      } else {
          lighting = 0;
-      else if(countLightning >= 0.0 && countLightning <= 1.0)
-         lighting = 1;
-      else if(countLightning > 1.0) {
-         countLightning = -2.0;
-         numLightning--;
-         if(numLightning == 1)
-            countLightning = -7.5;
       }
-   } else {
-      lighting = 0;
-   }
 
-   bool deerBlocked = false;
-   if (deer_.isMoving()) {
-      BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt);
-      std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
-      for (auto collObj : collObjs) {
-         collObj->performObjectHit(sound_engine_);
-         deerBlocked = deerBlocked || collObj->isBlocker();
+      bool deerBlocked = false;
+      if (deer_.isMoving()) {
+         BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt);
+         std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
+         for (auto collObj : collObjs) {
+            collObj->performObjectHit(sound_engine_);
+            deerBlocked = deerBlocked || collObj->isBlocker();
+         }
       }
-   }
 
-   /*last minute addition, needs to be moved to deer*/
-   if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
-      if(!deerInWater) {
-         deerInWater = true;
-         /*
+      /*last minute addition, needs to be moved to deer*/
+      if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
+         if(!deerInWater) {
+            deerInWater = true;
+            /*
+            sound_engine_.playSoundEffect(
+            SoundEngine::SoundEffect::WATER,
+            false,
+            deer_.getPosition());
+            //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
+            */
+         }
+      }
+      else if(deerInWater) { //leave water
+         deerInWater = false;
          sound_engine_.playSoundEffect(
-         SoundEngine::SoundEffect::WATER,
-         false,
-         deer_.getPosition());
-         //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
-         */
+            SoundEngine::SoundEffect::WATER,
+            false,
+            deer_.getPosition());
       }
-   }
-   else if(deerInWater) { //leave water
-      deerInWater = false;
-      sound_engine_.playSoundEffect(
-         SoundEngine::SoundEffect::WATER,
-         false,
-         deer_.getPosition());
-   }
-   
 
-   if (deerBlocked) {
-      deer_.block();
-   } else {
-      deer_.step(dt, ground_, sound_engine_);
-   }
-
-   song_path_.step(dt, deer_.bounding_rectangle());
-
-   for (auto& bush : bushGen.getBushes()) {
-      bush.step(dt);
-   }
-
-   for (auto& tree : treeGen.getTrees()) {
-      tree.step(dt);
-   }
-
-   for(auto& flower : daisyGen.getFlowers()) {
-      if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
-         deer_.eat(flower);
+      if (deerBlocked) {
+         deer_.block();
+      } else {
+         deer_.step(dt, ground_, sound_engine_);
       }
-   }
-   for(auto& flower : roseGen.getFlowers()) {
-      if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
-         deer_.eat(flower);
+
+      song_path_.step(dt, deer_.bounding_rectangle());
+
+      for (auto& bush : bushGen.getBushes()) {
+         bush.step(dt);
       }
-   }
-   eatFlower = false;
 
-   if (!pinecone_.been_pounced() && deer_.bounding_rectangle().collidesWith(pinecone_.aoe_bounding_rectangle())) {
-      deer_.pounce(pinecone_.bounding_rectangle().getCenter());
-      pinecone_.deer_pounces();
-   }
+      for (auto& tree : treeGen.getTrees()) {
+         tree.step(dt);
+      }
 
-   if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
-      if (numLightning == 0) {
-         if (!raining) {
-            song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::STORM_SONG));
+      for(auto& flower : daisyGen.getFlowers()) {
+         if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
+            deer_.eat(flower);
+         }
+      }
+      for(auto& flower : roseGen.getFlowers()) {
+         if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
+            deer_.eat(flower);
+         }
+      }
+      eatFlower = false;
+
+      if (!pinecone_.been_pounced() && deer_.bounding_rectangle().collidesWith(pinecone_.aoe_bounding_rectangle())) {
+         deer_.pounce(pinecone_.bounding_rectangle().getCenter());
+         pinecone_.deer_pounces();
+      }
+
+      if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
+         if (numLightning == 0) {
+            if (!raining) {
+               song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::STORM_SONG));
+               song_path_.reset();
+            }
+            raining = 1;
+            lighting = 1;
+            numLightning = 3;
+            sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+         }
+      }
+
+      if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
+         if (day_cycle_.isDaytime()) {
+            song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::NIGHT_SONG));
             song_path_.reset();
          }
-         raining = 1;
-         lighting = 1;
-         numLightning = 3;
-         sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+         day_cycle_.dayToNight();
       }
-   }
+      else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
+         if (!day_cycle_.isDaytime()) {
+            song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG));
+            song_path_.reset();
+         }
+         day_cycle_.nightToDay();
+      }
+      day_cycle_.autoAdjustTime(dt);
 
-   if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
-      if (day_cycle_.isDaytime()) {
-         song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::NIGHT_SONG));
-         song_path_.reset();
+      Camera::Position cam_pos;
+      glm::vec3 target_pos(deer_.getPosition());
+      if (deer_.is_sleeping()) {
+         cam_pos = Camera::Position::FRONT_RIGHT;
+      } else if (deer_.is_eating()) {
+         cam_pos = Camera::Position::LEFT;
+      } else {
+         cam_pos = Camera::Position::BEHIND;
       }
-      day_cycle_.dayToNight();
-   }
-   else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
-      if (!day_cycle_.isDaytime()) {
-         song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG));
-         song_path_.reset();
+      if (deer_.is_sleeping() || deer_.is_eating()) {
+         glm::vec2 head_pos(deer_.head_bounding_rectangle().getCenter());
+         target_pos.x = head_pos.x;
+         target_pos.z = head_pos.y;
       }
-      day_cycle_.nightToDay();
+      deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
+   } else if (current_mode == START) {
+      deerCam.circle(dt, deer_.getPosition());
    }
-   day_cycle_.autoAdjustTime(dt);
-
-   Camera::Position cam_pos;
-   glm::vec3 target_pos(deer_.getPosition());
-   if (deer_.is_sleeping()) {
-      cam_pos = Camera::Position::FRONT_RIGHT;
-   } else if (deer_.is_eating()) {
-      cam_pos = Camera::Position::LEFT;
-   } else {
-      cam_pos = Camera::Position::BEHIND;
-   }
-   if (deer_.is_sleeping() || deer_.is_eating()) {
-      glm::vec2 head_pos(deer_.head_bounding_rectangle().getCenter());
-      target_pos.x = head_pos.x;
-      target_pos.z = head_pos.y;
-   }
-   deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
 }
 
 void Game::draw() {
@@ -431,40 +440,6 @@ void Game::mainLoop() {
          if (input.wasKeyPressed(SDL_SCANCODE_ESCAPE)) {
             running = false;
          }
-         { // handle walk forward/backward for deer.
-            const auto key_forward = SDL_SCANCODE_W;
-            const auto key_backward = SDL_SCANCODE_S;
-            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
-               deer_.walkForward();
-            } else if (input.isKeyHeld(key_backward) && !input.isKeyHeld(key_forward)) {
-               deer_.walkBackward();
-            } else {
-               deer_.stopWalking();
-            }
-         }
-         { // handle strafe left/right for deer.
-            const auto key_left = SDL_SCANCODE_A;
-            const auto key_right = SDL_SCANCODE_D;
-            if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
-               deer_.turnLeft();
-            } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
-               deer_.turnRight();
-            } else {
-               deer_.stopTurning();
-            }
-         }
-         { // handle jumping
-            const auto key_jump = SDL_SCANCODE_J;
-            if (input.wasKeyPressed(key_jump)) {
-               deer_.jump();
-            }
-         }
-         { // handle jumping
-            const auto key_eat = SDL_SCANCODE_E;
-            if (input.wasKeyPressed(key_eat)) {
-               eatFlower = true;
-            }
-         }
          { // show or hide tree shadows -- Katelyn
             const auto key_tree = SDL_SCANCODE_T;
             if (input.wasKeyPressed(key_tree)) {
@@ -509,6 +484,50 @@ void Game::mainLoop() {
             const auto key_quit = SDL_SCANCODE_Q;
             if (input.wasKeyPressed(key_quit)) {
                running = false;
+            }
+         }
+      }
+      if (current_mode == START) {
+         { // start button
+            const auto key_start = SDL_SCANCODE_RETURN;
+            if (input.wasKeyPressed(key_start)) {
+               current_mode = PLAY;
+            }
+         }
+      }
+      else if (current_mode == PLAY) {
+         { // handle walk forward/backward for deer.
+            const auto key_forward = SDL_SCANCODE_W;
+            const auto key_backward = SDL_SCANCODE_S;
+            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
+               deer_.walkForward();
+            } else if (input.isKeyHeld(key_backward) && !input.isKeyHeld(key_forward)) {
+               deer_.walkBackward();
+            } else {
+               deer_.stopWalking();
+            }
+         }
+         { // handle strafe left/right for deer.
+            const auto key_left = SDL_SCANCODE_A;
+            const auto key_right = SDL_SCANCODE_D;
+            if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
+               deer_.turnLeft();
+            } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
+               deer_.turnRight();
+            } else {
+               deer_.stopTurning();
+            }
+         }
+         {
+            const auto key_jump = SDL_SCANCODE_J;
+            if (input.wasKeyPressed(key_jump)) {
+               deer_.jump();
+            }
+         }
+         {
+            const auto key_eat = SDL_SCANCODE_E;
+            if (input.wasKeyPressed(key_eat)) {
+               eatFlower = true;
             }
          }
       }
