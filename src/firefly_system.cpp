@@ -8,7 +8,8 @@
 
 #define Y_MAX 0.00007f
 
-FireflySystem::FireflySystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles) :
+FireflySystem::FireflySystem(const Mesh& mesh, const Mesh& glow_mesh, 
+      TextureType texture_type, const glm::vec3& origin, int numParticles) :
             draw_template_({
                   ShaderType::DEFERRED,
                   mesh, 
@@ -19,7 +20,7 @@ FireflySystem::FireflySystem(const Mesh& mesh, TextureType texture_type, const g
                   }),
             draw_template_glow_({
                   ShaderType::FINAL_LIGHT_PASS,
-                  mesh, 
+                  glow_mesh, 
                   Material(),
                   Texture(texture_type, DIFFUSE_TEXTURE),
                   boost::none,
@@ -70,6 +71,6 @@ Drawable FireflySystem::drawable() const {
 Drawable FireflySystem::drawable_glow() const {
    std::vector<DrawInstance> model_matrices;
    for (auto& particle : particles_) 
-      model_matrices.push_back(particle.calculateModel() * glm::scale(glm::mat4(), glm::vec3(1.2f)));
+      model_matrices.push_back(particle.calculateModel() * glm::scale(glm::mat4(), glm::vec3(3.0f)));
    return Drawable({draw_template_glow_, model_matrices});
 }

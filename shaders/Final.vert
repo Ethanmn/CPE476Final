@@ -15,6 +15,7 @@ varying vec4 vNormal;
 attribute vec3 aPosition;
 attribute vec3 aTexCoord;
 varying vec4 vPosition;
+varying vec4 vCenterPos;
 
 uniform int uIsGodRay;
 uniform vec3 uGodRayCenter;
@@ -24,6 +25,7 @@ varying float vGodRayDepth;
 void main() {
    vTexCoord = vec2(aTexCoord);
    vPosition = uModelMatrix * vec4(aPosition, 1.0);
+   vCenterPos = uModelMatrix * vec4(uGodRayCenter, 1.0);
    vec4 pixel_pos = uProjectionMatrix * uViewMatrix * vPosition;
    vNormal = uNormalMatrix * vec4(aNormal, 1.0);
 
