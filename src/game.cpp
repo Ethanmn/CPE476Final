@@ -186,13 +186,11 @@ void Game::step(units::MS dt) {
    if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
       if(!deerInWater) {
          deerInWater = true;
-         /*
          sound_engine_.playSoundEffect(
          SoundEngine::SoundEffect::WATER,
          false,
          deer_.getPosition());
          //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
-         */
       }
    }
    else if(deerInWater) { //leave water
