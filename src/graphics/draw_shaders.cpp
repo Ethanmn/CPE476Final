@@ -57,12 +57,6 @@ namespace {
 void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
       const glm::mat4& view, bool needsModel, const UniformLocationMap& uniforms) {
    for(const auto& instance : drawable.draw_instances) {
-      /*
-      if (instance.material && drawable.draw_template.effects.count(EffectType::VARY_MATERIAL)) {
-         instance.material->sendMaterial(shader, uniforms);
-      }
-      */
-
       shader.sendUniform(Uniform::NORMAL, uniforms,
             glm::transpose(glm::inverse(view * instance.model_transform)));
       if (needsModel)
@@ -81,13 +75,9 @@ void DrawShader::drawModelTransforms(
       bool needsModel,
       const UniformLocationMap& uniforms) {
    for(const auto& instance : drawable.draw_instances) {
-      /* Note: only DEFERRED is usuing VARY_MATERIAL. */
-      if (instance.material && drawable.draw_template.effects.count(EffectType::VARY_MATERIAL)) {
-         shader.sendUniform(Uniform::VARY_MATERIAL, uniforms, 1);
+      if (instance.material) {
          instance.material->sendMaterial(shader, uniforms);
       }
-      else
-         shader.sendUniform(Uniform::VARY_MATERIAL, uniforms, 0);
 
       shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * instance.model_transform);
       shader.sendUniform(Uniform::NORMAL, uniforms,
@@ -308,6 +298,10 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                   SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
                   SendTexture(shader, newDrawable);
+                  {
+                     const int vary_material = drawable.draw_template.effects.count(EffectType::VARY_MATERIAL);
+                     shader.sendUniform(Uniform::VARY_MATERIAL, uniforms, vary_material);
+                  }
                   drawModelTransforms(shader, newDrawable, viewMatrix,
                         deferred_diffuse_fbo_,
                         deferred_position_fbo_,
