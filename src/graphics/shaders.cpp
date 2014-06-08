@@ -22,7 +22,6 @@ const std::vector<Attribute> kTextureAttrs{
    Attribute::BONE_WEIGHT4,
 };
 const std::vector<Uniform> kTextureUniforms{
-   Uniform::MODEL_VIEW,
    Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,

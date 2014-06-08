@@ -20,7 +20,7 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
-   Timer timer;
+   Timer draw_timer;
    bool show_fps = false;
    enum class AdjustType {
       FOV,
@@ -384,7 +384,7 @@ void Game::draw() {
    auto culledDrawables = frustum.cullDrawables(drawables);
 
    // Skybox is never culled, so we add it after.
-   culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
+   culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay(), deerCam.get_position())));
 
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -600,10 +600,10 @@ void Game::mainLoop() {
 
       {
          if (show_fps)
-            timer.start();
+            draw_timer.start();
          draw();
          if (show_fps)
-            timer.end();
+            draw_timer.end();
          engine_.swapWindow();
       }
 
