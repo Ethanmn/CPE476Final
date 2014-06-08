@@ -10,15 +10,11 @@
 #include "graphics/shader.h"
 #include "graphics/location_maps.h"
 
-enum class ShaderType { 
+enum class ShaderType {
    /* Ordering is important, shadow must be first */
    SHADOW,
    /* Reflection generates a texture, so must be before TEXTURE */
-   REFLECTION,
    DEFERRED,
-   DEF_DIFFUSE, 
-   DEF_POSITION,
-   DEF_NORMAL,
    WATER,
    TEXTURE,
    FINAL_LIGHT_PASS,

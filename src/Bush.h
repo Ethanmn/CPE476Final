@@ -12,7 +12,7 @@ struct Shader;
 struct SoundEngine;
 
 struct Bush : public GameObject {
-   Bush(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, 
+   Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
         float scale, units::MS rustle_time);
 
    void step(units::MS dt);

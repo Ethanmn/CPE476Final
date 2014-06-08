@@ -53,6 +53,14 @@ struct DrawShader {
             const glm::mat4& view,
             bool needsModel,
             const UniformLocationMap& uniforms);
+   void drawModelTransforms(Shader& shader, 
+            const Drawable& drawable,
+            const glm::mat4& view,
+            const FrameBufferObject& deferred_diffuse_fbo_,
+            const FrameBufferObject& deferred_position_fbo_,
+            const FrameBufferObject& deferred_normal_fbo_,
+            bool needsModel,
+            const UniformLocationMap& uniforms);
 
    Shaders shaders;
    UniformLocationMap uniforms;
