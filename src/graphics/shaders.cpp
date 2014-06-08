@@ -1,10 +1,6 @@
 #include "graphics/shaders.h"
 #include <assert.h>
 
-namespace {
-   bool useTextureShader = false; //Note: this also needs to be changed in game.cpp
-}
-
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
    Attribute::TEX_COORD,
@@ -169,21 +165,17 @@ const std::vector<Uniform> kFinalPassUniforms{
 };
 
 Shaders::Shaders() {
-      shaders_.insert(std::make_pair(ShaderType::SHADOW,
+   shaders_.insert(std::make_pair(ShaderType::SHADOW,
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::SKYBOX,
+   shaders_.insert(std::make_pair(ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
 
-      if(!useTextureShader) { 
-          shaders_.insert(std::make_pair(ShaderType::DEFERRED,
-                   Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
-         shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
+   shaders_.insert(std::make_pair(ShaderType::DEFERRED,
+            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+   shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
-      }
-      else {
-         shaders_.insert(std::make_pair(ShaderType::TEXTURE,
+   shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
-      }
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

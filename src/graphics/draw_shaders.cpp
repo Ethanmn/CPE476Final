@@ -121,7 +121,7 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
       const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
       int lightning) {
 
-   shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+   shader.sendUniform(Uniform::PROJECTION, uniforms, kProjectionMatrix);
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
 
    shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
@@ -238,6 +238,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::TEXTURE:
+            if (!useTextureShader) break;
             if(printCurrentShaderName)
                printf("Texture\n");
 
@@ -259,7 +260,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
          case ShaderType::SKYBOX:
             if(printCurrentShaderName)
                printf("Skybox\n");
-            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+            shader.sendUniform(Uniform::PROJECTION, uniforms, kProjectionMatrix);
 
             for (auto& drawable : culledDrawables) {
                if (drawable.draw_template.shader_type == ShaderType::SKYBOX) {
@@ -276,6 +277,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::DEFERRED:
+            if (useTextureShader) break;
             if(printCurrentShaderName)
                printf("Deferred\n");
             for (size_t i = 0; i < LAST_DEFERRED; ++i) {
@@ -295,7 +297,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
 
-            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+            shader.sendUniform(Uniform::PROJECTION, uniforms, kProjectionMatrix);
 
             shadow_map_fbo_.texture().enable(texture_cache_);
             SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
@@ -318,6 +320,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::FINAL_LIGHT_PASS:
+            if (useTextureShader) break;
             glm::mat4 curView;
             glm::mat4 lookAt = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) );
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -331,7 +334,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_normal_fbo_.texture_slot());
 
             SendSun(shader, uniforms, sunIntensity, sunDir);
-            shader.sendUniform(Uniform::PROJECTION, uniforms, projectionMatrix);
+            shader.sendUniform(Uniform::PROJECTION, uniforms, kProjectionMatrix);
             shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
             shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);

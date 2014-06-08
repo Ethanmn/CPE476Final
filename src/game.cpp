@@ -15,14 +15,19 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
 
-   bool useTextureShader = false; //Note: this also needs to be changed in shaders.cpp
-
    int lighting = 0;
    int raining = 0;
 
    float countLightning = 0.0;
    int numLightning = 0;
    Timer timer;
+   bool show_fps = false;
+   enum class AdjustType {
+      FOV,
+      NEAR,
+      FAR,
+   };
+   AdjustType adjust_mode = AdjustType::FAR;
 }
 
 Game::Game() :
@@ -451,7 +456,7 @@ void Game::mainLoop() {
             }
          }
          { // handle jumping
-            const auto key_jump = SDL_SCANCODE_J;
+            const auto key_jump = SDL_SCANCODE_F;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
             }
@@ -513,14 +518,65 @@ void Game::mainLoop() {
       {
          const units::MS current_time = SDL_GetTicks();
          const units::MS dt = current_time - previous_time;
+         { // Debug/perf stuff.
+            if (input.wasKeyPressed(SDL_SCANCODE_F12)) {
+               useTextureShader = !useTextureShader;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F11)) {
+               show_fps = !show_fps;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F1)) {
+               adjust_mode = AdjustType::FAR;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F2)) {
+               adjust_mode = AdjustType::FOV;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F3)) {
+               adjust_mode = AdjustType::NEAR;
+            }
+            {
+               const auto far_adjust_speed = 100.f / 1000.f;
+               const auto near_adjust_speed = 10.f / 1000.f;
+               const auto fov_adjust_speed = 15.f / 1000.f;
+               if (input.isKeyHeld(SDL_SCANCODE_K)) { // adjust up
+                  switch (adjust_mode) {
+                     case AdjustType::FAR:
+                        kFar += far_adjust_speed * dt;
+                        break;
+                     case AdjustType::NEAR:
+                        kNear += near_adjust_speed * dt;
+                        break;
+                     case AdjustType::FOV:
+                        kFieldOfView += fov_adjust_speed * dt;
+                        break;
+                  }
+               }
+               if (input.isKeyHeld(SDL_SCANCODE_J)) { // adjust down
+                  switch (adjust_mode) {
+                     case AdjustType::FAR:
+                        kFar -= far_adjust_speed * dt;
+                        break;
+                     case AdjustType::NEAR:
+                        kNear -= near_adjust_speed * dt;
+                        break;
+                     case AdjustType::FOV:
+                        kFieldOfView -= fov_adjust_speed * dt;
+                        break;
+                  }
+               }
+               kProjectionMatrix = calculateProjection();
+            }
+         }
          step(dt);
          previous_time = current_time;
       }
 
       {
-         //timer.start();
+         if (show_fps)
+            timer.start();
          draw();
-         //timer.end();
+         if (show_fps)
+            timer.end();
          engine_.swapWindow();
       }
 
