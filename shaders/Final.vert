@@ -19,6 +19,7 @@ varying vec4 vPosition;
 uniform int uIsGodRay;
 uniform vec3 uGodRayCenter;
 varying float vGodRayIntensity;
+varying float vGodRayDepth;
 
 void main() {
    vTexCoord = vec2(aTexCoord);
@@ -27,6 +28,7 @@ void main() {
    vNormal = uNormalMatrix * vec4(aNormal, 1.0);
 
    if(uIsGodRay == 1) {
+      vGodRayDepth = pixel_pos.z / pixel_pos.w;
       pixel_pos.z = 0.0;
       /*vGodRayIntensity = 1.0 + distance(vec3(vPosition), uGodRayCenter)/40.0;*/
       if(vNormal.z > 0.1)
