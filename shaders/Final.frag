@@ -32,24 +32,19 @@ void main() {
 
    color = calculateDiffuse(pixelOnScreen, 1);
    if(uIsGodRay == 1) {
-      color = vec4(1, 0, 0, 1); //Test: this should never appear.
 
       bool isVisible = vGodRayDepth <= depthOfImage.z;
       if(isVisible) {
          float dist = distance(vPosition.xy, vCenterPos.xy);
          glow *= vec4(vec3(10.0/dist), 1.0);
-         if(dist < 0.1)
-            glow = vec4(1, 0, 0, 1);
-         else if(dist < 1.0) {
+         if(dist < 1.0) {
             test = vec4(1,0,0,1);
             color + vec4(2.0, 2.0, 0.0, 1.0);
          }
-         else if(dist < 2.0) {
+         else  {
             test = vec4(0,1,1,0);
-            color = calculateDiffuse(pixelOnScreen, 0);
+            color + vec4(0.5, 0.5, 0.0, 1.0);
          }
-         else
-            test = vec4(0, 0, 1, 0);
       }
       else {
          discard;
@@ -57,7 +52,7 @@ void main() {
       color = glow;
    }
 
-   gl_FragColor = color; // + calculateAmbient(pixelOnScreen, AmbientAmount);
+   gl_FragColor = color + calculateAmbient(pixelOnScreen, AmbientAmount);
 }
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun) {
