@@ -30,14 +30,13 @@ void main() {
    float AmbientAmount = 0.23;
 
    if(uIsGodRay == 1) {
-      color = calculateDiffuse(pixelOnScreen, 0) + calculateAmbient(pixelOnScreen, AmbientAmount);
+      color = vec4(1, 0, 0, 1); //Test: this should never appear.
 
       float differenceOfDepth = vGodRayDepth - depthOfImage.z;
       if(differenceOfDepth < 0.0002)
-         color = vec4(1,0,0,1);
+         color = calculateDiffuse(pixelOnScreen, 0) + calculateAmbient(pixelOnScreen, AmbientAmount);
       else
          discard;
-         /*color = calculateDiffuse(pixelOnScreen, 1) + calculateAmbient(pixelOnScreen, AmbientAmount);*/
    }
    else
       color = calculateDiffuse(pixelOnScreen, 1) + calculateAmbient(pixelOnScreen, AmbientAmount);
