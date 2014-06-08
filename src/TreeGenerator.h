@@ -23,7 +23,7 @@ struct TreeGenerator {
    std::vector<Tree>& getTrees();
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
-   std::vector<Drawable> leafDrawable() const;
+   Drawable leafDrawable() const;
    void includeInShadows(bool value); 
 
   private:

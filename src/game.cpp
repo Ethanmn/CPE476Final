@@ -350,10 +350,7 @@ void Game::draw() {
    drawables.push_back(bushGen.drawable());
    drawables.push_back(rockGen.drawable());
    drawables.push_back(treeGen.drawable());
-   std::vector<Drawable> leaf_drawables = treeGen.leafDrawable();
-   for (auto& leafDrawable : leaf_drawables) {
-      drawables.push_back(leafDrawable);
-   }
+   drawables.push_back(treeGen.leafDrawable());
 
    drawables.push_back(daisyGen.drawable());
    drawables.push_back(daisyGen.drawableEaten());
