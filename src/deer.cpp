@@ -215,7 +215,8 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
       }
       return;
    } else if (pounce_target_) {
-      const auto target_facing = glm::normalize(*pounce_target_ - xz(model_state_.position));
+      const auto target_facing = glm::normalize(*pounce_target_ -
+            xz(glm::vec3(inverse_pivot_ * glm::vec4(model_state_.position, 1.f))));
       const auto angle = glm::orientedAngle(model_state_.last_facing, target_facing);
       if (glm::abs(angle) > 7.f) {
          const auto rotate_speed = 5.f / 16.f;
