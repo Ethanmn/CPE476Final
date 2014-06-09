@@ -224,9 +224,31 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::REFLECTION:
-            // Cheap hack: just use view culling.
             {
+               reflection_fbo.bind();
+               // Cheap hack: just use view culling.
                auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
+               // scale everything across the ground.
+               const auto scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
+               for (std::vector<Drawable>::iterator iter = drawables.begin(); iter != drawables.end();) {
+                  // Cheap hack to get rid of the ground plane. DEADLINE
+                  // APPROACHES.
+                  if (iter->draw_template.height_map) {
+                     iter = drawables.erase(iter);
+                  } else {
+                     for (auto& instance : iter->draw_instances) {
+                        instance.model_transform = scale * instance.model_transform;
+                     }
+                     ++iter;
+                  }
+               }
+               const auto reflectSunDir = glm::vec3(scale * glm::vec4(sunDir, 0));
+
+               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
+               shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
+
+               drawTextureShader(shader, drawables, viewMatrix, reflectSunDir, sunIntensity,
+                     lightning);
             }
             break;
          case ShaderType::WATER:
