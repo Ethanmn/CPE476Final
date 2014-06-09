@@ -42,7 +42,7 @@ void main() {
    vPosition = uModelMatrix * pos;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
-   vHeightMapHeight = pos.y;
+   vHeightMapHeight = aPosition.y;
 
    gl_Position = uModelViewProjectionMatrix * pos;
 }

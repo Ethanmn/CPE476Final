@@ -67,6 +67,6 @@ void main() {
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord) : vec2(0.0, 0.0);
    vShadow = uShadowMap * pos;
-   vHeightMapHeight = pos.y;
+   vHeightMapHeight = aPosition.y;
    gl_Position = uProjectionMatrix * vViewer;
 }
