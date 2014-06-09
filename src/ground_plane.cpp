@@ -50,7 +50,7 @@ float GroundPlane::heightAt(const glm::vec3& position) const {
       // multiply by some constant
       // TODO(chebert): This should match the texture shader. Deadline monday,
       // so I am postponing good coding stuffz.
-      return (pixel_packet->red / 65535.0f - 0.5f) * kHeightMapScale;
+      return (pixel_packet->red / 65535.0f - 0.5f) * gHeightMapScale;
    }
    // return a height of 0 if we are out of bounds (for testing).
    return 0.0f;
