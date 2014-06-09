@@ -512,7 +512,7 @@ void Game::mainLoop() {
          { // start button
             const auto key_start = SDL_SCANCODE_RETURN;
             if (input.wasKeyPressed(key_start)) {
-               far_plane_target = 500.f;
+               far_plane_target = 400.f;
                current_mode = PLAY;
             }
          }
