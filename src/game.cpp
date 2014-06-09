@@ -37,6 +37,12 @@ namespace {
       HEIGHT_MAP
    };
    AdjustType adjust_mode = AdjustType::FAR;
+   SpringMotion<float> far_plane_spring(
+         0.128f, // strength
+         0.00065f, // damp
+         0.01f) // speed
+         ;
+   boost::optional<float> far_plane_target;
 }
 
 Game::Game() :
@@ -162,6 +168,10 @@ void Game::step(units::MS dt) {
    }
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
+
+   if (far_plane_target) {
+      gFar = far_plane_spring.step(dt, *far_plane_target, gFar);
+   }
 
    if (current_mode == PLAY) {
       butterfly_system_red_.step(dt);
@@ -502,7 +512,7 @@ void Game::mainLoop() {
          { // start button
             const auto key_start = SDL_SCANCODE_RETURN;
             if (input.wasKeyPressed(key_start)) {
-               gFar = 500.f;
+               far_plane_target = 500.f;
                current_mode = PLAY;
             }
          }
@@ -592,6 +602,7 @@ void Game::mainLoop() {
                   switch (adjust_mode) {
                      case AdjustType::FAR:
                         gFar += far_adjust_speed * dt;
+                        far_plane_target = boost::none;
                         break;
                      case AdjustType::NEAR:
                         gNear += near_adjust_speed * dt;
@@ -614,6 +625,7 @@ void Game::mainLoop() {
                   switch (adjust_mode) {
                      case AdjustType::FAR:
                         gFar -= far_adjust_speed * dt;
+                        far_plane_target = boost::none;
                         break;
                      case AdjustType::NEAR:
                         gNear -= near_adjust_speed * dt;
