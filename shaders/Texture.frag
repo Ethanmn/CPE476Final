@@ -26,7 +26,8 @@ varying vec2 vTexCoord;
 varying vec4 vViewer;
 varying vec3 vNormal;
 varying vec4 vShadow;
-varying float vUnderWater;
+varying float vHeightMapHeight;
+uniform int uHasHeightMap;
 
 float calculateShadowAmount();
 vec4 calculateDiffuse(vec3 lightInt, vec3 lightDir);
@@ -115,7 +116,8 @@ vec3 calculateSpecular(vec3 lightInt, vec3 lightDir) {
 }
 
 void CheckIfUnderWater(float ShadowAmount) {
-   if(vUnderWater > 0.0) {
+   float underWater = vHeightMapHeight < 0.0 ? 1.0 : 0.0;
+   if(uHasHeightMap != 0 && underWater > 0.0) {
       gl_FragColor = vec4(0.0, 
                      uSunIntensity * 0.6 * gl_FragColor.y + ShadowAmount * 0.2, 
                      uSunIntensity * 0.6 * gl_FragColor.z + ShadowAmount * 0.4, 

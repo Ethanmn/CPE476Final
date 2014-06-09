@@ -3,6 +3,7 @@ uniform int uOutputShaderType;
 uniform sampler2D uShadowMapTexture;
 uniform int uHasShadows;
 uniform mat4 uShadowMap;
+uniform int uHasHeightMap;
 
 uniform int uHasTexture;
 uniform sampler2D uTexture;
@@ -19,7 +20,7 @@ uniform Material uMat;
 varying vec2 vTexCoord;
 varying vec4 vPosition;
 varying vec3 vNormal;
-varying float vUnderWater;
+varying float vHeightMapHeight;
 
 vec4 calculateDiffuse();
 vec4 checkIfUnderWater(vec4 Diffuse);
@@ -69,9 +70,10 @@ int alphaCheck() {
 
 vec4 checkIfUnderWater(vec4 Diffuse) {
    vec4 DiffuseWithWater = Diffuse;
-   if(vUnderWater > 0.0) {
-      DiffuseWithWater = vec4(0.0, vUnderWater + DiffuseWithWater.y, 
-                                   vUnderWater + DiffuseWithWater.z, 1.0);
+   float underWater = vHeightMapHeight < 0.1 ? vHeightMapHeight * -0.2 : 0.0; 
+   if(uHasHeightMap != 0 && underWater > 0.0) {
+      DiffuseWithWater = vec4(0.0, underWater + DiffuseWithWater.y, 
+                                   underWater + DiffuseWithWater.z, 1.0);
    }
    return DiffuseWithWater;
 }
