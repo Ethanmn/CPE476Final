@@ -230,6 +230,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
 
          case ShaderType::REFLECTION:
+            if (!gReflections) break;
             {
                reflection_fbo.bind();
                glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -259,6 +260,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
          case ShaderType::WATER:
+            if (!gReflections) break;
             SendScreenSize(shader, uniforms);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             {

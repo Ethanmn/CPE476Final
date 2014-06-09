@@ -19,6 +19,7 @@ enum class MeshType {
    DEER_SLEEP,
    DEER_POUNCE,
    TIME_STONE,
+   WATER,
    TREE,
    BUSH,
    DAISY,
