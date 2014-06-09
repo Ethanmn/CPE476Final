@@ -201,10 +201,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
                {
                   glPolygonMode(GL_FRONT, GL_FILL);
-                  std::vector<Drawable> drawables;
-                  for (auto& drawable : shadow_drawables) {
-                     drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
-                  }
+                  const auto drawables = Drawable::fromCulledDrawables(shadow_drawables, CullType::VIEW_CULLING);
                   for (auto& drawable : drawables) {
                      SendBones(shader, drawable);
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
@@ -234,10 +231,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             {
-               std::vector<Drawable> drawables;
-               for (auto& drawable : culledDrawables) {
-                  drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING));
-               }
+               const auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
                shadow_map_fbo_.texture().enable(texture_cache_);
                SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
