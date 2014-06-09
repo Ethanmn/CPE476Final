@@ -27,7 +27,8 @@ namespace {
       NEAR,
       FAR,
       CAM_HEIGHT,
-      CAM_DIST
+      CAM_DIST,
+      HEIGHT_MAP
    };
    AdjustType adjust_mode = AdjustType::FAR;
 }
@@ -379,7 +380,7 @@ void Game::draw() {
 
    // View Frustum Culling
    auto viewMatrix = deerCam.getViewMatrix();
-   const auto view_projection = kProjectionMatrix * viewMatrix;
+   const auto view_projection = gProjectionMatrix * viewMatrix;
    Frustum frustum(view_projection);
    auto culledDrawables = frustum.cullDrawables(drawables);
 
@@ -548,21 +549,26 @@ void Game::mainLoop() {
                adjust_mode = AdjustType::CAM_DIST;
                std::clog << "adjusting camera's distance to deer" << std::endl;
             }
+            if (input.wasKeyPressed(SDL_SCANCODE_F6)) {
+               adjust_mode = AdjustType::HEIGHT_MAP;
+               std::clog << "adjusting height map's scale" << std::endl;
+            }
             {
                const auto far_adjust_speed = 100.f / 1000.f;
                const auto near_adjust_speed = 10.f / 1000.f;
                const auto fov_adjust_speed = 15.f / 1000.f;
                const auto camera_dist_speed = 5.f / 1000.f;
+               const auto height_map_speed = 5.f / 1000.f;
                if (input.isKeyHeld(SDL_SCANCODE_K)) { // adjust up
                   switch (adjust_mode) {
                      case AdjustType::FAR:
-                        kFar += far_adjust_speed * dt;
+                        gFar += far_adjust_speed * dt;
                         break;
                      case AdjustType::NEAR:
-                        kNear += near_adjust_speed * dt;
+                        gNear += near_adjust_speed * dt;
                         break;
                      case AdjustType::FOV:
-                        kFieldOfView += fov_adjust_speed * dt;
+                        gFieldOfView += fov_adjust_speed * dt;
                         break;
                      case AdjustType::CAM_HEIGHT:
                         cameraHeightAboveDeer += camera_dist_speed * dt;
@@ -570,18 +576,21 @@ void Game::mainLoop() {
                      case AdjustType::CAM_DIST:
                         cameraDistanceToDeer += camera_dist_speed * dt;
                         break;
+                     case AdjustType::HEIGHT_MAP:
+                        gHeightMapScale += height_map_speed * dt;
+                        break;
                   }
                }
                if (input.isKeyHeld(SDL_SCANCODE_J)) { // adjust down
                   switch (adjust_mode) {
                      case AdjustType::FAR:
-                        kFar -= far_adjust_speed * dt;
+                        gFar -= far_adjust_speed * dt;
                         break;
                      case AdjustType::NEAR:
-                        kNear -= near_adjust_speed * dt;
+                        gNear -= near_adjust_speed * dt;
                         break;
                      case AdjustType::FOV:
-                        kFieldOfView -= fov_adjust_speed * dt;
+                        gFieldOfView -= fov_adjust_speed * dt;
                         break;
                      case AdjustType::CAM_HEIGHT:
                         cameraHeightAboveDeer -= camera_dist_speed * dt;
@@ -589,9 +598,12 @@ void Game::mainLoop() {
                      case AdjustType::CAM_DIST:
                         cameraDistanceToDeer -= camera_dist_speed * dt;
                         break;
+                     case AdjustType::HEIGHT_MAP:
+                        gHeightMapScale -= height_map_speed * dt;
+                        break;
                   }
                }
-               kProjectionMatrix = calculateProjection();
+               gProjectionMatrix = calculateProjection();
             }
          }
          step(dt);

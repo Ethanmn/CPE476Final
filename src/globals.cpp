@@ -11,15 +11,15 @@ const float kScreenHeightf = kScreenHeight;
 const float kAspectRatio = kScreenWidthf / kScreenHeightf;
 
 glm::mat4 calculateProjection() {
-   return glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar);
+   return glm::perspective(gFieldOfView, kScreenWidthf/kScreenHeightf, gNear, gFar);
 }
-glm::mat4 kProjectionMatrix = calculateProjection();
+glm::mat4 gProjectionMatrix = calculateProjection();
 
-const float kHeightMapScale = 3.0f;
+float kHeightMapScale = 3.0f;
 
-float kNear = 1.0f;
-float kFieldOfView = 80.0f;
-float kFar = 500.0f;
+float gNear = 1.0f;
+float gFieldOfView = 80.0f;
+float gFar = 500.0f;
 bool useTextureShader = true;
 
 float cameraDistanceToDeer = 23.0f;

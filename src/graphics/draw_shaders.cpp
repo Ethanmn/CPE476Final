@@ -108,7 +108,7 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
       const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
       int lightning) {
 
-   shader.sendUniform(Uniform::PROJECTION, uniforms, kProjectionMatrix);
+   shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
 
    shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
@@ -135,7 +135,7 @@ void DrawShader::SendHeightMap(Shader& shader, const Drawable& drawable) {
    if (drawable.draw_template.height_map) {
       shader.sendUniform(Uniform::HEIGHT_MAP, uniforms,
             (*drawable.draw_template.height_map).texture_slot());
-      shader.sendUniform(Uniform::HEIGHT_MAP_SCALE, uniforms, kHeightMapScale);
+      shader.sendUniform(Uniform::HEIGHT_MAP_SCALE, uniforms, gHeightMapScale);
       shader.sendUniform(Uniform::HAS_HEIGHT_MAP, uniforms, 1);
       (*drawable.draw_template.height_map).enable(texture_cache_);
    }
@@ -249,7 +249,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
          case ShaderType::SKYBOX:
             if(printCurrentShaderName)
                printf("Skybox\n");
-            shader.sendUniform(Uniform::PROJECTION, uniforms, kProjectionMatrix);
+            shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
 
             for (auto& drawable : culledDrawables) {
                if (drawable.draw_template.shader_type == ShaderType::SKYBOX) {
@@ -286,7 +286,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
 
-            shader.sendUniform(Uniform::PROJECTION, uniforms, kProjectionMatrix);
+            shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
 
             shadow_map_fbo_.texture().enable(texture_cache_);
             SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
@@ -327,7 +327,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_normal_fbo_.texture_slot());
 
             SendSun(shader, uniforms, sunIntensity, sunDir);
-            shader.sendUniform(Uniform::PROJECTION, uniforms, kProjectionMatrix);
+            shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
             shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
             shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
             shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
