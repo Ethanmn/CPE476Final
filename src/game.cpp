@@ -502,6 +502,7 @@ void Game::mainLoop() {
          { // start button
             const auto key_start = SDL_SCANCODE_RETURN;
             if (input.wasKeyPressed(key_start)) {
+               gFar = 500.f;
                current_mode = PLAY;
             }
          }

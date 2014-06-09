@@ -12,6 +12,7 @@
 
 #include "units.h"
 #include "globals.h"
+#include "spring_motion.h"
 
 struct Deer;
 struct Camera {
@@ -33,6 +34,7 @@ struct Camera {
    glm::vec3 position;
    glm::vec3 lookAt;
    glm::vec3 camera_target;
+   SpringMotion<glm::vec3> spring_motion;
 
    float angle;
 };

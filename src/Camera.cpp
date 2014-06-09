@@ -22,7 +22,8 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    position(pos),
    lookAt(look),
    camera_target(pos),
-   angle(0.f)
+   angle(0.f),
+   spring_motion(kSpringStrength, kDampConst, kSpringSpeed)
 {}
 
 
@@ -52,27 +53,14 @@ void Camera::step(float dT, const glm::vec3& target_pos, const glm::vec3& target
          break;
    }
 
-   //Get the distance between the current position and our target
-   const auto displacement = position - camera_target;
-   const auto dispLength = glm::length(displacement);
-
-   //Only move if the distance is not super small
-   if (dispLength >= 0.09f) {
-      //Find the magnitude of the spring for this distance
-      const auto springMag = kSpringStrength * dispLength + kDampConst * (1 / dispLength);
-
-      //Calculate the scale of displacement based on the magnitude and distance
-      const auto scalar = (1.0f / dispLength) * springMag;
-
-      //Apply the scale and move based on the scaled displacement
-      position -= dT * kSpringSpeed * displacement * scalar;
-   } else {
-      position = camera_target;
-   }
+   position = spring_motion.step(dT, camera_target, position);
 }
 
 void Camera::circle(float dT, const glm::vec3& target_pos) {
    lookAt = target_pos;
    angle += kRotateSpeed * dT;
-   camera_target = position = glm::vec3(kCircleRadius*glm::cos(glm::radians(angle)), position.y, kCircleRadius*glm::sin(glm::radians(angle)));
+   camera_target = position = glm::vec3(
+         kCircleRadius * glm::cos(glm::radians(angle)),
+         position.y,
+         kCircleRadius * glm::sin(glm::radians(angle)));
 }
