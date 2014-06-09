@@ -1,6 +1,5 @@
-uniform mat4 uModelViewMatrix;
+uniform mat4 uModelViewProjectionMatrix;
 uniform mat4 uModelMatrix;
-uniform mat4 uProjectionMatrix;
 uniform mat4 uNormalMatrix;
 uniform int uHasTexture;
 
@@ -48,8 +47,7 @@ void main() {
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
 
-   gl_Position = uProjectionMatrix * uModelViewMatrix * pos;
-
+   gl_Position = uModelViewProjectionMatrix * pos;
 }
 
 mat4 calculateBones() {

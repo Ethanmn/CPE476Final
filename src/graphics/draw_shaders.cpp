@@ -52,15 +52,24 @@ namespace {
       shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
       SendInverseShadow(shader, uniforms, sunDir, deerPos);
    }
+
+   void SendModelAndNormal(Shader& shader, const UniformLocationMap& uniforms,
+         const glm::mat4& model_view, const glm::mat4& model, bool needsModel) {
+      shader.sendUniform(Uniform::NORMAL, uniforms, glm::transpose(glm::inverse(model_view)));
+      if (needsModel)
+         shader.sendUniform(Uniform::MODEL, uniforms, model);
+   }
+
+   void SendScreenSize(Shader& shader, const UniformLocationMap& uniforms) {
+      shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
+      shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
+   }
 }
 
 void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
       const glm::mat4& view, bool needsModel, const UniformLocationMap& uniforms) {
    for(const auto& instance : drawable.draw_instances) {
-      shader.sendUniform(Uniform::NORMAL, uniforms,
-            glm::transpose(glm::inverse(view * instance.model_transform)));
-      if (needsModel)
-         shader.sendUniform(Uniform::MODEL, uniforms, instance.model_transform);
+      SendModelAndNormal(shader, uniforms, view*instance.model_transform, instance.model_transform, needsModel);
       shader.drawMesh(drawable.draw_template.mesh);
    }
 }
@@ -79,11 +88,9 @@ void DrawShader::drawModelTransforms(
          instance.material->sendMaterial(shader, uniforms);
       }
 
-      shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * instance.model_transform);
-      shader.sendUniform(Uniform::NORMAL, uniforms,
-            glm::transpose(glm::inverse(view * instance.model_transform)));
-      if (needsModel)
-         shader.sendUniform(Uniform::MODEL, uniforms, instance.model_transform);
+      const auto model_view = view * instance.model_transform;
+      shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, gProjectionMatrix * model_view);
+      SendModelAndNormal(shader, uniforms, model_view, instance.model_transform, needsModel);
       for (int i = 0; i < LAST_DEFERRED; ++i) {
          const auto deferred_type(static_cast<DeferredType>(i));
          switch (deferred_type) {
@@ -104,7 +111,7 @@ void DrawShader::drawModelTransforms(
    }
 }
 
-void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
+void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables,
       const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
       int lightning) {
 
@@ -114,9 +121,9 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
    shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
    SendSun(shader, uniforms, sunIntensity, sunDir);
 
-
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE ||
+          drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
          {
          // Per-Drawable Texture Shader Setup
             SendHeightMap(shader, drawable);
@@ -200,10 +207,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
                {
                   glPolygonMode(GL_FRONT, GL_FILL);
-                  std::vector<Drawable> drawables;
-                  for (auto& drawable : shadow_drawables) {
-                     drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::SHADOW_CULLING));
-                  }
+                  const auto drawables = Drawable::fromCulledDrawables(shadow_drawables, CullType::VIEW_CULLING);
                   for (auto& drawable : drawables) {
                      SendBones(shader, drawable);
                      if (drawable.draw_template.effects.count(EffectType::CASTS_SHADOW)) {
@@ -225,6 +229,56 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
 
+         case ShaderType::REFLECTION:
+            if (!gReflections) break;
+            {
+               reflection_fbo.bind();
+               glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+               // Cheap hack: just use view culling.
+               auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
+               // scale everything across the ground.
+               const auto scale = glm::scale(glm::mat4(), glm::vec3(1, -1, 1));
+               for (std::vector<Drawable>::iterator iter = drawables.begin(); iter != drawables.end();) {
+                  // Cheap hack to get rid of the ground plane. DEADLINE
+                  // APPROACHES.
+                  if (iter->draw_template.height_map) {
+                     iter = drawables.erase(iter);
+                  } else {
+                     for (auto& instance : iter->draw_instances) {
+                        instance.model_transform = scale * instance.model_transform;
+                     }
+                     ++iter;
+                  }
+               }
+               const auto reflectSunDir = glm::vec3(scale * glm::vec4(sunDir, 0));
+
+               shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
+               shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
+
+               drawTextureShader(shader, drawables, viewMatrix, reflectSunDir, sunIntensity,
+                     lightning);
+            }
+            break;
+         case ShaderType::WATER:
+            if (!gReflections) break;
+            SendScreenSize(shader, uniforms);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            {
+               const auto view_projection = gProjectionMatrix * viewMatrix;
+               for (auto& drawable : culledDrawables) {
+                  if (drawable.draw_template.shader_type == ShaderType::WATER) {
+                     drawable.draw_template.texture->enable(texture_cache_);
+                     shader.sendUniform(Uniform::TEXTURE, uniforms,
+                           drawable.draw_template.texture->texture_slot());
+                     for (auto& inst : drawable.draw_instances) {
+                        shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms,
+                              view_projection * inst.instance.model_transform);
+                        shader.drawMesh(drawable.draw_template.mesh);
+                     }
+                  }
+               }
+            }
+            break;
          case ShaderType::TEXTURE:
             if (!useTextureShader) break;
             if(printCurrentShaderName)
@@ -233,10 +287,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             {
-               std::vector<Drawable> drawables;
-               for (auto& drawable : culledDrawables) {
-                  drawables.push_back(Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING));
-               }
+               const auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
                shadow_map_fbo_.texture().enable(texture_cache_);
                SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
@@ -286,8 +337,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
 
-            shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
-
             shadow_map_fbo_.texture().enable(texture_cache_);
             SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
 
@@ -328,8 +377,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
             SendSun(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
-            shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
-            shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
+            SendScreenSize(shader, uniforms);
             shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
 
             for (auto& drawable : culledDrawables) {

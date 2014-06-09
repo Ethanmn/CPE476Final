@@ -125,7 +125,7 @@ Game::Game() :
    deferred_normal_fbo_(kScreenWidth, kScreenHeight, DEFERRED_NORMAL_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::COLOR_WITH_DEPTH),
 
-   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
+   water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::WATER))),
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GEM))),
@@ -380,10 +380,13 @@ void Game::draw() {
       drawables.push_back(roseGen.drawable());
       drawables.push_back(roseGen.drawableEaten());
 
+      if (gReflections) {
+         drawables.push_back(water_.drawable());
+      }
+
       drawables.push_back(song_path_.drawable());
       if (raining)
          drawables.push_back(rain_system_.drawable());
-      drawables.push_back(water_.drawable());
 
       drawables.push_back(butterfly_system_red_.drawable());
       drawables.push_back(butterfly_system_pink_.drawable());
@@ -566,6 +569,9 @@ void Game::mainLoop() {
             }
             if (input.wasKeyPressed(SDL_SCANCODE_F10)) {
                draw_collision_box = !draw_collision_box;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F9)) {
+               gReflections = !gReflections;
             }
 
             if (input.wasKeyPressed(SDL_SCANCODE_F1)) {

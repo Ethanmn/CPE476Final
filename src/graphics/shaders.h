@@ -14,6 +14,7 @@ enum class ShaderType {
    /* Ordering is important, shadow must be first */
    SHADOW,
    /* Reflection generates a texture, so must be before TEXTURE */
+   REFLECTION,
    DEFERRED,
    WATER,
    TEXTURE,

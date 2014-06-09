@@ -56,9 +56,8 @@ const std::vector<Uniform> kTextureUniforms{
 
 /* Deferred Pass Attributes are the same as Texture's */
 const std::vector<Uniform> kDeferredPassUniforms {
-   Uniform::MODEL_VIEW,
+   Uniform::MODEL_VIEW_PROJECTION,
    Uniform::MODEL,
-   Uniform::PROJECTION,
    Uniform::NORMAL,
 
    Uniform::M_AMB,
@@ -129,8 +128,7 @@ const std::vector<Attribute> kWaterAttrs{
    Attribute::VERTEX,
 };
 const std::vector<Uniform> kWaterUniforms{
-   Uniform::MODEL_VIEW,
-   Uniform::PROJECTION,
+   Uniform::MODEL_VIEW_PROJECTION,
    Uniform::TEXTURE,
    Uniform::SCREEN_WIDTH,
    Uniform::SCREEN_HEIGHT,
@@ -174,6 +172,12 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
    shaders_.insert(std::make_pair(ShaderType::TEXTURE,
+            Shader("Texture", kTextureAttrs, kTextureUniforms)));
+
+   shaders_.insert(std::make_pair(ShaderType::WATER,
+            Shader("Water", kWaterAttrs, kWaterUniforms)));
+
+   shaders_.insert(std::make_pair(ShaderType::REFLECTION,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
 }
 
