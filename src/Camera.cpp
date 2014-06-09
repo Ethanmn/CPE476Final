@@ -14,7 +14,7 @@ const float kSpringStrength(0.128f);  //Larger = stiffer spring
 const float kDampConst(0.0065f);      //Larger = lighter mass (more spring motion),
 const float kSpringSpeed(0.01f);      //Larger = faster spring movement
 const float kCircleRadius(300.f);
-const float kRotateSpeed(15.f / 1000.f);
+const float kRotateSpeed(10.f / 1000.f);
 
 const auto kUp = glm::vec3(0, 1, 0);
 
@@ -22,8 +22,8 @@ Camera::Camera(glm::vec3 pos, glm::vec3 look) :
    position(pos),
    lookAt(look),
    camera_target(pos),
-   angle(0.f),
-   spring_motion(kSpringStrength, kDampConst, kSpringSpeed)
+   spring_motion(kSpringStrength, kDampConst, kSpringSpeed),
+   angle(0.f)
 {}
 
 
