@@ -223,6 +223,14 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
 
+         case ShaderType::REFLECTION:
+            // Cheap hack: just use view culling.
+            {
+               auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
+            }
+            break;
+         case ShaderType::WATER:
+            break;
          case ShaderType::TEXTURE:
             if (!useTextureShader) break;
             if(printCurrentShaderName)
