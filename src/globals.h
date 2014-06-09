@@ -18,6 +18,7 @@ extern float gNear;
 extern float gFieldOfView;
 extern glm::mat4 gProjectionMatrix;
 extern bool useTextureShader;
+extern bool gReflections;
 
 glm::mat4 calculateProjection();
 
