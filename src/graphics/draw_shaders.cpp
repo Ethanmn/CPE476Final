@@ -52,15 +52,19 @@ namespace {
       shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
       SendInverseShadow(shader, uniforms, sunDir, deerPos);
    }
+
+   void SendModelAndNormal(Shader& shader, const UniformLocationMap& uniforms,
+         const glm::mat4& model_view, const glm::mat4& model, bool needsModel) {
+      shader.sendUniform(Uniform::NORMAL, uniforms, glm::transpose(glm::inverse(model_view)));
+      if (needsModel)
+         shader.sendUniform(Uniform::MODEL, uniforms, model);
+   }
 }
 
 void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
       const glm::mat4& view, bool needsModel, const UniformLocationMap& uniforms) {
    for(const auto& instance : drawable.draw_instances) {
-      shader.sendUniform(Uniform::NORMAL, uniforms,
-            glm::transpose(glm::inverse(view * instance.model_transform)));
-      if (needsModel)
-         shader.sendUniform(Uniform::MODEL, uniforms, instance.model_transform);
+      SendModelAndNormal(shader, uniforms, view*instance.model_transform, instance.model_transform, needsModel);
       shader.drawMesh(drawable.draw_template.mesh);
    }
 }
@@ -79,12 +83,9 @@ void DrawShader::drawModelTransforms(
          instance.material->sendMaterial(shader, uniforms);
       }
 
-      shader.sendUniform(Uniform::NORMAL, uniforms,
-            glm::transpose(glm::inverse(view * instance.model_transform)));
-      if (needsModel)
-         shader.sendUniform(Uniform::MODEL, uniforms, instance.model_transform);
       const auto model_view = view * instance.model_transform;
       shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, gProjectionMatrix * model_view);
+      SendModelAndNormal(shader, uniforms, model_view, instance.model_transform, needsModel);
       for (int i = 0; i < LAST_DEFERRED; ++i) {
          const auto deferred_type(static_cast<DeferredType>(i));
          switch (deferred_type) {
