@@ -73,7 +73,7 @@ void LeafSystem::add() {
    for (int i = 0; i < numAdd; i++) {
       glm::vec3 randVec = getRandomVec();
       float randAngle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / ROT_MAX));
-      particles_.push_back(Particle(glm::vec3(origin_.x + randVec.x, origin_.y + randVec.y - 55.0f, origin_.z + randVec.z), 
+      particles_.push_back(Particle(glm::vec3(origin_.x + randVec.x, origin_.y + randVec.y - 40.0f, origin_.z + randVec.z), 
       scale_, randAngle, velocity_,  acceleration_));
    }
 }
