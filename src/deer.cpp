@@ -326,7 +326,7 @@ bool Deer::isMoving() {
 }
 
 glm::vec3 Deer::getPosition() const {
-   return model_state_.position;
+   return glm::vec3(bounding_rectangle().getCenter().x, model_state_.position.y, bounding_rectangle().getCenter().y);
 }
 
 void Deer::block() {

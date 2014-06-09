@@ -4,6 +4,7 @@
    Deer - CPE 476
 */
 #include "Skybox.h"
+#include "globals.h"
 
 Skybox::Skybox(Mesh mesh) :
    draw_template_day({
@@ -22,18 +23,15 @@ Skybox::Skybox(Mesh mesh) :
       EffectSet({})})
 {}
 
-glm::mat4 Skybox::calculateModel() const {
-   glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(GroundPlane::GROUND_SCALE, GroundPlane::GROUND_SCALE / 2, GroundPlane::GROUND_SCALE));
-   //glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(20.0f, 20.0f, 20.0f));
-   //glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f));
-
-   return scale;// * translate;
+glm::mat4 Skybox::calculateModel(const glm::vec3& cam_pos) const {
+   const auto translate = glm::translate(glm::mat4(), cam_pos);
+   const glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(kFar));
+   return translate * scale;
 }
 
-Drawable Skybox::drawable(bool isDay) const {
+Drawable Skybox::drawable(bool isDay, const glm::vec3& cam_pos) const {
    std::vector<DrawInstance> model_matrices;
-   model_matrices.push_back(calculateModel());
-  
+   model_matrices.push_back(calculateModel(cam_pos));
    if (isDay) {
       return Drawable({draw_template_day, model_matrices});
    }
@@ -41,36 +39,3 @@ Drawable Skybox::drawable(bool isDay) const {
       return Drawable({draw_template_night, model_matrices});
    }
 }
-
-std::vector<Drawable> Skybox::drawables(bool isDay) const {
-   std::vector<DrawInstance> model_matrices;
-   std::vector<Drawable> drawables;
-   glm::mat4 planeMat = calculateModel();
-
-   for (int side = 0; side < 4; side++) {
-      glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-      rotation = glm::rotate(glm::mat4(1.0f), 90.0f * side, glm::vec3(0.0f, 1.0f, 0.0f)) * rotation;
-      glm::mat4 translate;
-
-      if (side % 2) {
-         int multiply = side <= 1 ? -1 : 1;
-         translate = glm::translate(glm::mat4(1.0f), glm::vec3(multiply * 20.0f, -1.0f, 0.0f));
-      }
-      else {
-         int multiply = side <= 1 ? -1 : 1;
-         translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, multiply * 20.0f));
-      }
-
-      model_matrices.clear();
-      model_matrices.push_back(translate * rotation * planeMat);
-
-      if (isDay) {
-         drawables.push_back(Drawable({draw_template_day, model_matrices}));
-      }
-      else {
-         drawables.push_back(Drawable({draw_template_night, model_matrices}));
-      }
-   }
-
-   return drawables;
-} 

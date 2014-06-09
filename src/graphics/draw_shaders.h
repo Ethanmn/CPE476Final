@@ -10,8 +10,7 @@
 #include "globals.h"
 
 struct DrawShader {
-   DrawShader() : uniforms(shaders.getUniformLocationMap()), 
-      projectionMatrix(glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar)) {}
+   DrawShader() : uniforms(shaders.getUniformLocationMap()) {}
 
    void Draw(const FrameBufferObject& shadow_map_fbo_, 
             const FrameBufferObject& reflection_fbo,
@@ -64,7 +63,6 @@ struct DrawShader {
 
    Shaders shaders;
    UniformLocationMap uniforms;
-   const glm::mat4 projectionMatrix;
    TextureCache texture_cache_;
 };
 
