@@ -128,8 +128,7 @@ const std::vector<Attribute> kWaterAttrs{
    Attribute::VERTEX,
 };
 const std::vector<Uniform> kWaterUniforms{
-   Uniform::MODEL_VIEW,
-   Uniform::PROJECTION,
+   Uniform::MODEL_VIEW_PROJECTION,
    Uniform::TEXTURE,
    Uniform::SCREEN_WIDTH,
    Uniform::SCREEN_HEIGHT,
@@ -176,7 +175,7 @@ Shaders::Shaders() {
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
 
    shaders_.insert(std::make_pair(ShaderType::WATER,
-            Shader("Water", kTextureAttrs, kTextureUniforms)));
+            Shader("Water", kWaterAttrs, kWaterUniforms)));
 
    shaders_.insert(std::make_pair(ShaderType::REFLECTION,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));

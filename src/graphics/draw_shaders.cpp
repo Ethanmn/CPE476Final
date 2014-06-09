@@ -232,6 +232,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
          case ShaderType::REFLECTION:
             {
                reflection_fbo.bind();
+               glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
                // Cheap hack: just use view culling.
                auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
                // scale everything across the ground.
@@ -259,14 +260,18 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             break;
          case ShaderType::WATER:
             SendScreenSize(shader, uniforms);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
             {
                const auto view_projection = gProjectionMatrix * viewMatrix;
                for (auto& drawable : culledDrawables) {
                   if (drawable.draw_template.shader_type == ShaderType::WATER) {
                      drawable.draw_template.texture->enable(texture_cache_);
+                     shader.sendUniform(Uniform::TEXTURE, uniforms,
+                           drawable.draw_template.texture->texture_slot());
                      for (auto& inst : drawable.draw_instances) {
                         shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms,
                               view_projection * inst.instance.model_transform);
+                        shader.drawMesh(drawable.draw_template.mesh);
                      }
                   }
                }

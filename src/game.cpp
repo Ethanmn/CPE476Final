@@ -362,7 +362,7 @@ void Game::draw() {
    if (raining)
       drawables.push_back(rain_system_.drawable());
 
-   drawables.push_back(ground_.drawable());
+   //drawables.push_back(ground_.drawable());
    drawables.push_back(water_.drawable());
 
    drawables.push_back(butterfly_system_red_.drawable());
