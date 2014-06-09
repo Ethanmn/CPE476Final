@@ -59,6 +59,11 @@ namespace {
       if (needsModel)
          shader.sendUniform(Uniform::MODEL, uniforms, model);
    }
+
+   void SendScreenSize(Shader& shader, const UniformLocationMap& uniforms) {
+      shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
+      shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
+   }
 }
 
 void DrawShader::drawModelTransforms(Shader& shader, const Drawable& drawable,
@@ -117,7 +122,8 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
    SendSun(shader, uniforms, sunIntensity, sunDir);
 
    for (auto& drawable : drawables) {
-      if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
+      if (drawable.draw_template.shader_type == ShaderType::TEXTURE ||
+          drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
          {
          // Per-Drawable Texture Shader Setup
             SendHeightMap(shader, drawable);
@@ -252,6 +258,19 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
          case ShaderType::WATER:
+            SendScreenSize(shader, uniforms);
+            {
+               const auto view_projection = gProjectionMatrix * viewMatrix;
+               for (auto& drawable : culledDrawables) {
+                  if (drawable.draw_template.shader_type == ShaderType::WATER) {
+                     drawable.draw_template.texture->enable(texture_cache_);
+                     for (auto& inst : drawable.draw_instances) {
+                        shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms,
+                              view_projection * inst.instance.model_transform);
+                     }
+                  }
+               }
+            }
             break;
          case ShaderType::TEXTURE:
             if (!useTextureShader) break;
@@ -351,8 +370,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
             SendSun(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
-            shader.sendUniform(Uniform::SCREEN_WIDTH, uniforms, kScreenWidthf);
-            shader.sendUniform(Uniform::SCREEN_HEIGHT, uniforms, kScreenHeightf);
+            SendScreenSize(shader, uniforms);
             shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
 
             for (auto& drawable : culledDrawables) {
