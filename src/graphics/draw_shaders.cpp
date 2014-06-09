@@ -79,11 +79,12 @@ void DrawShader::drawModelTransforms(
          instance.material->sendMaterial(shader, uniforms);
       }
 
-      shader.sendUniform(Uniform::MODEL_VIEW, uniforms, view * instance.model_transform);
       shader.sendUniform(Uniform::NORMAL, uniforms,
             glm::transpose(glm::inverse(view * instance.model_transform)));
       if (needsModel)
          shader.sendUniform(Uniform::MODEL, uniforms, instance.model_transform);
+      const auto model_view = view * instance.model_transform;
+      shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms, gProjectionMatrix * model_view);
       for (int i = 0; i < LAST_DEFERRED; ++i) {
          const auto deferred_type(static_cast<DeferredType>(i));
          switch (deferred_type) {
@@ -104,7 +105,7 @@ void DrawShader::drawModelTransforms(
    }
 }
 
-void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables, 
+void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables,
       const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
       int lightning) {
 
@@ -113,7 +114,6 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
 
    shader.sendUniform(Uniform::LIGHTNING, uniforms, lightning);
    SendSun(shader, uniforms, sunIntensity, sunDir);
-
 
    for (auto& drawable : drawables) {
       if (drawable.draw_template.shader_type == ShaderType::TEXTURE) { 
@@ -285,8 +285,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
-
-            shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
 
             shadow_map_fbo_.texture().enable(texture_cache_);
             SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);

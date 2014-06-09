@@ -56,9 +56,8 @@ const std::vector<Uniform> kTextureUniforms{
 
 /* Deferred Pass Attributes are the same as Texture's */
 const std::vector<Uniform> kDeferredPassUniforms {
-   Uniform::MODEL_VIEW,
+   Uniform::MODEL_VIEW_PROJECTION,
    Uniform::MODEL,
-   Uniform::PROJECTION,
    Uniform::NORMAL,
 
    Uniform::M_AMB,
