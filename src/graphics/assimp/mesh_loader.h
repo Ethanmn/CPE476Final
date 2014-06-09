@@ -36,7 +36,8 @@ enum class MeshType {
    PLANE,
    LEAF,
    PINECONE,
-   ROCK
+   ROCK,
+   FIREFLY
 };
 
 std::string mesh_path(MeshType mesh);

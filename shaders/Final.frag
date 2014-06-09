@@ -12,10 +12,12 @@ uniform int uIsGodRay;
 uniform int uIsFirefly;
 uniform int uLightning;
 uniform vec3 uGodRayCenter;
+varying vec4 vNormal;
 
 varying vec4 vPosition;
 varying vec2 vTexCoord;
 varying float vGodRayIntensity;
+varying float vGodRayDepth;
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun);
 vec4 calculateAmbient(vec2 texCoord, float AmbientAmount);
@@ -28,32 +30,25 @@ void main() {
    float AmbientAmount = 0.23;
 
    if(uIsGodRay == 1) {
-      color = calculateDiffuse(pixelOnScreen, 0);
+      color = vec4(1, 0, 0, 1); //Test: this should never appear.
 
-      if(depthOfImage.z - gl_FragCoord.z > 0.0 &&
-         depthOfImage.z - gl_FragCoord.z < 10.0) {
-         color *= min(vGodRayIntensity, 5.0); 
-      }
+      float differenceOfDepth = vGodRayDepth - depthOfImage.z;
+      if(vGodRayDepth > depthOfImage.z)
+         color = calculateDiffuse(pixelOnScreen, 0) + calculateAmbient(pixelOnScreen, AmbientAmount);
       else
          discard;
    }
    else
-      color = calculateDiffuse(pixelOnScreen, 1);
+      color = calculateDiffuse(pixelOnScreen, 1) + calculateAmbient(pixelOnScreen, AmbientAmount);
 
-   gl_FragColor = color + calculateAmbient(pixelOnScreen, AmbientAmount);
-   if(uIsFirefly == 1)
-      gl_FragColor *= distance(vPosition, vec4(uGodRayCenter.xyz, 1.0)) * vec4(2.5, 2.5, 250.0/255.0, 1.0);
-
+   gl_FragColor = color;
 }
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun) {
    vec3 sunDir = normalize(vec3(uViewMatrix * vec4(uSunDir, 0.0)));
    float sunInt = uSunIntensity;
-     
-   if(useSun == 0) {
-      sunDir = vec3(0.2, 1.0, 0.2);
-      sunInt = min(0.5, uSunIntensity + 0.3);
-   }
+   if(useSun == 0)
+      sunInt = 1.0;
 
    vec4 Diffuse = texture2D(uDiffuseTexture, texCoord);
    if(Diffuse.a < 0.8)

@@ -27,6 +27,8 @@ struct Camera {
    void step(float dT, const glm::vec3& target_pos, const glm::vec3& target_facing, Position relative_position);
    void circle(float dT, const glm::vec3& target_pos);
 
+   glm::vec3 get_position() const { return position; }
+
   private:
    glm::vec3 position;
    glm::vec3 lookAt;

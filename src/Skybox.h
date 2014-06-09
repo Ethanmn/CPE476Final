@@ -18,9 +18,9 @@
 struct Skybox {
    Skybox(Mesh mesh);
 
-   glm::mat4 calculateModel() const;
+   glm::mat4 calculateModel(const glm::vec3& cam_pos) const;
    std::vector<Drawable> drawables(bool isDay) const;
-   Drawable drawable(bool isDay) const;
+   Drawable drawable(bool isDay, const glm::vec3& cam_pos) const;
 
    private:
       DrawTemplate draw_template_day;

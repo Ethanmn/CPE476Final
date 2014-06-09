@@ -15,20 +15,28 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
 
-   bool useTextureShader = true; //Note: this also needs to be changed in shaders.cpp
-
    int lighting = 0;
    int raining = 0;
 
    float countLightning = 0.0;
    int numLightning = 0;
-   Timer timer;
 
    enum GameMode {
       START,
       PLAY,
    };
    GameMode current_mode = START;
+   Timer draw_timer;
+   bool show_fps = false;
+   enum class AdjustType {
+      FOV,
+      NEAR,
+      FAR,
+      CAM_HEIGHT,
+      CAM_DIST,
+      HEIGHT_MAP
+   };
+   AdjustType adjust_mode = AdjustType::FAR;
 }
 
 Game::Game() :
@@ -85,6 +93,10 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
          glm::vec3(-60.0f, 0.f, -70.0f), 10),
 
+   firefly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::FIREFLY)), TextureType::FIREFLY,
+         glm::vec3(-20.0f, 0.f, -20.0f), 20),
+
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
             glm::vec3(0.0f, 100.0f, 0.0f), 2000),
@@ -105,8 +117,8 @@ Game::Game() :
    deferred_diffuse_fbo_(kScreenWidth, kScreenHeight, DEFERRED_DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    deferred_position_fbo_(kScreenWidth, kScreenHeight, DEFERRED_POSITION_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    deferred_normal_fbo_(kScreenWidth, kScreenHeight, DEFERRED_NORMAL_TEXTURE, FBOType::COLOR_WITH_DEPTH),
-
    shadow_map_fbo_(kScreenWidth, kScreenHeight, SHADOW_MAP_TEXTURE, FBOType::COLOR_WITH_DEPTH),
+
    water_(Mesh::fromAssimpMesh(attribute_location_map_, mesh_loader_.loadMesh(MeshType::GROUND))),
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
@@ -371,29 +383,27 @@ void Game::draw() {
          Drawable fireflyDrawable = butterfly_system_red_.drawable();
          fireflyDrawable.draw_template.mesh = song_path_.drawable().draw_template.mesh;
          for(auto& instance : fireflyDrawable.draw_instances)
-            instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.6)) * 
+            instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.6)) *
                glm::translate(glm::mat4(), glm::vec3(-30.0, 10.0, -30.0)) * instance.model_transform;
-         drawables.push_back(fireflyDrawable); 
+         drawables.push_back(fireflyDrawable);
          fireflyDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
-         drawables.push_back(fireflyDrawable); 
+         drawables.push_back(fireflyDrawable);
       }
 
       god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
       god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
       drawables.push_back(god_rays_.drawable());
-      for (auto& leafDrawable : treeGen.leafDrawable()) {
-         drawables.push_back(leafDrawable);
-      }
+      drawables.push_back(treeGen.leafDrawable());
    }
 
    // View Frustum Culling
    auto viewMatrix = deerCam.getViewMatrix();
-   const auto view_projection = kProjectionMatrix * viewMatrix;
+   const auto view_projection = gProjectionMatrix * viewMatrix;
    Frustum frustum(view_projection);
    auto culledDrawables = frustum.cullDrawables(drawables);
 
    // Skybox is never culled, so we add it after.
-   culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay())));
+   culledDrawables.push_back(CulledDrawable::fromDrawable(skybox.drawable(day_cycle_.isDay(), deerCam.get_position())));
 
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -520,7 +530,7 @@ void Game::mainLoop() {
             }
          }
          {
-            const auto key_jump = SDL_SCANCODE_J;
+            const auto key_jump = SDL_SCANCODE_F;
             if (input.wasKeyPressed(key_jump)) {
                deer_.jump();
             }
@@ -536,14 +546,104 @@ void Game::mainLoop() {
       {
          const units::MS current_time = SDL_GetTicks();
          const units::MS dt = current_time - previous_time;
+         { // Debug/perf stuff.
+            if (input.wasKeyPressed(SDL_SCANCODE_F12)) {
+               useTextureShader = !useTextureShader;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F11)) {
+               show_fps = !show_fps;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F10)) {
+               draw_collision_box = !draw_collision_box;
+            }
+
+            if (input.wasKeyPressed(SDL_SCANCODE_F1)) {
+               adjust_mode = AdjustType::FAR;
+               std::clog << "adjusting far-plane" << std::endl;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F2)) {
+               adjust_mode = AdjustType::FOV;
+               std::clog << "adjusting field-of-view" << std::endl;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F3)) {
+               adjust_mode = AdjustType::NEAR;
+               std::clog << "adjusting near-plane" << std::endl;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F4)) {
+               adjust_mode = AdjustType::CAM_HEIGHT;
+               std::clog << "adjusting camera's height above deer" << std::endl;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F5)) {
+               adjust_mode = AdjustType::CAM_DIST;
+               std::clog << "adjusting camera's distance to deer" << std::endl;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_F6)) {
+               adjust_mode = AdjustType::HEIGHT_MAP;
+               std::clog << "adjusting height map's scale" << std::endl;
+            }
+            {
+               const auto far_adjust_speed = 100.f / 1000.f;
+               const auto near_adjust_speed = 10.f / 1000.f;
+               const auto fov_adjust_speed = 15.f / 1000.f;
+               const auto camera_dist_speed = 5.f / 1000.f;
+               const auto height_map_speed = 5.f / 1000.f;
+               if (input.isKeyHeld(SDL_SCANCODE_K)) { // adjust up
+                  switch (adjust_mode) {
+                     case AdjustType::FAR:
+                        gFar += far_adjust_speed * dt;
+                        break;
+                     case AdjustType::NEAR:
+                        gNear += near_adjust_speed * dt;
+                        break;
+                     case AdjustType::FOV:
+                        gFieldOfView += fov_adjust_speed * dt;
+                        break;
+                     case AdjustType::CAM_HEIGHT:
+                        cameraHeightAboveDeer += camera_dist_speed * dt;
+                        break;
+                     case AdjustType::CAM_DIST:
+                        cameraDistanceToDeer += camera_dist_speed * dt;
+                        break;
+                     case AdjustType::HEIGHT_MAP:
+                        gHeightMapScale += height_map_speed * dt;
+                        break;
+                  }
+               }
+               if (input.isKeyHeld(SDL_SCANCODE_J)) { // adjust down
+                  switch (adjust_mode) {
+                     case AdjustType::FAR:
+                        gFar -= far_adjust_speed * dt;
+                        break;
+                     case AdjustType::NEAR:
+                        gNear -= near_adjust_speed * dt;
+                        break;
+                     case AdjustType::FOV:
+                        gFieldOfView -= fov_adjust_speed * dt;
+                        break;
+                     case AdjustType::CAM_HEIGHT:
+                        cameraHeightAboveDeer -= camera_dist_speed * dt;
+                        break;
+                     case AdjustType::CAM_DIST:
+                        cameraDistanceToDeer -= camera_dist_speed * dt;
+                        break;
+                     case AdjustType::HEIGHT_MAP:
+                        gHeightMapScale -= height_map_speed * dt;
+                        break;
+                  }
+               }
+               gProjectionMatrix = calculateProjection();
+            }
+         }
          step(dt);
          previous_time = current_time;
       }
 
       {
-         //timer.start();
+         if (show_fps)
+            draw_timer.start();
          draw();
-         //timer.end();
+         if (show_fps)
+            draw_timer.end();
          engine_.swapWindow();
       }
 

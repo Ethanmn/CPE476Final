@@ -71,7 +71,7 @@ vec4 checkIfUnderWater(vec4 Diffuse) {
    vec4 DiffuseWithWater = Diffuse;
    if(vUnderWater > 0.0) {
       DiffuseWithWater = vec4(0.0, vUnderWater + DiffuseWithWater.y, 
-                                   vUnderWater + DiffuseWithWater.z + 0.2 , 1.0);
+                                   vUnderWater + DiffuseWithWater.z, 1.0);
    }
    return DiffuseWithWater;
 }

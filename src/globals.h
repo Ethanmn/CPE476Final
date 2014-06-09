@@ -10,11 +10,18 @@ extern const float kScreenHeightf;
 
 extern const bool kDebugUseDeerModels;
 
-extern const float kFieldOfView;
 extern const float kAspectRatio;
-extern const float kNear;
-extern const float kFar;
-extern const glm::mat4 kProjectionMatrix;
-extern const float kHeightMapScale;
+extern float gHeightMapScale;
+
+extern float gFar;
+extern float gNear;
+extern float gFieldOfView;
+extern glm::mat4 gProjectionMatrix;
+extern bool useTextureShader;
+
+glm::mat4 calculateProjection();
+
+extern float cameraDistanceToDeer;
+extern float cameraHeightAboveDeer;
 
 #endif // GLOBALS_H_
