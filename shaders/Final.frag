@@ -31,24 +31,25 @@ void main() {
    vec4 color;
    vec2 pixelOnScreen = vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight);
    vec4 depthOfImage =  texture2D(uPositionTexture, pixelOnScreen);
-   float AmbientAmount = 0.23;
 
    if(uIsGodRay == 1) {
       color = vec4(1, 0, 0, 1); //Test: this should never appear.
 
       float differenceOfDepth = vGodRayDepth - depthOfImage.z;
       if(vGodRayDepth > depthOfImage.z)
-         color = calculateDiffuse(pixelOnScreen, 0) + calculateAmbient(pixelOnScreen, AmbientAmount);
+         color = calculateDiffuse(pixelOnScreen, 0);
       else
          discard;
    }
    else
-      color = calculateDiffuse(pixelOnScreen, 1) + calculateAmbient(pixelOnScreen, AmbientAmount);
+      color = calculateDiffuse(pixelOnScreen, 1);
 
    gl_FragColor = color;
 }
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun) {
+   float AmbientAmount = 0.23;
+   bool noAmbient = false;
    vec3 sunDir = normalize(vec3(uViewMatrix * vec4(uSunDir, 0.0)));
    float sunInt = uSunIntensity;
    if(useSun == 0)
@@ -60,6 +61,7 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
       && Diffuse.g == 0.6274509 * uSunIntensity
       && Diffuse.b == uSunIntensity) {
       Diffuse = changeIfWaterPlane();
+      noAmbient = true;
       if(Diffuse.x < 0.0)
          discard; 
    }
@@ -71,7 +73,11 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
    if (dotNLDir < 0.0) dotNLDir = 0.15;
    
    Diffuse = vec4(vec3(sunInt), 1.0) * Diffuse.rgba * dotNLDir;
-   return checkIfLightning(Diffuse);
+  
+   if(noAmbient)
+      return checkIfLightning(Diffuse); 
+   else
+      return checkIfLightning(Diffuse) + calculateAmbient(texCoord, AmbientAmount);
 }
 
 vec4 calculateAmbient(vec2 texCoord, float AmbientAmount) {
