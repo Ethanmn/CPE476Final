@@ -38,6 +38,7 @@ struct Deer {
    void jump();
    void eat(Flower& flower);
    void pounce(const glm::vec2& pounce_target);
+   void stop_pounce() { pounce_target_ = boost::none; spring_ = false; }
 
    glm::vec3 getPosition() const;
    glm::vec3 getFacing() const;

@@ -225,10 +225,6 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
          if (draw_template_.mesh.animation.past_percentage(32. / 40.)) {
             draw_template_.mesh.animation.set_percentage(16. / 40.);
          }
-         if (glm::length(*pounce_target_ - xz(model_state_.position)) < 10.f) {
-            spring_ = false;
-            pounce_target_ = boost::none;
-         }
       } else {
          const auto target_facing = glm::normalize(*pounce_target_ -
                xz(glm::vec3(inverse_pivot_ * glm::vec4(model_state_.position, 1.f))));

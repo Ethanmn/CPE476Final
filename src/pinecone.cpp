@@ -38,3 +38,22 @@ Drawable Pinecone::drawable() const {
          std::vector<DrawInstance>({mt})
          });
 }
+
+void Pinecone::kick(const glm::vec2& direction) {
+   velocity_ = glm::normalize(direction) / 20.f;
+}
+
+void Pinecone::step(float dt, const GroundPlane& ground) {
+   if (glm::length(velocity_) > 0.001f) {
+      const auto deltaV = -glm::normalize(velocity_) * 0.00045f * dt;
+      if (glm::length(deltaV) > glm::length(velocity_)) {
+         velocity_ = glm::vec2();
+      } else {
+         velocity_ += deltaV;
+      }
+   }
+   const auto dp = velocity_ * dt;
+   position_.x += dp.x;
+   position_.z += dp.y;
+   position_.y = -draw_template_.mesh.min.y + ground.heightAt(position_);
+}

@@ -237,6 +237,7 @@ void Game::step(units::MS dt) {
       } else {
          deer_.step(dt, ground_, sound_engine_);
       }
+      pinecone_.step(dt, ground_);
 
       song_path_.step(dt, deer_.bounding_rectangle());
 
@@ -248,7 +249,9 @@ void Game::step(units::MS dt) {
          tree.step(dt);
       }
 
-      if(eatFlower && deer_.front_feet_bounding_rectangle().collidesWith(pinecone_.bounding_rectangle())) {
+      if(deer_.front_feet_bounding_rectangle().collidesWith(pinecone_.bounding_rectangle())) {
+         deer_.stop_pounce();
+         pinecone_.kick(glm::vec2(deer_.getFacing().x, deer_.getFacing().z));
       }
 
       for(auto& flower : daisyGen.getFlowers()) {
