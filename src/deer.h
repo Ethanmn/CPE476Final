@@ -20,6 +20,7 @@ struct Deer {
       glm::vec3 velocity;
       glm::vec2 last_facing;
       float current_lean;
+      float current_rock;
    };
   public:
    Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const glm::vec3& position);
@@ -78,9 +79,24 @@ struct Deer {
             );
       return head;
    }
+   BoundingRectangle back_feet_bounding_rectangle() const {
+      BoundingRectangle head(bounding_rectangle_);
+      head.set_dimensions(
+            glm::vec2(
+               bounding_rectangle_.getDimensions().x / 8,
+               bounding_rectangle_.getDimensions().y));
+      head.set_position(
+            bounding_rectangle_.getCenter() +
+            bounding_rectangle_.getDimensions().x/5.f * glm::vec2(
+               glm::sin(glm::radians(bounding_rectangle_.getRotation() + 90.f) - 3.0),
+               glm::cos(glm::radians(bounding_rectangle_.getRotation() + 90.f) - 3.0))
+            );
+      return head;
+   }
 
    void block();
 
+   void changeRock(units::MS dt, const GroundPlane& ground_plane);
    glm::mat4 calculateModel(const ModelState& model_state) const;
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
@@ -118,6 +134,7 @@ struct Deer {
    ModelState model_state_;
 
    float desired_lean_;
+   float desired_rock_;
 
    WalkDirection walk_direction_;
    TurnDirection turn_direction_;

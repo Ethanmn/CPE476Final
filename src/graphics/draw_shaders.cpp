@@ -127,7 +127,7 @@ void DrawShader::drawTextureShader(bool isReflection, Shader& shader, const std:
           drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
          {
          // Per-Drawable Texture Shader Setup
-            SendHeightMap(shader, drawable);
+            //SendHeightMap(shader, drawable);
             SendBones(shader, drawable);
             SendTexture(shader, drawable);
 
