@@ -431,6 +431,8 @@ void Game::draw() {
       drawables.push_back(roseGen.drawable());
       drawables.push_back(roseGen.drawableEaten());
 
+      drawables.push_back(song_path_.drawable());
+
       if (gReflections) {
          Drawable waterDrawable = water_.drawable();
          if(useTextureShader)
