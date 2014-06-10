@@ -60,8 +60,7 @@ mat4 calculateBones() {
 }
 
 void main() {
-   vec3 offset = vec3(0, 0, 0);
-   vec4 pos = uModelMatrix * calculateBones() * vec4(offset + aPosition, 1.0);
+   vec4 pos = uModelMatrix * calculateBones() * vec4(aPosition, 1.0);
    vViewer = uViewMatrix * pos;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord) : vec2(0.0, 0.0);
