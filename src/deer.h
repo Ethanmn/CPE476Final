@@ -7,6 +7,7 @@
 #include "graphics/draw_template.h"
 #include "graphics/location_maps.h"
 #include "units.h"
+#include "dust_particle.h"
 
 struct GroundPlane;
 struct Shader;
@@ -22,7 +23,7 @@ struct Deer {
       float current_lean;
    };
   public:
-   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const glm::vec3& position);
+   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const Mesh& dust, const glm::vec3& position);
 
    BoundingRectangle getNextBoundingBox(units::MS dt);
 
@@ -131,6 +132,9 @@ struct Deer {
 
    glm::mat4 pivot_, inverse_pivot_;
    boost::optional<Flower&> flower_;
+
+   Dust dust_system_front_;
+   Dust dust_system_back_;
 };
 
 #endif // DEER_H_
