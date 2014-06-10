@@ -39,7 +39,7 @@ void main() {
 
       bool isVisible = vGodRayDepth <= depthOfImage.z;
       if(isVisible) {
-         float dist = distance(vPosition.xy, vCenterPos.xy);
+         float dist = distance(vPosition.xz, vCenterPos.xz);
          glow *= vec4(vec3(10.0/dist), 1.0);
          if(dist < 1.0) {
             test = vec4(1,0,0,1);
