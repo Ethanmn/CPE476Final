@@ -63,8 +63,8 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh,
    inverse_pivot_(glm::inverse(pivot_)),
    dust_system_front_(dust, TextureType::LEAF, position, 0),
    dust_system_back_(dust, TextureType::LEAF, position, 0),
-   water_system_front_(dust, TextureType::BUTTERFLY_BLUE, position, 0),
-   water_system_back_(dust, TextureType::BUTTERFLY_BLUE, position, 0)
+   water_system_front_(dust, TextureType::RAIN, position, 0),
+   water_system_back_(dust, TextureType::RAIN, position, 0)
       {}
 
 glm::mat4 Deer::calculateModel(const ModelState& model_state) const {
