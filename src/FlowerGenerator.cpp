@@ -40,7 +40,8 @@ void FlowerGenerator::generate(const GroundPlane& ground,  float errX, float err
             float x = row * FLOWER_SIZE - groundSize + rand() % FLOWER_SIZE;
             float y = col * FLOWER_SIZE - groundSize + rand() % FLOWER_SIZE;
 
-            flowers.push_back(Flower(draw_template_.mesh, glm::vec3(x, 0.0f, y), ground, scale, errX, errY));
+            if (ground.heightAt(glm::vec3(x, 0, y)) > 0.0f)
+               flowers.push_back(Flower(draw_template_.mesh, glm::vec3(x, 0.0f, y), ground, scale, errX, errY));
          }
       }
    }

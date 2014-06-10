@@ -43,7 +43,9 @@ void BushGenerator::generate(const GroundPlane& ground) {
             float angle = rand() % 360;
             float rustleTime = (rand() % (int)(BUSH_RUSTLE_MAX - BUSH_RUSTLE_MIN)) + BUSH_RUSTLE_MIN;
 
-            bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime));
+            if (ground.heightAt(glm::vec3(x, 0, y)) > 0.f) {
+               bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime));
+            }
          }
       }
    }
