@@ -27,6 +27,7 @@ enum class TextureType {
    PINECONE,
    ROCK,
    FIREFLY,
+   TITLE,
    LAST_TEXTURE_TYPE,
 };
 
