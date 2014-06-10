@@ -24,6 +24,7 @@ enum class Uniform {
    HAS_BONES,
    SHADOW_MAP,
    SHADOW_MAP_TEXTURE,
+   REFLECTION_TEXTURE,
    LIGHTNING,
    HAS_SHADOWS,
    HAS_TEXTURE,
@@ -32,6 +33,8 @@ enum class Uniform {
    USE_BLINN_PHONG,
    OUTPUT_SHADER_TYPE,
    VARY_MATERIAL,
+   IS_WATER,
+   IS_TITLE_SCREEN,
 
    SUN_DIR,
    SUN_INTENSITY,
@@ -91,6 +94,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uShadowMap";
       case Uniform::SHADOW_MAP_TEXTURE:
          return "uShadowMapTexture";
+      case Uniform::REFLECTION_TEXTURE:
+         return "uReflectionTexture";
       case Uniform::LIGHTNING:
          return "uLightning";
       case Uniform::HAS_SHADOWS:
@@ -115,6 +120,10 @@ inline std::string uniform_name(Uniform uniform) {
          return "uOutputShaderType";
       case Uniform::VARY_MATERIAL:
          return "uVaryMaterial";
+      case Uniform::IS_WATER:
+         return "uIsWater";
+      case Uniform::IS_TITLE_SCREEN:
+         return "uIsTitleScreen";
 
       case Uniform::FINAL_PASS_POSITION_TEXTURE:
          return "uPositionTexture";

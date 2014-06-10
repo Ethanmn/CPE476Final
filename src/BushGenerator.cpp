@@ -23,7 +23,7 @@ BushGenerator::BushGenerator(const Mesh& mesh, const GroundPlane& ground) :
          Material(),
          Texture(TextureType::TREE, DIFFUSE_TEXTURE),
          boost::none,
-         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::VARY_MATERIAL}) }) 
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::VARY_MATERIAL}) })
 {
    draw_template_.material = Material(glm::vec3(0.45, 0.24, 0.15));
    generate(ground);
@@ -43,7 +43,9 @@ void BushGenerator::generate(const GroundPlane& ground) {
             float angle = rand() % 360;
             float rustleTime = (rand() % (int)(BUSH_RUSTLE_MAX - BUSH_RUSTLE_MIN)) + BUSH_RUSTLE_MIN;
 
-            bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime));
+            if (ground.heightAt(glm::vec3(x, 0, y)) > 0.f) {
+               bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime));
+            }
          }
       }
    }

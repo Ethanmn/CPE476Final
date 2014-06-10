@@ -4,6 +4,8 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 
+const int BUTTERFLY_PROBABILTY = 35;
+
 Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
       float scale, units::MS rustle_time) :
    rotate_(0.0f),
@@ -28,15 +30,27 @@ Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const
          -90.0f,
          glm::vec3(1, 0, 0)
       )
-   )
+   ),
+   has_butterflies_(false),
+   position_(position)
 {}
 
-void Bush::step(units::MS dt) {
+bool Bush::step(units::MS dt) {
+   bool releaseButterflies = false;
+
    if (rustle_time_ < kMaxRustleTime) {
       rustle_time_ += dt;
       elapsed_time_ += dt;
       rotate_ = 10 * glm::sin(elapsed_time_ / 60.0f);
+      
+      releaseButterflies = !has_butterflies_ && (rand() % 100 < BUTTERFLY_PROBABILTY);
+      has_butterflies_ = true;
    }
+   else {
+      has_butterflies_ = false;  
+   }
+
+   return releaseButterflies;
 }
 
 glm::mat4 Bush::calculateModel() const {
@@ -52,6 +66,10 @@ glm::mat4 Bush::calculateModel() const {
    );
    return default_model_ * rotate;
 } 
+
+glm::vec3 Bush::getPosition() {
+   return position_;
+}
 
 void Bush::rustle(SoundEngine& sound_engine) {
    sound_engine.playSoundEffect(

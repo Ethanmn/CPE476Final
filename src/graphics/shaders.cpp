@@ -36,12 +36,13 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::SHADOW_MAP,
    Uniform::SHADOW_MAP_TEXTURE,
 
+   Uniform::IS_WATER,
+   Uniform::REFLECTION_TEXTURE,
+   Uniform::SCREEN_WIDTH,
+   Uniform::SCREEN_HEIGHT,
+
    Uniform::HAS_TEXTURE,
    Uniform::TEXTURE,
-
-   Uniform::HEIGHT_MAP,
-   Uniform::HEIGHT_MAP_SCALE,
-   Uniform::HAS_HEIGHT_MAP,
 
    Uniform::USE_BLINN_PHONG,
    Uniform::SUN_DIR,
@@ -72,7 +73,6 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::TEXTURE,
    Uniform::VARY_MATERIAL,
 
-   Uniform::HEIGHT_MAP,
    Uniform::HAS_HEIGHT_MAP,
 
    Uniform::BONES,
@@ -121,7 +121,8 @@ const std::vector<Attribute> kSkyboxAttrs{
 const std::vector<Uniform> kSkyboxUniforms{
    Uniform::MODEL_VIEW,
    Uniform::PROJECTION,
-   Uniform::TEXTURE
+   Uniform::TEXTURE,
+   Uniform::IS_TITLE_SCREEN
 };
 
 const std::vector<Attribute> kWaterAttrs{
@@ -145,6 +146,10 @@ const std::vector<Uniform> kFinalPassUniforms{
    Uniform::PROJECTION,
    Uniform::NORMAL,
 
+   Uniform::HAS_TEXTURE,
+   Uniform::TEXTURE,
+
+   Uniform::IS_WATER,
    Uniform::IS_GOD_RAY,
    Uniform::IS_FIREFLY,
    Uniform::GOD_RAY_CENTER,
@@ -167,16 +172,15 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
 
+   /* Both Deferred and Final used for deferred lighting */
    shaders_.insert(std::make_pair(ShaderType::DEFERRED,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
    shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
+   
+   /* Both Texture and Reflection used for normal lighting */
    shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
-
-   shaders_.insert(std::make_pair(ShaderType::WATER,
-            Shader("Water", kWaterAttrs, kWaterUniforms)));
-
    shaders_.insert(std::make_pair(ShaderType::REFLECTION,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
 }

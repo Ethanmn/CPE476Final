@@ -41,6 +41,7 @@ namespace {
 
       shadowProjection = biasMatrix * kShadowProjection;
       shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
+
       lightMat = shadowProjection * shadowView;
 
       shader.sendUniform(Uniform::SHADOW_MAP, uniforms, lightMat);
@@ -111,9 +112,9 @@ void DrawShader::drawModelTransforms(
    }
 }
 
-void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& drawables,
+void DrawShader::drawTextureShader(bool isReflection, Shader& shader, const std::vector<Drawable>& drawables,
       const glm::mat4& viewMatrix, const glm::vec3& sunDir, float sunIntensity, 
-      int lightning) {
+      int lightning, const FrameBufferObject& reflection_fbo) {
 
    shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
    shader.sendUniform(Uniform::VIEW, uniforms, viewMatrix);
@@ -130,9 +131,18 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
             SendBones(shader, drawable);
             SendTexture(shader, drawable);
 
+            if (!isReflection && drawable.draw_template.effects.count(EffectType::IS_WATER)) {
+               shader.sendUniform(Uniform::IS_WATER, uniforms, 1);
+               shader.sendUniform(Uniform::REFLECTION_TEXTURE, uniforms, reflection_fbo.texture_slot());  
+               reflection_fbo.texture().enable(texture_cache_);
+            }
+            else
+               shader.sendUniform(Uniform::IS_WATER, uniforms, 0);
+
             drawable.draw_template.material.sendMaterial(shader, uniforms);
          }
-         drawModelTransforms(shader, drawable, viewMatrix, true, uniforms);
+         if (!drawable.draw_template.effects.count(EffectType::IS_WATER) || !isReflection)
+            drawModelTransforms(shader, drawable, viewMatrix, true, uniforms);
       }
    }
 }
@@ -188,6 +198,9 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
       const glm::vec3& sunDir,
       float sunIntensity,
       int lightning) {
+
+   glm::mat4 curView; //For deferred shading.
+
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
       shader.use();
@@ -255,30 +268,11 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
 
-               drawTextureShader(shader, drawables, viewMatrix, reflectSunDir, sunIntensity,
-                     lightning);
+               drawTextureShader(true, shader, drawables, viewMatrix, reflectSunDir, sunIntensity,
+                     lightning, reflection_fbo);
             }
             break;
-         case ShaderType::WATER:
-            if (!gReflections) break;
-            SendScreenSize(shader, uniforms);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            {
-               const auto view_projection = gProjectionMatrix * viewMatrix;
-               for (auto& drawable : culledDrawables) {
-                  if (drawable.draw_template.shader_type == ShaderType::WATER) {
-                     drawable.draw_template.texture->enable(texture_cache_);
-                     shader.sendUniform(Uniform::TEXTURE, uniforms,
-                           drawable.draw_template.texture->texture_slot());
-                     for (auto& inst : drawable.draw_instances) {
-                        shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms,
-                              view_projection * inst.instance.model_transform);
-                        shader.drawMesh(drawable.draw_template.mesh);
-                     }
-                  }
-               }
-            }
-            break;
+
          case ShaderType::TEXTURE:
             if (!useTextureShader) break;
             if(printCurrentShaderName)
@@ -290,10 +284,13 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                const auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
                shadow_map_fbo_.texture().enable(texture_cache_);
+
                SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
 
-               drawTextureShader(shader, drawables, viewMatrix, sunDir, sunIntensity,
-                     lightning);
+               SendScreenSize(shader, uniforms);
+               
+               drawTextureShader(false, shader, drawables, viewMatrix, sunDir, sunIntensity,
+                     lightning, reflection_fbo);
             }
             break;
 
@@ -309,7 +306,18 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                      shader.sendUniform(Uniform::TEXTURE, uniforms,
                            (*drawable.draw_template.texture).texture_slot());
                      (*drawable.draw_template.texture).enable(texture_cache_);
-                     shader.sendUniform(Uniform::MODEL_VIEW, uniforms, viewMatrix * instance.instance.model_transform);
+
+                     if (drawable.draw_template.effects.count(EffectType::IS_TITLE_SCREEN)) {
+                        shader.sendUniform(Uniform::IS_TITLE_SCREEN, uniforms, 1);
+                        curView = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) ); 
+                     }
+                     else {
+                        shader.sendUniform(Uniform::IS_TITLE_SCREEN, uniforms, 0);
+                        curView = viewMatrix;
+                     }
+
+                     shader.sendUniform(Uniform::MODEL_VIEW, uniforms, 
+                           curView * instance.instance.model_transform);
                      shader.drawMesh(drawable.draw_template.mesh);
                   }
                }
@@ -344,7 +352,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
                if (newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
                   newDrawable.draw_template.material.sendMaterial(shader, uniforms);
-                  SendHeightMap(shader, newDrawable);
+                  //SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
                   SendTexture(shader, newDrawable);
                   {
@@ -363,7 +371,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
          case ShaderType::FINAL_LIGHT_PASS:
             if (useTextureShader) break;
-            glm::mat4 curView;
             glm::mat4 lookAt = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) );
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -385,11 +392,22 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
                if(newDrawable.draw_template.shader_type == ShaderType::FINAL_LIGHT_PASS) {
 
+                  if (drawable.draw_template.effects.count(EffectType::IS_WATER)) {
+                     shader.sendUniform(Uniform::IS_WATER, uniforms, 1);
+                     shader.sendUniform(Uniform::TEXTURE, uniforms, reflection_fbo.texture_slot());  
+                     reflection_fbo.texture().enable(texture_cache_);
+                  }
+                  else
+                     shader.sendUniform(Uniform::IS_WATER, uniforms, 0);
+
                   shader.sendUniform(Uniform::IS_FIREFLY, uniforms, 0);
                   if (drawable.draw_template.effects.count(EffectType::IS_GOD_RAY)) {
                      shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, 1);
                      if(drawable.draw_template.effects.count(EffectType::IS_FIREFLY))
                         shader.sendUniform(Uniform::IS_FIREFLY, uniforms, 1);
+                     curView = viewMatrix;
+                  }
+                  else if(drawable.draw_template.effects.count(EffectType::IS_WATER)) {
                      curView = viewMatrix;
                   }
                   else {
