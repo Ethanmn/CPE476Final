@@ -78,9 +78,9 @@ void Deer::changeRock(units::MS dt, const GroundPlane& ground_plane) {
    desired_rock_ = feetAngle;
    
    if(desired_rock_ < model_state_.current_rock)
-      model_state_.current_rock -= 0.0001 * dt;
+      model_state_.current_rock -= 0.00001 * dt;
    else if(desired_rock_ > model_state_.current_rock)
-      model_state_.current_rock += 0.0001 * dt;
+      model_state_.current_rock += 0.00001 * dt;
 }
 
 glm::mat4 Deer::calculateModel(const ModelState& model_state) const {

@@ -521,7 +521,6 @@ void Game::mainLoop() {
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
                switchBlinnPhongShading = !switchBlinnPhongShading;
-
                glm::vec2 backFeet = deer_.back_feet_bounding_rectangle().getCenter();
                glm::vec2 frontFeet = deer_.front_feet_bounding_rectangle().getCenter();
                float heightFront = ground_.heightAt(glm::vec3(frontFeet.x, 0.0, frontFeet.y));
