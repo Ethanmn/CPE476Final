@@ -25,7 +25,7 @@ Skybox::Skybox(Mesh mesh) :
 
 glm::mat4 Skybox::calculateModel(const glm::vec3& cam_pos) const {
    const auto translate = glm::translate(glm::mat4(), cam_pos);
-   const glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(gFar));
+   const auto scale = glm::scale(glm::mat4(), glm::vec3(1.6f*gFar));
    return translate * scale;
 }
 

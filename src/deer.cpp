@@ -42,6 +42,7 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh,
    eat_mesh_(eat_mesh),
    sleep_mesh_(sleep_mesh),
    pounce_mesh_(pounce_mesh),
+   spring_(false),
    model_state_({
          position,
          glm::vec3(0, 0, 0),
@@ -50,6 +51,7 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh,
          }),
    desired_lean_(0.0f),
    walk_direction_(WalkDirection::NONE),
+   turn_direction_(TurnDirection::NONE),
    bounding_rectangle_(xz(model_state_.position),
          glm::vec2(draw_template_.mesh.max.z - draw_template_.mesh.min.z,
                    draw_template_.mesh.max.x - draw_template_.mesh.min.x), 0.0f),
@@ -148,6 +150,7 @@ glm::vec3 Deer::predictVelocity(units::MS dt, const glm::vec3& acceleration) con
 
 void Deer::pounce(const glm::vec2& pounce_target) {
    pounce_target_ = pounce_target;
+   spring_ = false;
    draw_template_.mesh = pounce_mesh_;
 }
 
@@ -172,6 +175,7 @@ glm::vec2 Deer::predictFacing(units::MS dt) const {
 }
 
 void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
+   if (pounce_target_ && spring_) walkForward();
    model_state_.current_lean += (desired_lean_ - model_state_.current_lean) * 0.1f;
    model_state_.velocity = predictVelocity(dt, acceleration());
 
@@ -215,20 +219,29 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
       }
       return;
    } else if (pounce_target_) {
-      const auto target_facing = glm::normalize(*pounce_target_ - xz(model_state_.position));
-      const auto angle = glm::orientedAngle(model_state_.last_facing, target_facing);
-      if (glm::abs(angle) > 7.f) {
-         const auto rotate_speed = 5.f / 16.f;
-         const auto sign = angle > 1.f ? 1.f : -1.f;
-         const auto abs_angle = std::min(dt * rotate_speed, glm::abs(angle));
-         const auto rotate_angle = abs_angle * sign;
-         model_state_.last_facing = glm::rotate(model_state_.last_facing, rotate_angle);
-      } else {
-         model_state_.last_facing = target_facing;
+      if (spring_) {
+         model_state_.position = predictPosition(dt, model_state_.velocity);
          draw_template_.mesh.animation.step(dt);
-         if (draw_template_.mesh.animation.is_finished()) {
-            pounce_target_ = boost::none;
-            draw_template_.mesh = walk_mesh_;
+         if (draw_template_.mesh.animation.past_percentage(32. / 40.)) {
+            draw_template_.mesh.animation.set_percentage(16. / 40.);
+         }
+      } else {
+         const auto target_facing = glm::normalize(*pounce_target_ -
+               xz(glm::vec3(inverse_pivot_ * glm::vec4(model_state_.position, 1.f))));
+         const auto angle = glm::orientedAngle(model_state_.last_facing, target_facing);
+         if (glm::abs(angle) > 7.f) {
+            const auto rotate_speed = 5.f / 16.f;
+            const auto sign = angle > 1.f ? 1.f : -1.f;
+            const auto abs_angle = std::min(dt * rotate_speed, glm::abs(angle));
+            const auto rotate_angle = abs_angle * sign;
+            model_state_.last_facing = glm::rotate(model_state_.last_facing, rotate_angle);
+         } else {
+            model_state_.last_facing = target_facing;
+            draw_template_.mesh.animation.step(dt);
+            if (draw_template_.mesh.animation.is_finished()) {
+               spring_ = true;
+               draw_template_.mesh = walk_mesh_;
+            }
          }
       }
       bounding_rectangle_ = boundingRectangleFromModel(model_state_);
