@@ -140,6 +140,10 @@ const std::vector<Uniform> kFinalPassUniforms{
    Uniform::PROJECTION,
    Uniform::NORMAL,
 
+   Uniform::HAS_TEXTURE,
+   Uniform::TEXTURE,
+
+   Uniform::IS_WATER,
    Uniform::IS_GOD_RAY,
    Uniform::IS_FIREFLY,
    Uniform::GOD_RAY_CENTER,
@@ -169,8 +173,8 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
 
-   shaders_.insert(std::make_pair(ShaderType::WATER,
-            Shader("Water", kWaterAttrs, kWaterUniforms)));
+   //shaders_.insert(std::make_pair(ShaderType::WATER,
+            //Shader("Water", kWaterAttrs, kWaterUniforms)));
 
    shaders_.insert(std::make_pair(ShaderType::REFLECTION,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));

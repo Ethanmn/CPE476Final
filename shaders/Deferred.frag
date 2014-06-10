@@ -29,6 +29,8 @@ int alphaCheck();
 float calculateShadowAmount();
 
 void main() {
+   if(vPosition.y < 0.0)
+      discard;
    vec4 color = vec4(1, 0, 0, 1); 
    //red if OutputShaderType is not correct
    int alpha = alphaCheck();
@@ -76,6 +78,7 @@ vec4 checkIfUnderWater(vec4 Diffuse) {
    if(uHasHeightMap != 0 && underWater > 0.0) {
       DiffuseWithWater = vec4(0.0, underWater + DiffuseWithWater.y, 
                                    underWater + DiffuseWithWater.z, 1.0);
+      discard;
    }
    return DiffuseWithWater;
 }

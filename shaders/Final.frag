@@ -2,6 +2,8 @@ uniform sampler2D uDiffuseTexture;
 uniform sampler2D uPositionTexture;
 uniform sampler2D uNormalTexture;
 
+uniform sampler2D uTexture;
+
 uniform mat4 uViewMatrix;
 uniform float uScreenWidth;
 uniform float uScreenHeight;
@@ -12,8 +14,9 @@ uniform int uIsGodRay;
 uniform int uIsFirefly;
 uniform int uLightning;
 uniform vec3 uGodRayCenter;
-varying vec4 vNormal;
+uniform int uIsWater;
 
+varying vec4 vNormal;
 varying vec4 vPosition;
 varying vec2 vTexCoord;
 varying float vGodRayIntensity;
@@ -22,6 +25,7 @@ varying float vGodRayDepth;
 vec4 calculateDiffuse(vec2 texCoord, int useSun);
 vec4 calculateAmbient(vec2 texCoord, float AmbientAmount);
 vec4 checkIfLightning(vec4 Diffuse);
+bool changeIfWaterPlane();
 
 void main() {
    vec4 color;
@@ -42,6 +46,7 @@ void main() {
       color = calculateDiffuse(pixelOnScreen, 1) + calculateAmbient(pixelOnScreen, AmbientAmount);
 
    gl_FragColor = color;
+   changeIfWaterPlane();
 }
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun) {
@@ -77,4 +82,13 @@ vec4 checkIfLightning(vec4 Diffuse) {
       Diffuse = vec4(Diffuse.rgb * LightningAmount, 1.0);
    }
    return Diffuse;
+}
+
+bool changeIfWaterPlane() {
+   if(uIsWater == 1) {
+      vec4 refraction = vec4(0.0, 0, 0.4, 1.0);
+      vec4 reflection = texture2D(uTexture, vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight));
+      gl_FragColor = (refraction + reflection) / 2.0;
+   }
+   return uIsWater == 1;
 }

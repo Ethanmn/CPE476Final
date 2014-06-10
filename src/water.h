@@ -18,12 +18,12 @@ struct Water {
    Drawable drawable() const {
       return Drawable({
             DrawTemplate({
-               ShaderType::WATER,
+               ShaderType::FINAL_LIGHT_PASS,
                mesh_,
                Material(),
                reflection_fbo_.texture(),
                boost::none,
-               EffectSet()
+               EffectSet({EffectType::IS_WATER})
                }),
             std::vector<DrawInstance>({glm::scale(glm::mat4(), glm::vec3(
                      GroundPlane::GROUND_SCALE, 1, GroundPlane::GROUND_SCALE))})

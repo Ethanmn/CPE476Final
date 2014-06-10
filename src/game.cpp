@@ -363,6 +363,7 @@ void Game::draw() {
       drawables.push_back(rain_system_.drawable());
 
    drawables.push_back(ground_.drawable());
+
    if (gReflections) {
       drawables.push_back(water_.drawable());
    }

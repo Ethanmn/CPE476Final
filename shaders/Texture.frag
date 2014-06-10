@@ -82,8 +82,6 @@ float calculateShadowAmount() {
    else
       differenceInDepth = 0.0;
 
-   /*gl_FragColor = vec4(vec3(differenceInDepth), 1.0);   */
-
    return applyShadow;
 }
 

@@ -32,6 +32,7 @@ enum class Uniform {
    USE_BLINN_PHONG,
    OUTPUT_SHADER_TYPE,
    VARY_MATERIAL,
+   IS_WATER,
 
    SUN_DIR,
    SUN_INTENSITY,
@@ -115,6 +116,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uOutputShaderType";
       case Uniform::VARY_MATERIAL:
          return "uVaryMaterial";
+      case Uniform::IS_WATER:
+         return "uIsWater";
 
       case Uniform::FINAL_PASS_POSITION_TEXTURE:
          return "uPositionTexture";

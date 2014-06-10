@@ -260,6 +260,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                      lightning);
             }
             break;
+
          case ShaderType::WATER:
             if (!gReflections) break;
             SendScreenSize(shader, uniforms);
@@ -280,6 +281,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                }
             }
             break;
+
          case ShaderType::TEXTURE:
             if (!useTextureShader) break;
             if(printCurrentShaderName)
@@ -346,7 +348,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
                if (newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
                   newDrawable.draw_template.material.sendMaterial(shader, uniforms);
-                  SendHeightMap(shader, newDrawable);
+                  //SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
                   SendTexture(shader, newDrawable);
                   {
@@ -387,11 +389,22 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
                if(newDrawable.draw_template.shader_type == ShaderType::FINAL_LIGHT_PASS) {
 
+                  if (drawable.draw_template.effects.count(EffectType::IS_WATER)) {
+                     shader.sendUniform(Uniform::IS_WATER, uniforms, 1);
+                     shader.sendUniform(Uniform::TEXTURE, uniforms, reflection_fbo.texture_slot());  
+                     reflection_fbo.texture().enable(texture_cache_);
+                  }
+                  else
+                     shader.sendUniform(Uniform::IS_WATER, uniforms, 0);
+
                   shader.sendUniform(Uniform::IS_FIREFLY, uniforms, 0);
                   if (drawable.draw_template.effects.count(EffectType::IS_GOD_RAY)) {
                      shader.sendUniform(Uniform::IS_GOD_RAY, uniforms, 1);
                      if(drawable.draw_template.effects.count(EffectType::IS_FIREFLY))
                         shader.sendUniform(Uniform::IS_FIREFLY, uniforms, 1);
+                     curView = viewMatrix;
+                  }
+                  else if(drawable.draw_template.effects.count(EffectType::IS_WATER)) {
                      curView = viewMatrix;
                   }
                   else {
