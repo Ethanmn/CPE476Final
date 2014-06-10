@@ -7,13 +7,14 @@
 #include "ground_plane.h"
 #include "graphics/mesh.h"
 #include "units.h"
+#include "butterfly_system.h"
 
 struct Shader;
 struct SoundEngine;
 
 struct Bush : public GameObject {
    Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
-        float scale, units::MS rustle_time);
+        float scale, units::MS rustle_time, const Mesh& butterfly);
 
    void step(units::MS dt);
    void rustle(SoundEngine& sound_engine);
@@ -28,6 +29,8 @@ struct Bush : public GameObject {
 
    glm::mat4 calculateModel() const;
 
+  public:
+     ButterflySystem butterfly_system_;
 
   private: 
    float rotate_;
@@ -36,6 +39,7 @@ struct Bush : public GameObject {
    BoundingRectangle bounding_rectangle_;
    glm::mat4 translate_scale_;
    glm::mat4 default_model_;
+   bool hasButterflies_;
 };
 
 #endif // BUSH_H_

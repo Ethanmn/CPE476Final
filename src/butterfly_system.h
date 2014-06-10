@@ -15,6 +15,8 @@ struct ButterflySystem {
 
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
+   void add();
+   void generate(int numParticles);
 
    private:
       std::vector<Particle> particles_;
