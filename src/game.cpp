@@ -248,6 +248,9 @@ void Game::step(units::MS dt) {
          tree.step(dt);
       }
 
+      if(eatFlower && deer_.front_feet_bounding_rectangle().collidesWith(pinecone_.bounding_rectangle())) {
+      }
+
       for(auto& flower : daisyGen.getFlowers()) {
          if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
             deer_.eat(flower);
@@ -300,6 +303,8 @@ void Game::step(units::MS dt) {
          cam_pos = Camera::Position::FRONT_RIGHT;
       } else if (deer_.is_eating()) {
          cam_pos = Camera::Position::LEFT;
+      } else if (deer_.is_pouncing()) {
+         cam_pos = Camera::Position::RIGHT;
       } else {
          cam_pos = Camera::Position::BEHIND;
       }
@@ -307,6 +312,10 @@ void Game::step(units::MS dt) {
          glm::vec2 head_pos(deer_.head_bounding_rectangle().getCenter());
          target_pos.x = head_pos.x;
          target_pos.z = head_pos.y;
+      } else if (deer_.is_pouncing()) {
+         glm::vec2 target_xz((pinecone_.bounding_rectangle().getCenter() + deer_.bounding_rectangle().getCenter()) / 2.f);
+         target_pos.x = target_xz.x;
+         target_pos.z = target_xz.y;
       }
       deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
    } else if (current_mode == START) {

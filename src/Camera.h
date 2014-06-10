@@ -19,7 +19,8 @@ struct Camera {
    enum class Position {
       BEHIND,
       FRONT_RIGHT,
-      LEFT
+      LEFT,
+      RIGHT
    };
 
    Camera(glm::vec3 position, glm::vec3 lookAt);

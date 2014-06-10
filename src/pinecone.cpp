@@ -26,7 +26,7 @@ Pinecone::Pinecone(const Mesh& mesh, const GroundPlane& ground, const glm::vec2&
          position,
          glm::vec2(kAreaOfEffect, kAreaOfEffect),
          0.0f),
-   position_(position.x, ground.heightAt(glm::vec3(position.x, 0, position.y)), position.y),
+   position_(position.x, -mesh.min.y + ground.heightAt(glm::vec3(position.x, 0, position.y)), position.y),
    been_pounced_(false)
 {
 }

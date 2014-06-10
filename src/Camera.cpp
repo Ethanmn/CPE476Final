@@ -51,6 +51,11 @@ void Camera::step(float dT, const glm::vec3& target_pos, const glm::vec3& target
             cameraDistanceToDeer/1.5f * glm::rotateY(target_facing, -100.f) +
             glm::vec3(0, cameraHeightAboveDeer / 2.f, 0);
          break;
+      case Position::RIGHT:
+         camera_target = target_pos -
+            cameraDistanceToDeer * glm::rotateY(target_facing, 100.f) +
+            glm::vec3(0, cameraHeightAboveDeer / 3.f, 0);
+         break;
    }
 
    position = spring_motion.step(dT, camera_target, position);
