@@ -112,6 +112,7 @@ struct Deer {
    bool eating_;
    bool sleeping_;
    boost::optional<glm::vec2> pounce_target_;
+   bool spring_; // for the pounce yah
    Mesh walk_mesh_;
    Mesh eat_mesh_, sleep_mesh_, pounce_mesh_;
 
