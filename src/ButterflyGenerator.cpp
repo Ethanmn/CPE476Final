@@ -5,8 +5,11 @@
 */
 #include "ButterflyGenerator.h"
 
-const int MAX_NUM_BUTTERFLIES = 10;
-const int MIN_NUM_BUTTERFLIES = 4;
+const int MAX_NUM_BUTTERFLIES = 20;
+const int MIN_NUM_BUTTERFLIES = 5;
+
+const int MAX_HEIGHT = 20;
+const int MIN_HEIGHT = 10;
 
 ButterflyGenerator::ButterflyGenerator(AttributeLocationMap attribute_location_map_, MeshLoader mesh_loader_) {
    systems.push_back(ButterflySystem(Mesh::fromAssimpMesh(attribute_location_map_,
@@ -22,8 +25,9 @@ ButterflyGenerator::ButterflyGenerator(AttributeLocationMap attribute_location_m
 
 ButterflySystem ButterflyGenerator::getSystem(glm::vec3 origin) {
    ButterflySystem system = systems.at(rand() % systems.size());
+   float height = (rand() % (MAX_HEIGHT - MIN_HEIGHT)) + MIN_HEIGHT;
 
-   system.generate(origin, (rand() % (MAX_NUM_BUTTERFLIES - MIN_NUM_BUTTERFLIES)) + MIN_NUM_BUTTERFLIES);
+   system.generate(origin + glm::vec3(0, height, 0), (rand() % (MAX_NUM_BUTTERFLIES - MIN_NUM_BUTTERFLIES)) + MIN_NUM_BUTTERFLIES);
 
    return system;
 }

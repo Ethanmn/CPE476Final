@@ -10,7 +10,7 @@
 const float SCALE_MAX = 0.3f * 100.0f;
 const float SCALE_MIN = 0.05f * 100.0f;
 
-const float DISAPPEAR_INTERVAL = 1000.0f;
+const float DISAPPEAR_INTERVAL = 500.0f;
 
 ButterflySystem::ButterflySystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles) :
    draw_template_({
