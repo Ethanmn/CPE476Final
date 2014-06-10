@@ -447,6 +447,12 @@ void Game::draw() {
       god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
       god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
       drawables.push_back(god_rays_.drawable());
+
+      if(!day_cycle_.isDay()) {
+         drawables.push_back(firefly_system_.drawable());
+         drawables.push_back(firefly_system_.drawable_glow());
+      }
+
       drawables.push_back(treeGen.leafDrawable());
    }
 
