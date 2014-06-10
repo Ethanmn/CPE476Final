@@ -353,7 +353,7 @@ void Game::draw() {
    drawables.push_back(screen_drawable);
 
    if(displayTitleScreen) {
-      /* Title Pass Plane */
+      /* Title Screen Plane */
       for(auto& instance : screen_drawable.draw_instances) {
          instance.model_transform = glm::translate(glm::mat4(), glm::vec3(-1.0, 0.0, 0.0)) * instance.model_transform;
       }
