@@ -38,7 +38,7 @@ FireflySystem::FireflySystem(const Mesh& mesh, const Mesh& glow_mesh,
                   float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
                   float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
                   float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
-                  particles_.push_back(Particle(glm::vec3(origin_.x + rx, origin_.y + ry, origin_.z + rz), scale_, 0.0f,
+                  particles_.push_back(Particle(glm::vec3(origin_.x + rx, origin_.y + ry, origin_.z + rz), scale_, rand(),
                                        glm::vec3(rvx, 0.0f, rvz), acceleration_));
 
                }
@@ -73,6 +73,6 @@ Drawable FireflySystem::drawable() const {
 Drawable FireflySystem::drawable_glow() const {
    std::vector<DrawInstance> model_matrices;
    for (auto& particle : particles_) 
-      model_matrices.push_back(particle.calculateModel() * glm::scale(glm::mat4(), glm::vec3(5.0f)));
+      model_matrices.push_back(particle.calculateModel() * glm::scale(glm::mat4(), glm::vec3(3.0f)));
    return Drawable({draw_template_glow_, model_matrices});
 }

@@ -85,7 +85,7 @@ Game::Game() :
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::FIREFLY)),
          TextureType::FIREFLY,
-         glm::vec3(-20.0f, 0.f, -20.0f), 10),
+         glm::vec3(-20.0f, 0.f, -20.0f), 15),
 
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
