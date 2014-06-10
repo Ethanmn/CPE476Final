@@ -62,7 +62,9 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh,
             glm::vec3(0, 0, (draw_template_.mesh.max.z - draw_template_.mesh.min.z)) / 3.0f)),
    inverse_pivot_(glm::inverse(pivot_)),
    dust_system_front_(dust, TextureType::LEAF, position, 0),
-   dust_system_back_(dust, TextureType::LEAF, position, 0)
+   dust_system_back_(dust, TextureType::LEAF, position, 0),
+   water_system_front_(dust, TextureType::BUTTERFLY_BLUE, position, 0),
+   water_system_back_(dust, TextureType::BUTTERFLY_BLUE, position, 0)
       {}
 
 glm::mat4 Deer::calculateModel(const ModelState& model_state) const {
@@ -266,12 +268,22 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
    } else if (isMoving()) {
       step_timer_ += dt;
       if (step_timer_ > kStepTime) {
-         dust_system_front_.add(glm::vec3(front_feet_bounding_rectangle().getCenter().x,
+         if (draw_template_.mesh.min.y < 0.0f) {
+            water_system_front_.add(glm::vec3(front_feet_bounding_rectangle().getCenter().x,
                                           model_state_.position.y + draw_template_.mesh.min.y,
                                           front_feet_bounding_rectangle().getCenter().y));
-         dust_system_back_.add(glm::vec3(front_feet_bounding_rectangle().getCenter().x,
+            water_system_back_.add(glm::vec3(front_feet_bounding_rectangle().getCenter().x,
                                           model_state_.position.y + draw_template_.mesh.min.y,
                                           front_feet_bounding_rectangle().getCenter().y));
+         }
+         else {
+            dust_system_front_.add(glm::vec3(front_feet_bounding_rectangle().getCenter().x,
+                                          model_state_.position.y + draw_template_.mesh.min.y,
+                                          front_feet_bounding_rectangle().getCenter().y));
+            dust_system_back_.add(glm::vec3(front_feet_bounding_rectangle().getCenter().x,
+                                          model_state_.position.y + draw_template_.mesh.min.y,
+                                          front_feet_bounding_rectangle().getCenter().y));
+         }
          step_timer_ = 0;
          sound_engine.playRandomWalkSound();
       }
@@ -286,6 +298,8 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
    }
    dust_system_front_.step(dt);
    dust_system_back_.step(dt);
+   water_system_front_.step(dt);
+   water_system_back_.step(dt);
 
    blocked = false;
 

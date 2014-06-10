@@ -89,6 +89,8 @@ struct Deer {
       return std::vector<Drawable>({
             dust_system_back_.drawable(),
             dust_system_front_.drawable(),
+            water_system_back_.drawable(),
+            water_system_front_.drawable(),
             });
    }
 
@@ -141,6 +143,8 @@ struct Deer {
 
    Dust dust_system_front_;
    Dust dust_system_back_;
+   Dust water_system_front_;
+   Dust water_system_back_;
 };
 
 #endif // DEER_H_

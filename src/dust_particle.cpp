@@ -2,7 +2,7 @@
 #include "dust_particle.h"
 
 #define DUST_MAX 0.01f
-#define DUST_MIN 0.001f
+#define DUST_MIN -0.01f
 
 namespace {
    glm::vec3 getRandomVec() {
@@ -60,8 +60,8 @@ Drawable Dust::drawable() const {
 void Dust::add(glm::vec3 origin) {
    origin_ = origin;
    int numParticles = rand() % 10 + 5;
-   glm::vec3 rand = getRandomVec();
    for (int i = 0; i < numParticles; i++) {
+      glm::vec3 rand = getRandomVec();
       particles_.push_back(Particle(origin_, 0.3f, 0.0f,
          glm::vec3(velocity_.x + rand.x, velocity_.y + rand.y + 0.001f, velocity_.z + rand.z), acceleration_));
    }
