@@ -267,10 +267,10 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
       step_timer_ += dt;
       if (step_timer_ > kStepTime) {
          dust_system_front_.add(glm::vec3(front_feet_bounding_rectangle().getCenter().x,
-                                          5.0f,
+                                          model_state_.position.y + draw_template_.mesh.min.y,
                                           front_feet_bounding_rectangle().getCenter().y));
          dust_system_back_.add(glm::vec3(front_feet_bounding_rectangle().getCenter().x,
-                                          5.0f,
+                                          model_state_.position.y + draw_template_.mesh.min.y,
                                           front_feet_bounding_rectangle().getCenter().y));
          step_timer_ = 0;
          sound_engine.playRandomWalkSound();

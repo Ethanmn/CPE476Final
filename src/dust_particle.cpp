@@ -1,7 +1,7 @@
 #include "particle.h"
 #include "dust_particle.h"
 
-#define DUST_MAX 0.001f
+#define DUST_MAX 0.01f
 #define DUST_MIN 0.001f
 
 namespace {
@@ -44,6 +44,17 @@ void Dust::step(units::MS dt) {
       }
       
    }
+}
+
+Drawable Dust::drawable() const {
+   std::vector<DrawInstance> insts;
+   for (auto& p : particles_) {
+      insts.push_back(p.calculateModel());
+   }
+   return Drawable({
+         draw_template_,
+         insts
+         });
 }
 
 void Dust::add(glm::vec3 origin) {

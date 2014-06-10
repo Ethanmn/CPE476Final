@@ -85,6 +85,12 @@ struct Deer {
    glm::mat4 calculateModel(const ModelState& model_state) const;
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
+   std::vector<Drawable> dust_drawable() const {
+      return std::vector<Drawable>({
+            dust_system_back_.drawable(),
+            dust_system_front_.drawable(),
+            });
+   }
 
   private:
    enum class WalkDirection {

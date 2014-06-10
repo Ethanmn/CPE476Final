@@ -364,6 +364,10 @@ void Game::draw() {
 
 
    drawables.push_back(deer_.drawable());
+   {
+      const auto d = deer_.dust_drawable();
+      drawables.insert(drawables.end(), d.begin(), d.end());
+   }
 
    drawables.push_back(pinecone_.drawable());
    drawables.push_back(lightning_trigger_.drawable());
