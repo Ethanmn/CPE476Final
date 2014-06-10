@@ -8,6 +8,8 @@
 
 #include "graphics/texture.h"
 
+const int MAX_NUM_BUTTERFLY_SYSTEMS = 10; //For optimization just in case
+
 namespace {
    bool showTreeShadows = false;
    bool draw_collision_box = false;
@@ -89,18 +91,7 @@ Game::Game() :
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
-
-   /* temporary solution to three butterfly textures */
-   butterfly_system_red_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_RED,
-         glm::vec3(0.0f), 10),
-   butterfly_system_pink_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_PINK,
-         glm::vec3(40.0f, 0.f, 50.0f), 10),
-   butterfly_system_blue_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
-         glm::vec3(-60.0f, 0.f, -70.0f), 10),
-
+   butterflyGen(attribute_location_map_, mesh_loader_),
    firefly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::FIREFLY)), TextureType::FIREFLY,
          glm::vec3(-20.0f, 0.f, -20.0f), 20),
@@ -179,9 +170,12 @@ void Game::step(units::MS dt) {
    }
 
    if (current_mode == PLAY) {
-      butterfly_system_red_.step(dt);
-      butterfly_system_pink_.step(dt);
-      butterfly_system_blue_.step(dt);
+      butterflies.remove_if(ButterflySystem::checkIfEmpty);
+      for (auto& butSys : butterflies) {
+         butSys.step(dt);
+      }
+
+      firefly_system_.step(dt);
 
       rain_system_.step(dt);
 
@@ -242,7 +236,9 @@ void Game::step(units::MS dt) {
       song_path_.step(dt, deer_.bounding_rectangle());
 
       for (auto& bush : bushGen.getBushes()) {
-         bush.step(dt);
+         if(bush.step(dt) && butterflies.size() < MAX_NUM_BUTTERFLY_SYSTEMS && day_cycle_.isDaytime()) {
+            butterflies.push_back(butterflyGen.getSystem(bush.getPosition()));
+         }
       }
 
       for (auto& tree : treeGen.getTrees()) {
@@ -418,23 +414,8 @@ void Game::draw() {
          drawables.push_back(waterDrawable);
       }
 
-      drawables.push_back(song_path_.drawable());
-      if (raining)
-         drawables.push_back(rain_system_.drawable());
-
-      drawables.push_back(butterfly_system_red_.drawable());
-      drawables.push_back(butterfly_system_pink_.drawable());
-      drawables.push_back(butterfly_system_blue_.drawable());
-
-      if (!day_cycle_.isDay()) {
-         Drawable fireflyDrawable = butterfly_system_red_.drawable();
-         fireflyDrawable.draw_template.mesh = song_path_.drawable().draw_template.mesh;
-         for(auto& instance : fireflyDrawable.draw_instances)
-            instance.model_transform = glm::scale(glm::mat4(), glm::vec3(0.6)) *
-               glm::translate(glm::mat4(), glm::vec3(-30.0, 10.0, -30.0)) * instance.model_transform;
-         drawables.push_back(fireflyDrawable);
-         fireflyDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
-         drawables.push_back(fireflyDrawable);
+      for (auto& butSys : butterflies) {
+         drawables.push_back(butSys.drawable());
       }
 
       god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());

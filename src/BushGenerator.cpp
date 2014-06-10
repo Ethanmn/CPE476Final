@@ -23,7 +23,7 @@ BushGenerator::BushGenerator(const Mesh& mesh, const GroundPlane& ground) :
          Material(),
          Texture(TextureType::TREE, DIFFUSE_TEXTURE),
          boost::none,
-         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::VARY_MATERIAL}) }) 
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::VARY_MATERIAL}) })
 {
    draw_template_.material = Material(glm::vec3(0.45, 0.24, 0.15));
    generate(ground);
