@@ -5,7 +5,7 @@
 #include "sound_engine.h"
 
 Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
-      float scale, units::MS rustle_time, const Mesh& butterfly) :
+      float scale, units::MS rustle_time) :
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(rustle_time),

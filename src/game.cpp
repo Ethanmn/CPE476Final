@@ -56,8 +56,7 @@ Game::Game() :
             ground_),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH)),
-         ground_, Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY))),
+         ground_),
    rockGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::ROCK)),
          ground_),
@@ -363,7 +362,6 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableMoon());
 
    drawables.push_back(bushGen.drawable());
-   drawables.push_back(bushGen.butterflyDrawable());
    drawables.push_back(rockGen.drawable());
    drawables.push_back(treeGen.drawable());
    drawables.push_back(treeGen.leafDrawable());
