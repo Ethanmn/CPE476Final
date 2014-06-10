@@ -4,7 +4,7 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 
-const int BUTTERFLY_PROBABILTY = 30;
+const int BUTTERFLY_PROBABILTY = 35;
 
 Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
       float scale, units::MS rustle_time) :

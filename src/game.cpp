@@ -8,6 +8,8 @@
 
 #include "graphics/texture.h"
 
+const int MAX_NUM_BUTTERFLY_SYSTEMS = 10; //For optimization just in case
+
 namespace {
    bool showTreeShadows = false;
    bool draw_collision_box = false;
@@ -152,7 +154,6 @@ void Game::step(units::MS dt) {
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
 
    butterflies.remove_if(ButterflySystem::checkIfEmpty);
-
    for (auto& butSys : butterflies) {
       butSys.step(dt);
    }
@@ -216,7 +217,7 @@ void Game::step(units::MS dt) {
    song_path_.step(dt, deer_.bounding_rectangle());
 
    for (auto& bush : bushGen.getBushes()) {
-      if(bush.step(dt)) {
+      if(bush.step(dt) && butterflies.size() < MAX_NUM_BUTTERFLY_SYSTEMS && day_cycle_.isDaytime()) {
          butterflies.push_back(butterflyGen.getSystem(bush.getPosition()));
       }
    }
