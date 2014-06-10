@@ -11,13 +11,17 @@
 #include "graphics/location_maps.h"
 
 enum class ShaderType {
-   /* Ordering is important, shadow must be first */
+   /* 
+    * Ordering is important, shadow must be first.
+    * Deferred must always be before Final.
+    * Skybox is last so it renders after Final.
+    * */
    SHADOW,
    /* Reflection generates a texture, so must be before TEXTURE */
-   REFLECTION,
    DEFERRED,
-   WATER,
+   REFLECTION,
    TEXTURE,
+
    FINAL_LIGHT_PASS,
    SKYBOX
 };

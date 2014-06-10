@@ -18,7 +18,7 @@
 #include "graphics/draw_template.h"
 
 struct TreeGenerator {
-   TreeGenerator(const Mesh& mesh, const Mesh& leaf);
+   TreeGenerator(const Mesh& mesh, const Mesh& leaf, const GroundPlane& ground);
 
    std::vector<Tree>& getTrees();
    DrawTemplate draw_template() const { return draw_template_; }

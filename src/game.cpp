@@ -63,7 +63,8 @@ Game::Game() :
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TREE)),
             Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::LEAF))),
+            mesh_loader_.loadMesh(MeshType::LEAF)),
+            ground_),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH)),
          ground_),
@@ -381,7 +382,10 @@ void Game::draw() {
       drawables.push_back(roseGen.drawableEaten());
 
       if (gReflections) {
-         drawables.push_back(water_.drawable());
+         Drawable waterDrawable = water_.drawable();
+         if(useTextureShader)
+            waterDrawable.draw_template.shader_type = ShaderType::TEXTURE;
+         drawables.push_back(waterDrawable);
       }
 
       drawables.push_back(song_path_.drawable());

@@ -16,11 +16,16 @@ uniform Material uMat;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform mat4 uNormalMatrix;
+uniform float uScreenWidth;
+uniform float uScreenHeight;
 
 uniform int uUseBlinnPhong;
 uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uLightning;
+
+uniform int uIsWater;
+uniform sampler2D uReflectionTexture;
 
 varying vec2 vTexCoord;
 varying vec4 vViewer;
@@ -35,6 +40,7 @@ vec3 calculateSpecular(vec3 lightInt, vec3 lightDir);
 vec3 calculateAmbient(float ambientAmount);
 void CheckIfUnderWater(float ShadowAmount);
 void CheckIfLightning();
+bool ChangeIfWaterPlane();
 
 void main() {
    vec3 color;
@@ -42,7 +48,10 @@ void main() {
    vec4 Diffuse;
    vec3 directionalColor = vec3(0.8 * uSunIntensity);
    float ShadowAmount, LightningAmount, AmbientAmount = 0.13;
-   vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0)); 
+   vec4 vLightAndDirectional = normalize(uViewMatrix * vec4(uSunDir, 0.0));
+   
+   if(ChangeIfWaterPlane())
+      return; 
    
    ShadowAmount = calculateShadowAmount();
    Ambient = calculateAmbient(AmbientAmount);
@@ -54,9 +63,6 @@ void main() {
 
    CheckIfUnderWater(ShadowAmount);
    CheckIfLightning();
-
-   float garbage = calculateShadowAmount();
-
 }
 
 float calculateShadowAmount() {
@@ -81,8 +87,6 @@ float calculateShadowAmount() {
    }
    else
       differenceInDepth = 0.0;
-
-   /*gl_FragColor = vec4(vec3(differenceInDepth), 1.0);   */
 
    return applyShadow;
 }
@@ -142,4 +146,14 @@ void CheckIfLightning() {
          LightningAmount = 4.0;
       gl_FragColor = vec4(gl_FragColor.rgb * LightningAmount, 1.0);
    }
+}
+
+bool ChangeIfWaterPlane() {
+   if(uIsWater == 1) {
+      vec4 refraction = vec4(0.0, 0, 0.4, 1.0);
+      vec4 reflection = texture2D(uReflectionTexture, 
+                        vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight));
+      gl_FragColor = (refraction + reflection) / 2.0;
+   }
+   return uIsWater == 1;
 }
