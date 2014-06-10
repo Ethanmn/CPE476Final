@@ -20,7 +20,7 @@ varying vec2 vTexCoord;
 
 uniform int uIsGodRay;
 uniform int uIsFirefly;
-varying vec4 vCenterPos;
+varying vec4 vCenter;
 varying float vGodRayIntensity;
 varying float vGodRayDepth;
 
@@ -33,27 +33,29 @@ void main() {
    vec4 color, test, glow = vec4(1.0);
    vec2 pixelOnScreen = vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight);
    vec4 depthOfImage =  texture2D(uPositionTexture, pixelOnScreen);
+   float attenuation;
 
    color = calculateDiffuse(pixelOnScreen, 1);
    if(uIsGodRay == 1) {
+      float bias = 0.025;
 
-      bool isVisible = vGodRayDepth <= depthOfImage.z;
+      bool isVisible = vGodRayDepth <= depthOfImage.z - bias;
       if(isVisible) {
-         float dist = distance(vPosition.xz, vCenterPos.xz);
-         glow *= vec4(vec3(10.0/dist), 1.0);
-         if(dist < 1.0) {
-            test = vec4(1,0,0,1);
-            color + vec4(2.0, 2.0, 0.0, 1.0);
+         float dist = abs(distance(vPosition.xyz, vCenter.xyz));
+         if(dist < 1.0)
+            attenuation = 3.0;
+         else {
+            attenuation = 1.0 / (3.0 * log(dist));
+            attenuation = min(1.0, attenuation);
+            test = vec4(vec3(attenuation), 1.0);
+            attenuation += 1.0;
          }
-         else  {
-            test = vec4(0,1,1,0);
-            color + vec4(0.5, 0.5, 0.0, 1.0);
-         }
+         attenuation = max(attenuation, 1.0);
+         color = vec4(color.r * attenuation, color.g * attenuation, color.b * attenuation, 1.0); 
       }
       else {
          discard;
       }
-      color = glow;
    }
    else
       color = calculateDiffuse(pixelOnScreen, 1);

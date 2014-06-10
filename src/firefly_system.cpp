@@ -3,8 +3,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdlib.h>
 
-#define MAX 0.005f
-#define MIN -0.005f
+#define VMAX 0.005f
+#define VMIN -0.005f
+#define MAX 0.075f
+#define MIN -0.075f
 
 #define Y_MAX 0.00007f
 
@@ -49,8 +51,8 @@ void FireflySystem::step(units::MS dt) {
       float rvy = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / Y_MAX);
 
       if (!((particle.getLife() / 100) % 2)) {
-         float rvx = MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (MAX - MIN));
-         float rvz = MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (MAX - MIN));
+         float rvx = VMIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (VMAX - VMIN));
+         float rvz = VMIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (VMAX - VMIN));
          
          particle.setVel(rvx, rvy, rvz);
       }
@@ -71,6 +73,6 @@ Drawable FireflySystem::drawable() const {
 Drawable FireflySystem::drawable_glow() const {
    std::vector<DrawInstance> model_matrices;
    for (auto& particle : particles_) 
-      model_matrices.push_back(particle.calculateModel() * glm::scale(glm::mat4(), glm::vec3(3.0f)));
+      model_matrices.push_back(particle.calculateModel() * glm::scale(glm::mat4(), glm::vec3(5.0f)));
    return Drawable({draw_template_glow_, model_matrices});
 }
