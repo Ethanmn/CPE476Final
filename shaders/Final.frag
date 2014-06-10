@@ -62,6 +62,12 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
       sunInt = 1.0;
 
    vec4 Diffuse = texture2D(uDiffuseTexture, texCoord);
+  
+   if(Diffuse.r == 0.05098 * uSunIntensity
+      && Diffuse.g == 0.6274509 * uSunIntensity
+      && Diffuse.b == uSunIntensity)
+      discard;
+   
    if(Diffuse.a < 0.8)
       discard;
    float dotNLDir = dot(normalize(vec3(texture2D(uNormalTexture, texCoord))), sunDir);
