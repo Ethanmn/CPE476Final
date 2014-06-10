@@ -53,6 +53,8 @@ std::string mesh_path(MeshType mesh) {
    switch (mesh) {
       case MeshType::GROUND:
          return kMeshPath + "ground_plane.obj";
+      case MeshType::WATER:
+         return kMeshPath + "ground_plane.obj";
       case MeshType::DEER_WALK:
          return kMeshPath + "deer_walk.dae";
       case MeshType::DEER_EAT:

@@ -67,10 +67,14 @@ Drawable TreeGenerator::drawable() const {
    return Drawable({draw_template_, model_matrices});
 }
 
-std::vector<Drawable> TreeGenerator::leafDrawable() const {
-   std::vector<Drawable> ret;
+Drawable TreeGenerator::leafDrawable() const {
+   Drawable ret;
    for (auto& tree : trees) {
-      ret.push_back(tree.leaf_system_.drawable());
+      const auto& draw_instances = tree.leaf_system_.drawable().draw_instances;
+      ret.draw_template = tree.leaf_system_.drawable().draw_template;
+      ret.draw_instances.insert(ret.draw_instances.end(),
+            draw_instances.begin(),
+            draw_instances.end());
    }
    return ret;
 }

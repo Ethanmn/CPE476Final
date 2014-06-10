@@ -1,6 +1,5 @@
-uniform mat4 uModelViewMatrix;
+uniform mat4 uModelViewProjectionMatrix;
 uniform mat4 uModelMatrix;
-uniform mat4 uProjectionMatrix;
 uniform mat4 uNormalMatrix;
 uniform int uHasTexture;
 
@@ -10,10 +9,6 @@ uniform mat4 uBones[40];
 #endif
 
 uniform int uHasHeightMap;
-#ifdef USE_HEIGHT_MAP
-uniform sampler2D uHeightMap;
-uniform float uHeightMapScale;
-#endif
 
 attribute vec3 aTexCoord;
 attribute vec3 aPosition;
@@ -35,7 +30,7 @@ attribute float aBoneWeight4;
 varying vec4 vPosition;
 varying vec3 vNormal;
 varying vec2 vTexCoord;
-varying float vUnderWater;
+varying float vHeightMapHeight;
 
 mat4 calculateBones();
 vec3 calculateHeight();
@@ -43,13 +38,13 @@ vec3 calculateHeight();
 void main() {
    mat4 bone = calculateBones();
 
-   vec4 pos = bone * vec4(calculateHeight() + aPosition, 1.0);
+   vec4 pos = bone * vec4(aPosition, 1.0);
    vPosition = uModelMatrix * pos;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord.x, aTexCoord.y) : vec2(0.0, 0.0);
+   vHeightMapHeight = aPosition.y;
 
-   gl_Position = uProjectionMatrix * uModelViewMatrix * pos;
-
+   gl_Position = uModelViewProjectionMatrix * pos;
 }
 
 mat4 calculateBones() {
@@ -74,16 +69,4 @@ mat4 calculateBones() {
    }
 #endif
    return bone;
-}
-
-vec3 calculateHeight() {
-   vec3 heightOffset = vec3(0.0);
-#ifdef USE_HEIGHT_MAP
-   float HEIGHT_MAP_SCALE = 3.0;
-   if (uHasHeightMap != 0) {
-      heightOffset = vec3(0, (texture2D(uHeightMap, aTexCoord.xy).x - 0.5) * uHeightMapScale, 0);
-   }
-   vUnderWater = heightOffset.y < 0.1 ? heightOffset.y * -0.2 : 0.0; 
-#endif
-   return heightOffset;
 }

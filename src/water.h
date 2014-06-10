@@ -5,25 +5,28 @@
 #include "graphics/gl_adapters/frame_buffer_object.h"
 #include "graphics/draw_template.h"
 
+#include "ground_plane.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 struct Water {
    Water(const Mesh& mesh) :
       mesh_(mesh),
-      reflection_fbo_(kScreenWidth, kScreenHeight, DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH)
+      reflection_fbo_(kScreenWidth, kScreenHeight, REFLECTION_TEXTURE, FBOType::COLOR_WITH_DEPTH)
    {}
 
    Drawable drawable() const {
       return Drawable({
             DrawTemplate({
-               ShaderType::DEFERRED,
+               ShaderType::FINAL_LIGHT_PASS,
                mesh_,
                Material(),
-               reflection_fbo_.texture(),
                boost::none,
-               EffectSet()
+               boost::none,
+               EffectSet({EffectType::IS_WATER})
                }),
-            std::vector<DrawInstance>({glm::scale(glm::mat4(), glm::vec3(10, 1, 10))})
+            std::vector<DrawInstance>({glm::scale(glm::mat4(), glm::vec3(
+                     GroundPlane::GROUND_SCALE, 1, GroundPlane::GROUND_SCALE))})
             });
    }
 

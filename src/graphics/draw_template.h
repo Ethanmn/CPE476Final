@@ -16,7 +16,8 @@ enum class EffectType {
    CASTS_REFLECTION,
    VARY_MATERIAL,
    IS_GOD_RAY,
-   IS_FIREFLY
+   IS_FIREFLY,
+   IS_WATER
 };
 
 typedef std::set<EffectType> EffectSet;
@@ -51,6 +52,13 @@ struct DrawInstance {
 struct CulledDrawable;
 struct Drawable {
    static Drawable fromCulledDrawable(const CulledDrawable& d, CullType cull_type);
+   static std::vector<Drawable> fromCulledDrawables(const std::vector<CulledDrawable>& drawables, CullType cull_type) {
+      std::vector<Drawable> ret;
+      for (auto& d : drawables) {
+         ret.push_back(fromCulledDrawable(d, cull_type));
+      }
+      return ret;
+   }
    DrawTemplate draw_template;
    std::vector<DrawInstance> draw_instances;
 };

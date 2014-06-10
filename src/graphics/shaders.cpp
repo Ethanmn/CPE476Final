@@ -1,10 +1,6 @@
 #include "graphics/shaders.h"
 #include <assert.h>
 
-namespace {
-   bool useTextureShader = false; //Note: this also needs to be changed in game.cpp
-}
-
 const std::vector<Attribute> kTextureAttrs{
    Attribute::VERTEX,
    Attribute::TEX_COORD,
@@ -26,7 +22,6 @@ const std::vector<Attribute> kTextureAttrs{
    Attribute::BONE_WEIGHT4,
 };
 const std::vector<Uniform> kTextureUniforms{
-   Uniform::MODEL_VIEW,
    Uniform::MODEL,
    Uniform::VIEW,
    Uniform::PROJECTION,
@@ -41,12 +36,13 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::SHADOW_MAP,
    Uniform::SHADOW_MAP_TEXTURE,
 
+   Uniform::IS_WATER,
+   Uniform::REFLECTION_TEXTURE,
+   Uniform::SCREEN_WIDTH,
+   Uniform::SCREEN_HEIGHT,
+
    Uniform::HAS_TEXTURE,
    Uniform::TEXTURE,
-
-   Uniform::HEIGHT_MAP,
-   Uniform::HEIGHT_MAP_SCALE,
-   Uniform::HAS_HEIGHT_MAP,
 
    Uniform::USE_BLINN_PHONG,
    Uniform::SUN_DIR,
@@ -61,9 +57,8 @@ const std::vector<Uniform> kTextureUniforms{
 
 /* Deferred Pass Attributes are the same as Texture's */
 const std::vector<Uniform> kDeferredPassUniforms {
-   Uniform::MODEL_VIEW,
+   Uniform::MODEL_VIEW_PROJECTION,
    Uniform::MODEL,
-   Uniform::PROJECTION,
    Uniform::NORMAL,
 
    Uniform::M_AMB,
@@ -78,7 +73,6 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::TEXTURE,
    Uniform::VARY_MATERIAL,
 
-   Uniform::HEIGHT_MAP,
    Uniform::HAS_HEIGHT_MAP,
 
    Uniform::BONES,
@@ -134,8 +128,7 @@ const std::vector<Attribute> kWaterAttrs{
    Attribute::VERTEX,
 };
 const std::vector<Uniform> kWaterUniforms{
-   Uniform::MODEL_VIEW,
-   Uniform::PROJECTION,
+   Uniform::MODEL_VIEW_PROJECTION,
    Uniform::TEXTURE,
    Uniform::SCREEN_WIDTH,
    Uniform::SCREEN_HEIGHT,
@@ -152,6 +145,10 @@ const std::vector<Uniform> kFinalPassUniforms{
    Uniform::PROJECTION,
    Uniform::NORMAL,
 
+   Uniform::HAS_TEXTURE,
+   Uniform::TEXTURE,
+
+   Uniform::IS_WATER,
    Uniform::IS_GOD_RAY,
    Uniform::IS_FIREFLY,
    Uniform::GOD_RAY_CENTER,
@@ -169,21 +166,22 @@ const std::vector<Uniform> kFinalPassUniforms{
 };
 
 Shaders::Shaders() {
-      shaders_.insert(std::make_pair(ShaderType::SHADOW,
+   shaders_.insert(std::make_pair(ShaderType::SHADOW,
             Shader("Shadow", kShadowAttrs, kShadowUniforms)));
-      shaders_.insert(std::make_pair(ShaderType::SKYBOX,
+   shaders_.insert(std::make_pair(ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
 
-      if(!useTextureShader) { 
-          shaders_.insert(std::make_pair(ShaderType::DEFERRED,
-                   Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
-         shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
+   /* Both Deferred and Final used for deferred lighting */
+   shaders_.insert(std::make_pair(ShaderType::DEFERRED,
+            Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
+   shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
-      }
-      else {
-         shaders_.insert(std::make_pair(ShaderType::TEXTURE,
+   
+   /* Both Texture and Reflection used for normal lighting */
+   shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
-      }
+   shaders_.insert(std::make_pair(ShaderType::REFLECTION,
+            Shader("Texture", kTextureAttrs, kTextureUniforms)));
 }
 
 Shader& Shaders::at(ShaderType shader_type) {

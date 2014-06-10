@@ -10,8 +10,7 @@
 #include "globals.h"
 
 struct DrawShader {
-   DrawShader() : uniforms(shaders.getUniformLocationMap()), 
-      projectionMatrix(glm::perspective(kFieldOfView, kScreenWidthf/kScreenHeightf, kNear, kFar)) {}
+   DrawShader() : uniforms(shaders.getUniformLocationMap()) {}
 
    void Draw(const FrameBufferObject& shadow_map_fbo_, 
             const FrameBufferObject& reflection_fbo,
@@ -32,12 +31,13 @@ struct DrawShader {
    Shaders getShaders() const { return shaders; }
 
   private:
-   void drawTextureShader(Shader& shader, 
+   void drawTextureShader(bool isReflection, Shader& shader, 
             const std::vector<Drawable>& drawables, 
             const glm::mat4& viewMatrix, 
             const glm::vec3& sunDir, 
             float sunIntensity, 
-            int lightning);
+            int lightning,
+            const FrameBufferObject& reflection_fbo);
 
    void SendDeferred(Shader& shader, 
             const UniformLocationMap& uniforms,
@@ -64,7 +64,6 @@ struct DrawShader {
 
    Shaders shaders;
    UniformLocationMap uniforms;
-   const glm::mat4 projectionMatrix;
    TextureCache texture_cache_;
 };
 
