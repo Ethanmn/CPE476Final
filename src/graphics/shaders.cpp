@@ -171,10 +171,13 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::SKYBOX,
             Shader("Skybox", kSkyboxAttrs, kSkyboxUniforms)));
 
+   /* Both Deferred and Final used for deferred lighting */
    shaders_.insert(std::make_pair(ShaderType::DEFERRED,
             Shader("Deferred", kTextureAttrs, kDeferredPassUniforms)));
    shaders_.insert(std::make_pair(ShaderType::FINAL_LIGHT_PASS,
             Shader("Final", kFinalPassAttrs, kFinalPassUniforms)));
+   
+   /* Both Texture and Reflection used for normal lighting */
    shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
    shaders_.insert(std::make_pair(ShaderType::REFLECTION,
