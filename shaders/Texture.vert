@@ -66,14 +66,7 @@ mat4 calculateBones() {
 }
 
 void main() {
-   vec4 heightColor = vec4(0.0);
-#ifdef USE_HEIGHT_MAP
-   if (uHasHeightMap != 0) {
-      heightColor = vec4(0, texture2D(uHeightMap, aTexCoord.xy).x - 0.5, 0, 0.0) * uHeightMapScale;
-   }
-#endif
-
-   vec4 pos = uModelMatrix * calculateBones() * vec4(heightColor.xyz + aPosition, 1.0);
+   vec4 pos = uModelMatrix * calculateBones() * vec4(vec3(0, 0.2f, 0) + aPosition, 1.0);
    vViewer = uViewMatrix * pos;
    vNormal = vec3(uNormalMatrix * vec4(aNormal, 1.0));
    vTexCoord = uHasTexture != 0 ? vec2(aTexCoord) : vec2(0.0, 0.0);
