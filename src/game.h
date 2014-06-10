@@ -82,7 +82,9 @@ struct Game {
    FrameBufferObject shadow_map_fbo_;
    Water water_;
    SongPath song_path_;
+
    Mesh screen_plane_mesh_;
+   Texture title_texture_;
 
    Pinecone pinecone_;
 

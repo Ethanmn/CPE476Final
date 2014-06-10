@@ -14,6 +14,7 @@ namespace {
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool deerInWater = false;
+   bool displayTitleScreen = true;
 
    int lighting = 0;
    int raining = 0;
@@ -130,8 +131,11 @@ Game::Game() :
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GEM))),
+
    screen_plane_mesh_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::PLANE))),
+   title_texture_(TextureType::TITLE, DIFFUSE_TEXTURE),
+
    pinecone_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::PINECONE)),
          ground_,
@@ -357,10 +361,24 @@ void Game::draw() {
             glm::vec2(kScreenWidthf, kScreenHeightf), 0.0f);
    screen_drawable.draw_template = BoundingRectangle::draw_template();
    screen_drawable.draw_template.mesh = screen_plane_mesh_;
+   screen_drawable.draw_instances.push_back(screen_br.model_matrix_screen());
+
+   /* Final Pass Plane */
    screen_drawable.draw_template.texture = deer_.drawable().draw_template.texture;
    screen_drawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
-   screen_drawable.draw_instances.push_back(screen_br.model_matrix_screen());
    drawables.push_back(screen_drawable);
+
+   if(displayTitleScreen) {
+      /* Title Screen Plane */
+      for(auto& instance : screen_drawable.draw_instances) {
+         instance.model_transform = glm::translate(glm::mat4(), glm::vec3(-1.0, 0.0, 0.0)) * instance.model_transform;
+      }
+      screen_drawable.draw_template.texture = title_texture_;
+      screen_drawable.draw_template.effects = EffectSet({EffectType::IS_TITLE_SCREEN});
+      screen_drawable.draw_template.shader_type = ShaderType::SKYBOX;
+      drawables.push_back(screen_drawable);
+   }
+
 
    drawables.push_back(deer_.drawable());
 
@@ -475,6 +493,46 @@ void Game::mainLoop() {
                treeGen.includeInShadows(showTreeShadows);
             }
          }
+         { // handle walk forward/backward for deer.
+            const auto key_forward = SDL_SCANCODE_W;
+            const auto key_backward = SDL_SCANCODE_S;
+            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
+               deer_.walkForward();
+            } else if (input.isKeyHeld(key_backward) && !input.isKeyHeld(key_forward)) {
+               deer_.walkBackward();
+            } else {
+               deer_.stopWalking();
+            }
+         }
+         { // handle strafe left/right for deer.
+            const auto key_left = SDL_SCANCODE_A;
+            const auto key_right = SDL_SCANCODE_D;
+            if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
+               deer_.turnLeft();
+            } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
+               deer_.turnRight();
+            } else {
+               deer_.stopTurning();
+            }
+         }
+         { // handle jumping
+            const auto key_jump = SDL_SCANCODE_F;
+            if (input.wasKeyPressed(key_jump)) {
+               deer_.jump();
+            }
+         }
+         { // handle jumping
+            const auto key_eat = SDL_SCANCODE_E;
+            if (input.wasKeyPressed(key_eat)) {
+               eatFlower = true;
+            }
+         }
+         { // handle jumping
+            const auto key_title = SDL_SCANCODE_T;
+            if (input.wasKeyPressed(key_title)) {
+               displayTitleScreen = !displayTitleScreen;
+            }
+         }
          {
             const auto key_toNight = SDL_SCANCODE_3;
             if (input.wasKeyPressed(key_toNight)) {
@@ -521,6 +579,7 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_start)) {
                far_plane_target = 400.f;
                current_mode = PLAY;
+               displayTitleScreen = !displayTitleScreen;
             }
          }
       }
