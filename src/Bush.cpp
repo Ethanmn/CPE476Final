@@ -4,6 +4,8 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 
+const int BUTTERFLY_PROBABILTY = 30;
+
 Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
       float scale, units::MS rustle_time) :
    rotate_(0.0f),
@@ -41,7 +43,7 @@ bool Bush::step(units::MS dt) {
       elapsed_time_ += dt;
       rotate_ = 10 * glm::sin(elapsed_time_ / 60.0f);
       
-      releaseButterflies = !has_butterflies_;
+      releaseButterflies = !has_butterflies_ && (rand() % 100 < BUTTERFLY_PROBABILTY);
       has_butterflies_ = true;
    }
    else {
