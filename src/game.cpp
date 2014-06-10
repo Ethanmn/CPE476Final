@@ -613,6 +613,9 @@ void Game::mainLoop() {
             if (input.wasKeyPressed(key_start)) {
                far_plane_target = 400.f;
                current_mode = PLAY;
+               if (!gReflections) {
+                  gReflections = true;
+               }
                displayTitleScreen = !displayTitleScreen;
                useTextureShader = false;
             }
