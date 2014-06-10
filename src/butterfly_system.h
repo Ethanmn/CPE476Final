@@ -11,10 +11,15 @@
 struct ButterflySystem {
    ButterflySystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles);
 
+   void generate(const glm::vec3& origin, int numParticles);
+
    void step(units::MS dt);
+
+   static bool checkIfEmpty(const ButterflySystem& system);
 
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
+   bool isEmpty() const;
 
    private:
       std::vector<Particle> particles_;
@@ -22,6 +27,8 @@ struct ButterflySystem {
       glm::vec3 origin_;
       glm::vec3 velocity_;
       glm::vec3 acceleration_;
+      float num_particles_;
+      float timer;
 };
 
 #endif // BUTTERFLY_SYSTEM_H_

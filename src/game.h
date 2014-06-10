@@ -31,6 +31,7 @@
 #include "Camera.h"
 #include "pinecone.h"
 #include "RockGenerator.h"
+#include "ButterflyGenerator.h"
 
 struct Game {
    Game();
@@ -60,9 +61,8 @@ struct Game {
    BirdSound cardinal_bird_sound_, canary_bird_sound_, canary2_bird_sound_, woodpecker_bird_sound_;
 
    /*temporary solution for three textures*/
-   ButterflySystem butterfly_system_red_;
-   ButterflySystem butterfly_system_pink_;
-   ButterflySystem butterfly_system_blue_;
+   ButterflyGenerator butterflyGen;
+   std::list<ButterflySystem> butterflies;
    FireflySystem firefly_system_;
 
    RainSystem rain_system_;
