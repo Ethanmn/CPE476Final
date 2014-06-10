@@ -17,7 +17,7 @@ Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const
             glm::vec2(8.0f * scale, 8.0f * scale),
             0.0f)),
    translate_scale_(
-         glm::translate(glm::mat4(), glm::vec3(position.x, ground.heightAt(position) - mesh.min.y, position.z)) *
+         glm::translate(glm::mat4(), glm::vec3(position.x, ground.heightAt(position) - mesh.min.y - 1 / scale, position.z)) *
          glm::scale(glm::mat4(), glm::vec3(scale))),
    default_model_(
       translate_scale_ *
