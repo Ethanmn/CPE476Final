@@ -14,7 +14,7 @@ struct Timer {
       average_time = (average_time * num_times + SDL_GetTicks() - start_time) / (num_times + 1);
       ++num_times;
       if (num_times == 10) {
-         std::clog << average_time << std::endl;
+         std::clog << 1000 / average_time << std::endl;
          average_time = num_times = 0;
       }
    }

@@ -41,6 +41,7 @@ namespace {
 
       shadowProjection = biasMatrix * kShadowProjection;
       shadowView = glm::lookAt(lightDir + deerPos, deerPos, glm::vec3(0.0, 1.0, 0.0));
+
       lightMat = shadowProjection * shadowView;
 
       shader.sendUniform(Uniform::SHADOW_MAP, uniforms, lightMat);
@@ -126,7 +127,7 @@ void DrawShader::drawTextureShader(Shader& shader, const std::vector<Drawable>& 
           drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
          {
          // Per-Drawable Texture Shader Setup
-            SendHeightMap(shader, drawable);
+            //SendHeightMap(shader, drawable);
             SendBones(shader, drawable);
             SendTexture(shader, drawable);
 
@@ -290,6 +291,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                const auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
                shadow_map_fbo_.texture().enable(texture_cache_);
+
                SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
 
                drawTextureShader(shader, drawables, viewMatrix, sunDir, sunIntensity,

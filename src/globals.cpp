@@ -15,7 +15,7 @@ glm::mat4 calculateProjection() {
 }
 glm::mat4 gProjectionMatrix = calculateProjection();
 
-float gHeightMapScale = 3.0f;
+float gHeightMapScale = 1.5f;
 
 float gNear = 1.0f;
 float gFieldOfView = 80.0f;
