@@ -7,6 +7,7 @@
 #include "graphics/draw_template.h"
 #include "graphics/location_maps.h"
 #include "units.h"
+#include "dust_particle.h"
 
 struct GroundPlane;
 struct Shader;
@@ -23,7 +24,7 @@ struct Deer {
       float current_rock;
    };
   public:
-   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const glm::vec3& position);
+   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const Mesh& dust, const glm::vec3& position);
 
    BoundingRectangle getNextBoundingBox(units::MS dt);
 
@@ -101,6 +102,14 @@ struct Deer {
    glm::mat4 calculateModel(const ModelState& model_state) const;
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
+   std::vector<Drawable> dust_drawable() const {
+      return std::vector<Drawable>({
+            dust_system_back_.drawable(),
+            dust_system_front_.drawable(),
+            water_system_back_.drawable(),
+            water_system_front_.drawable(),
+            });
+   }
 
   private:
    enum class WalkDirection {
@@ -150,6 +159,11 @@ struct Deer {
 
    glm::mat4 pivot_, inverse_pivot_;
    boost::optional<Flower&> flower_;
+
+   Dust dust_system_front_;
+   Dust dust_system_back_;
+   Dust water_system_front_;
+   Dust water_system_back_;
 };
 
 #endif // DEER_H_

@@ -63,6 +63,8 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::DEER_SLEEP)),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::DEER_POUNCE)),
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::LEAF)),
          glm::vec3()),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
@@ -413,6 +415,10 @@ void Game::draw() {
 
 
    drawables.push_back(deer_.drawable());
+   {
+      const auto d = deer_.dust_drawable();
+      drawables.insert(drawables.end(), d.begin(), d.end());
+   }
 
    drawables.push_back(ground_.drawable());
    drawables.push_back(treeGen.drawable());
