@@ -198,6 +198,9 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
       const glm::vec3& sunDir,
       float sunIntensity,
       int lightning) {
+
+   glm::mat4 curView; //For deferred shading.
+
    for(auto& shader_pair : shaders.getMap()) {
       Shader& shader = shader_pair.second;
       shader.use();
@@ -303,8 +306,18 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                      shader.sendUniform(Uniform::TEXTURE, uniforms,
                            (*drawable.draw_template.texture).texture_slot());
                      (*drawable.draw_template.texture).enable(texture_cache_);
+
+                     if (drawable.draw_template.effects.count(EffectType::IS_TITLE_SCREEN)) {
+                        shader.sendUniform(Uniform::IS_TITLE_SCREEN, uniforms, 1);
+                        curView = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) ); 
+                     }
+                     else {
+                        shader.sendUniform(Uniform::IS_TITLE_SCREEN, uniforms, 0);
+                        curView = viewMatrix;
+                     }
+
                      shader.sendUniform(Uniform::MODEL_VIEW, uniforms, 
-                           viewMatrix * instance.instance.model_transform);
+                           curView * instance.instance.model_transform);
                      shader.drawMesh(drawable.draw_template.mesh);
                   }
                }
@@ -358,7 +371,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
 
          case ShaderType::FINAL_LIGHT_PASS:
             if (useTextureShader) break;
-            glm::mat4 curView;
             glm::mat4 lookAt = glm::lookAt( glm::vec3(2.0f, 0.f,0.0f),glm::vec3(0.f, 0.f, 0.f),glm::vec3( 0.0f, 1.0f, 0.0f ) );
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -121,7 +121,8 @@ const std::vector<Attribute> kSkyboxAttrs{
 const std::vector<Uniform> kSkyboxUniforms{
    Uniform::MODEL_VIEW,
    Uniform::PROJECTION,
-   Uniform::TEXTURE
+   Uniform::TEXTURE,
+   Uniform::IS_TITLE_SCREEN
 };
 
 const std::vector<Attribute> kWaterAttrs{
