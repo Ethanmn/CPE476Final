@@ -16,6 +16,7 @@
 #include "bounding_rectangle.h"
 #include "Bush.h"
 #include "graphics/draw_template.h"
+#include "butterfly_system.h"
 
 struct BushGenerator {
    BushGenerator(const Mesh& mesh, const GroundPlane& ground);
@@ -27,7 +28,6 @@ struct BushGenerator {
 
   private:
    void generate(const GroundPlane& ground);
-
    std::vector<Bush> bushes;
    DrawTemplate draw_template_;
 };

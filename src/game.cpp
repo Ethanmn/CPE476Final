@@ -8,6 +8,8 @@
 
 #include "graphics/texture.h"
 
+const int MAX_NUM_BUTTERFLY_SYSTEMS = 10; //For optimization just in case
+
 namespace {
    bool showTreeShadows = false;
    bool draw_collision_box = false;
@@ -77,18 +79,7 @@ Game::Game() :
    canary_bird_sound_(SoundEngine::SoundEffect::CANARY0, 4000),
    canary2_bird_sound_(SoundEngine::SoundEffect::CANARY1, 7000),
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
-
-   /* temporary solution to three butterfly textures */
-   butterfly_system_red_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_RED,
-         glm::vec3(0.0f), 10),
-   butterfly_system_pink_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_PINK,
-         glm::vec3(40.0f, 0.f, 50.0f), 10),
-   butterfly_system_blue_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::BUTTERFLY)), TextureType::BUTTERFLY_BLUE,
-         glm::vec3(-60.0f, 0.f, -70.0f), 10),
-
+   butterflyGen(attribute_location_map_, mesh_loader_),
    firefly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::FIREFLY)), 
          Mesh::fromAssimpMesh(attribute_location_map_,
@@ -165,9 +156,11 @@ void Game::step(units::MS dt) {
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
 
-   butterfly_system_red_.step(dt);
-   butterfly_system_pink_.step(dt);
-   butterfly_system_blue_.step(dt);
+   butterflies.remove_if(ButterflySystem::checkIfEmpty);
+   for (auto& butSys : butterflies) {
+      butSys.step(dt);
+   }
+
    firefly_system_.step(dt);
 
    rain_system_.step(dt);
@@ -227,7 +220,9 @@ void Game::step(units::MS dt) {
    song_path_.step(dt, deer_.bounding_rectangle());
 
    for (auto& bush : bushGen.getBushes()) {
-      bush.step(dt);
+      if(bush.step(dt) && butterflies.size() < MAX_NUM_BUTTERFLY_SYSTEMS && day_cycle_.isDaytime()) {
+         butterflies.push_back(butterflyGen.getSystem(bush.getPosition()));
+      }
    }
 
    for (auto& tree : treeGen.getTrees()) {
@@ -394,9 +389,9 @@ void Game::draw() {
       drawables.push_back(waterDrawable);
    }
 
-   drawables.push_back(butterfly_system_red_.drawable());
-   drawables.push_back(butterfly_system_pink_.drawable());
-   drawables.push_back(butterfly_system_blue_.drawable());
+   for (auto& butSys : butterflies) {
+      drawables.push_back(butSys.drawable());
+   }
 
    if (!day_cycle_.isDay()) {
       drawables.push_back(firefly_system_.drawable());
