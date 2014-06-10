@@ -20,7 +20,7 @@ float gHeightMapScale = 10.5f;
 float gNear = 1.0f;
 float gFieldOfView = 80.0f;
 float gFar = 500.0f;
-bool useTextureShader = true;
+bool useTextureShader = false;
 bool gReflections = true;
 
 float cameraDistanceToDeer = 23.0f;

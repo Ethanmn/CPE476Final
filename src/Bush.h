@@ -14,7 +14,7 @@ struct SoundEngine;
 
 struct Bush : public GameObject {
    Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
-        float scale, units::MS rustle_time);
+        float scale, units::MS rustle_time, const Mesh& butterfly);
 
    bool step(units::MS dt);
 
@@ -32,6 +32,8 @@ struct Bush : public GameObject {
 
    glm::mat4 calculateModel() const;
 
+  public:
+     ButterflySystem butterfly_system_;
 
   private: 
    float rotate_;
@@ -40,7 +42,7 @@ struct Bush : public GameObject {
    BoundingRectangle bounding_rectangle_;
    glm::mat4 translate_scale_;
    glm::mat4 default_model_;
-   bool hasButts;
+   bool has_butterflies_;
    glm::vec3 position_;
 };
 

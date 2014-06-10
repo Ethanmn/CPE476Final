@@ -14,6 +14,7 @@ namespace {
    bool switchBlinnPhongShading = false;
    bool eatFlower = false;
    bool deerInWater = false;
+   bool displayTitleScreen = true;
 
    int lighting = 0;
    int raining = 0;
@@ -55,7 +56,8 @@ Game::Game() :
             ground_),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH)),
-         ground_),
+         ground_, Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::BUTTERFLY))),
    rockGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::ROCK)),
          ground_),
@@ -107,8 +109,11 @@ Game::Game() :
    song_path_(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GEM))),
+
    screen_plane_mesh_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::PLANE))),
+   title_texture_(TextureType::TITLE, DIFFUSE_TEXTURE),
+
    pinecone_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::PINECONE)),
          ground_,
@@ -331,10 +336,24 @@ void Game::draw() {
             glm::vec2(kScreenWidthf, kScreenHeightf), 0.0f);
    screen_drawable.draw_template = BoundingRectangle::draw_template();
    screen_drawable.draw_template.mesh = screen_plane_mesh_;
+   screen_drawable.draw_instances.push_back(screen_br.model_matrix_screen());
+
+   /* Final Pass Plane */
    screen_drawable.draw_template.texture = deer_.drawable().draw_template.texture;
    screen_drawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
-   screen_drawable.draw_instances.push_back(screen_br.model_matrix_screen());
    drawables.push_back(screen_drawable);
+
+   if(displayTitleScreen) {
+      /* Title Screen Plane */
+      for(auto& instance : screen_drawable.draw_instances) {
+         instance.model_transform = glm::translate(glm::mat4(), glm::vec3(-1.0, 0.0, 0.0)) * instance.model_transform;
+      }
+      screen_drawable.draw_template.texture = title_texture_;
+      screen_drawable.draw_template.effects = EffectSet({EffectType::IS_TITLE_SCREEN});
+      screen_drawable.draw_template.shader_type = ShaderType::SKYBOX;
+      drawables.push_back(screen_drawable);
+   }
+
 
    drawables.push_back(deer_.drawable());
 
@@ -344,6 +363,7 @@ void Game::draw() {
    drawables.push_back(day_night_boxes_.drawableMoon());
 
    drawables.push_back(bushGen.drawable());
+   drawables.push_back(bushGen.butterflyDrawable());
    drawables.push_back(rockGen.drawable());
    drawables.push_back(treeGen.drawable());
    drawables.push_back(treeGen.leafDrawable());
@@ -468,11 +488,10 @@ void Game::mainLoop() {
                eatFlower = true;
             }
          }
-         { // show or hide tree shadows -- Katelyn
-            const auto key_tree = SDL_SCANCODE_T;
-            if (input.wasKeyPressed(key_tree)) {
-               showTreeShadows = !showTreeShadows;
-               treeGen.includeInShadows(showTreeShadows);
+         { // handle jumping
+            const auto key_title = SDL_SCANCODE_T;
+            if (input.wasKeyPressed(key_title)) {
+               displayTitleScreen = !displayTitleScreen; 
             }
          }
          {

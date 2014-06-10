@@ -16,14 +16,15 @@ const float BUSH_SCALE_MAX = 1.8 * 100;
 const int BUSH_RUSTLE_MIN = 250;
 const int BUSH_RUSTLE_MAX = 450;
 
-BushGenerator::BushGenerator(const Mesh& mesh, const GroundPlane& ground) : 
+BushGenerator::BushGenerator(const Mesh& mesh, const GroundPlane& ground, const Mesh& butterfly) : 
    draw_template_({
          ShaderType::DEFERRED,
          mesh,
          Material(),
          Texture(TextureType::TREE, DIFFUSE_TEXTURE),
          boost::none,
-         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::VARY_MATERIAL}) }) 
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::CASTS_REFLECTION, EffectType::VARY_MATERIAL}) }),
+   butterfly_(butterfly)
 {
    draw_template_.material = Material(glm::vec3(0.45, 0.24, 0.15));
    generate(ground);
@@ -44,7 +45,7 @@ void BushGenerator::generate(const GroundPlane& ground) {
             float rustleTime = (rand() % (int)(BUSH_RUSTLE_MAX - BUSH_RUSTLE_MIN)) + BUSH_RUSTLE_MIN;
 
             if (ground.heightAt(glm::vec3(x, 0, y)) > 0.f) {
-               bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime));
+               bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime, butterfly_));
             }
          }
       }
@@ -62,3 +63,14 @@ Drawable BushGenerator::drawable() const {
    return Drawable({draw_template_, model_matrices});
 } 
 
+Drawable BushGenerator::butterflyDrawable() const {
+   Drawable ret;
+   for (auto& bush : bushes) {
+      const auto& draw_instances = bush.butterfly_system_.drawable().draw_instances;
+      ret.draw_template = bush.butterfly_system_.drawable().draw_template;
+      ret.draw_instances.insert(ret.draw_instances.end(),
+            draw_instances.begin(),
+            draw_instances.end());
+   }
+   return ret;
+}

@@ -5,7 +5,7 @@
 #include "sound_engine.h"
 
 Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
-      float scale, units::MS rustle_time) :
+      float scale, units::MS rustle_time, const Mesh& butterfly) :
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(rustle_time),
@@ -29,7 +29,7 @@ Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const
          glm::vec3(1, 0, 0)
       )
    ),
-   hasButts(false),
+   has_butterflies_(false),
    position_(position)
 {}
 
@@ -41,11 +41,11 @@ bool Bush::step(units::MS dt) {
       elapsed_time_ += dt;
       rotate_ = 10 * glm::sin(elapsed_time_ / 60.0f);
       
-      releaseButterflies = !hasButts;
-      hasButts = true;
+      releaseButterflies = !has_butterflies_;
+      has_butterflies_ = true;
    }
    else {
-      hasButts = false;  
+      has_butterflies_ = false;  
    }
 
    return releaseButterflies;
