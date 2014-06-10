@@ -270,27 +270,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             }
             break;
 
-         case ShaderType::WATER:
-            if (!gReflections) break;
-            SendScreenSize(shader, uniforms);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            {
-               const auto view_projection = gProjectionMatrix * viewMatrix;
-               for (auto& drawable : culledDrawables) {
-                  if (drawable.draw_template.shader_type == ShaderType::WATER) {
-                     drawable.draw_template.texture->enable(texture_cache_);
-                     shader.sendUniform(Uniform::TEXTURE, uniforms,
-                           drawable.draw_template.texture->texture_slot());
-                     for (auto& inst : drawable.draw_instances) {
-                        shader.sendUniform(Uniform::MODEL_VIEW_PROJECTION, uniforms,
-                              view_projection * inst.instance.model_transform);
-                        shader.drawMesh(drawable.draw_template.mesh);
-                     }
-                  }
-               }
-            }
-            break;
-
          case ShaderType::TEXTURE:
             if (!useTextureShader) break;
             if(printCurrentShaderName)
