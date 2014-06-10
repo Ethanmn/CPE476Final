@@ -26,7 +26,7 @@ Pinecone::Pinecone(const Mesh& mesh, const GroundPlane& ground, const glm::vec2&
          position,
          glm::vec2(kAreaOfEffect, kAreaOfEffect),
          0.0f),
-   position_(position.x, ground.heightAt(glm::vec3(position.x, 0, position.y)), position.y),
+   position_(position.x, -mesh.min.y + ground.heightAt(glm::vec3(position.x, 0, position.y)), position.y),
    been_pounced_(false)
 {
 }
@@ -37,4 +37,24 @@ Drawable Pinecone::drawable() const {
          draw_template_,
          std::vector<DrawInstance>({mt})
          });
+}
+
+void Pinecone::kick(const glm::vec2& direction) {
+   velocity_ = glm::normalize(direction) / 20.f;
+}
+
+void Pinecone::step(float dt, const GroundPlane& ground) {
+   if (glm::length(velocity_) > 0.001f) {
+      const auto deltaV = -glm::normalize(velocity_) * 0.00005f * dt;
+      if (glm::length(deltaV) > glm::length(velocity_)) {
+         velocity_ = glm::vec2();
+      } else {
+         velocity_ += deltaV;
+      }
+   }
+   const auto dp = velocity_ * dt;
+   position_.x += dp.x;
+   position_.z += dp.y;
+   position_.y = -draw_template_.mesh.min.y + ground.heightAt(position_);
+   bounding_rectangle_.set_position(glm::vec2(position_.x, position_.z));
 }
