@@ -10,7 +10,7 @@ const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
 const int TREE_SCALE = 5;
 const int TREE_VARIANCE = 40;
 
-TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
+TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf, const GroundPlane& ground) :
    draw_template_({
          ShaderType::DEFERRED,
          mesh, 
@@ -22,11 +22,6 @@ TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf) :
    leaf_(leaf)
 {
    draw_template_.material = Material(glm::vec3(1.2) * glm::vec3(0.45, 0.24, 0.15));
-   generate();
-}
-
-//Generate the trees
-void TreeGenerator::generate() {
    int size = GroundPlane::GROUND_SCALE / TREE_SIZE; 
    int groundSize = GroundPlane::GROUND_SCALE / 2;
 
@@ -40,12 +35,16 @@ void TreeGenerator::generate() {
             float y = height * TREE_SCALE * TREE_SIZE / 2;
             float z = col * TREE_SIZE - groundSize + rand() % TREE_SIZE;
 
-           if (!(x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
+           if (ground.heightAt(glm::vec3(x, y, z)) >= 0.0f  && !(x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
                trees.push_back(Tree(glm::vec3(x, y, z), height, width, angleRot, leaf_));
            }
          }
       }
    }
+}
+
+//Generate the trees
+void TreeGenerator::generate() {
 }
 
 void TreeGenerator::includeInShadows(bool value) {

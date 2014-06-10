@@ -46,6 +46,7 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh,
          position,
          glm::vec3(0, 0, 0),
          glm::vec2(0, 1),
+         0.0f,
          0.0f
          }),
    desired_lean_(0.0f),
@@ -62,6 +63,25 @@ Deer::Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh,
             glm::vec3(0, 0, (draw_template_.mesh.max.z - draw_template_.mesh.min.z)) / 3.0f)),
    inverse_pivot_(glm::inverse(pivot_))
       {}
+
+void Deer::changeRock(units::MS dt, const GroundPlane& ground_plane) {
+   glm::vec2 backFeet = back_feet_bounding_rectangle().getCenter();
+   glm::vec2 frontFeet = front_feet_bounding_rectangle().getCenter();
+   float heightFront = ground_plane.heightAt(glm::vec3(frontFeet.x, 0.0, frontFeet.y));
+   float heightBack = ground_plane.heightAt(glm::vec3(backFeet.x, 0.0, backFeet.y));
+
+   glm::vec3 feetVec = glm::vec3(frontFeet.x - backFeet.x, 
+                                 heightFront - heightBack,
+                                 frontFeet.y - frontFeet.y);
+   float feetDot = glm::dot(glm::vec3(1,0,0), glm::normalize(feetVec));
+   float feetAngle = glm::degrees(glm::acos(feetDot));
+   desired_rock_ = feetAngle;
+   
+   if(desired_rock_ < model_state_.current_rock)
+      model_state_.current_rock -= 0.00001 * dt;
+   else if(desired_rock_ > model_state_.current_rock)
+      model_state_.current_rock += 0.00001 * dt;
+}
 
 glm::mat4 Deer::calculateModel(const ModelState& model_state) const {
    const glm::mat4 rotate(
@@ -86,7 +106,13 @@ glm::mat4 Deer::calculateModel(const ModelState& model_state) const {
 }
 
 Drawable Deer::drawable() const {
-   return Drawable({draw_template_, std::vector<DrawInstance>({calculateModel(model_state_)})});
+   const glm::mat4 rock(
+         glm::rotate(
+            glm::mat4(),
+            model_state_.current_rock,
+            glm::vec3(1, 0, 0)
+            ));
+   return Drawable({draw_template_, std::vector<DrawInstance>({calculateModel(model_state_) * rock})});
 } 
 
 glm::vec3 Deer::predictPosition(units::MS dt, const glm::vec3& velocity) const {
@@ -172,6 +198,8 @@ glm::vec2 Deer::predictFacing(units::MS dt) const {
 }
 
 void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& sound_engine) {
+   changeRock(dt, ground_plane);
+
    model_state_.current_lean += (desired_lean_ - model_state_.current_lean) * 0.1f;
    model_state_.velocity = predictVelocity(dt, acceleration());
 

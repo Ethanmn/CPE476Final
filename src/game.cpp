@@ -51,7 +51,8 @@ Game::Game() :
    treeGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TREE)),
             Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::LEAF))),
+            mesh_loader_.loadMesh(MeshType::LEAF)),
+            ground_),
    bushGen(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::BUSH)),
          ground_),
@@ -347,6 +348,15 @@ void Game::draw() {
 
    drawables.push_back(deer_.drawable());
 
+   /*feet*/
+   Drawable br_drawable;
+   br_drawable.draw_template = BoundingRectangle::draw_template();
+   br_drawable.draw_instances.push_back(deer_.front_feet_bounding_rectangle().model_matrix());
+   br_drawable.draw_instances.push_back(deer_.back_feet_bounding_rectangle().model_matrix());
+   drawables.push_back(br_drawable);
+   /**/
+
+
    drawables.push_back(pinecone_.drawable());
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
@@ -515,6 +525,21 @@ void Game::mainLoop() {
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
                switchBlinnPhongShading = !switchBlinnPhongShading;
+               glm::vec2 backFeet = deer_.back_feet_bounding_rectangle().getCenter();
+               glm::vec2 frontFeet = deer_.front_feet_bounding_rectangle().getCenter();
+               float heightFront = ground_.heightAt(glm::vec3(frontFeet.x, 0.0, frontFeet.y));
+               float heightBack = ground_.heightAt(glm::vec3(backFeet.x, 0.0, backFeet.y));
+
+               glm::vec3 feetVec = glm::vec3(frontFeet.x - backFeet.x, 
+                                             heightFront - heightBack,
+                                             frontFeet.y - frontFeet.y);
+               float feetDot = glm::dot(glm::vec3(1,0,0), glm::normalize(feetVec));
+               float feetAngle = glm::degrees(glm::acos(feetDot)); 
+
+               printf("front feet height %f at (%f, %f)\n", heightFront, frontFeet.x, frontFeet.y);
+               printf("back feet height %f at (%f, %f)\n", heightBack, backFeet.x, backFeet.y);
+               printf("    Dot is %f\nAngle: %f\n\n", feetDot, feetAngle);
+               
             }
          }
          { //handle quit
