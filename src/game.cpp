@@ -366,6 +366,7 @@ void Game::draw() {
 
    if (gReflections) {
       Drawable waterDrawable = water_.drawable();
+      drawables.push_back(waterDrawable);
       if(useTextureShader)
          waterDrawable.draw_template.shader_type = ShaderType::TEXTURE;
       drawables.push_back(waterDrawable);
