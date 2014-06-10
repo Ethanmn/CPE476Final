@@ -45,7 +45,7 @@ void Pinecone::kick(const glm::vec2& direction) {
 
 void Pinecone::step(float dt, const GroundPlane& ground) {
    if (glm::length(velocity_) > 0.001f) {
-      const auto deltaV = -glm::normalize(velocity_) * 0.00045f * dt;
+      const auto deltaV = -glm::normalize(velocity_) * 0.00005f * dt;
       if (glm::length(deltaV) > glm::length(velocity_)) {
          velocity_ = glm::vec2();
       } else {
@@ -56,4 +56,5 @@ void Pinecone::step(float dt, const GroundPlane& ground) {
    position_.x += dp.x;
    position_.z += dp.y;
    position_.y = -draw_template_.mesh.min.y + ground.heightAt(position_);
+   bounding_rectangle_.set_position(glm::vec2(position_.x, position_.z));
 }
