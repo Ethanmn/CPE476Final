@@ -9,6 +9,9 @@
 #include "graphics/texture.h"
 
 const int MAX_NUM_BUTTERFLY_SYSTEMS = 10; //For optimization just in case
+const float COLOR_RATIO_MIN = 0.15;
+const float COLOR_LOSS_RATE = 0.1;
+const float MAX_FLOWER_TIME = 10000.0f;
 
 namespace {
    bool showTreeShadows = false;
@@ -133,7 +136,12 @@ Game::Game() :
    pinecone_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::PINECONE)),
          ground_,
-         glm::vec2(40))
+         glm::vec2(40)),
+   redRatio(1.0f),
+   blueRatio(1.0f),
+   greenRatio(1.0f),
+   redFlowerTimer(0.0f),
+   blueFlowerTimer(0.0f)
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
@@ -256,11 +264,13 @@ void Game::step(units::MS dt) {
       for(auto& flower : daisyGen.getFlowers()) {
          if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
             deer_.eat(flower);
+            redFlowerTimer = 0.0f;
          }
       }
       for(auto& flower : roseGen.getFlowers()) {
          if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
             deer_.eat(flower);
+            blueFlowerTimer = 0.0f;
          }
       }
       eatFlower = false;
@@ -319,10 +329,20 @@ void Game::step(units::MS dt) {
          target_pos.x = target_xz.x;
          target_pos.z = target_xz.y;
       }
+
+      redRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME);
+      blueRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME);
+      greenRatio = std::max(COLOR_RATIO_MIN, ((MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME + (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME) / 2);
+
+      redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer + (dt * COLOR_LOSS_RATE));
+      blueFlowerTimer =  std::min(MAX_FLOWER_TIME, blueFlowerTimer + (dt * COLOR_LOSS_RATE));
+
       deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
    } else if (current_mode == START) {
       deerCam.circle(dt, deer_.getPosition());
    }
+
+   //printf("Red Ratio: %f Blue Ratio: %f Green ratio: %f\n", redRatio, blueRatio, greenRatio);
 }
 
 void Game::draw() {
@@ -410,6 +430,8 @@ void Game::draw() {
       drawables.push_back(daisyGen.drawableEaten());
       drawables.push_back(roseGen.drawable());
       drawables.push_back(roseGen.drawableEaten());
+
+      drawables.push_back(song_path_.drawable());
 
       if (gReflections) {
          Drawable waterDrawable = water_.drawable();
