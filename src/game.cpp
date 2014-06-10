@@ -348,15 +348,6 @@ void Game::draw() {
 
    drawables.push_back(deer_.drawable());
 
-   /*feet*/
-   Drawable br_drawable;
-   br_drawable.draw_template = BoundingRectangle::draw_template();
-   br_drawable.draw_instances.push_back(deer_.front_feet_bounding_rectangle().model_matrix());
-   br_drawable.draw_instances.push_back(deer_.back_feet_bounding_rectangle().model_matrix());
-   drawables.push_back(br_drawable);
-   /**/
-
-
    drawables.push_back(pinecone_.drawable());
    drawables.push_back(lightning_trigger_.drawable());
    drawables.push_back(day_night_boxes_.drawableSun());
