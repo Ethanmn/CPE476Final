@@ -424,6 +424,7 @@ void Game::draw() {
       drawables.push_back(day_night_boxes_.drawableMoon());
 
       drawables.push_back(bushGen.drawable());
+      drawables.push_back(treeGen.leafDrawable());
       drawables.push_back(rockGen.drawable());
 
       drawables.push_back(daisyGen.drawable());
@@ -444,16 +445,25 @@ void Game::draw() {
          drawables.push_back(butSys.drawable());
       }
 
+      /* God Rays */
       god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
       god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
       drawables.push_back(god_rays_.drawable());
 
+      /* Fireflies and Firefly Glow */
       if(!day_cycle_.isDay()) {
          drawables.push_back(firefly_system_.drawable());
          drawables.push_back(firefly_system_.drawable_glow());
       }
 
-      drawables.push_back(treeGen.leafDrawable());
+      /* Lightning Bolt Glow */
+      Drawable lightningGlowDrawable = lightning_trigger_.drawable();
+      lightningGlowDrawable.draw_template.shader_type = ShaderType::FINAL_LIGHT_PASS;
+      for(auto& instance : lightningGlowDrawable.draw_instances) {
+         instance.model_transform = instance.model_transform * glm::scale(glm::mat4(), glm::vec3(1.0));
+      }
+      drawables.push_back(lightningGlowDrawable);
+
    }
 
    // View Frustum Culling

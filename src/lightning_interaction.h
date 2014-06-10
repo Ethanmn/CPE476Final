@@ -23,7 +23,7 @@ struct Lightning {
                Material(),
                Texture(TextureType::LIGHTNING, DIFFUSE_TEXTURE),
                boost::none,
-               EffectSet({EffectType::CASTS_SHADOW})
+               EffectSet({EffectType::CASTS_SHADOW, EffectType::IS_GOD_RAY})
                }),
             std::vector<DrawInstance>({calculateModel()})
             }),
