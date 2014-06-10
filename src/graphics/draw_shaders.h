@@ -31,12 +31,13 @@ struct DrawShader {
    Shaders getShaders() const { return shaders; }
 
   private:
-   void drawTextureShader(Shader& shader, 
+   void drawTextureShader(bool isReflection, Shader& shader, 
             const std::vector<Drawable>& drawables, 
             const glm::mat4& viewMatrix, 
             const glm::vec3& sunDir, 
             float sunIntensity, 
-            int lightning);
+            int lightning,
+            const FrameBufferObject& reflection_fbo);
 
    void SendDeferred(Shader& shader, 
             const UniformLocationMap& uniforms,

@@ -365,7 +365,10 @@ void Game::draw() {
    drawables.push_back(ground_.drawable());
 
    if (gReflections) {
-      drawables.push_back(water_.drawable());
+      Drawable waterDrawable = water_.drawable();
+      if(useTextureShader)
+         waterDrawable.draw_template.shader_type = ShaderType::TEXTURE;
+      drawables.push_back(waterDrawable);
    }
 
    drawables.push_back(butterfly_system_red_.drawable());

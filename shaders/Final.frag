@@ -25,7 +25,7 @@ varying float vGodRayDepth;
 vec4 calculateDiffuse(vec2 texCoord, int useSun);
 vec4 calculateAmbient(vec2 texCoord, float AmbientAmount);
 vec4 checkIfLightning(vec4 Diffuse);
-bool changeIfWaterPlane();
+vec4 changeIfWaterPlane();
 
 void main() {
    vec4 color;
@@ -46,7 +46,6 @@ void main() {
       color = calculateDiffuse(pixelOnScreen, 1) + calculateAmbient(pixelOnScreen, AmbientAmount);
 
    gl_FragColor = color;
-   changeIfWaterPlane();
 }
 
 vec4 calculateDiffuse(vec2 texCoord, int useSun) {
@@ -56,6 +55,15 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
       sunInt = 1.0;
 
    vec4 Diffuse = texture2D(uDiffuseTexture, texCoord);
+
+   if(Diffuse.r == 0.05098 * uSunIntensity
+      && Diffuse.g == 0.6274509 * uSunIntensity
+      && Diffuse.b == uSunIntensity) {
+      Diffuse = changeIfWaterPlane();
+      if(Diffuse.x < 0.0)
+         discard; 
+   }
+
    if(Diffuse.a < 0.8)
       discard;
    float dotNLDir = dot(normalize(vec3(texture2D(uNormalTexture, texCoord))), sunDir);
@@ -84,11 +92,11 @@ vec4 checkIfLightning(vec4 Diffuse) {
    return Diffuse;
 }
 
-bool changeIfWaterPlane() {
+vec4 changeIfWaterPlane() {
    if(uIsWater == 1) {
       vec4 refraction = vec4(0.0, 0, 0.4, 1.0);
       vec4 reflection = texture2D(uTexture, vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight));
-      gl_FragColor = (refraction + reflection) / 2.0;
+      return (refraction + reflection) / 2.0;
    }
-   return uIsWater == 1;
+   return vec4(-1);
 }

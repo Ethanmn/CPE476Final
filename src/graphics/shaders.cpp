@@ -36,6 +36,11 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::SHADOW_MAP,
    Uniform::SHADOW_MAP_TEXTURE,
 
+   Uniform::IS_WATER,
+   Uniform::REFLECTION_TEXTURE,
+   Uniform::SCREEN_WIDTH,
+   Uniform::SCREEN_HEIGHT,
+
    Uniform::HAS_TEXTURE,
    Uniform::TEXTURE,
 
@@ -173,8 +178,8 @@ Shaders::Shaders() {
    shaders_.insert(std::make_pair(ShaderType::TEXTURE,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));
 
-   //shaders_.insert(std::make_pair(ShaderType::WATER,
-            //Shader("Water", kWaterAttrs, kWaterUniforms)));
+   shaders_.insert(std::make_pair(ShaderType::WATER,
+            Shader("Water", kWaterAttrs, kWaterUniforms)));
 
    shaders_.insert(std::make_pair(ShaderType::REFLECTION,
             Shader("Texture", kTextureAttrs, kTextureUniforms)));

@@ -12,7 +12,7 @@
 struct Water {
    Water(const Mesh& mesh) :
       mesh_(mesh),
-      reflection_fbo_(kScreenWidth, kScreenHeight, DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH)
+      reflection_fbo_(kScreenWidth, kScreenHeight, REFLECTION_TEXTURE, FBOType::COLOR_WITH_DEPTH)
    {}
 
    Drawable drawable() const {
@@ -21,7 +21,7 @@ struct Water {
                ShaderType::FINAL_LIGHT_PASS,
                mesh_,
                Material(),
-               reflection_fbo_.texture(),
+               boost::none,
                boost::none,
                EffectSet({EffectType::IS_WATER})
                }),

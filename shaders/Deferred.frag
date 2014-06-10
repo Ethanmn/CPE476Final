@@ -31,6 +31,7 @@ float calculateShadowAmount();
 void main() {
    if(vPosition.y < 0.0)
       discard;
+
    vec4 color = vec4(1, 0, 0, 1); 
    //red if OutputShaderType is not correct
    int alpha = alphaCheck();
