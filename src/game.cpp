@@ -96,8 +96,11 @@ Game::Game() :
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
    butterflyGen(attribute_location_map_, mesh_loader_),
    firefly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::FIREFLY)), TextureType::FIREFLY,
-         glm::vec3(-20.0f, 0.f, -20.0f), 20),
+            mesh_loader_.loadMesh(MeshType::FIREFLY)), 
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::FIREFLY)),
+         TextureType::FIREFLY,
+         glm::vec3(-20.0f, 0.f, -20.0f), 15),
 
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
@@ -345,6 +348,7 @@ void Game::step(units::MS dt) {
 void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    const auto sunIntensity = day_cycle_.getSunIntensity();
+
    glClearColor (0.05098 * sunIntensity,
          0.6274509 * sunIntensity,
          sunIntensity, 1.0f);
@@ -577,6 +581,21 @@ void Game::mainLoop() {
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
                switchBlinnPhongShading = !switchBlinnPhongShading;
+               glm::vec2 backFeet = deer_.back_feet_bounding_rectangle().getCenter();
+               glm::vec2 frontFeet = deer_.front_feet_bounding_rectangle().getCenter();
+               float heightFront = ground_.heightAt(glm::vec3(frontFeet.x, 0.0, frontFeet.y));
+               float heightBack = ground_.heightAt(glm::vec3(backFeet.x, 0.0, backFeet.y));
+
+               glm::vec3 feetVec = glm::vec3(frontFeet.x - backFeet.x, 
+                                             heightFront - heightBack,
+                                             frontFeet.y - frontFeet.y);
+               float feetDot = glm::dot(glm::vec3(1,0,0), glm::normalize(feetVec));
+               float feetAngle = glm::degrees(glm::acos(feetDot)); 
+
+               printf("front feet height %f at (%f, %f)\n", heightFront, frontFeet.x, frontFeet.y);
+               printf("back feet height %f at (%f, %f)\n", heightBack, backFeet.x, backFeet.y);
+               printf("    Dot is %f\nAngle: %f\n\n", feetDot, feetAngle);
+               
             }
          }
          { //handle quit
@@ -593,6 +612,7 @@ void Game::mainLoop() {
                far_plane_target = 400.f;
                current_mode = PLAY;
                displayTitleScreen = !displayTitleScreen;
+               useTextureShader = false;
             }
          }
       }

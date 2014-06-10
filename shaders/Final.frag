@@ -10,8 +10,6 @@ uniform float uScreenHeight;
 
 uniform vec3 uSunDir;
 uniform float uSunIntensity;
-uniform int uIsGodRay;
-uniform int uIsFirefly;
 uniform int uLightning;
 uniform vec3 uGodRayCenter;
 uniform int uIsWater;
@@ -19,6 +17,10 @@ uniform int uIsWater;
 varying vec4 vNormal;
 varying vec4 vPosition;
 varying vec2 vTexCoord;
+
+uniform int uIsGodRay;
+uniform int uIsFirefly;
+varying vec4 vCenter;
 varying float vGodRayIntensity;
 varying float vGodRayDepth;
 
@@ -28,18 +30,34 @@ vec4 checkIfLightning(vec4 Diffuse);
 vec4 changeIfWaterPlane();
 
 void main() {
-   vec4 color;
+   vec4 color, test, glow = vec4(1.0);
    vec2 pixelOnScreen = vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight);
    vec4 depthOfImage =  texture2D(uPositionTexture, pixelOnScreen);
+   float attenuation = 1.5;
 
+   color = calculateDiffuse(pixelOnScreen, 1);
    if(uIsGodRay == 1) {
-      color = vec4(1, 0, 0, 1); //Test: this should never appear.
+      float bias = 0.025;
 
-      float differenceOfDepth = vGodRayDepth - depthOfImage.z;
-      if(vGodRayDepth > depthOfImage.z)
-         color = calculateDiffuse(pixelOnScreen, 0);
-      else
+      bool isVisible = vGodRayDepth <= depthOfImage.z - bias;
+      if(isVisible) {
+         if(uIsFirefly == 1) {
+         float dist = abs(distance(vPosition.xyz, vCenter.xyz));
+            if(dist < 1.0)
+               attenuation = 3.0;
+            else {
+               attenuation = 1.0 / (3.0 * log(dist));
+               attenuation = min(1.0, attenuation);
+               test = vec4(vec3(attenuation), 1.0);
+               attenuation += 1.0;
+            }
+         }
+         attenuation = max(attenuation, 1.0);
+         color = vec4(color.r * attenuation, color.g * attenuation, color.b * attenuation, 1.0); 
+      }
+      else {
          discard;
+      }
    }
    else
       color = calculateDiffuse(pixelOnScreen, 1);
@@ -56,7 +74,6 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
       sunInt = 1.0;
 
    vec4 Diffuse = texture2D(uDiffuseTexture, texCoord);
-
    if(Diffuse.r == 0.05098 * uSunIntensity
       && Diffuse.g == 0.6274509 * uSunIntensity
       && Diffuse.b == uSunIntensity) {

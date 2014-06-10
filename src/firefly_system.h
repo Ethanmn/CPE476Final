@@ -9,8 +9,9 @@
 #include "graphics/draw_template.h"
 
 struct FireflySystem {
-   FireflySystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles);
 
+   FireflySystem(const Mesh& mesh, const Mesh& glow_mesh,
+      TextureType texture_type, const glm::vec3& origin, int numParticles);
    void step(units::MS dt);
 
    DrawTemplate draw_template() const { return draw_template_; }

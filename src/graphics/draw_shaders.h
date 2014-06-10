@@ -45,6 +45,9 @@ struct DrawShader {
 
    void sendOutputShaderType(ShaderType shaderT, Shader& shader);
 
+   void SendShadow(Shader& shader, const UniformLocationMap& uniforms,
+            const FrameBufferObject& shadow_map_fbo_,
+            const glm::vec3& deerPos, const glm::vec3& sunDir);
    void SendHeightMap(Shader& shader, const Drawable& drawable);
    void SendBones(Shader& shader, const Drawable& drawable);
    void SendTexture(Shader& shader, const Drawable& drawable);
