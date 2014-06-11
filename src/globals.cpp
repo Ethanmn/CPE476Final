@@ -27,7 +27,6 @@ float cameraDistanceToDeer = 23.0f;
 float cameraHeightAboveDeer = 12.0f;
 
 float redFlowerTimer = 0.f;
-float blueFlowerTimer = 0.f;
 
 const int kMaxDensityLevel = 3;
 int gDensityLevel = 2;
