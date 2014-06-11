@@ -22,6 +22,7 @@ uniform int uIsGodRay;
 uniform int uIsFirefly;
 
 varying vec4 vCenter;
+varying vec4 vHeight;
 varying vec4 vMVPPos;
 
 varying float vGodRayIntensity;
@@ -40,12 +41,14 @@ void main() {
 
    color = calculateDiffuse(pixelOnScreen, 1);
    if(uIsGodRay == 1) {
-      float bias = 0.025;
+      float bias = 0.005;
+      float fireflyBias = 0.025;
       float dist;
 
       bool isVisible = vGodRayDepth <= depthOfImage.z - bias;
-      if(isVisible) {
-         if(uIsFirefly == 1) {
+      bool fireflyIsVisible = vGodRayDepth <= depthOfImage.z - fireflyBias;
+
+      if(uIsFirefly == 1 && fireflyIsVisible) {
          dist = abs(distance(vPosition.xyz, vCenter.xyz));
             if(dist < 1.0)
                attenuation = 3.0;
@@ -55,23 +58,24 @@ void main() {
                test = vec4(vec3(attenuation), 1.0);
                attenuation += 1.0;
             }
-         }
-         else {
-            dist = abs(vCenter.x - vMVPPos.x);
+      }
+      else if(uIsFirefly == 0 && isVisible) {
+            dist = abs(vCenter.x - vMVPPos.x); 
+            float xDist = abs(vHeight.x + vMVPPos.x) / (2.0 * vHeight.x);
+            float yDist = abs(vHeight.y + vMVPPos.y) / (2.0 * vHeight.y);
+
             if(dist < 1.0)
                dist = 1.0;
-            test = vec4(vec3(3.0/dist), 1.0);
-         }
-
-         attenuation = max(attenuation, 1.0);
-         color = vec4(color.r * attenuation, color.g * attenuation, color.b * attenuation, 1.0); 
-
-
-         color = test;
+            test = vec4(vec3(log(dist)), 1.0);
+            dist = min(2.0, 1.0 + 1.0 / (3.0 * log(dist)));
+            attenuation = max(-1.0, dist / yDist);
       }
-      else {
+      else
          discard;
-      }
+
+      attenuation = max(attenuation, 1.0);
+      color = vec4(color.r * attenuation, color.g * attenuation, color.b * attenuation, 1.0); 
+         /*color = test;*/
    }
    else
       color = calculateDiffuse(pixelOnScreen, 1);

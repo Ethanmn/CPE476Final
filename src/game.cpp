@@ -117,7 +117,7 @@ Game::Game() :
 
    god_rays_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::GOD_RAYS)),
-            glm::vec3(0.0f, 0.0f, 0.0f), 5.5),
+            glm::vec3(0.0f, 0.0f, 0.0f), 1.5),
 
    skybox(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::SKYBOX))),
