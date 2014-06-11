@@ -188,7 +188,8 @@ void DrawShader::SendTexture(Shader& shader, const Drawable& drawable) {
    }
 }
 
-void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
+void DrawShader::Draw(glm::vec3 flowerFade,
+      const FrameBufferObject& shadow_map_fbo_,
       const FrameBufferObject& reflection_fbo,
       const FrameBufferObject& deferred_diffuse_fbo_,
       const FrameBufferObject& deferred_position_fbo_,
@@ -285,6 +286,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             {
                const auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
+               shader.sendUniform(Uniform::FLOWER_FADE, uniforms, flowerFade);
 
                SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
                SendScreenSize(shader, uniforms);
@@ -381,6 +383,7 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             deferred_normal_fbo_.texture().enable(texture_cache_);
             shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_normal_fbo_.texture_slot());
 
+            shader.sendUniform(Uniform::FLOWER_FADE, uniforms, flowerFade);
             SendSun(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
             SendScreenSize(shader, uniforms);

@@ -12,7 +12,8 @@
 struct DrawShader {
    DrawShader() : uniforms(shaders.getUniformLocationMap()) {}
 
-   void Draw(const FrameBufferObject& shadow_map_fbo_, 
+   void Draw(glm::vec3 flowerFade,
+            const FrameBufferObject& shadow_map_fbo_, 
             const FrameBufferObject& reflection_fbo,
 
             const FrameBufferObject& deferred_diffuse_fbo_,

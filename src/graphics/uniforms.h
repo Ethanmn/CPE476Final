@@ -35,6 +35,7 @@ enum class Uniform {
    VARY_MATERIAL,
    IS_WATER,
    IS_TITLE_SCREEN,
+   FLOWER_FADE,
 
    SUN_DIR,
    SUN_INTENSITY,
@@ -124,6 +125,8 @@ inline std::string uniform_name(Uniform uniform) {
          return "uIsWater";
       case Uniform::IS_TITLE_SCREEN:
          return "uIsTitleScreen";
+      case Uniform::FLOWER_FADE:
+         return "uFlowerFade";
 
       case Uniform::FINAL_PASS_POSITION_TEXTURE:
          return "uPositionTexture";

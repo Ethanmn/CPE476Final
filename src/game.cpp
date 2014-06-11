@@ -9,8 +9,8 @@
 #include "graphics/texture.h"
 
 const int MAX_NUM_BUTTERFLY_SYSTEMS = 10; //For optimization just in case
-const float COLOR_RATIO_MIN = 0.15;
-const float COLOR_LOSS_RATE = 0.1;
+const float COLOR_RATIO_MIN = 0.0;
+const float COLOR_LOSS_RATE = 0.3;
 const float MAX_FLOWER_TIME = 10000.0f;
 
 namespace {
@@ -267,12 +267,14 @@ void Game::step(units::MS dt) {
          if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
             deer_.eat(flower);
             redFlowerTimer = 0.0f;
+            printf("Eat red flower\n");
          }
       }
       for(auto& flower : roseGen.getFlowers()) {
          if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
             deer_.eat(flower);
             blueFlowerTimer = 0.0f;
+            printf("Eat blue flower\n");
          }
       }
       eatFlower = false;
@@ -485,7 +487,11 @@ void Game::draw() {
 
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
-   draw_shader_.Draw(shadow_map_fbo_,
+   float ratioMax = redRatio > blueRatio ? redRatio : blueRatio;
+   glm::vec3 flowerFade = glm::vec3(ratioMax);
+
+   draw_shader_.Draw(flowerFade,
+                     shadow_map_fbo_,
                      water_.fbo(),
                      deferred_diffuse_fbo_,
                      deferred_position_fbo_,

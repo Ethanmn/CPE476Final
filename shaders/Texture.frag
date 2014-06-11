@@ -20,6 +20,7 @@ uniform float uScreenWidth;
 uniform float uScreenHeight;
 
 uniform int uUseBlinnPhong;
+uniform vec3 uFlowerFade;
 uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uLightning;
@@ -59,7 +60,9 @@ void main() {
    Specular = calculateSpecular(directionalColor, vLightAndDirectional.xyz);
 
    color =  vec3(Diffuse) + Specular + Ambient;
-   gl_FragColor = vec4(ShadowAmount * color.rgb, 1.0);
+   color = ShadowAmount * color.rgb;
+
+   gl_FragColor = vec4(color.rgb, 1.0);
 
    CheckIfUnderWater(ShadowAmount);
    CheckIfLightning();
@@ -150,10 +153,14 @@ void CheckIfLightning() {
 
 bool ChangeIfWaterPlane() {
    if(uIsWater == 1) {
+      vec4 color;
       vec4 refraction = vec4(0.0, 0, 0.4, 1.0);
       vec4 reflection = texture2D(uReflectionTexture, 
                         vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight));
-      gl_FragColor = (refraction + reflection) / 2.0;
+      color = (refraction + reflection) / 2.0;
+      
+      gl_FragColor = color;
    }
    return uIsWater == 1;
 }
+
