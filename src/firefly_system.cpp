@@ -3,12 +3,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdlib.h>
 
-#define MAX 0.005f
-#define MIN -0.005f
+#define VMAX 0.005f
+#define VMIN -0.005f
+#define MAX 0.075f
+#define MIN -0.075f
 
 #define Y_MAX 0.00007f
 
-FireflySystem::FireflySystem(const Mesh& mesh, TextureType texture_type, const glm::vec3& origin, int numParticles) :
+FireflySystem::FireflySystem(const Mesh& mesh, const Mesh& glow_mesh, 
+      TextureType texture_type, const glm::vec3& origin, int numParticles) :
             draw_template_({
                   ShaderType::DEFERRED,
                   mesh, 
@@ -19,7 +22,7 @@ FireflySystem::FireflySystem(const Mesh& mesh, TextureType texture_type, const g
                   }),
             draw_template_glow_({
                   ShaderType::FINAL_LIGHT_PASS,
-                  mesh, 
+                  glow_mesh, 
                   Material(),
                   Texture(texture_type, DIFFUSE_TEXTURE),
                   boost::none,
@@ -35,7 +38,7 @@ FireflySystem::FireflySystem(const Mesh& mesh, TextureType texture_type, const g
                   float rx = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
                   float ry = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
                   float rz = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / 10.0f);
-                  particles_.push_back(Particle(glm::vec3(origin_.x + rx, origin_.y + ry, origin_.z + rz), scale_, 0.0f,
+                  particles_.push_back(Particle(glm::vec3(origin_.x + rx, origin_.y + ry, origin_.z + rz), scale_, rand(),
                                        glm::vec3(rvx, 0.0f, rvz), acceleration_));
 
                }
@@ -48,8 +51,8 @@ void FireflySystem::step(units::MS dt) {
       float rvy = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / Y_MAX);
 
       if (!((particle.getLife() / 100) % 2)) {
-         float rvx = MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (MAX - MIN));
-         float rvz = MIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (MAX - MIN));
+         float rvx = VMIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (VMAX - VMIN));
+         float rvz = VMIN + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (VMAX - VMIN));
          
          particle.setVel(rvx, rvy, rvz);
       }
@@ -70,6 +73,6 @@ Drawable FireflySystem::drawable() const {
 Drawable FireflySystem::drawable_glow() const {
    std::vector<DrawInstance> model_matrices;
    for (auto& particle : particles_) 
-      model_matrices.push_back(particle.calculateModel() * glm::scale(glm::mat4(), glm::vec3(1.2f)));
+      model_matrices.push_back(particle.calculateModel() * glm::scale(glm::mat4(), glm::vec3(3.0f)));
    return Drawable({draw_template_glow_, model_matrices});
 }

@@ -25,7 +25,7 @@ struct DayNightInteraction {
             std::vector<DrawInstance>({
                glm::translate(
                   glm::mat4(),
-                  glm::vec3(-30.0f, ground.heightAt(glm::vec3(-7, 0, -7)) + 3, -30.0f))
+                  glm::vec3(-30.0f, ground.heightAt(glm::vec3(-7, 0, -7)), -30.0f))
                }),
             }),
       sun_drawable_({
@@ -40,7 +40,7 @@ struct DayNightInteraction {
             std::vector<DrawInstance>({
                glm::translate(
                   glm::mat4(),
-                  glm::vec3(20.0f, ground.heightAt(glm::vec3(7, 0, 7)) + 3, 20.0f))
+                  glm::vec3(20.0f, ground.heightAt(glm::vec3(7, 0, 7)), 20.0f))
                }),
             }),
       bounding_rectangle_sun_(glm::vec2(20.0f, 20.0f), glm::vec2(8.0f, 8.0f),

@@ -9,6 +9,9 @@
 #include "graphics/texture.h"
 
 const int MAX_NUM_BUTTERFLY_SYSTEMS = 10; //For optimization just in case
+const float COLOR_RATIO_MIN = 0.15;
+const float COLOR_LOSS_RATE = 0.1;
+const float MAX_FLOWER_TIME = 10000.0f;
 
 namespace {
    bool showTreeShadows = false;
@@ -23,6 +26,12 @@ namespace {
 
    float countLightning = 0.0;
    int numLightning = 0;
+
+   enum GameMode {
+      START,
+      PLAY,
+   };
+   GameMode current_mode = START;
    Timer draw_timer;
    bool show_fps = false;
    enum class AdjustType {
@@ -34,6 +43,12 @@ namespace {
       HEIGHT_MAP
    };
    AdjustType adjust_mode = AdjustType::FAR;
+   SpringMotion<float> far_plane_spring(
+         0.128f, // strength
+         0.00065f, // damp
+         0.01f) // speed
+         ;
+   boost::optional<float> far_plane_target;
 }
 
 Game::Game() :
@@ -48,6 +63,8 @@ Game::Game() :
             mesh_loader_.loadMesh(MeshType::DEER_SLEEP)),
          Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::DEER_POUNCE)),
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::LEAF)),
          glm::vec3()),
    day_night_boxes_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::TIME_STONE)), ground_),
@@ -81,8 +98,11 @@ Game::Game() :
    woodpecker_bird_sound_(SoundEngine::SoundEffect::WOODPECKER0, 3000),
    butterflyGen(attribute_location_map_, mesh_loader_),
    firefly_system_(Mesh::fromAssimpMesh(attribute_location_map_,
-            mesh_loader_.loadMesh(MeshType::FIREFLY)), TextureType::FIREFLY,
-         glm::vec3(-20.0f, 0.f, -20.0f), 20),
+            mesh_loader_.loadMesh(MeshType::FIREFLY)), 
+         Mesh::fromAssimpMesh(attribute_location_map_,
+            mesh_loader_.loadMesh(MeshType::FIREFLY)),
+         TextureType::FIREFLY,
+         glm::vec3(-20.0f, 0.f, -20.0f), 15),
 
    rain_system_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::RAIN)),
@@ -99,7 +119,7 @@ Game::Game() :
    skybox(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::SKYBOX))),
 
-   deerCam(Camera(glm::vec3(150.0f, 150.0f, 150.0f), glm::vec3(0.0f))),
+   deerCam(Camera(glm::vec3(300.0f), glm::vec3(0.0f))),
 
    deferred_diffuse_fbo_(kScreenWidth, kScreenHeight, DEFERRED_DIFFUSE_TEXTURE, FBOType::COLOR_WITH_DEPTH),
    deferred_position_fbo_(kScreenWidth, kScreenHeight, DEFERRED_POSITION_TEXTURE, FBOType::COLOR_WITH_DEPTH),
@@ -118,7 +138,12 @@ Game::Game() :
    pinecone_(Mesh::fromAssimpMesh(attribute_location_map_,
             mesh_loader_.loadMesh(MeshType::PINECONE)),
          ground_,
-         glm::vec2(40))
+         glm::vec2(40)),
+   redRatio(1.0f),
+   blueRatio(1.0f),
+   greenRatio(1.0f),
+   redFlowerTimer(0.0f),
+   blueFlowerTimer(0.0f)
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
 
@@ -153,145 +178,179 @@ void Game::step(units::MS dt) {
 
    sound_engine_.set_listener_position(deer_.getPosition(), deer_.getFacing());
 
-   butterflies.remove_if(ButterflySystem::checkIfEmpty);
-   for (auto& butSys : butterflies) {
-      butSys.step(dt);
+   if (far_plane_target) {
+      gFar = far_plane_spring.step(dt, *far_plane_target, gFar);
    }
 
-   firefly_system_.step(dt);
+   if (current_mode == PLAY) {
+      butterflies.remove_if(ButterflySystem::checkIfEmpty);
+      for (auto& butSys : butterflies) {
+         butSys.step(dt);
+      }
 
-   rain_system_.step(dt);
+      firefly_system_.step(dt);
 
-   if(numLightning) {
-      countLightning += dt/100.0;
-      if(countLightning < 0.0)
+      rain_system_.step(dt);
+
+      if(numLightning) {
+         countLightning += dt/100.0;
+         if(countLightning < 0.0)
+            lighting = 0;
+         else if(countLightning >= 0.0 && countLightning <= 1.0)
+            lighting = 1;
+         else if(countLightning > 1.0) {
+            countLightning = -2.0;
+            numLightning--;
+            if(numLightning == 1)
+               countLightning = -7.5;
+         }
+      } else {
          lighting = 0;
-      else if(countLightning >= 0.0 && countLightning <= 1.0)
-         lighting = 1;
-      else if(countLightning > 1.0) {
-         countLightning = -2.0;
-         numLightning--;
-         if(numLightning == 1)
-            countLightning = -7.5;
       }
-   } else {
-      lighting = 0;
-   }
 
-   bool deerBlocked = false;
-   if (deer_.isMoving()) {
-      BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt);
-      std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
-      for (auto collObj : collObjs) {
-         collObj->performObjectHit(sound_engine_);
-         deerBlocked = deerBlocked || collObj->isBlocker();
+      bool deerBlocked = false;
+      if (deer_.isMoving()) {
+         BoundingRectangle nextDeerRect = deer_.getNextBoundingBox(dt);
+         std::vector<GameObject*> collObjs = objTree.getCollidingObjects(nextDeerRect);
+         for (auto collObj : collObjs) {
+            collObj->performObjectHit(sound_engine_);
+            deerBlocked = deerBlocked || collObj->isBlocker();
+         }
       }
-   }
 
-   /*last minute addition, needs to be moved to deer*/
-   if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
-      if(!deerInWater) {
-         deerInWater = true;
+      /*last minute addition, needs to be moved to deer*/
+      if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
+         if(!deerInWater) {
+            deerInWater = true;
+            /*
+            sound_engine_.playSoundEffect(
+            SoundEngine::SoundEffect::WATER,
+            false,
+            deer_.getPosition());
+            //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
+            */
+         }
+      }
+      else if(deerInWater) { //leave water
+         deerInWater = false;
          sound_engine_.playSoundEffect(
-         SoundEngine::SoundEffect::WATER,
-         false,
-         deer_.getPosition());
-         //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
+            SoundEngine::SoundEffect::WATER,
+            false,
+            deer_.getPosition());
       }
-   }
-   else if(deerInWater) { //leave water
-      deerInWater = false;
-      sound_engine_.playSoundEffect(
-         SoundEngine::SoundEffect::WATER,
-         false,
-         deer_.getPosition());
-   }
-   
 
-   if (deerBlocked) {
-      deer_.block();
-   } else {
-      deer_.step(dt, ground_, sound_engine_);
-   }
-
-   song_path_.step(dt, deer_.bounding_rectangle());
-
-   for (auto& bush : bushGen.getBushes()) {
-      if(bush.step(dt) && butterflies.size() < MAX_NUM_BUTTERFLY_SYSTEMS && day_cycle_.isDaytime()) {
-         butterflies.push_back(butterflyGen.getSystem(bush.getPosition()));
+      if (deerBlocked) {
+         deer_.block();
+      } else {
+         deer_.step(dt, ground_, sound_engine_);
       }
-   }
+      pinecone_.step(dt, ground_);
 
-   for (auto& tree : treeGen.getTrees()) {
-      tree.step(dt);
-   }
+      song_path_.step(dt, deer_.bounding_rectangle());
 
-   for(auto& flower : daisyGen.getFlowers()) {
-      if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
-         deer_.eat(flower);
+      for (auto& bush : bushGen.getBushes()) {
+         if(bush.step(dt) && butterflies.size() < MAX_NUM_BUTTERFLY_SYSTEMS && day_cycle_.isDaytime()) {
+            butterflies.push_back(butterflyGen.getSystem(bush.getPosition()));
+         }
       }
-   }
-   for(auto& flower : roseGen.getFlowers()) {
-      if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
-         deer_.eat(flower);
+
+      for (auto& tree : treeGen.getTrees()) {
+         tree.step(dt);
       }
-   }
-   eatFlower = false;
 
-   if (!pinecone_.been_pounced() && deer_.bounding_rectangle().collidesWith(pinecone_.aoe_bounding_rectangle())) {
-      deer_.pounce(pinecone_.bounding_rectangle().getCenter());
-      pinecone_.deer_pounces();
-   }
+      if(deer_.front_feet_bounding_rectangle().collidesWith(pinecone_.bounding_rectangle())) {
+         deer_.stop_pounce();
+         pinecone_.kick(glm::vec2(deer_.getFacing().x, deer_.getFacing().z));
+      }
 
-   if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
-      if (numLightning == 0) {
-         if (!raining) {
-            song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::STORM_SONG));
+      for(auto& flower : daisyGen.getFlowers()) {
+         if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
+            deer_.eat(flower);
+            redFlowerTimer = 0.0f;
+         }
+      }
+      for(auto& flower : roseGen.getFlowers()) {
+         if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
+            deer_.eat(flower);
+            blueFlowerTimer = 0.0f;
+         }
+      }
+      eatFlower = false;
+
+      if (!pinecone_.been_pounced() && deer_.bounding_rectangle().collidesWith(pinecone_.aoe_bounding_rectangle())) {
+         deer_.pounce(pinecone_.bounding_rectangle().getCenter());
+         pinecone_.deer_pounces();
+      }
+
+      if(deer_.bounding_rectangle().collidesWith(lightning_trigger_.bounding_rectangle())) {
+         if (numLightning == 0) {
+            if (!raining) {
+               song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::STORM_SONG));
+               song_path_.reset();
+            }
+            raining = 1;
+            lighting = 1;
+            numLightning = 3;
+            sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+         }
+      }
+
+      if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
+         if (day_cycle_.isDaytime()) {
+            song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::NIGHT_SONG));
             song_path_.reset();
          }
-         raining = 1;
-         lighting = 1;
-         numLightning = 3;
-         sound_engine_.playSoundEffect(SoundEngine::SoundEffect::THUNDER_STRIKE, false, glm::vec3());
+         day_cycle_.dayToNight();
       }
+      else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
+         if (!day_cycle_.isDaytime()) {
+            song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG));
+            song_path_.reset();
+         }
+         day_cycle_.nightToDay();
+      }
+      day_cycle_.autoAdjustTime(dt);
+
+      Camera::Position cam_pos;
+      glm::vec3 target_pos(deer_.getPosition());
+      if (deer_.is_sleeping()) {
+         cam_pos = Camera::Position::FRONT_RIGHT;
+      } else if (deer_.is_eating()) {
+         cam_pos = Camera::Position::LEFT;
+      } else if (deer_.is_pouncing()) {
+         cam_pos = Camera::Position::RIGHT;
+      } else {
+         cam_pos = Camera::Position::BEHIND;
+      }
+      if (deer_.is_sleeping() || deer_.is_eating()) {
+         glm::vec2 head_pos(deer_.head_bounding_rectangle().getCenter());
+         target_pos.x = head_pos.x;
+         target_pos.z = head_pos.y;
+      } else if (deer_.is_pouncing()) {
+         glm::vec2 target_xz((pinecone_.bounding_rectangle().getCenter() + deer_.bounding_rectangle().getCenter()) / 2.f);
+         target_pos.x = target_xz.x;
+         target_pos.z = target_xz.y;
+      }
+
+      redRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME);
+      blueRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME);
+      greenRatio = std::max(COLOR_RATIO_MIN, ((MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME + (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME) / 2);
+
+      redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer + (dt * COLOR_LOSS_RATE));
+      blueFlowerTimer =  std::min(MAX_FLOWER_TIME, blueFlowerTimer + (dt * COLOR_LOSS_RATE));
+
+      deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
+   } else if (current_mode == START) {
+      deerCam.circle(dt, deer_.getPosition());
    }
 
-   if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_moon())) {
-      if (day_cycle_.isDaytime()) {
-         song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::NIGHT_SONG));
-         song_path_.reset();
-      }
-      day_cycle_.dayToNight();
-   }
-   else if (deer_.bounding_rectangle().collidesWith(day_night_boxes_.bounding_rectangle_sun())) {
-      if (!day_cycle_.isDaytime()) {
-         song_path_.set_song(sound_engine_.loadSong(SoundEngine::Song::DAY_SONG));
-         song_path_.reset();
-      }
-      day_cycle_.nightToDay();
-   }
-   day_cycle_.autoAdjustTime(dt);
-
-   Camera::Position cam_pos;
-   glm::vec3 target_pos(deer_.getPosition());
-   if (deer_.is_sleeping()) {
-      cam_pos = Camera::Position::FRONT_RIGHT;
-   } else if (deer_.is_eating()) {
-      cam_pos = Camera::Position::LEFT;
-   } else {
-      cam_pos = Camera::Position::BEHIND;
-   }
-   if (deer_.is_sleeping() || deer_.is_eating()) {
-      glm::vec2 head_pos(deer_.head_bounding_rectangle().getCenter());
-      target_pos.x = head_pos.x;
-      target_pos.z = head_pos.y;
-   }
-   deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
+   //printf("Red Ratio: %f Blue Ratio: %f Green ratio: %f\n", redRatio, blueRatio, greenRatio);
 }
 
 void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    const auto sunIntensity = day_cycle_.getSunIntensity();
+
    glClearColor (0.05098 * sunIntensity,
          0.6274509 * sunIntensity,
          sunIntensity, 1.0f);
@@ -356,47 +415,52 @@ void Game::draw() {
 
 
    drawables.push_back(deer_.drawable());
-
-   drawables.push_back(pinecone_.drawable());
-   drawables.push_back(lightning_trigger_.drawable());
-   drawables.push_back(day_night_boxes_.drawableSun());
-   drawables.push_back(day_night_boxes_.drawableMoon());
-
-   drawables.push_back(bushGen.drawable());
-   drawables.push_back(rockGen.drawable());
-   drawables.push_back(treeGen.drawable());
-   drawables.push_back(treeGen.leafDrawable());
-
-   drawables.push_back(daisyGen.drawable());
-   drawables.push_back(daisyGen.drawableEaten());
-   drawables.push_back(roseGen.drawable());
-   drawables.push_back(roseGen.drawableEaten());
-
-   drawables.push_back(song_path_.drawable());
-   if (raining)
-      drawables.push_back(rain_system_.drawable());
+   {
+      const auto d = deer_.dust_drawable();
+      drawables.insert(drawables.end(), d.begin(), d.end());
+   }
 
    drawables.push_back(ground_.drawable());
+   drawables.push_back(treeGen.drawable());
 
-   if (gReflections) {
-      Drawable waterDrawable = water_.drawable();
-      if(useTextureShader)
-         waterDrawable.draw_template.shader_type = ShaderType::TEXTURE;
-      drawables.push_back(waterDrawable);
+   if (current_mode == PLAY) {
+      drawables.push_back(pinecone_.drawable());
+      drawables.push_back(lightning_trigger_.drawable());
+      drawables.push_back(day_night_boxes_.drawableSun());
+      drawables.push_back(day_night_boxes_.drawableMoon());
+
+      drawables.push_back(bushGen.drawable());
+      drawables.push_back(rockGen.drawable());
+
+      drawables.push_back(daisyGen.drawable());
+      drawables.push_back(daisyGen.drawableEaten());
+      drawables.push_back(roseGen.drawable());
+      drawables.push_back(roseGen.drawableEaten());
+
+      drawables.push_back(song_path_.drawable());
+
+      if (gReflections) {
+         Drawable waterDrawable = water_.drawable();
+         if(useTextureShader)
+            waterDrawable.draw_template.shader_type = ShaderType::TEXTURE;
+         drawables.push_back(waterDrawable);
+      }
+
+      for (auto& butSys : butterflies) {
+         drawables.push_back(butSys.drawable());
+      }
+
+      god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
+      god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
+      drawables.push_back(god_rays_.drawable());
+
+      if(!day_cycle_.isDay()) {
+         drawables.push_back(firefly_system_.drawable());
+         drawables.push_back(firefly_system_.drawable_glow());
+      }
+
+      drawables.push_back(treeGen.leafDrawable());
    }
-
-   for (auto& butSys : butterflies) {
-      drawables.push_back(butSys.drawable());
-   }
-
-   if (!day_cycle_.isDay()) {
-      drawables.push_back(firefly_system_.drawable());
-      drawables.push_back(firefly_system_.drawable_glow());
-   }
-
-   god_rays_.setRayPositions(song_path_.CurrentStonePosition(), song_path_.NextStonePosition());
-   god_rays_.setCurrentRayScale(song_path_.CurrentStoneRemainingRatio());
-   drawables.push_back(god_rays_.drawable());
 
    // View Frustum Culling
    auto viewMatrix = deerCam.getViewMatrix();
@@ -453,6 +517,13 @@ void Game::mainLoop() {
          if (input.wasKeyPressed(SDL_SCANCODE_ESCAPE)) {
             running = false;
          }
+         { // show or hide tree shadows -- Katelyn
+            const auto key_tree = SDL_SCANCODE_T;
+            if (input.wasKeyPressed(key_tree)) {
+               showTreeShadows = !showTreeShadows;
+               treeGen.includeInShadows(showTreeShadows);
+            }
+         }
          { // handle walk forward/backward for deer.
             const auto key_forward = SDL_SCANCODE_W;
             const auto key_backward = SDL_SCANCODE_S;
@@ -490,7 +561,7 @@ void Game::mainLoop() {
          { // handle jumping
             const auto key_title = SDL_SCANCODE_T;
             if (input.wasKeyPressed(key_title)) {
-               displayTitleScreen = !displayTitleScreen; 
+               displayTitleScreen = !displayTitleScreen;
             }
          }
          {
@@ -524,12 +595,77 @@ void Game::mainLoop() {
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
                switchBlinnPhongShading = !switchBlinnPhongShading;
+               glm::vec2 backFeet = deer_.back_feet_bounding_rectangle().getCenter();
+               glm::vec2 frontFeet = deer_.front_feet_bounding_rectangle().getCenter();
+               float heightFront = ground_.heightAt(glm::vec3(frontFeet.x, 0.0, frontFeet.y));
+               float heightBack = ground_.heightAt(glm::vec3(backFeet.x, 0.0, backFeet.y));
+
+               glm::vec3 feetVec = glm::vec3(frontFeet.x - backFeet.x, 
+                                             heightFront - heightBack,
+                                             frontFeet.y - frontFeet.y);
+               float feetDot = glm::dot(glm::vec3(1,0,0), glm::normalize(feetVec));
+               float feetAngle = glm::degrees(glm::acos(feetDot)); 
+
+               printf("front feet height %f at (%f, %f)\n", heightFront, frontFeet.x, frontFeet.y);
+               printf("back feet height %f at (%f, %f)\n", heightBack, backFeet.x, backFeet.y);
+               printf("    Dot is %f\nAngle: %f\n\n", feetDot, feetAngle);
+               
             }
          }
          { //handle quit
             const auto key_quit = SDL_SCANCODE_Q;
             if (input.wasKeyPressed(key_quit)) {
                running = false;
+            }
+         }
+      }
+      if (current_mode == START) {
+         { // start button
+            const auto key_start = SDL_SCANCODE_RETURN;
+            if (input.wasKeyPressed(key_start)) {
+               far_plane_target = 400.f;
+               current_mode = PLAY;
+               if (!gReflections) {
+                  gReflections = true;
+               }
+               displayTitleScreen = !displayTitleScreen;
+               useTextureShader = false;
+            }
+         }
+      }
+      else if (current_mode == PLAY) {
+         { // handle walk forward/backward for deer.
+            const auto key_forward = SDL_SCANCODE_W;
+            const auto key_backward = SDL_SCANCODE_S;
+            if (input.isKeyHeld(key_forward) && !input.isKeyHeld(key_backward)) {
+               deer_.walkForward();
+            } else if (input.isKeyHeld(key_backward) && !input.isKeyHeld(key_forward)) {
+               deer_.walkBackward();
+            } else {
+               deer_.stopWalking();
+            }
+         }
+         { // handle strafe left/right for deer.
+            const auto key_left = SDL_SCANCODE_A;
+            const auto key_right = SDL_SCANCODE_D;
+            if (input.isKeyHeld(key_left) && !input.isKeyHeld(key_right)) {
+               deer_.turnLeft();
+            } else if (!input.isKeyHeld(key_left) && input.isKeyHeld(key_right)) {
+               deer_.turnRight();
+            } else {
+               deer_.stopTurning();
+            }
+         }
+         {
+            const auto key_jump = SDL_SCANCODE_F;
+            if (input.wasKeyPressed(key_jump)) {
+               deer_.jump();
+            }
+         }
+         {
+            const auto key_eat = SDL_SCANCODE_E;
+            if (input.wasKeyPressed(key_eat)) {
+               eatFlower = true;
             }
          }
       }
@@ -585,6 +721,7 @@ void Game::mainLoop() {
                   switch (adjust_mode) {
                      case AdjustType::FAR:
                         gFar += far_adjust_speed * dt;
+                        far_plane_target = boost::none;
                         break;
                      case AdjustType::NEAR:
                         gNear += near_adjust_speed * dt;
@@ -607,6 +744,7 @@ void Game::mainLoop() {
                   switch (adjust_mode) {
                      case AdjustType::FAR:
                         gFar -= far_adjust_speed * dt;
+                        far_plane_target = boost::none;
                         break;
                      case AdjustType::NEAR:
                         gNear -= near_adjust_speed * dt;

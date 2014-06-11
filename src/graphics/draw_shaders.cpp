@@ -46,13 +46,6 @@ namespace {
 
       shader.sendUniform(Uniform::SHADOW_MAP, uniforms, lightMat);
    }
-   void SendShadow(Shader& shader, const UniformLocationMap& uniforms,
-         const FrameBufferObject& shadow_map_fbo_,
-         const glm::vec3& deerPos, const glm::vec3& sunDir) {
-      shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
-      shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
-      SendInverseShadow(shader, uniforms, sunDir, deerPos);
-   }
 
    void SendModelAndNormal(Shader& shader, const UniformLocationMap& uniforms,
          const glm::mat4& model_view, const glm::mat4& model, bool needsModel) {
@@ -127,7 +120,7 @@ void DrawShader::drawTextureShader(bool isReflection, Shader& shader, const std:
           drawable.draw_template.shader_type == ShaderType::DEFERRED) { 
          {
          // Per-Drawable Texture Shader Setup
-            SendHeightMap(shader, drawable);
+            //SendHeightMap(shader, drawable);
             SendBones(shader, drawable);
             SendTexture(shader, drawable);
 
@@ -145,6 +138,15 @@ void DrawShader::drawTextureShader(bool isReflection, Shader& shader, const std:
             drawModelTransforms(shader, drawable, viewMatrix, true, uniforms);
       }
    }
+}
+
+void DrawShader::SendShadow(Shader& shader, const UniformLocationMap& uniforms,
+         const FrameBufferObject& shadow_map_fbo_,
+         const glm::vec3& deerPos, const glm::vec3& sunDir) {
+      shadow_map_fbo_.texture().enable(texture_cache_);
+      shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 1);
+      shader.sendUniform(Uniform::SHADOW_MAP_TEXTURE, uniforms, shadow_map_fbo_.texture_slot());
+      SendInverseShadow(shader, uniforms, sunDir, deerPos);
 }
 
 
@@ -283,10 +285,8 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
             {
                const auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
-               shadow_map_fbo_.texture().enable(texture_cache_);
 
                SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
-
                SendScreenSize(shader, uniforms);
                
                drawTextureShader(false, shader, drawables, viewMatrix, sunDir, sunIntensity,
@@ -345,7 +345,6 @@ void DrawShader::Draw(const FrameBufferObject& shadow_map_fbo_,
                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             }
 
-            shadow_map_fbo_.texture().enable(texture_cache_);
             SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
 
             for (auto& drawable : culledDrawables) {

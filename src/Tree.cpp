@@ -21,7 +21,7 @@ Tree::Tree(glm::vec3 position, float heightOffset, float widthOffset, float angl
    elapsed_time_(0),
    rustle_time_(200),
    kMaxRustleTime(200),
-   material_(glm::vec3((rand() % 360) / 360.f)),
+   material_(glm::vec3(((rand() % 100) - 50) / 100.f * 0.9f)),
    translate_scale_(
       glm::translate(
          glm::mat4(),

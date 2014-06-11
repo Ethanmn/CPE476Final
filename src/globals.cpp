@@ -15,13 +15,13 @@ glm::mat4 calculateProjection() {
 }
 glm::mat4 gProjectionMatrix = calculateProjection();
 
-float gHeightMapScale = 10.5f;
+float gHeightMapScale = 7.5f;
 
 float gNear = 1.0f;
 float gFieldOfView = 80.0f;
-float gFar = 500.0f;
-bool useTextureShader = false;
-bool gReflections = true;
+float gFar = 1500.0f;
+bool useTextureShader = true;
+bool gReflections = false;
 
 float cameraDistanceToDeer = 23.0f;
 float cameraHeightAboveDeer = 12.0f;

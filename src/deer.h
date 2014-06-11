@@ -7,6 +7,7 @@
 #include "graphics/draw_template.h"
 #include "graphics/location_maps.h"
 #include "units.h"
+#include "dust_particle.h"
 
 struct GroundPlane;
 struct Shader;
@@ -20,9 +21,10 @@ struct Deer {
       glm::vec3 velocity;
       glm::vec2 last_facing;
       float current_lean;
+      float current_rock;
    };
   public:
-   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const glm::vec3& position);
+   Deer(const Mesh& walk_mesh, const Mesh& eat_mesh, const Mesh& sleep_mesh, const Mesh& pounce_mesh, const Mesh& dust, const glm::vec3& position);
 
    BoundingRectangle getNextBoundingBox(units::MS dt);
 
@@ -38,6 +40,7 @@ struct Deer {
    void jump();
    void eat(Flower& flower);
    void pounce(const glm::vec2& pounce_target);
+   void stop_pounce() { pounce_target_ = boost::none; spring_ = false; }
 
    glm::vec3 getPosition() const;
    glm::vec3 getFacing() const;
@@ -78,12 +81,35 @@ struct Deer {
             );
       return head;
    }
+   BoundingRectangle back_feet_bounding_rectangle() const {
+      BoundingRectangle head(bounding_rectangle_);
+      head.set_dimensions(
+            glm::vec2(
+               bounding_rectangle_.getDimensions().x / 8,
+               bounding_rectangle_.getDimensions().y));
+      head.set_position(
+            bounding_rectangle_.getCenter() +
+            bounding_rectangle_.getDimensions().x/5.f * glm::vec2(
+               glm::sin(glm::radians(bounding_rectangle_.getRotation() + 90.f) - 3.0),
+               glm::cos(glm::radians(bounding_rectangle_.getRotation() + 90.f) - 3.0))
+            );
+      return head;
+   }
 
    void block();
 
+   void changeRock(units::MS dt, const GroundPlane& ground_plane);
    glm::mat4 calculateModel(const ModelState& model_state) const;
    DrawTemplate draw_template() const { return draw_template_; }
    Drawable drawable() const;
+   std::vector<Drawable> dust_drawable() const {
+      return std::vector<Drawable>({
+            dust_system_back_.drawable(),
+            dust_system_front_.drawable(),
+            water_system_back_.drawable(),
+            water_system_front_.drawable(),
+            });
+   }
 
   private:
    enum class WalkDirection {
@@ -112,12 +138,14 @@ struct Deer {
    bool eating_;
    bool sleeping_;
    boost::optional<glm::vec2> pounce_target_;
+   bool spring_; // for the pounce yah
    Mesh walk_mesh_;
    Mesh eat_mesh_, sleep_mesh_, pounce_mesh_;
 
    ModelState model_state_;
 
    float desired_lean_;
+   float desired_rock_;
 
    WalkDirection walk_direction_;
    TurnDirection turn_direction_;
@@ -131,6 +159,11 @@ struct Deer {
 
    glm::mat4 pivot_, inverse_pivot_;
    boost::optional<Flower&> flower_;
+
+   Dust dust_system_front_;
+   Dust dust_system_back_;
+   Dust water_system_front_;
+   Dust water_system_back_;
 };
 
 #endif // DEER_H_
