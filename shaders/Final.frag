@@ -80,7 +80,7 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
       && Diffuse.b == 1.0 ||
       Diffuse.r == 0.05098 * 0.5
       && Diffuse.g == 0.6274509 * 0.5
-      && Diffuse.b == 1.0 * 0.5) {//uSunIntensity) {
+      && Diffuse.b == 1.0 * 0.5) {
       Diffuse = changeIfWaterPlane();
       noAmbient = true;
       if(Diffuse.r < 0.0)
