@@ -91,8 +91,6 @@ struct Game {
    float redRatio;
    float blueRatio;
    float greenRatio;
-   float redFlowerTimer;
-   float blueFlowerTimer;
 
    void step(units::MS dt);
    void draw();

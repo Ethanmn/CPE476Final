@@ -28,4 +28,7 @@ extern float cameraHeightAboveDeer;
 extern const int kMaxDensityLevel;
 extern int gDensityLevel;
 
+extern float redFlowerTimer;
+extern float blueFlowerTimer;
+
 #endif // GLOBALS_H_

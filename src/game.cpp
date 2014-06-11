@@ -144,9 +144,7 @@ Game::Game() :
          glm::vec2(40)),
    redRatio(1.0f),
    blueRatio(1.0f),
-   greenRatio(1.0f),
-   redFlowerTimer(0.0f),
-   blueFlowerTimer(0.0f)
+   greenRatio(1.0f)
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
    std::vector<GameObject*> objects;
@@ -267,15 +265,11 @@ void Game::step(units::MS dt) {
       for(auto& flower : daisyGen.getFlowers()) {
          if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
             deer_.eat(flower);
-            redFlowerTimer = 0.0f;
-            printf("Eat red flower\n");
          }
       }
       for(auto& flower : roseGen.getFlowers()) {
          if(eatFlower && deer_.head_bounding_rectangle().collidesWith(flower.bounding_rectangle())) {
             deer_.eat(flower);
-            blueFlowerTimer = 0.0f;
-            printf("Eat blue flower\n");
          }
       }
       eatFlower = false;
