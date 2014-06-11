@@ -243,7 +243,7 @@ void Deer::step(units::MS dt, const GroundPlane& ground_plane, SoundEngine& soun
       draw_template_.mesh.animation.step(dt);
       if (flower_ && draw_template_.mesh.animation.past_percentage(16. / 56.)) {
          flower_->eat(sound_engine);
-         redFlowerTimer = 0.f;
+         flowerResetting = true;
       }
       if (draw_template_.mesh.animation.is_finished()) {
          eating_ = false;

@@ -332,7 +332,7 @@ void Game::step(units::MS dt) {
       if(isFadingFlowers || redRatio < 1.0 || blueRatio < 1.0) {
          float stepScale = 1.0;
 
-         if(!isFadingFlowers) //Pushed 'G' to stop greyscale. Gradual return to color.
+         if(!isFadingFlowers || flowerResetting) //Pushed 'G' to stop greyscale. Gradual return to color.
             stepScale = -15.0;
          else if(deerInWater)
             stepScale = -10.0;
@@ -346,7 +346,10 @@ void Game::step(units::MS dt) {
          }
 
          redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer + stepScale * (dt * COLOR_LOSS_RATE));
-         redFlowerTimer = redFlowerTimer < 0.0 ? 0.0 : redFlowerTimer;
+         if (redFlowerTimer < 0.0) {
+            redFlowerTimer = 0.0;
+            flowerResetting = false;
+         }
 
 
          redRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME);
