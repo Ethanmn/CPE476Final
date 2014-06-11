@@ -29,6 +29,6 @@ extern const int kMaxDensityLevel;
 extern int gDensityLevel;
 
 extern float redFlowerTimer;
-extern float blueFlowerTimer;
+extern bool flowerResetting;
 
 #endif // GLOBALS_H_
