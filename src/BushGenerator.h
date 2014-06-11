@@ -29,6 +29,7 @@ struct BushGenerator {
   private:
    void generate(const GroundPlane& ground);
    std::vector<Bush> bushes;
+   std::vector<int> density_levels;
    DrawTemplate draw_template_;
 };
 

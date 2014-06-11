@@ -7,7 +7,8 @@
 const int BUTTERFLY_PROBABILTY = 35;
 
 Bush::Bush(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
-      float scale, units::MS rustle_time) :
+      float scale, units::MS rustle_time, int density) :
+   density_(density),
    rotate_(0.0f),
    elapsed_time_(0),
    rustle_time_(rustle_time),

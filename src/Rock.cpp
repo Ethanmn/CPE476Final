@@ -10,7 +10,8 @@
 #include "sound_engine.h"
 
 Rock::Rock(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
-      float scale) :
+      float scale, int density) :
+   density_(density),
    bounding_rectangle_(BoundingRectangle(
             glm::vec2(position.x, position.z),
             glm::vec2(2.0f * scale),

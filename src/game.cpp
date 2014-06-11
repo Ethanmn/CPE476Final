@@ -146,9 +146,7 @@ Game::Game() :
    blueFlowerTimer(0.0f)
 {
    BoundingRectangle::loadBoundingMesh(mesh_loader_, attribute_location_map_);
-
    std::vector<GameObject*> objects;
-
    for (auto& tree : treeGen.getTrees()) {
       objects.push_back(&tree);
    }
@@ -164,7 +162,6 @@ Game::Game() :
    for (auto& flower : roseGen.getFlowers()) {
       objects.push_back(&flower);
    }
-
    objTree.calculateTree(objects);
 }
 
@@ -709,6 +706,13 @@ void Game::mainLoop() {
             }
             if (input.wasKeyPressed(SDL_SCANCODE_F6)) {
                adjust_mode = AdjustType::HEIGHT_MAP;
+               std::clog << "adjusting height map's scale" << std::endl;
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_U)) {
+               gDensityLevel = std::max(gDensityLevel - 1, 0);
+            }
+            if (input.wasKeyPressed(SDL_SCANCODE_I)) {
+               gDensityLevel = std::min(gDensityLevel + 1, kMaxDensityLevel);
                std::clog << "adjusting height map's scale" << std::endl;
             }
             {

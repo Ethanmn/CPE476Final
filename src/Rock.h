@@ -18,7 +18,7 @@ struct SoundEngine;
 
 struct Rock : public GameObject {
    Rock(const Mesh& mesh, const glm::vec3& position, float angleOffset, const GroundPlane& ground, 
-        float scale);
+        float scale, int density);
 
    BoundingRectangle bounding_rectangle() const { return bounding_rectangle_; }
 
@@ -30,9 +30,11 @@ struct Rock : public GameObject {
    void performObjectHit(SoundEngine& sound_engine);
 
    glm::mat4 calculateModel() const;
+   int density() const { return density_; }
 
 
   private: 
+   int density_;
      BoundingRectangle bounding_rectangle_;
      float scale;
      glm::mat4 translate_scale_;

@@ -25,3 +25,6 @@ bool gReflections = false;
 
 float cameraDistanceToDeer = 23.0f;
 float cameraHeightAboveDeer = 12.0f;
+
+const int kMaxDensityLevel = 3;
+int gDensityLevel = 2;

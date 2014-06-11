@@ -4,7 +4,8 @@
 #include "graphics/material.h"
 #include "sound_engine.h"
 
-Flower::Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale, float errX, float errY) :
+Flower::Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale, float errX, float errY, int density) :
+   density_(density),
    position_(position.x, ground.heightAt(position) - mesh.min.y - scale / 2, position.z),
    bounding_rectangle_(BoundingRectangle(glm::vec2(position.x, position.z), glm::vec2(scale, scale), 0.0f)),
    eaten(false),

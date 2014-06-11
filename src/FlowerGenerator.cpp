@@ -40,8 +40,11 @@ void FlowerGenerator::generate(const GroundPlane& ground,  float errX, float err
             float x = row * FLOWER_SIZE - groundSize + rand() % FLOWER_SIZE;
             float y = col * FLOWER_SIZE - groundSize + rand() % FLOWER_SIZE;
 
-            if (ground.heightAt(glm::vec3(x, 0, y)) > 0.0f)
-               flowers.push_back(Flower(draw_template_.mesh, glm::vec3(x, 0.0f, y), ground, scale, errX, errY));
+            if (ground.heightAt(glm::vec3(x, 0, y)) > 0.0f) {
+               auto density = makeDensity();
+               flowers.push_back(Flower(draw_template_.mesh, glm::vec3(x, 0.0f, y), ground, scale, errX, errY, density));
+               density_levels.push_back(density);
+            }
          }
       }
    }
@@ -53,18 +56,22 @@ std::vector<Flower>& FlowerGenerator::getFlowers() {
 
 Drawable FlowerGenerator::drawable() const {
    std::vector<DrawInstance> model_matrices;
-   for(auto& flower : flowers) {
-      if(!flower.isEaten())
+   for(size_t i = 0; i < flowers.size(); ++i) {
+      auto& flower = flowers[i];
+      if(density_levels[i] <= gDensityLevel && !flower.isEaten()) {
          model_matrices.push_back(flower.calculateModel());
+      }
    }
    return Drawable({draw_template_, model_matrices});
 } 
 
 Drawable FlowerGenerator::drawableEaten() const {
    std::vector<DrawInstance> model_matrices;
-   for(auto& flower : flowers) {
-      if(flower.isEaten())
+   for(size_t i = 0; i < flowers.size(); ++i) {
+      auto& flower = flowers[i];
+      if(density_levels[i] <= gDensityLevel && flower.isEaten()) {
          model_matrices.push_back(flower.calculateModel());
+      }
    }
    return Drawable({draw_template_eaten_, model_matrices});
 } 

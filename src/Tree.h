@@ -20,7 +20,7 @@
 
 
 struct Tree : public GameObject {
-   Tree(glm::vec3 position, float heightOffset, float widthOffset, float angleRot, const Mesh& leaf);
+   Tree(glm::vec3 position, float heightOffset, float widthOffset, float angleRot, const Mesh& leaf, int density);
 
    BoundingRectangle getBoundingRectangle() {
       return bRect;
@@ -32,6 +32,7 @@ struct Tree : public GameObject {
    DrawInstance draw_instance() const;
 
    void step(units::MS dt);
+   int density() const { return density_; }
 
    public:
       LeafSystem leaf_system_;
@@ -48,6 +49,7 @@ struct Tree : public GameObject {
       glm::mat4 default_model_;
       MeshLoader mesh_loader_;
       AttributeLocationMap attribute_location_map_;
+      int density_;
 };
 
 #endif //TREE_H_

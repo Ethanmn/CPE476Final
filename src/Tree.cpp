@@ -12,7 +12,7 @@ const int BOUNDING_SIZE = 4;
 const float BOUNDING_ERR_X = 0.15f;
 const float BOUNDING_ERR_Z = 1.0f;
 
-Tree::Tree(glm::vec3 position, float heightOffset, float widthOffset, float angleRot, const Mesh& leaf) :
+Tree::Tree(glm::vec3 position, float heightOffset, float widthOffset, float angleRot, const Mesh& leaf, int density) :
    leaf_system_(leaf, TextureType::LEAF,
               glm::vec3(position.x, position.y + 5.0f, position.z), 0),
    bRect(BoundingRectangle(glm::vec2(position.x, position.z), 
@@ -48,9 +48,9 @@ Tree::Tree(glm::vec3 position, float heightOffset, float widthOffset, float angl
          -90.0f,
          glm::vec3(1.0f, 0, 0)
       )
-   )
-
-{} 
+   ),
+   density_(density)
+{}
 
 DrawInstance Tree::draw_instance() const {
    if (rustle_time_ >= kMaxRustleTime)

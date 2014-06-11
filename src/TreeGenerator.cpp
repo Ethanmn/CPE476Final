@@ -4,6 +4,7 @@
    Deer - CPE 476
 */
 #include "TreeGenerator.h"
+#include "globals.h"
 
 const int TREE_SIZE = 20;
 const int TREE_DENSITY = 4; //Higher numbers here will mean less trees.
@@ -36,7 +37,9 @@ TreeGenerator::TreeGenerator(const Mesh& mesh, const Mesh& leaf, const GroundPla
             float z = col * TREE_SIZE - groundSize + rand() % TREE_SIZE;
 
            if (ground.heightAt(glm::vec3(x, y, z)) >= 0.0f  && !(x < 80.0f && x > -80.0f && z < 80.0f && z > -80.0f)) {
-               trees.push_back(Tree(glm::vec3(x, y, z), height, width, angleRot, leaf_));
+              auto density = makeDensity();
+               trees.push_back(Tree(glm::vec3(x, y, z), height, width, angleRot, leaf_, density));
+               density_levels.push_back(density);
            }
          }
       }
@@ -60,20 +63,26 @@ std::vector<Tree>& TreeGenerator::getTrees() {
 
 Drawable TreeGenerator::drawable() const {
    std::vector<DrawInstance> model_matrices;
-   for (auto& tree : trees) {
-      model_matrices.push_back(tree.draw_instance());
+   for (size_t i = 0; i < trees.size(); ++i) {
+      if (density_levels[i] <= gDensityLevel) {
+         auto& tree = trees[i];
+         model_matrices.push_back(tree.draw_instance());
+      }
    }
    return Drawable({draw_template_, model_matrices});
 }
 
 Drawable TreeGenerator::leafDrawable() const {
    Drawable ret;
-   for (auto& tree : trees) {
-      const auto& draw_instances = tree.leaf_system_.drawable().draw_instances;
-      ret.draw_template = tree.leaf_system_.drawable().draw_template;
-      ret.draw_instances.insert(ret.draw_instances.end(),
-            draw_instances.begin(),
-            draw_instances.end());
+   for (size_t i = 0; i < trees.size(); ++i) {
+      if (density_levels[i] <= gDensityLevel) {
+         auto& tree = trees[i];
+         const auto& draw_instances = tree.leaf_system_.drawable().draw_instances;
+         ret.draw_template = tree.leaf_system_.drawable().draw_template;
+         ret.draw_instances.insert(ret.draw_instances.end(),
+               draw_instances.begin(),
+               draw_instances.end());
+      }
    }
    return ret;
 }
