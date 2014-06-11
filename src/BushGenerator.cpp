@@ -44,7 +44,9 @@ void BushGenerator::generate(const GroundPlane& ground) {
             float rustleTime = (rand() % (int)(BUSH_RUSTLE_MAX - BUSH_RUSTLE_MIN)) + BUSH_RUSTLE_MIN;
 
             if (ground.heightAt(glm::vec3(x, 0, y)) > 0.f) {
-               bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime));
+               auto density = makeDensity();
+               bushes.push_back(Bush(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, rustleTime, density));
+               density_levels.push_back(density);
             }
          }
       }
@@ -57,8 +59,12 @@ std::vector<Bush>& BushGenerator::getBushes() {
 
 Drawable BushGenerator::drawable() const {
    std::vector<DrawInstance> model_matrices;
-   for(auto& bush : bushes)
-      model_matrices.push_back(bush.calculateModel());
+   for(size_t i = 0; i < bushes.size(); ++i) {
+      if (density_levels[i] <= gDensityLevel) {
+         auto& bush = bushes[i];
+         model_matrices.push_back(bush.calculateModel());
+      }
+   }
    return Drawable({draw_template_, model_matrices});
 } 
 

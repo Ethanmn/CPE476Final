@@ -25,4 +25,7 @@ glm::mat4 calculateProjection();
 extern float cameraDistanceToDeer;
 extern float cameraHeightAboveDeer;
 
+extern const int kMaxDensityLevel;
+extern int gDensityLevel;
+
 #endif // GLOBALS_H_

@@ -29,6 +29,7 @@ struct RockGenerator {
    void generate(const GroundPlane& ground);
 
    std::vector<Rock> rocks;
+   std::vector<int> density_levels;
    DrawTemplate draw_template_;
 };
 

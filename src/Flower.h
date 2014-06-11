@@ -15,7 +15,7 @@ struct Shader;
 struct SoundEngine;
 
 struct Flower : GameObject {
-   Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale, float errX, float errY);
+   Flower(const Mesh& mesh, const glm::vec3& position, const GroundPlane& ground, float scale, float errX, float errY, int density);
 
    void eat(SoundEngine& sound_engine);
 
@@ -25,11 +25,13 @@ struct Flower : GameObject {
    }
 
    glm::mat4 calculateModel() const;
-   bool isEaten() const { return eaten; }  
+   bool isEaten() const { return eaten; }
    bool isBlocker() { return false; }
    void performObjectHit(SoundEngine& sound_engine); 
+   int density() const { return density_; }
 
   private:
+   int density_;
    glm::vec3 position_;
    BoundingRectangle bounding_rectangle_;
    bool eaten;

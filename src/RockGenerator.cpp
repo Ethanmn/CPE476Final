@@ -39,7 +39,9 @@ void RockGenerator::generate(const GroundPlane& ground) {
             float y = col * ROCK_SIZE - groundSize + rand() % ROCK_SIZE;
             float angle = rand() % 360;
 
-            rocks.push_back(Rock(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale));
+            auto density = makeDensity();
+            rocks.push_back(Rock(draw_template_.mesh, glm::vec3(x, 0.0f, y), angle, ground, scale, density));
+            density_levels.push_back(density);
          }
       }
    }
@@ -51,8 +53,12 @@ std::vector<Rock>& RockGenerator::getRocks() {
 
 Drawable RockGenerator::drawable() const {
    std::vector<DrawInstance> model_matrices;
-   for(auto& rock : rocks)
-      model_matrices.push_back(rock.calculateModel());
+   for(size_t i = 0; i < rocks.size(); ++i) {
+      if (density_levels[i] <= gDensityLevel) {
+         auto& rock = rocks[i];
+         model_matrices.push_back(rock.calculateModel());
+      }
+   }
    return Drawable({draw_template_, model_matrices});
 } 
 

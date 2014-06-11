@@ -17,6 +17,7 @@ struct Pinecone {
    void deer_pounces() { been_pounced_ = true; }
    bool been_pounced() const { return been_pounced_; }
    void step(float dt, const GroundPlane& ground);
+   void reverse() { velocity_ = -velocity_; }
 
   private:
    DrawTemplate draw_template_;

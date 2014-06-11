@@ -29,9 +29,9 @@ struct TreeGenerator {
   private:
    void generate();
    std::vector<Tree> trees;
+   std::vector<int> density_levels;
    DrawTemplate draw_template_;
    Mesh leaf_;
-
 };
 
 #endif //TREE_GEN_H_

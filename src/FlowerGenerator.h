@@ -25,6 +25,7 @@ struct FlowerGenerator {
   private:
    void generate(const GroundPlane& ground, float errX, float errY);
    std::vector<Flower> flowers;
+   std::vector<int> density_levels;
    DrawTemplate draw_template_;
    DrawTemplate draw_template_eaten_;
 };
