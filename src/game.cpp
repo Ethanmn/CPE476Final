@@ -354,6 +354,7 @@ void Game::draw() {
    glClearColor (0.05098 * sunIntensity,
          0.6274509 * sunIntensity,
          sunIntensity, 1.0f);
+   //glClearColor(1.0, 0.0, 0.0, 1.0);
 
    std::vector<Drawable> drawables;
    if (draw_collision_box) {

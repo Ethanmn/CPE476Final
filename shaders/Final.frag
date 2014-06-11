@@ -74,16 +74,16 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun) {
       sunInt = 1.0;
 
    vec4 Diffuse = texture2D(uDiffuseTexture, texCoord);
+
    if(Diffuse.r == 0.05098 * uSunIntensity
       && Diffuse.g == 0.6274509 * uSunIntensity
       && Diffuse.b == uSunIntensity) {
       Diffuse = changeIfWaterPlane();
       noAmbient = true;
-      if(Diffuse.x < 0.0)
+      if(Diffuse.r < 0.0)
          discard; 
    }
-
-   if(Diffuse.a < 0.8)
+   else if(Diffuse.a < 0.8)
       discard;
    float dotNLDir = dot(normalize(vec3(texture2D(uNormalTexture, texCoord))), sunDir);
       
@@ -117,7 +117,7 @@ vec4 checkIfLightning(vec4 Diffuse) {
 
 vec4 changeIfWaterPlane() {
    if(uIsWater == 1) {
-      vec4 refraction = vec4(0.0, 0, 0.4, 1.0);
+      vec4 refraction = vec4(0.0, 0.2, 0.2, 1.0);
       vec4 reflection = texture2D(uTexture, vec2(gl_FragCoord.x / uScreenWidth, gl_FragCoord.y / uScreenHeight));
       return (refraction + reflection) / 2.0;
    }
