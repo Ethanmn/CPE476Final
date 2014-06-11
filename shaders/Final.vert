@@ -18,6 +18,7 @@ varying vec4 vPosition;
 
 varying vec4 vMVPPos;
 varying vec4 vCenter;
+varying vec4 vCenter2;
 varying vec4 vHeight;
 
 uniform int uIsGodRay;
@@ -31,6 +32,7 @@ void main() {
    vec4 pixel_pos = uProjectionMatrix * uViewMatrix * vPosition;
 
    vCenter = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(vec3(0), 1.0);
+   vCenter2 = uModelMatrix * vec4(vec3(0), 1.0);
    vHeight = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(vec3(0, 10, 10), 1.0);
    vMVPPos = pixel_pos;
 
