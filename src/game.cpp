@@ -20,7 +20,7 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
    bool displayTitleScreen = true;
-   bool isFadingFlowers = false;
+   bool isFadingFlowers = true;
 
    int lighting = 0;
    int raining = 0;
