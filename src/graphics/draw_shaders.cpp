@@ -271,8 +271,10 @@ void DrawShader::Draw(glm::vec3 flowerFade,
                shader.sendUniform(Uniform::HAS_SHADOWS, uniforms, 0);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
 
+               glFrontFace(GL_CW);
                drawTextureShader(true, shader, drawables, viewMatrix, reflectSunDir, sunIntensity,
                      lightning, reflection_fbo);
+               glFrontFace(GL_CCW);
             }
             break;
 
