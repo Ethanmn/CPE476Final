@@ -362,8 +362,6 @@ void Game::step(units::MS dt) {
    } else if (current_mode == START) {
       deerCam.circle(dt, deer_.getPosition());
    }
-
-   //printf("Red Ratio: %f Blue Ratio: %f Green ratio: %f\n", redRatio, blueRatio, greenRatio);
 }
 
 void Game::draw() {
