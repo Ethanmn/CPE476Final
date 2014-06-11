@@ -22,6 +22,7 @@ uniform int uIsGodRay;
 uniform int uIsFirefly;
 
 varying vec4 vCenter;
+varying vec4 vCenter2;
 varying vec4 vHeight;
 varying vec4 vMVPPos;
 
@@ -49,12 +50,13 @@ void main() {
       bool fireflyIsVisible = vGodRayDepth <= depthOfImage.z - fireflyBias;
 
       if(uIsFirefly == 1 && fireflyIsVisible) {
-         dist = abs(distance(vPosition.xyz, vCenter.xyz));
+         dist = abs(distance(vPosition.xyz, vCenter2.xyz));
             if(dist < 1.0)
                attenuation = 3.0;
             else {
-               attenuation = 1.0 + 1.0 / (2.0 * log(dist));
-               attenuation = max(attenuation, 1.0);
+               attenuation = 1.0 / (3.0 * log(dist));
+               attenuation = min(1.0, attenuation);
+               attenuation = max(1.0 + attenuation, 1.0);
             }
       }
       else if(uIsFirefly == 0 && isVisible) {
