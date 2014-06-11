@@ -156,7 +156,7 @@ std::vector<GameObject*> BVHTree::getCollidingObjects(BoundingRectangle bRect) {
       curNode = nodeQ.front();
       nodeQ.pop_front();
       
-      if (curNode->getGameObject() && curNode->getGameObject()->density() < gDensityLevel) continue;
+      if (curNode->getGameObject() && curNode->getGameObject()->density() > gDensityLevel) continue;
       if (curNode->getRect().collidesWith(bRect)) {
          
          if (curNode->getGameObject() != NULL) {
