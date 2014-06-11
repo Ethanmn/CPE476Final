@@ -22,7 +22,7 @@ namespace {
    bool displayTitleScreen = true;
 
    bool isFadingFlowers = true;
-   float fadingTimeBeforeWater = 0.0f;
+   float fadingTimeBeforeWater = -1.0f;
 
    int lighting = 0;
    int raining = 0;
@@ -335,34 +335,34 @@ void Game::step(units::MS dt) {
          target_pos.z = target_xz.y;
       }
 
-      if(isFadingFlowers) {
-         if(deerInWater) {
-            redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer - 10 * (dt * COLOR_LOSS_RATE));
-            blueFlowerTimer =  std::min(MAX_FLOWER_TIME, blueFlowerTimer - 10 * (dt * COLOR_LOSS_RATE));
-         }
-         else {
-            redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer + (dt * COLOR_LOSS_RATE));
-            blueFlowerTimer =  std::min(MAX_FLOWER_TIME, blueFlowerTimer + (dt * COLOR_LOSS_RATE));
+      if(isFadingFlowers || redRatio < 1.0 || blueRatio < 1.0) {
+         float stepScale = 1.0;
+
+         if(!isFadingFlowers) //Pushed 'G' to stop greyscale. Gradual return to color.
+            stepScale = -15.0;
+         else if(deerInWater)
+            stepScale = -10.0;
+         else if(redFlowerTimer < fadingTimeBeforeWater)
+            stepScale = 8.0;
+         else
+            fadingTimeBeforeWater = -1.0;
+
+         if(deerInWater && fadingTimeBeforeWater < 0.0) {
+            fadingTimeBeforeWater = redFlowerTimer > blueFlowerTimer ? redFlowerTimer : blueFlowerTimer;  
          }
 
-            redRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME);
-            blueRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME);
-            greenRatio = std::max(COLOR_RATIO_MIN, ((MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME + 
+         redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer + stepScale * (dt * COLOR_LOSS_RATE));
+         blueFlowerTimer =  std::min(MAX_FLOWER_TIME, blueFlowerTimer + stepScale * (dt * COLOR_LOSS_RATE));
+         redFlowerTimer = redFlowerTimer < 0.0 ? 0.0 : redFlowerTimer;
+         blueFlowerTimer = blueFlowerTimer < 0.0 ? 0.0 : blueFlowerTimer;
+
+
+         redRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME);
+         blueRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME);
+         greenRatio = std::max(COLOR_RATIO_MIN, ((MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME + 
                   (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME) / 2);
 
       }
-
-      if(deerInWater && fadingTimeBeforeWater == -1.0) {
-         fadingTimeBeforeWater = redFlowerTimer > blueFlowerTimer ? redFlowerTimer : blueFlowerTimer;  
-         redFlowerTimer = 0.0f;
-         blueFlowerTimer = 0.0f;
-      }
-      else if(!deerInWater && fadingTimeBeforeWater > 0.0) {
-         redFlowerTimer = fadingTimeBeforeWater;
-         blueFlowerTimer = fadingTimeBeforeWater;
-         fadingTimeBeforeWater = -1.0;
-      }
-
 
       deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
    } else if (current_mode == START) {
@@ -513,8 +513,6 @@ void Game::draw() {
    float ratioMax = redRatio > blueRatio ? redRatio : blueRatio;
    if(ratioMax > 1.0)
       ratioMax = 1.0;
-   if(!isFadingFlowers)
-      ratioMax = 1.0;
 
    glm::vec3 flowerFade = glm::vec3(ratioMax);
 
@@ -632,8 +630,6 @@ void Game::mainLoop() {
             const auto key_fade = SDL_SCANCODE_G;
             if (input.wasKeyPressed(key_fade)) {
                isFadingFlowers = !isFadingFlowers;
-               redFlowerTimer = 0.0f;
-               blueFlowerTimer = 0.0f;
             }
          }
          { //Change shading models
