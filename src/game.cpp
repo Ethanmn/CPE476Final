@@ -348,9 +348,12 @@ void Game::draw() {
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    const auto sunIntensity = day_cycle_.getSunIntensity();
 
-   glClearColor (0.05098 * sunIntensity,
-         0.6274509 * sunIntensity,
-         sunIntensity, 1.0f);
+   float checkNight = 0.5f;
+   if(day_cycle_.isDay())
+      checkNight = 1.0;
+   glClearColor (0.05098 * checkNight,
+         0.6274509 * checkNight,
+         1.0 * checkNight, 1.0f);
 
    std::vector<Drawable> drawables;
    if (draw_collision_box) {
