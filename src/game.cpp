@@ -242,6 +242,11 @@ void Game::step(units::MS dt) {
          deer_.step(dt, ground_, sound_engine_);
       }
       pinecone_.step(dt, ground_);
+      for (auto& tree : treeGen.getTrees()) {
+         if (pinecone_.bounding_rectangle().collidesWith(tree.getBoundingRectangle())) {
+            pinecone_.reverse();
+         }
+      }
 
       song_path_.step(dt, deer_.bounding_rectangle());
 
