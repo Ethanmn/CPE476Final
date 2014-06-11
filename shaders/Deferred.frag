@@ -4,6 +4,7 @@ uniform sampler2D uShadowMapTexture;
 uniform int uHasShadows;
 uniform mat4 uShadowMap;
 uniform int uHasHeightMap;
+uniform vec3 uFlowerFade;
 
 uniform int uHasTexture;
 uniform sampler2D uTexture;
@@ -27,6 +28,7 @@ vec4 calculateDiffuse();
 vec4 checkIfUnderWater(vec4 Diffuse);
 int alphaCheck();
 float calculateShadowAmount();
+vec4 greyscaleColor(vec4 color);
 
 void main() {
    if(vPosition.y < 0.0)
@@ -40,7 +42,7 @@ void main() {
       discard;
 
    if(uOutputShaderType == 0) { 
-      color = checkIfUnderWater(calculateDiffuse() * calculateShadowAmount());
+      color = greyscaleColor(checkIfUnderWater(calculateDiffuse() * calculateShadowAmount()));
    }
    else if(uOutputShaderType == 1)
       color = vec4(vec3(gl_FragCoord.z + 0.001), 1.0);
@@ -109,7 +111,13 @@ float calculateShadowAmount() {
    else
       differenceInDepth = 0.0;
 
-   /*gl_FragColor = vec4(vec3(differenceInDepth), 1.0);   */
-
    return applyShadow;
+}
+
+vec4 greyscaleColor(vec4 color) {
+   float average = (color.r + color.g + color.b) / 3.0;
+   return vec4(color.r * uFlowerFade.r + average * (1.0 - uFlowerFade.r),
+                       color.g * uFlowerFade.g + average * (1.0 - uFlowerFade.b),
+                       color.b * uFlowerFade.b + average * (1.0 - uFlowerFade.g),
+                       1.0);
 }

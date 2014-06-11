@@ -48,8 +48,6 @@ const std::vector<Uniform> kTextureUniforms{
    Uniform::SUN_DIR,
    Uniform::SUN_INTENSITY,
 
-   Uniform::FLOWER_FADE,
-
    Uniform::BONES,
    Uniform::HAS_BONES,
 
@@ -74,6 +72,7 @@ const std::vector<Uniform> kDeferredPassUniforms {
    Uniform::HEIGHT_MAP_SCALE,
    Uniform::TEXTURE,
    Uniform::VARY_MATERIAL,
+   Uniform::FLOWER_FADE,
 
    Uniform::HAS_HEIGHT_MAP,
 
@@ -155,7 +154,6 @@ const std::vector<Uniform> kFinalPassUniforms{
    Uniform::IS_GOD_RAY,
    Uniform::IS_FIREFLY,
    Uniform::GOD_RAY_CENTER,
-   Uniform::FLOWER_FADE,
 
    Uniform::SCREEN_WIDTH,
    Uniform::SCREEN_HEIGHT,

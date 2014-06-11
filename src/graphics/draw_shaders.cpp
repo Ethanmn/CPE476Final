@@ -286,7 +286,6 @@ void DrawShader::Draw(glm::vec3 flowerFade,
             {
                const auto drawables = Drawable::fromCulledDrawables(culledDrawables, CullType::VIEW_CULLING);
                shader.sendUniform(Uniform::USE_BLINN_PHONG, uniforms, useBlinnPhong);
-               shader.sendUniform(Uniform::FLOWER_FADE, uniforms, flowerFade);
 
                SendShadow(shader, uniforms, shadow_map_fbo_, deerPos, sunDir);
                SendScreenSize(shader, uniforms);
@@ -352,6 +351,12 @@ void DrawShader::Draw(glm::vec3 flowerFade,
             for (auto& drawable : culledDrawables) {
                Drawable newDrawable = Drawable::fromCulledDrawable(drawable, CullType::VIEW_CULLING);
                if (newDrawable.draw_template.shader_type == ShaderType::DEFERRED) {
+
+               if (drawable.draw_template.effects.count(EffectType::IS_FLOWER))
+                  shader.sendUniform(Uniform::FLOWER_FADE, uniforms, glm::vec3(1.0f));
+               else 
+                  shader.sendUniform(Uniform::FLOWER_FADE, uniforms, flowerFade);
+
                   newDrawable.draw_template.material.sendMaterial(shader, uniforms);
                   //SendHeightMap(shader, newDrawable);
                   SendBones(shader, newDrawable);
@@ -383,7 +388,6 @@ void DrawShader::Draw(glm::vec3 flowerFade,
             deferred_normal_fbo_.texture().enable(texture_cache_);
             shader.sendUniform(Uniform::FINAL_PASS_NORMAL_TEXTURE, uniforms, deferred_normal_fbo_.texture_slot());
 
-            shader.sendUniform(Uniform::FLOWER_FADE, uniforms, flowerFade);
             SendSun(shader, uniforms, sunIntensity, sunDir);
             shader.sendUniform(Uniform::PROJECTION, uniforms, gProjectionMatrix);
             SendScreenSize(shader, uniforms);

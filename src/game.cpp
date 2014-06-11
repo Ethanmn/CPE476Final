@@ -20,7 +20,9 @@ namespace {
    bool eatFlower = false;
    bool deerInWater = false;
    bool displayTitleScreen = true;
+
    bool isFadingFlowers = true;
+   float fadingTimeBeforeWater = 0.0f;
 
    int lighting = 0;
    int raining = 0;
@@ -216,17 +218,13 @@ void Game::step(units::MS dt) {
          }
       }
 
-      /*last minute addition, needs to be moved to deer*/
       if(ground_.heightAt(deer_.getPosition()) < 0.0f) { //enter water
          if(!deerInWater) {
             deerInWater = true;
-            /*
             sound_engine_.playSoundEffect(
             SoundEngine::SoundEffect::WATER,
             false,
             deer_.getPosition());
-            //printf("Deer in water at %f %f\n", deer_.getPosition().x, deer_.getPosition().z);
-            */
          }
       }
       else if(deerInWater) { //leave water
@@ -337,14 +335,34 @@ void Game::step(units::MS dt) {
          target_pos.z = target_xz.y;
       }
 
-      redRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME);
-      blueRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME);
-      greenRatio = std::max(COLOR_RATIO_MIN, ((MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME + (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME) / 2);
-
       if(isFadingFlowers) {
-         redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer + (dt * COLOR_LOSS_RATE));
-         blueFlowerTimer =  std::min(MAX_FLOWER_TIME, blueFlowerTimer + (dt * COLOR_LOSS_RATE));
+         if(deerInWater) {
+            redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer - 10 * (dt * COLOR_LOSS_RATE));
+            blueFlowerTimer =  std::min(MAX_FLOWER_TIME, blueFlowerTimer - 10 * (dt * COLOR_LOSS_RATE));
+         }
+         else {
+            redFlowerTimer = std::min(MAX_FLOWER_TIME, redFlowerTimer + (dt * COLOR_LOSS_RATE));
+            blueFlowerTimer =  std::min(MAX_FLOWER_TIME, blueFlowerTimer + (dt * COLOR_LOSS_RATE));
+         }
+
+            redRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME);
+            blueRatio = std::max(COLOR_RATIO_MIN, (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME);
+            greenRatio = std::max(COLOR_RATIO_MIN, ((MAX_FLOWER_TIME - redFlowerTimer) / MAX_FLOWER_TIME + 
+                  (MAX_FLOWER_TIME - blueFlowerTimer) / MAX_FLOWER_TIME) / 2);
+
       }
+
+      if(deerInWater && fadingTimeBeforeWater == -1.0) {
+         fadingTimeBeforeWater = redFlowerTimer > blueFlowerTimer ? redFlowerTimer : blueFlowerTimer;  
+         redFlowerTimer = 0.0f;
+         blueFlowerTimer = 0.0f;
+      }
+      else if(!deerInWater && fadingTimeBeforeWater > 0.0) {
+         redFlowerTimer = fadingTimeBeforeWater;
+         blueFlowerTimer = fadingTimeBeforeWater;
+         fadingTimeBeforeWater = -1.0;
+      }
+
 
       deerCam.step(dt, target_pos, deer_.getFacing(), cam_pos);
    } else if (current_mode == START) {
@@ -493,8 +511,11 @@ void Game::draw() {
    const auto deerPos = deer_.getPosition();
    const auto sunDir = day_cycle_.getSunDir();
    float ratioMax = redRatio > blueRatio ? redRatio : blueRatio;
+   if(ratioMax > 1.0)
+      ratioMax = 1.0;
    if(!isFadingFlowers)
       ratioMax = 1.0;
+
    glm::vec3 flowerFade = glm::vec3(ratioMax);
 
    draw_shader_.Draw(flowerFade,
@@ -611,8 +632,6 @@ void Game::mainLoop() {
             const auto key_fade = SDL_SCANCODE_G;
             if (input.wasKeyPressed(key_fade)) {
                isFadingFlowers = !isFadingFlowers;
-               redRatio = 1.0;
-               blueRatio = 1.0;
                redFlowerTimer = 0.0f;
                blueFlowerTimer = 0.0f;
             }
@@ -621,21 +640,6 @@ void Game::mainLoop() {
             const auto key_blinn = SDL_SCANCODE_B;
             if (input.wasKeyPressed(key_blinn)) {
                switchBlinnPhongShading = !switchBlinnPhongShading;
-               glm::vec2 backFeet = deer_.back_feet_bounding_rectangle().getCenter();
-               glm::vec2 frontFeet = deer_.front_feet_bounding_rectangle().getCenter();
-               float heightFront = ground_.heightAt(glm::vec3(frontFeet.x, 0.0, frontFeet.y));
-               float heightBack = ground_.heightAt(glm::vec3(backFeet.x, 0.0, backFeet.y));
-
-               glm::vec3 feetVec = glm::vec3(frontFeet.x - backFeet.x, 
-                                             heightFront - heightBack,
-                                             frontFeet.y - frontFeet.y);
-               float feetDot = glm::dot(glm::vec3(1,0,0), glm::normalize(feetVec));
-               float feetAngle = glm::degrees(glm::acos(feetDot)); 
-
-               printf("front feet height %f at (%f, %f)\n", heightFront, frontFeet.x, frontFeet.y);
-               printf("back feet height %f at (%f, %f)\n", heightBack, backFeet.x, backFeet.y);
-               printf("    Dot is %f\nAngle: %f\n\n", feetDot, feetAngle);
-               
             }
          }
          { //handle quit

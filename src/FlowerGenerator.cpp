@@ -15,7 +15,7 @@ FlowerGenerator::FlowerGenerator(const Mesh& mesh, const Mesh& mesh_eaten,
          Material(),
          Texture(texture_type, DIFFUSE_TEXTURE),
          boost::none,
-         EffectSet({EffectType::CASTS_SHADOW}) }),
+         EffectSet({EffectType::CASTS_SHADOW, EffectType::IS_FLOWER}) }),
    draw_template_eaten_({
          ShaderType::DEFERRED,
          mesh_eaten, 

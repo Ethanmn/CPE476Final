@@ -8,7 +8,6 @@ uniform mat4 uViewMatrix;
 uniform float uScreenWidth;
 uniform float uScreenHeight;
 
-uniform vec3 uFlowerFade;
 uniform vec3 uSunDir;
 uniform float uSunIntensity;
 uniform int uLightning;
@@ -29,7 +28,6 @@ vec4 calculateDiffuse(vec2 texCoord, int useSun);
 vec4 calculateAmbient(vec2 texCoord, float AmbientAmount);
 vec4 checkIfLightning(vec4 Diffuse);
 vec4 changeIfWaterPlane();
-vec4 greyscaleColor(vec4 color);
 
 void main() {
    vec4 color, test, glow = vec4(1.0);
@@ -64,10 +62,6 @@ void main() {
    else
       color = calculateDiffuse(pixelOnScreen, 1);
 
-   float average = (color.r + color.g + color.b) / 3.0;
-   
-   if(uIsWater == 0)
-      color = greyscaleColor(color);
    gl_FragColor = color;
 }
 
@@ -131,12 +125,4 @@ vec4 changeIfWaterPlane() {
       return (refraction + reflection) / 2.0;
    }
    return vec4(-1);
-}
-
-vec4 greyscaleColor(vec4 color) {
-   float average = (color.r + color.g + color.b) / 3.0;
-   return vec4(color.r * uFlowerFade.r + average * (1.0 - uFlowerFade.r),
-                       color.g * uFlowerFade.g + average * (1.0 - uFlowerFade.b),
-                       color.b * uFlowerFade.b + average * (1.0 - uFlowerFade.g),
-                       1.0);
 }
