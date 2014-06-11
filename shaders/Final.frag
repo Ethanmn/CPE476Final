@@ -20,7 +20,10 @@ varying vec2 vTexCoord;
 
 uniform int uIsGodRay;
 uniform int uIsFirefly;
+
 varying vec4 vCenter;
+varying vec4 vMVPPos;
+
 varying float vGodRayIntensity;
 varying float vGodRayDepth;
 
@@ -38,11 +41,12 @@ void main() {
    color = calculateDiffuse(pixelOnScreen, 1);
    if(uIsGodRay == 1) {
       float bias = 0.025;
+      float dist;
 
       bool isVisible = vGodRayDepth <= depthOfImage.z - bias;
       if(isVisible) {
          if(uIsFirefly == 1) {
-         float dist = abs(distance(vPosition.xyz, vCenter.xyz));
+         dist = abs(distance(vPosition.xyz, vCenter.xyz));
             if(dist < 1.0)
                attenuation = 3.0;
             else {
@@ -52,8 +56,18 @@ void main() {
                attenuation += 1.0;
             }
          }
+         else {
+            dist = abs(vCenter.x - vMVPPos.x);
+            if(dist < 1.0)
+               dist = 1.0;
+            test = vec4(vec3(3.0/dist), 1.0);
+         }
+
          attenuation = max(attenuation, 1.0);
          color = vec4(color.r * attenuation, color.g * attenuation, color.b * attenuation, 1.0); 
+
+
+         color = test;
       }
       else {
          discard;
