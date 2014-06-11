@@ -61,7 +61,7 @@ void main() {
       }
       else if(uIsFirefly == 0 && isVisible) {
             dist = abs(vCenter.x - vMVPPos.x); 
-            float xDist = abs(vHeight.x + vMVPPos.x) / (2.0 * vHeight.x);
+            float xDist = abs(vCenter.x - vMVPPos.x);
             float yDist = abs(vHeight.y + vMVPPos.y) / (2.0 * vHeight.y);
 
             if(dist < 1.0)
